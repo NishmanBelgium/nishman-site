@@ -1,0 +1,280 @@
+/* ==========================================================================
+   NISHMAN — mini-site cartes de visite
+   Identité alignée sur le catalogue officiel : fond anthracite/noir,
+   accent or-orangé exact du logo (#FAA21B), typographie éditoriale.
+   ========================================================================== */
+
+:root {
+  --color-bg: #0c0a08;          /* noir chaud (fond de page) */
+  --color-bg-alt: #17130f;      /* dégradé subtil du fond */
+  --color-surface: #171310;     /* carte, anthracite chaud */
+  --color-surface-raised: #201a14;
+  --color-ink: #f3ece1;         /* texte principal, ivoire chaud */
+  --color-ink-soft: #a99d8c;    /* texte secondaire, taupe clair */
+  --color-gold: #faa21b;        /* or-orangé exact du logo Nishman */
+  --color-gold-deep: #c97e10;   /* or plus profond, hover / bordures */
+  --color-whatsapp: #3fb464;    /* vert whatsapp, légèrement assourdi */
+  --color-line: rgba(243, 236, 225, 0.12);
+
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Manrope", "Segoe UI", sans-serif;
+
+  --radius-card: 22px;
+  --radius-row: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 50% -10%, var(--color-bg-alt), var(--color-bg) 65%);
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 18px 48px;
+}
+
+/* Filet très discret en fond de page */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(250, 162, 27, 0.02) 1px, transparent 1px);
+  background-size: 100% 3px;
+  opacity: 0.5;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-surface);
+  border: 1px solid rgba(250, 162, 27, 0.14);
+  border-radius: var(--radius-card);
+  padding: 36px 30px 30px;
+  box-shadow: 0 24px 70px -24px rgba(0, 0, 0, 0.75);
+  animation: card-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Logo ---------- */
+
+.logo {
+  display: block;
+  width: 190px;
+  max-width: 68%;
+  height: auto;
+  margin: 0 auto 20px;
+  animation: logo-in 0.7s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.eyebrow {
+  text-align: center;
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  font-weight: 700;
+  margin: 0 0 22px;
+}
+
+.hairline {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 0 0 22px;
+}
+
+/* ---------- Bloc commercial ---------- */
+
+.agent-block {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.agent-role {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.agent-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 32px;
+  margin: 0 0 12px;
+  color: var(--color-ink);
+}
+
+.agent-bio {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-ink-soft);
+  margin: 0 auto;
+  max-width: 32ch;
+}
+
+/* ---------- Liste de contact ---------- */
+
+.label-list {
+  list-style: none;
+  margin: 0 0 6px;
+  padding: 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.label-list li {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 4px;
+  text-decoration: none;
+  color: var(--color-ink);
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.label-row:active {
+  transform: scale(0.98);
+  opacity: 0.85;
+}
+
+.swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--color-gold);
+  opacity: 0.55;
+}
+
+.swatch-whatsapp { background: var(--color-whatsapp); opacity: 1; }
+
+.label-row .row-text {
+  flex: 1;
+}
+
+.row-sub {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--color-ink-soft);
+  margin-top: 1px;
+}
+
+.chevron {
+  color: var(--color-ink-soft);
+  font-size: 15px;
+  opacity: 0.7;
+}
+
+/* Ligne WhatsApp : CTA principal, plein or */
+.label-row.primary {
+  background: var(--color-gold);
+  color: #1c1409;
+  border-radius: var(--radius-row);
+  padding: 15px 14px;
+  margin: 14px 0;
+  font-size: 15.5px;
+  font-weight: 700;
+}
+
+.label-row.primary .row-sub {
+  color: rgba(28, 20, 9, 0.7);
+}
+
+.label-row.primary .chevron {
+  color: #1c1409;
+  opacity: 0.8;
+}
+
+.label-row.primary .swatch {
+  background: #1c1409;
+  opacity: 0.55;
+}
+
+.label-list li:first-child { border-top: none; }
+.label-list li:has(.primary) { border: none; }
+
+/* ---------- Pied de carte ---------- */
+
+.footer-note {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  color: var(--color-ink-soft);
+  opacity: 0.7;
+}
+
+/* ---------- État "commercial inconnu" ---------- */
+
+.fallback {
+  text-align: center;
+  padding: 10px 0 6px;
+}
+
+.fallback p {
+  font-size: 14px;
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.fallback a.label-row.primary {
+  justify-content: center;
+}
+
+/* ---------- Responsive / petits écrans ---------- */
+
+@media (max-width: 360px) {
+  .card { padding: 30px 22px 24px; }
+  .agent-name { font-size: 28px; }
+}
+
+/* Respect des préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+  .card, .logo {
+    animation: none;
+  }
+}
