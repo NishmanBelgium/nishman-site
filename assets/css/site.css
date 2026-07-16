@@ -1313,3 +1313,8 @@ button, .label-row, .cat-cell, .product-card { touch-action: manipulation; }
   .drawer, .product-sheet { max-width: 520px; border-radius: 26px; }
   .drawer-overlay { align-items: center; }
 }
+
+/* ---------- Pastilles des boutons de la carte de contact ---------- */
+.swatch-instagram { background: linear-gradient(135deg, #ffb340, #ff8a00); }
+.swatch-catalog { background: #0a0a0a; }
+.swatch-website { background: var(--ink-soft); }

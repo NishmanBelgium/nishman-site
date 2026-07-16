@@ -3,44 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Nishman — NBD Distribution Belgium</title>
-  <meta name="description" content="Nishman — NBD Distribution Belgium. Site officiel bientôt disponible." />
-  <meta name="theme-color" content="#0c0a08" />
+  <title>Nishman — NBD Distribution Belgium | Grooming professionnel</title>
+  <meta name="description" content="Distributeur officiel Nishman Belgique, France, Luxembourg — 178 références professionnelles pour barbers et coiffeurs." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Nishman — NBD Distribution Belgium" />
+  <meta property="og:image" content="https://nishman.be/assets/img/favicon-512.png" />
+  <meta property="og:title" content="Nishman — 178 produits professionnels" />
+  <meta property="og:description" content="Parcourez la gamme complète Nishman et envoyez votre sélection à votre commercial sur WhatsApp." />
   <meta name="robots" content="noindex, nofollow" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg" />
-  <link rel="stylesheet" href="/assets/css/style.css" />
-</head>
-<body>
-  <main class="card">
-    <img class="logo" src="/assets/img/logo.png" alt="Nishman — Creative Men Design" />
-    <p class="eyebrow">NBD Distribution Belgium</p>
 
-    <div class="badge-wrap">
-      <span class="badge">Site officiel — arrive bientôt</span>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body class="catalog-body">
+
+  <!-- ======================================================================
+       ÉCRAN D'ACCUEIL — noir, logo orange, cinématique de chargement.
+       Au scroll, le catalogue monte en feuille blanche 3D par-dessus.
+       ====================================================================== -->
+  <div class="intro-track" id="intro-track">
+    <section class="intro" id="intro">
+      <canvas class="intro-particles" id="intro-particles" aria-hidden="true"></canvas>
+      <div class="intro-scene" id="intro-scene">
+        <img class="intro-logo" src="/assets/img/logo-gold.png" alt="Nishman" />
+        <div class="intro-line" aria-hidden="true"><span></span></div>
+      </div>
+      <button class="intro-cue" id="intro-cue" aria-label="Découvrir la gamme">
+        <span class="cue-track"><span class="cue-dot"></span></span>
+        <span class="cue-text">Découvrir</span>
+      </button>
+    </section>
+  </div>
+
+  <div class="catalog-sheet" id="catalog-sheet">
+  <div class="catalog-shell">
+
+    <div class="search-sticky" id="search-sticky">
+      <div class="filter-row">
+        <a class="sticky-brand" href="#" id="sticky-brand" aria-label="Haut de page">
+          <img src="/assets/img/logo-black.png" alt="Nishman" />
+        </a>
+        <input
+          id="search-input"
+          class="search-input"
+          type="search"
+          placeholder="Rechercher un produit ou un code EAN..."
+          autocomplete="off"
+        />
+        <button class="cat-btn" id="cat-btn" aria-haspopup="dialog">
+          <span class="cat-btn-dot" aria-hidden="true"></span>
+          <span class="cat-btn-label" id="cat-btn-label">Toutes</span>
+          <span class="cat-btn-chevron" aria-hidden="true">&#9662;</span>
+        </button>
+      </div>
     </div>
 
-    <h1 class="home-title">Notre nouveau site<br />arrive très prochainement</h1>
-    <p class="home-text">
-      En attendant, contactez directement l'un de nos conseillers commerciaux
-      ci-dessous — ils répondent en direct sur WhatsApp.
-    </p>
+    <p class="result-count" id="result-count"></p>
 
-    <hr class="hairline" />
+    <div class="product-grid" id="grid"></div>
 
-    <p class="section-label">Nos conseillers commerciaux</p>
-    <ul class="label-list" id="home-agent-list"></ul>
+    <footer class="site-footer">
+      <p class="footer-brand">NISHMAN — Distribution officielle Belgique · France · Luxembourg</p>
+      <p>NBD Distribution SRL — Rue de la Poire d'Or 26, 7033 Mons, Belgique</p>
+      <p>BCE / TVA : BE 0817.750.283 — <a href="mailto:contact@nishman.be">contact@nishman.be</a></p>
+      <p>&copy; <span id="footer-year"></span> NBD Distribution SRL. Tous droits réservés.</p>
+    </footer>
+  </div>
+  </div>
 
-    <p class="footer-note">&copy; <span id="year"></span> Nishman</p>
-  </main>
+  <button class="float-bar" id="float-bar" hidden></button>
+  <button class="to-top" id="to-top" aria-label="Retour en haut">&uarr;</button>
+
+  <!-- Sélecteur de catégories : panneau, tout visible d'un coup -->
+  <div class="drawer-overlay cat-overlay" id="cat-overlay" hidden>
+    <div class="cat-panel">
+      <div class="cat-panel-head">
+        <p class="drawer-title">Catégories</p>
+        <button class="drawer-close" id="cat-close">&times;</button>
+      </div>
+      <div class="cat-grid" id="cat-grid"></div>
+    </div>
+  </div>
+
+  <div class="drawer-overlay" id="drawer-overlay" hidden>
+    <div class="drawer">
+      <button class="drawer-close" id="drawer-close">&times;</button>
+      <p class="drawer-title">Ma sélection</p>
+      <div id="drawer-list"></div>
+      <p class="agent-pick-title">Envoyer cette sélection sur WhatsApp à :</p>
+      <div id="agent-pick-list"></div>
+    </div>
+  </div>
+
+  <div class="drawer-overlay" id="sheet-overlay" hidden>
+    <div class="drawer product-sheet" id="product-sheet">
+      <button class="drawer-close" id="sheet-close">&times;</button>
+      <div class="sheet-body"></div>
+    </div>
+  </div>
 
   <script src="/assets/js/config.js"></script>
-  <script src="/assets/js/home.js"></script>
-  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  <script src="/assets/js/catalog.js"></script>
+  <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 </body>
 </html>
