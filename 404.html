@@ -5,28 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Nishman — NBD Distribution Belgium</title>
   <meta name="description" content="Carte de contact digitale Nishman — NBD Distribution Belgium." />
-  <meta name="theme-color" content="#0c0a08" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <!-- Empêche l'indexation : ce sont des pages de carte de visite, pas du contenu éditorial -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Nishman — NBD Distribution Belgium" />
+  <meta property="og:image" content="https://nishman.be/assets/img/favicon-512.png" />
+  <meta property="og:title" content="Nishman — Votre conseiller commercial" />
+  <meta property="og:description" content="Contactez votre conseiller Nishman directement sur WhatsApp." />
   <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Polices : Fraunces (display, personnalité de la marque) + Manrope (texte) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg" />
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
   <link rel="stylesheet" href="/assets/css/style.css" />
 </head>
 <body>
+
   <main class="card">
     <img class="logo" src="/assets/img/logo.png" alt="Nishman — Creative Men Design" />
+
     <p class="eyebrow" id="eyebrow">NBD Distribution Belgium</p>
+
     <hr class="hairline" />
+
+    <!-- Vue affichée quand l'URL correspond à un commercial connu -->
     <section id="agent-view" hidden>
       <div class="agent-block">
         <p class="agent-role">Votre conseiller(ère) commercial(e)</p>
         <h2 class="agent-name" id="agent-name">—</h2>
         <p class="agent-bio" id="agent-bio"></p>
       </div>
+
       <ul class="label-list">
         <li>
           <a id="btn-whatsapp" class="label-row primary" target="_blank" rel="noopener">
@@ -53,7 +71,7 @@
             <span class="swatch swatch-catalog"></span>
             <span class="row-text">
               Catalogue
-              <span class="row-sub">Toute la gamme en PDF</span>
+              <span class="row-sub">Toute la gamme en ligne</span>
             </span>
             <span class="chevron">&#8250;</span>
           </a>
@@ -70,16 +88,18 @@
         </li>
       </ul>
     </section>
+
+    <!-- Vue affichée sur la page d'accueil (nishman.be) ou toute URL inconnue :
+         un sélecteur listant chaque commercial, généré automatiquement depuis
+         AGENTS dans config.js. Rien à modifier ici si vous ajoutez un commercial. -->
     <section id="fallback-view" class="fallback" hidden>
-      <p>Cette carte n'est pas reconnue. Retrouvez-nous directement ici :</p>
-      <a class="label-row primary" href="https://nishman.be" target="_blank" rel="noopener">
-        <span class="swatch swatch-website"></span>
-        <span class="row-text">Visiter nishman.be</span>
-        <span class="chevron">&#8250;</span>
-      </a>
+      <p>Choisissez votre interlocuteur :</p>
+      <ul class="label-list" id="fallback-list"></ul>
     </section>
-    <p class="footer-note">&copy; <span id="year"></span> Nishman</p>
+
+    <p class="footer-note">&copy; <span id="year"></span> NBD Distribution SRL — BE 0817.750.283<br /><a href="mailto:contact@nishman.be" style="color:inherit">contact@nishman.be</a></p>
   </main>
+
   <script src="/assets/js/config.js"></script>
   <script src="/assets/js/app.js"></script>
   <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
