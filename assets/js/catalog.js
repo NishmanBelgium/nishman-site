@@ -34,6 +34,12 @@
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       selection = raw ? JSON.parse(raw) : {};
+      // Migration : les anciennes sélections stockaient un simple nombre d'unités.
+      Object.keys(selection).forEach((ean) => {
+        if (typeof selection[ean] === "number") {
+          selection[ean] = { u: selection[ean], b: 0 };
+        }
+      });
     } catch (e) {
       selection = {};
     }
@@ -47,8 +53,21 @@
     }
   }
 
-  function selectionCount() {
-    return Object.values(selection).reduce((sum, qty) => sum + qty, 0);
+  function unitCount() {
+    return Object.values(selection).reduce((s, q) => s + (q.u || 0), 0);
+  }
+
+  function boxCount() {
+    return Object.values(selection).reduce((s, q) => s + (q.b || 0), 0);
+  }
+
+  function hasSelection() {
+    return unitCount() + boxCount() > 0;
+  }
+
+  function entry(ean) {
+    if (!selection[ean]) selection[ean] = { u: 0, b: 0 };
+    return selection[ean];
   }
 
   // ---------- Chargement des produits ----------
@@ -160,7 +179,9 @@
 
     grid.innerHTML = filtered
       .map((p) => {
-        const qty = selection[p.ean] || 0;
+        const q = selection[p.ean] || { u: 0, b: 0 };
+        const inSel = q.u > 0 || q.b > 0;
+        const summary = [q.u ? q.u + " u" : "", q.b ? q.b + " ct" : ""].filter(Boolean).join(" + ");
         return `
           <div class="product-card" data-open="${p.ean}" role="button" tabindex="0">
             <div class="product-image-wrap">
@@ -175,12 +196,8 @@
                 <span class="vat-note">HT / unité</span>
               </span>
               ${
-                qty > 0
-                  ? `<div class="qty-stepper" data-ean="${p.ean}">
-                       <button data-action="dec">−</button>
-                       <span>${qty}</span>
-                       <button data-action="inc">+</button>
-                     </div>`
+                inSel
+                  ? `<button class="sel-chip" data-action="add" data-ean="${p.ean}">${summary}</button>`
                   : `<button class="add-btn" data-action="add" data-ean="${p.ean}">+</button>`
               }
             </div>
@@ -192,14 +209,13 @@
     grid.querySelectorAll("[data-action='add']").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        changeQty(btn.dataset.ean, 1);
+        const p = PRODUCTS.find((x) => x.ean === btn.dataset.ean);
+        if (p && p.box_qty) {
+          openProductSheet(p.ean); // le choix unité / carton se fait sur la fiche
+        } else {
+          changeQty(btn.dataset.ean, 1, "u");
+        }
       });
-    });
-    grid.querySelectorAll(".qty-stepper").forEach((stepper) => {
-      const ean = stepper.dataset.ean;
-      stepper.addEventListener("click", (e) => e.stopPropagation());
-      stepper.querySelector("[data-action='inc']").addEventListener("click", () => changeQty(ean, 1));
-      stepper.querySelector("[data-action='dec']").addEventListener("click", () => changeQty(ean, -1));
     });
     grid.querySelectorAll("[data-open]").forEach((card) => {
       card.addEventListener("click", () => openProductSheet(card.dataset.open));
@@ -232,14 +248,11 @@
     });
   }
 
-  function changeQty(ean, delta) {
-    const current = selection[ean] || 0;
-    const next = current + delta;
-    if (next <= 0) {
-      delete selection[ean];
-    } else {
-      selection[ean] = next;
-    }
+  // kind : "u" (unités) ou "b" (cartons)
+  function changeQty(ean, delta, kind) {
+    const e = entry(ean);
+    e[kind] = Math.max(0, (e[kind] || 0) + delta);
+    if (e.u === 0 && e.b === 0) delete selection[ean];
     saveSelection();
     renderGrid();
     renderFloatBar();
@@ -255,14 +268,18 @@
 
   function renderFloatBar() {
     const bar = document.getElementById("float-bar");
-    const count = selectionCount();
-    document.body.classList.toggle("has-float", count > 0);
-    if (count === 0) {
+    const u = unitCount();
+    const b = boxCount();
+    document.body.classList.toggle("has-float", u + b > 0);
+    if (u + b === 0) {
       bar.hidden = true;
       return;
     }
+    const parts = [];
+    if (u) parts.push(u + " article" + (u > 1 ? "s" : ""));
+    if (b) parts.push(b + " carton" + (b > 1 ? "s" : ""));
     bar.hidden = false;
-    bar.innerHTML = `<span class="fb-count">${count}</span> article${count > 1 ? "s" : ""} sélectionné${count > 1 ? "s" : ""} — voir ma sélection`;
+    bar.innerHTML = `<span class="fb-count">${u + b}</span> ${parts.join(" + ")} — voir ma sélection`;
   }
 
   // ---------- Tiroir de sélection ----------
@@ -283,12 +300,13 @@
       <h2 class="sheet-name">${escapeHtml(p.name)}</h2>
       <p class="sheet-meta">${escapeHtml(p.volume || "")}${p.volume ? " · " : ""}EAN ${p.ean}</p>
       <p class="sheet-desc">${escapeHtml(p.description || "")}</p>
-      <div class="sheet-footer">
+      ${p.box_qty ? `<p class="sheet-packaging">Conditionnement : carton de ${p.box_qty} unités${p.price_ht ? " — " + formatPrice(p.price_ht * p.box_qty) + " HT / carton" : ""}</p>` : ""}
+      <div class="sheet-buy">
         <span class="product-price sheet-price">
           ${formatPrice(p.price_ht)}
           <span class="vat-note">HT / unité</span>
         </span>
-        <div id="sheet-qty-zone"></div>
+        <div class="sheet-qty-rows" id="sheet-qty-zone"></div>
       </div>
     `;
 
@@ -300,29 +318,50 @@
   function renderSheetQty(ean) {
     const zone = document.getElementById("sheet-qty-zone");
     if (!zone) return;
-    const qty = selection[ean] || 0;
-    if (qty > 0) {
-      zone.innerHTML = `
-        <div class="qty-stepper">
-          <button data-action="dec">−</button>
-          <span>${qty}</span>
-          <button data-action="inc">+</button>
+    const p = PRODUCTS.find((x) => x.ean === ean);
+    const q = selection[ean] || { u: 0, b: 0 };
+
+    function row(kind, label) {
+      const val = q[kind] || 0;
+      if (val > 0) {
+        return `
+          <div class="buy-row">
+            <span class="buy-row-label">${label}</span>
+            <div class="qty-stepper" data-kind="${kind}">
+              <button data-action="dec">−</button>
+              <span>${val}</span>
+              <button data-action="inc">+</button>
+            </div>
+          </div>`;
+      }
+      return `
+        <div class="buy-row">
+          <span class="buy-row-label">${label}</span>
+          <button class="buy-add" data-kind="${kind}">Ajouter</button>
         </div>`;
-      zone.querySelector("[data-action='inc']").addEventListener("click", () => {
-        changeQty(ean, 1);
-        renderSheetQty(ean);
-      });
-      zone.querySelector("[data-action='dec']").addEventListener("click", () => {
-        changeQty(ean, -1);
-        renderSheetQty(ean);
-      });
-    } else {
-      zone.innerHTML = `<button class="sheet-add-btn">Ajouter à ma sélection</button>`;
-      zone.querySelector("button").addEventListener("click", () => {
-        changeQty(ean, 1);
-        renderSheetQty(ean);
-      });
     }
+
+    zone.innerHTML =
+      row("u", "À l'unité") +
+      (p && p.box_qty ? row("b", "Carton de " + p.box_qty) : "");
+
+    zone.querySelectorAll(".buy-add").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        changeQty(ean, 1, btn.dataset.kind);
+        renderSheetQty(ean);
+      });
+    });
+    zone.querySelectorAll(".qty-stepper").forEach((st) => {
+      const kind = st.dataset.kind;
+      st.querySelector("[data-action='inc']").addEventListener("click", () => {
+        changeQty(ean, 1, kind);
+        renderSheetQty(ean);
+      });
+      st.querySelector("[data-action='dec']").addEventListener("click", () => {
+        changeQty(ean, -1, kind);
+        renderSheetQty(ean);
+      });
+    });
   }
 
   function closeProductSheet() {
@@ -363,19 +402,30 @@
       .map((ean) => {
         const p = PRODUCTS.find((x) => x.ean === ean);
         if (!p) return "";
-        return `
+        const q = selection[ean];
+        const rows = [];
+        if (q.u > 0) rows.push({ kind: "u", label: `× ${q.u} unité${q.u > 1 ? "s" : ""}` });
+        if (q.b > 0) rows.push({ kind: "b", label: `× ${q.b} carton${q.b > 1 ? "s" : ""} de ${p.box_qty}` });
+        return rows
+          .map(
+            (r) => `
           <div class="drawer-item">
             <img src="${productImageSrc(p)}" alt="" />
-            <span class="drawer-item-name">${escapeHtml(p.name)} × ${selection[ean]}</span>
-            <button class="drawer-remove" data-ean="${ean}">retirer</button>
-          </div>
-        `;
+            <span class="drawer-item-name">${escapeHtml(p.name)} ${r.label}</span>
+            <button class="drawer-remove" data-ean="${ean}" data-kind="${r.kind}">retirer</button>
+          </div>`
+          )
+          .join("");
       })
       .join("");
 
     list.querySelectorAll(".drawer-remove").forEach((btn) => {
       btn.addEventListener("click", () => {
-        delete selection[btn.dataset.ean];
+        const e = selection[btn.dataset.ean];
+        if (e) {
+          e[btn.dataset.kind] = 0;
+          if (!e.u && !e.b) delete selection[btn.dataset.ean];
+        }
         saveSelection();
         renderDrawer();
         renderGrid();
@@ -392,7 +442,11 @@
     const lines = Object.keys(selection).map((ean) => {
       const p = PRODUCTS.find((x) => x.ean === ean);
       if (!p) return null;
-      return `• ${p.name} (x${selection[ean]})`;
+      const q = selection[ean];
+      const parts = [];
+      if (q.u > 0) parts.push(`${q.u} unité${q.u > 1 ? "s" : ""}`);
+      if (q.b > 0) parts.push(`${q.b} carton${q.b > 1 ? "s" : ""} de ${p.box_qty} (${q.b * p.box_qty} unités)`);
+      return `• ${p.name} — ${parts.join(" + ")}`;
     }).filter(Boolean);
     return `Bonjour, je souhaite une offre de prix pour les produits suivants :\n\n${lines.join("\n")}`;
   }

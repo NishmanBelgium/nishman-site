@@ -1365,3 +1365,72 @@ body.card-dark .label-row.primary .swatch {
   opacity: 1;
   border: 1px solid rgba(0, 0, 0, 0.35);
 }
+
+/* ==========================================================================
+   UNITÉS / CARTONS — résumé sur carte, lignes d'achat sur fiche
+   ========================================================================== */
+
+.sel-chip {
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 13px;
+  background: var(--gradient);
+  color: #0a0a0a;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.sheet-packaging {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin: 14px 0 0;
+}
+
+.sheet-buy {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.sheet-qty-rows { display: flex; flex-direction: column; gap: 9px; }
+
+.buy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.buy-row-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.buy-add {
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+  min-height: 40px;
+}
+
+.buy-add:hover { border-color: var(--gold); }

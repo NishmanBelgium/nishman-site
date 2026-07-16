@@ -8,7 +8,8 @@
   "image": "8684736675217.webp",
   "tagline": "Peigne à barbe",
   "description": "Peigne à barbe format poche : discipline et structure la barbe sans casser le poil ni créer d'électricité statique. L'accessoire du quotidien entre deux passages au salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8684736671523",
@@ -19,7 +20,8 @@
   "image": "8684736671523.webp",
   "tagline": "Après-shampoing barbe",
   "description": "Après-shampoing barbe et moustache : adoucit le poil dru, facilite le coiffage et hydrate la peau sous la barbe. Le complément idéal du shampoing barbe.",
-  "usage": "Appliquer après le shampoing, laisser poser 1-2 minutes, rincer."
+  "usage": "Appliquer après le shampoing, laisser poser 1-2 minutes, rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8684736673473",
@@ -30,7 +32,8 @@
   "image": "8684736673473.webp",
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
-  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette."
+  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
+  "box_qty": 12
  },
  {
   "ean": "8684736673664",
@@ -41,7 +44,8 @@
   "image": "8684736673664.webp",
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
-  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette."
+  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
+  "box_qty": 12
  },
  {
   "ean": "8684736673572",
@@ -52,7 +56,8 @@
   "image": "8684736673572.webp",
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
-  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts."
+  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
+  "box_qty": 48
  },
  {
   "ean": "8684736673671",
@@ -63,7 +68,8 @@
   "image": "8684736673671.webp",
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux. Enrichie au sel de mer pour un effet texturisé coiffé-décoiffé.",
-  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides."
+  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
+  "box_qty": 36
  },
  {
   "ean": "8684736673947",
@@ -74,7 +80,8 @@
   "image": "8684736673947.webp",
   "tagline": "Shampoing colorant noir",
   "description": "Shampoing colorant noir cheveux et barbe : estompe progressivement les poils blancs pour un résultat naturel, sans effet racine. Se dose selon l'intensité souhaitée.",
-  "usage": "Appliquer sur cheveux/barbe humides, laisser poser quelques minutes, rincer."
+  "usage": "Appliquer sur cheveux/barbe humides, laisser poser quelques minutes, rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8684736673954",
@@ -85,7 +92,8 @@
   "image": "8684736673954.webp",
   "tagline": "Shampoing colorant brun",
   "description": "Shampoing colorant brun cheveux et barbe : estompe progressivement les poils blancs pour un résultat naturel, sans effet racine. Se dose selon l'intensité souhaitée.",
-  "usage": "Appliquer sur cheveux/barbe humides, laisser poser quelques minutes, rincer."
+  "usage": "Appliquer sur cheveux/barbe humides, laisser poser quelques minutes, rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8684736673824",
@@ -96,7 +104,8 @@
   "image": "8684736673824.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8684736675224",
@@ -107,7 +116,8 @@
   "image": "8684736675224.webp",
   "tagline": "Peigne multifonction",
   "description": "Le peigne « magique » multifonction : dents étudiées pour lisser, texturiser et discipliner tous types de cheveux. Un outil polyvalent à avoir à chaque poste.",
-  "usage": null
+  "usage": null,
+  "box_qty": 24
  },
  {
   "ean": "8684736674012",
@@ -118,7 +128,8 @@
   "image": "8684736674012.webp",
   "tagline": "Mousse de rasage",
   "description": "Mousse de rasage onctueuse, menthol apaisant, effet fraîcheur immédiat. Prépare le poil, protège la peau et laisse un toucher confortable après rasage.",
-  "usage": "Appliquer sur peau humide, raser, rincer à l'eau claire."
+  "usage": "Appliquer sur peau humide, raser, rincer à l'eau claire.",
+  "box_qty": 24
  },
  {
   "ean": "8684736674029",
@@ -129,7 +140,8 @@
   "image": "8684736674029.webp",
   "tagline": "Mousse de rasage",
   "description": "Mousse de rasage onctueuse, formule douce pour peaux sensibles. Prépare le poil, protège la peau et laisse un toucher confortable après rasage.",
-  "usage": "Appliquer sur peau humide, raser, rincer à l'eau claire."
+  "usage": "Appliquer sur peau humide, raser, rincer à l'eau claire.",
+  "box_qty": 24
  },
  {
   "ean": "8684736674470",
@@ -140,7 +152,8 @@
   "image": "8684736674470.webp",
   "tagline": "Texture gelée hybride",
   "description": "Cire-gelée hybride à la texture surprenante : la brillance d'un gel, la souplesse d'une cire. Tenue forte et fini frais.",
-  "usage": "Prélever, réchauffer entre les paumes et appliquer sur cheveux secs ou humides."
+  "usage": "Prélever, réchauffer entre les paumes et appliquer sur cheveux secs ou humides.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088462",
@@ -151,7 +164,8 @@
   "image": "8682035088462.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088479",
@@ -162,7 +176,8 @@
   "image": "8682035088479.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088486",
@@ -173,7 +188,8 @@
   "image": "8682035088486.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088493",
@@ -184,7 +200,8 @@
   "image": "8682035088493.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088165",
@@ -195,7 +212,8 @@
   "image": "8682035088165.webp",
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
-  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides."
+  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
+  "box_qty": 48
  },
  {
   "ean": "8684736672636",
@@ -206,7 +224,8 @@
   "image": "8684736672636.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8684736673176",
@@ -217,7 +236,8 @@
   "image": "8684736673176.webp",
   "tagline": "Brillance rétro",
   "description": "La brillantine classique revisitée : brillance intense et contrôle souple pour les styles rétro et élégants. Discipline les cheveux sans les figer.",
-  "usage": "Répartir quelques gouttes dans les paumes et appliquer sur cheveux secs ou humides."
+  "usage": "Répartir quelques gouttes dans les paumes et appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035087984",
@@ -228,7 +248,8 @@
   "image": "8682035087984.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088547",
@@ -239,7 +260,8 @@
   "image": "8682035088547.webp",
   "tagline": "Effet toile — Black Widow",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, fini légèrement brillant, se rince facilement au shampoing.",
-  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer."
+  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088554",
@@ -250,7 +272,8 @@
   "image": "8682035088554.webp",
   "tagline": "Effet toile — Tarantula",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, fini brillant, parfum masculin, se rince facilement au shampoing.",
-  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer."
+  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
+  "box_qty": 48
  },
  {
   "ean": "8682035080411",
@@ -261,7 +284,8 @@
   "image": "8682035080411.webp",
   "tagline": "Effet toile — Blue Web",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, fini soigné et brillant, se rince facilement au shampoing.",
-  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer."
+  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
+  "box_qty": 48
  },
  {
   "ean": "8682035083658",
@@ -272,7 +296,8 @@
   "image": "8682035083658.webp",
   "tagline": "Effet toile — Argan",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, enrichie en argan, fini naturel, se rince facilement au shampoing.",
-  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer."
+  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
+  "box_qty": 48
  },
  {
   "ean": "8682035083665",
@@ -283,7 +308,8 @@
   "image": "8682035083665.webp",
   "tagline": "Effet toile — Keratin",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, enrichie en kératine, parfum coco, se rince facilement au shampoing.",
-  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer."
+  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
+  "box_qty": 48
  },
  {
   "ean": "8682035083672",
@@ -294,7 +320,8 @@
   "image": "8682035083672.webp",
   "tagline": "Effet toile — Keratin",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, enrichie en kératine, contrôle maximal, se rince facilement au shampoing.",
-  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer."
+  "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
+  "box_qty": 48
  },
  {
   "ean": "8681665066826",
@@ -305,7 +332,8 @@
   "image": "8681665066826.webp",
   "tagline": "Crème coiffante",
   "description": "Crème coiffante à tenue extra-forte : contrôle et définition avec un toucher naturel, sans rigidité. Convient aux cheveux épais et indisciplinés.",
-  "usage": "Répartir une noisette sur cheveux secs ou humides et coiffer."
+  "usage": "Répartir une noisette sur cheveux secs ou humides et coiffer.",
+  "box_qty": 48
  },
  {
   "ean": "8682035084686",
@@ -316,18 +344,20 @@
   "image": "8682035084686.webp",
   "tagline": "Format découverte 30 ml",
   "description": "Format testeur / voyage de la cire M1 : idéal à proposer au comptoir, à offrir aux nouveaux clients ou à glisser dans un kit découverte. Petit format, vraie formule.",
-  "usage": "Identique au format standard."
+  "usage": "Identique au format standard.",
+  "box_qty": 108
  },
  {
   "ean": "8682035084632",
-  "name": "M2 TESTER & TRAVEL SIZE 108 PCS",
+  "name": "M2 TESTER & TRAVEL SIZE",
   "volume": "30 ML",
   "category": "Testeurs & Miniatures",
   "price_ht": 1.8,
   "image": "8682035084632.webp",
   "tagline": "Format découverte 30 ml",
   "description": "Format testeur / voyage de la cire M2 : idéal à proposer au comptoir, à offrir aux nouveaux clients ou à glisser dans un kit découverte. Petit format, vraie formule.",
-  "usage": "Identique au format standard."
+  "usage": "Identique au format standard.",
+  "box_qty": 108
  },
  {
   "ean": "8682035084709",
@@ -338,7 +368,8 @@
   "image": "8682035084709.webp",
   "tagline": "Format découverte 30 ml",
   "description": "Format testeur / voyage de la cire M3 : idéal à proposer au comptoir, à offrir aux nouveaux clients ou à glisser dans un kit découverte. Petit format, vraie formule.",
-  "usage": "Identique au format standard."
+  "usage": "Identique au format standard.",
+  "box_qty": 90
  },
  {
   "ean": "8682035084716",
@@ -349,7 +380,8 @@
   "image": "8682035084716.webp",
   "tagline": "Format découverte 30 ml",
   "description": "Format testeur / voyage de la cire M4 : idéal à proposer au comptoir, à offrir aux nouveaux clients ou à glisser dans un kit découverte. Petit format, vraie formule.",
-  "usage": "Identique au format standard."
+  "usage": "Identique au format standard.",
+  "box_qty": 108
  },
  {
   "ean": "8682035081098",
@@ -360,7 +392,8 @@
   "image": "8682035081098.webp",
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
-  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides."
+  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
+  "box_qty": 36
  },
  {
   "ean": "8682035081326",
@@ -371,7 +404,8 @@
   "image": "8682035081326.webp",
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
-  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides."
+  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
+  "box_qty": 36
  },
  {
   "ean": "8682035085072",
@@ -382,7 +416,8 @@
   "image": "8682035085072.webp",
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
-  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides."
+  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
+  "box_qty": 36
  },
  {
   "ean": "8682035085089",
@@ -393,7 +428,8 @@
   "image": "8682035085089.webp",
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
-  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides."
+  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
+  "box_qty": 36
  },
  {
   "ean": "8682035085096",
@@ -404,7 +440,8 @@
   "image": "8682035085096.webp",
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
-  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides."
+  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
+  "box_qty": 36
  },
  {
   "ean": "8682035087991",
@@ -415,7 +452,8 @@
   "image": "8682035087991.webp",
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
-  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides."
+  "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035087502",
@@ -426,7 +464,8 @@
   "image": "8682035087502.webp",
   "tagline": "Pommade coiffante",
   "description": "Pommade coiffante pour les styles structurés et élégants : side part, pompadour, slick back. Tenue solide, fini soigné, se retravaille au peigne dans la journée.",
-  "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner."
+  "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner.",
+  "box_qty": 48
  },
  {
   "ean": "8682035085065",
@@ -437,7 +476,8 @@
   "image": "8682035085065.webp",
   "tagline": "Pommade coiffante",
   "description": "Pommade coiffante pour les styles structurés et élégants : side part, pompadour, slick back. Tenue solide, fini soigné, se retravaille au peigne dans la journée.",
-  "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner."
+  "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner.",
+  "box_qty": 36
  },
  {
   "ean": "8682035081104",
@@ -448,7 +488,8 @@
   "image": "8682035081104.webp",
   "tagline": "Pommade coiffante",
   "description": "Pommade coiffante pour les styles structurés et élégants : side part, pompadour, slick back. Tenue solide, fini soigné, se retravaille au peigne dans la journée.",
-  "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner."
+  "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner.",
+  "box_qty": 36
  },
  {
   "ean": "8684736671349",
@@ -459,7 +500,8 @@
   "image": "8684736671349.webp",
   "tagline": "Pommade coiffante",
   "description": "Pommade coiffante pour les styles structurés et élégants : side part, pompadour, slick back. Tenue solide, fini soigné, se retravaille au peigne dans la journée.",
-  "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner."
+  "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner.",
+  "box_qty": 36
  },
  {
   "ean": "8682035082910",
@@ -470,7 +512,8 @@
   "image": "8682035082910.webp",
   "tagline": "Cire colorante",
   "description": "Cire coiffante colorante noir profond : coiffe et intensifie la couleur en un seul geste. Couvre les cheveux blancs le temps d'une journée, s'élimine au shampoing.",
-  "usage": "Réchauffer entre les paumes, appliquer mèche par mèche sur cheveux secs."
+  "usage": "Réchauffer entre les paumes, appliquer mèche par mèche sur cheveux secs.",
+  "box_qty": 36
  },
  {
   "ean": "8682035080978",
@@ -481,7 +524,8 @@
   "image": "8682035080978.webp",
   "tagline": "Gel fixation ultra forte",
   "description": "Gel coiffant à fixation ultra forte, effet gomme longue durée. Le style reste impeccable du matin au soir, sans effet carton ni résidus blancs.",
-  "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit."
+  "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit.",
+  "box_qty": 24
  },
  {
   "ean": "8682035085850",
@@ -492,7 +536,8 @@
   "image": "8682035085850.webp",
   "tagline": "Gel fixation ultra forte",
   "description": "Gel coiffant à fixation ultra forte, effet gomme longue durée. Le style reste impeccable du matin au soir, sans effet carton ni résidus blancs.",
-  "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit."
+  "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit.",
+  "box_qty": 36
  },
  {
   "ean": "8682035080589",
@@ -503,7 +548,8 @@
   "image": "8682035080589.webp",
   "tagline": "Gel fixation ultra forte",
   "description": "Gel coiffant à fixation ultra forte, effet gomme longue durée. Le style reste impeccable du matin au soir, sans effet carton ni résidus blancs.",
-  "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit."
+  "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit.",
+  "box_qty": 24
  },
  {
   "ean": "8682035080183",
@@ -514,7 +560,8 @@
   "image": "8682035080183.webp",
   "tagline": "Fixation longue durée",
   "description": "Spray fixant professionnel : verrouille la coiffure sans effet carton, résiste à l'humidité et se brosse facilement en fin de journée.",
-  "usage": "Vaporiser à 25-30 cm sur la coiffure terminée."
+  "usage": "Vaporiser à 25-30 cm sur la coiffure terminée.",
+  "box_qty": 24
  },
  {
   "ean": "8682035086444",
@@ -525,7 +572,8 @@
   "image": "8682035086444.webp",
   "tagline": "Brillance & nutrition",
   "description": "Spray de brillance à l'huile d'olive et de coco : ravive l'éclat, nourrit la fibre et facilite le coiffage sans alourdir. Parfait en touche finale.",
-  "usage": "Vaporiser légèrement à 20 cm sur cheveux secs, en finition."
+  "usage": "Vaporiser légèrement à 20 cm sur cheveux secs, en finition.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084389",
@@ -536,7 +584,8 @@
   "image": "8682035084389.webp",
   "tagline": "Couleur temporaire blanc",
   "description": "Spray colorant temporaire blanc pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
-  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes."
+  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084402",
@@ -547,7 +596,8 @@
   "image": "8682035084402.webp",
   "tagline": "Couleur temporaire doré",
   "description": "Spray colorant temporaire doré pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
-  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes."
+  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084334",
@@ -558,7 +608,8 @@
   "image": "8682035084334.webp",
   "tagline": "Couleur temporaire rouge",
   "description": "Spray colorant temporaire rouge pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
-  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes."
+  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084327",
@@ -569,7 +620,8 @@
   "image": "8682035084327.webp",
   "tagline": "Couleur temporaire bleu",
   "description": "Spray colorant temporaire bleu pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
-  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes."
+  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084341",
@@ -580,7 +632,8 @@
   "image": "8682035084341.webp",
   "tagline": "Couleur temporaire vert",
   "description": "Spray colorant temporaire vert pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
-  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes."
+  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084372",
@@ -591,7 +644,8 @@
   "image": "8682035084372.webp",
   "tagline": "Couleur temporaire rose",
   "description": "Spray colorant temporaire rose pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
-  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes."
+  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084365",
@@ -602,7 +656,8 @@
   "image": "8682035084365.webp",
   "tagline": "Couleur temporaire violet",
   "description": "Spray colorant temporaire violet pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
-  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes."
+  "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084419",
@@ -613,7 +668,8 @@
   "image": "8682035084419.webp",
   "tagline": "Paillettes événementielles",
   "description": "Spray pailleté doré pour les occasions qui sortent de l'ordinaire : événements, fêtes, shootings. S'élimine au shampoing.",
-  "usage": "Vaporiser à 20 cm sur la coiffure terminée."
+  "usage": "Vaporiser à 20 cm sur la coiffure terminée.",
+  "box_qty": 24
  },
  {
   "ean": "8682035081753",
@@ -624,7 +680,8 @@
   "image": "8682035081753.webp",
   "tagline": "Fibres densifiantes brun moyen",
   "description": "Fibres de kératine brun moyen : camouflent instantanément les zones clairsemées et densifient visiblement la chevelure. Résultat naturel, tenue toute la journée, résiste au vent.",
-  "usage": "Saupoudrer sur les zones clairsemées, cheveux secs, puis tapoter pour fixer."
+  "usage": "Saupoudrer sur les zones clairsemées, cheveux secs, puis tapoter pour fixer.",
+  "box_qty": 48
  },
  {
   "ean": "8682035081760",
@@ -635,7 +692,8 @@
   "image": "8682035081760.webp",
   "tagline": "Fibres densifiantes brun foncé",
   "description": "Fibres de kératine brun foncé : camouflent instantanément les zones clairsemées et densifient visiblement la chevelure. Résultat naturel, tenue toute la journée, résiste au vent.",
-  "usage": "Saupoudrer sur les zones clairsemées, cheveux secs, puis tapoter pour fixer."
+  "usage": "Saupoudrer sur les zones clairsemées, cheveux secs, puis tapoter pour fixer.",
+  "box_qty": 48
  },
  {
   "ean": "8682035081739",
@@ -646,7 +704,8 @@
   "image": "8682035081739.webp",
   "tagline": "Fibres densifiantes noir",
   "description": "Fibres de kératine noir : camouflent instantanément les zones clairsemées et densifient visiblement la chevelure. Résultat naturel, tenue toute la journée, résiste au vent.",
-  "usage": "Saupoudrer sur les zones clairsemées, cheveux secs, puis tapoter pour fixer."
+  "usage": "Saupoudrer sur les zones clairsemées, cheveux secs, puis tapoter pour fixer.",
+  "box_qty": 48
  },
  {
   "ean": "8682035081784",
@@ -657,7 +716,8 @@
   "image": "8682035081784.webp",
   "tagline": "Applicateur de précision",
   "description": "Embout applicateur pour fibres capillaires : pulvérise les fibres avec précision sur les zones ciblées (ligne frontale, tempes, raie) pour un résultat net et maîtrisé.",
-  "usage": "Visser sur le flacon de fibres et presser pour pulvériser."
+  "usage": "Visser sur le flacon de fibres et presser pour pulvériser.",
+  "box_qty": 12
  },
  {
   "ean": "8684736672841",
@@ -668,7 +728,8 @@
   "image": "8684736672841.webp",
   "tagline": "Poudre de contours noire",
   "description": "Poudre correctrice noire pour les contours : redessine la ligne frontale, densifie les tempes et parfait les dégradés. L'arme secrète des finitions impeccables, avec son applicateur éponge.",
-  "usage": "Tamponner l'applicateur dans la poudre et appliquer par touches légères sur la ligne à redessiner."
+  "usage": "Tamponner l'applicateur dans la poudre et appliquer par touches légères sur la ligne à redessiner.",
+  "box_qty": 24
  },
  {
   "ean": "8684736672865",
@@ -679,7 +740,8 @@
   "image": "8684736672865.webp",
   "tagline": "Poudre de contours brun moyen",
   "description": "Poudre correctrice brun moyen pour les contours : redessine la ligne frontale, densifie les tempes et parfait les dégradés. L'arme secrète des finitions impeccables, avec son applicateur éponge.",
-  "usage": "Tamponner l'applicateur dans la poudre et appliquer par touches légères sur la ligne à redessiner."
+  "usage": "Tamponner l'applicateur dans la poudre et appliquer par touches légères sur la ligne à redessiner.",
+  "box_qty": 24
  },
  {
   "ean": "8684736672858",
@@ -690,7 +752,8 @@
   "image": "8684736672858.webp",
   "tagline": "Poudre de contours brun foncé",
   "description": "Poudre correctrice brun foncé pour les contours : redessine la ligne frontale, densifie les tempes et parfait les dégradés. L'arme secrète des finitions impeccables, avec son applicateur éponge.",
-  "usage": "Tamponner l'applicateur dans la poudre et appliquer par touches légères sur la ligne à redessiner."
+  "usage": "Tamponner l'applicateur dans la poudre et appliquer par touches légères sur la ligne à redessiner.",
+  "box_qty": 24
  },
  {
   "ean": "8684736673305",
@@ -701,7 +764,8 @@
   "image": "8684736673305.webp",
   "tagline": "Boucles définies",
   "description": "Crème pour boucles : définit, hydrate et discipline les cheveux bouclés à frisés sans effet cartonné. Anti-frisottis, toucher souple.",
-  "usage": "Appliquer sur cheveux humides, mèche par mèche, puis laisser sécher à l'air libre ou au diffuseur."
+  "usage": "Appliquer sur cheveux humides, mèche par mèche, puis laisser sécher à l'air libre ou au diffuseur.",
+  "box_qty": 24
  },
  {
   "ean": "8682035085799",
@@ -712,7 +776,8 @@
   "image": "8682035085799.webp",
   "tagline": "Mousse coiffante",
   "description": "Cire en mousse légère : volume, souplesse et définition sans alourdir. Idéale pour un style naturel au quotidien.",
-  "usage": "Une noisette de mousse dans les paumes, répartir sur cheveux humides et coiffer."
+  "usage": "Une noisette de mousse dans les paumes, répartir sur cheveux humides et coiffer.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084815",
@@ -723,7 +788,8 @@
   "image": "8682035084815.webp",
   "tagline": "Effet retour de plage",
   "description": "Spray au sel de mer, enrichi en kératine et aloe vera : texture, volume et ondulations naturelles, comme au retour de la plage.",
-  "usage": "Vaporiser sur cheveux humides ou secs, froisser à la main, laisser sécher."
+  "usage": "Vaporiser sur cheveux humides ou secs, froisser à la main, laisser sécher.",
+  "box_qty": 35
  },
  {
   "ean": "8684736672278",
@@ -734,7 +800,8 @@
   "image": "8684736672278.webp",
   "tagline": "Sachets colorants (boîte de 10)",
   "description": "Shampoing colorant noir — ravive les cheveux foncés en dosettes individuelles de 25 ml. Estompe les cheveux blancs en quelques minutes, résultat naturel et progressif. Boîte de 10 sachets.",
-  "usage": "Appliquer sur cheveux humides, laisser poser selon l'intensité souhaitée, rincer."
+  "usage": "Appliquer sur cheveux humides, laisser poser selon l'intensité souhaitée, rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8684736672285",
@@ -745,7 +812,8 @@
   "image": "8684736672285.webp",
   "tagline": "Sachets colorants (boîte de 10)",
   "description": "Shampoing colorant brun — ravive les tons châtains en dosettes individuelles de 25 ml. Estompe les cheveux blancs en quelques minutes, résultat naturel et progressif. Boîte de 10 sachets.",
-  "usage": "Appliquer sur cheveux humides, laisser poser selon l'intensité souhaitée, rincer."
+  "usage": "Appliquer sur cheveux humides, laisser poser selon l'intensité souhaitée, rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088912",
@@ -756,7 +824,8 @@
   "image": "8682035088912.webp",
   "tagline": "Format salon — sans sel ni parabène",
   "description": "Shampoing professionnel grand format, sans sel ni parabène : conçu pour l'usage intensif du bac, nettoie en douceur sans agresser ni décaper les cheveux traités.",
-  "usage": "Une noisette au bac suffit. Émulsionner, masser, rincer."
+  "usage": "Une noisette au bac suffit. Émulsionner, masser, rincer.",
+  "box_qty": 12
  },
  {
   "ean": "8682035083504",
@@ -767,7 +836,8 @@
   "image": "8682035083504.webp",
   "tagline": "Format salon — sans sulfate",
   "description": "Shampoing professionnel grand format, sans sulfate : conçu pour l'usage intensif du bac, nettoie en douceur sans agresser ni décaper les cheveux traités.",
-  "usage": "Une noisette au bac suffit. Émulsionner, masser, rincer."
+  "usage": "Une noisette au bac suffit. Émulsionner, masser, rincer.",
+  "box_qty": 12
  },
  {
   "ean": "8682035080688",
@@ -778,7 +848,8 @@
   "image": "8682035080688.webp",
   "tagline": "Format salon",
   "description": "Après-shampoing professionnel grand format : démêle, adoucit et referme les écailles pour un toucher soyeux, sans alourdir. Pensé pour l'usage intensif au bac.",
-  "usage": "Appliquer sur longueurs essorées, laisser poser 2 minutes, rincer."
+  "usage": "Appliquer sur longueurs essorées, laisser poser 2 minutes, rincer.",
+  "box_qty": 12
  },
  {
   "ean": "8684736671837",
@@ -789,7 +860,8 @@
   "image": "8684736671837.webp",
   "tagline": "Ail & ortie — fortifiant",
   "description": "Shampoing fortifiant à l'ail et à l'ortie, le duo traditionnel anti-chute : stimule le cuir chevelu et renforce les cheveux affaiblis. Sans odeur d'ail après rinçage.",
-  "usage": "Masser sur cuir chevelu humide, laisser agir, rincer abondamment."
+  "usage": "Masser sur cuir chevelu humide, laisser agir, rincer abondamment.",
+  "box_qty": 24
  },
  {
   "ean": "8684736671820",
@@ -800,7 +872,8 @@
   "image": "8684736671820.webp",
   "tagline": "Anti-chute",
   "description": "Shampoing anti-chute : fortifie la fibre et le bulbe, aide à réduire la chute liée à la casse et redonne densité et vigueur aux cheveux fins.",
-  "usage": "Utiliser régulièrement, masser le cuir chevelu, rincer."
+  "usage": "Utiliser régulièrement, masser le cuir chevelu, rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8684736671813",
@@ -811,7 +884,8 @@
   "image": "8684736671813.webp",
   "tagline": "Antipelliculaire",
   "description": "Shampoing antipelliculaire : élimine les pellicules visibles dès les premiers lavages, apaise les démangeaisons et purifie le cuir chevelu.",
-  "usage": "Masser sur cuir chevelu humide, laisser agir 2 minutes, rincer."
+  "usage": "Masser sur cuir chevelu humide, laisser agir 2 minutes, rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084143",
@@ -822,7 +896,8 @@
   "image": "8682035084143.webp",
   "tagline": "Masque réparateur",
   "description": "Masque capillaire au complexe Inca Inchi : répare, nourrit intensément et redonne souplesse et brillance aux cheveux secs ou sensibilisés.",
-  "usage": "Appliquer sur cheveux lavés et essorés, laisser poser 5-10 min, rincer."
+  "usage": "Appliquer sur cheveux lavés et essorés, laisser poser 5-10 min, rincer.",
+  "box_qty": 36
  },
  {
   "ean": "8682035080473",
@@ -833,7 +908,8 @@
   "image": "8682035080473.webp",
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage à la kératine — répare et renforce. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
-  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer."
+  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8684736671288",
@@ -844,7 +920,8 @@
   "image": "8684736671288.webp",
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage protéines de lait — douceur et souplesse. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
-  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer."
+  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088233",
@@ -855,7 +932,8 @@
   "image": "8682035088233.webp",
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage à l'argan — nourrit et fait briller. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
-  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer."
+  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088240",
@@ -866,7 +944,8 @@
   "image": "8682035088240.webp",
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage protéines de lait — douceur et souplesse. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
-  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer."
+  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8684736671271",
@@ -877,7 +956,8 @@
   "image": "8684736671271.webp",
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage à la kératine — répare et renforce. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
-  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer."
+  "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
+  "box_qty": 24
  },
  {
   "ean": "8681665066949",
@@ -888,7 +968,8 @@
   "image": "8681665066949.webp",
   "tagline": "Le classique du barbier",
   "description": "Tonique capillaire traditionnel : rafraîchit le cuir chevelu, facilite le coiffage au peigne et laisse un parfum propre et net. L'indispensable du service à l'ancienne.",
-  "usage": "Verser dans les paumes, masser le cuir chevelu, puis coiffer."
+  "usage": "Verser dans les paumes, masser le cuir chevelu, puis coiffer.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084525",
@@ -899,7 +980,8 @@
   "image": "8682035084525.webp",
   "tagline": "Masque peel-off",
   "description": "Masque peel-off noir au charbon actif — désincruste pores et points noirs. S'applique en couche fine, sèche, puis se retire d'un geste en emportant impuretés et cellules mortes. Peau nette et lisse immédiatement.",
-  "usage": "Appliquer en couche fine sur peau propre, laisser sécher 15-20 min, retirer délicatement."
+  "usage": "Appliquer en couche fine sur peau propre, laisser sécher 15-20 min, retirer délicatement.",
+  "box_qty": 35
  },
  {
   "ean": "8682035084532",
@@ -910,7 +992,8 @@
   "image": "8682035084532.webp",
   "tagline": "Masque peel-off",
   "description": "Masque peel-off doré — éclat et fermeté. S'applique en couche fine, sèche, puis se retire d'un geste en emportant impuretés et cellules mortes. Peau nette et lisse immédiatement.",
-  "usage": "Appliquer en couche fine sur peau propre, laisser sécher 15-20 min, retirer délicatement."
+  "usage": "Appliquer en couche fine sur peau propre, laisser sécher 15-20 min, retirer délicatement.",
+  "box_qty": 35
  },
  {
   "ean": "8682035084549",
@@ -921,7 +1004,8 @@
   "image": "8682035084549.webp",
   "tagline": "Masque peel-off",
   "description": "Masque peel-off argenté — purifie et resserre les pores. S'applique en couche fine, sèche, puis se retire d'un geste en emportant impuretés et cellules mortes. Peau nette et lisse immédiatement.",
-  "usage": "Appliquer en couche fine sur peau propre, laisser sécher 15-20 min, retirer délicatement."
+  "usage": "Appliquer en couche fine sur peau propre, laisser sécher 15-20 min, retirer délicatement.",
+  "box_qty": 35
  },
  {
   "ean": "8682035086024",
@@ -932,7 +1016,8 @@
   "image": "8682035086024.webp",
   "tagline": "Gommage à l'abricot",
   "description": "Gommage visage à l'abricot : exfolie en douceur, élimine les cellules mortes et affine le grain de peau. Idéal avant rasage pour prévenir les poils incarnés.",
-  "usage": "Masser en mouvements circulaires sur peau humide, rincer. 1 à 2 fois par semaine."
+  "usage": "Masser en mouvements circulaires sur peau humide, rincer. 1 à 2 fois par semaine.",
+  "box_qty": 36
  },
  {
   "ean": "8682035086017",
@@ -943,7 +1028,8 @@
   "image": "8682035086017.webp",
   "tagline": "Gommage à l'avocat",
   "description": "Gommage visage à l'avocat : exfolie en douceur, élimine les cellules mortes et affine le grain de peau. Idéal avant rasage pour prévenir les poils incarnés.",
-  "usage": "Masser en mouvements circulaires sur peau humide, rincer. 1 à 2 fois par semaine."
+  "usage": "Masser en mouvements circulaires sur peau humide, rincer. 1 à 2 fois par semaine.",
+  "box_qty": 36
  },
  {
   "ean": "8682035083689",
@@ -954,7 +1040,8 @@
   "image": "8682035083689.webp",
   "tagline": "Masque à l'argile",
   "description": "Masque à l'argile visage : absorbe l'excès de sébum, purifie en profondeur et resserre les pores. Format généreux pensé pour l'usage en cabine.",
-  "usage": "Appliquer en couche uniforme, laisser poser 10-15 min, rincer à l'eau tiède."
+  "usage": "Appliquer en couche uniforme, laisser poser 10-15 min, rincer à l'eau tiède.",
+  "box_qty": 36
  },
  {
   "ean": "8682035088561",
@@ -965,7 +1052,8 @@
   "image": "8682035088561.webp",
   "tagline": "Masque à l'argile",
   "description": "Masque à l'argile cuir chevelu et visage : absorbe l'excès de sébum, purifie en profondeur et resserre les pores. Format généreux pensé pour l'usage en cabine.",
-  "usage": "Appliquer en couche uniforme, laisser poser 10-15 min, rincer à l'eau tiède."
+  "usage": "Appliquer en couche uniforme, laisser poser 10-15 min, rincer à l'eau tiède.",
+  "box_qty": 36
  },
  {
   "ean": "8682035080794",
@@ -976,7 +1064,8 @@
   "image": "8682035080794.webp",
   "tagline": "Crème mains & visage — grenade",
   "description": "Crème hydratante mains et visage parfum grenade : texture riche, absorption rapide, sans film gras. Nourrit les mains sollicitées par les lavages répétés du métier.",
-  "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption."
+  "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption.",
+  "box_qty": 36
  },
  {
   "ean": "8682035080800",
@@ -987,7 +1076,8 @@
   "image": "8682035080800.webp",
   "tagline": "Crème mains & visage — mûre",
   "description": "Crème hydratante mains et visage parfum mûre : texture riche, absorption rapide, sans film gras. Nourrit les mains sollicitées par les lavages répétés du métier.",
-  "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption."
+  "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption.",
+  "box_qty": 36
  },
  {
   "ean": "8682035083955",
@@ -998,7 +1088,8 @@
   "image": "8682035083955.webp",
   "tagline": "Crème mains & visage — huile d'olive",
   "description": "Crème hydratante mains et visage parfum huile d'olive : texture riche, absorption rapide, sans film gras. Nourrit les mains sollicitées par les lavages répétés du métier.",
-  "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption."
+  "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption.",
+  "box_qty": 36
  },
  {
   "ean": "8682035089292",
@@ -1009,7 +1100,8 @@
   "image": "8682035089292.webp",
   "tagline": "Crème mains & visage — figue & pamplemousse",
   "description": "Crème hydratante mains et visage parfum figue & pamplemousse : texture riche, absorption rapide, sans film gras. Nourrit les mains sollicitées par les lavages répétés du métier.",
-  "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption."
+  "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption.",
+  "box_qty": 36
  },
  {
   "ean": "8682035088905",
@@ -1020,7 +1112,8 @@
   "image": "8682035088905.webp",
   "tagline": "Sans alcool — peaux sensibles",
   "description": "Lotion après-rasage sans alcool, idéale pour les peaux sensibles ou réactives. Apaise, hydrate et protège des rougeurs et sensations de brûlure, sans piquer.",
-  "usage": "Appliquer sur peau propre après le rasage, masser légèrement."
+  "usage": "Appliquer sur peau propre après le rasage, masser légèrement.",
+  "box_qty": 24
  },
  {
   "ean": "8684736673657",
@@ -1031,7 +1124,8 @@
   "image": "8684736673657.webp",
   "tagline": "Mousse coiffante",
   "description": "Cire en mousse légère : volume, souplesse et définition sans alourdir. Idéale pour un style naturel au quotidien. Enrichie au sel de mer pour un effet texturisé naturel.",
-  "usage": "Une noisette de mousse dans les paumes, répartir sur cheveux humides et coiffer."
+  "usage": "Une noisette de mousse dans les paumes, répartir sur cheveux humides et coiffer.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088707",
@@ -1042,7 +1136,8 @@
   "image": "8682035088707.webp",
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version Arctic Blue, à la fraîcheur polaire, saline et agrume.",
-  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption."
+  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088714",
@@ -1053,7 +1148,8 @@
   "image": "8682035088714.webp",
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version Pyrogenous, au sillage frais et vivifiant.",
-  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption."
+  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088721",
@@ -1064,7 +1160,8 @@
   "image": "8682035088721.webp",
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version Gold One, aux notes chaudes de mandarine et d'ambre.",
-  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption."
+  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
+  "box_qty": 24
  },
  {
   "ean": "8681665066840",
@@ -1075,7 +1172,8 @@
   "image": "8681665066840.webp",
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version Invisible Touch, au parfum discret ylang-ylang, santal et musc poudré.",
-  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption."
+  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088004",
@@ -1086,7 +1184,8 @@
   "image": "8682035088004.webp",
   "tagline": "Fraîcheur nordique",
   "description": "Un sillage frais et atmosphérique évoquant les grands espaces du Nord : notes de pluie, fleurs sauvages et conifères. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088134",
@@ -1097,7 +1196,8 @@
   "image": "8682035088134.webp",
   "tagline": "Agrumes glacés",
   "description": "La fraîcheur à l'état pur : pamplemousse, mandarine et eau marine pour un effet glaçon immédiat après le rasage. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035088141",
@@ -1108,7 +1208,8 @@
   "image": "8682035088141.webp",
   "tagline": "Vanille caramélisée & café",
   "description": "Un caractère affirmé : vanille caramélisée, café et lavande apaisante sur un fond d'ambre, santal et patchouli. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035082736",
@@ -1119,7 +1220,8 @@
   "image": "8682035082736.webp",
   "tagline": "Citron & fleurs blanches",
   "description": "Un citron éclatant accompagné de fleurs blanches et de patchouli — une signature élégante et moderne. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035082002",
@@ -1130,7 +1232,8 @@
   "image": "8682035082002.webp",
   "tagline": "Citron traditionnel",
   "description": "La cologne au citron dans sa plus pure tradition, relevée de fleur d'oranger et d'une pointe de rose. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035080176",
@@ -1141,7 +1244,8 @@
   "image": "8682035080176.webp",
   "tagline": "Agrumes & ambre oriental",
   "description": "Départ pétillant de mandarine, citron et bergamote, puis un cœur floral crémeux réchauffé de cannelle et d'ambre oriental. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035083696",
@@ -1152,7 +1256,8 @@
   "image": "8682035083696.webp",
   "tagline": "Aquatique salin",
   "description": "Une fraîcheur aquatique saline, citron et lime, qui s'adoucit vers un fond de cèdre musqué. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035083702",
@@ -1163,7 +1268,8 @@
   "image": "8682035083702.webp",
   "tagline": "Mandarine sanguine & cuir",
   "description": "Mandarine sanguine, pamplemousse et menthe en tête ; cannelle et rose en cœur ; ambre, cuir et patchouli en fond. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035083719",
@@ -1174,7 +1280,8 @@
   "image": "8682035083719.webp",
   "tagline": "Solaire & chaleureux",
   "description": "Un parfum solaire et chaleureux qui évoque les fins de journée d'été — rond, lumineux, facile à porter. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035083726",
@@ -1185,7 +1292,8 @@
   "image": "8682035083726.webp",
   "tagline": "Marine & fraîcheur",
   "description": "L'iode et la fraîcheur marine en signature : nette, propre, universelle. Un classique du barbershop. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035083733",
@@ -1196,7 +1304,8 @@
   "image": "8682035083733.webp",
   "tagline": "Ambre masculin",
   "description": "Un ambre masculin, profond et enveloppant, pour une fin de service qui laisse une impression durable. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035083740",
@@ -1207,7 +1316,8 @@
   "image": "8682035083740.webp",
   "tagline": "Aromatique & boisé",
   "description": "Bergamote, lavande, menthe fraîche et thym en tête, sur un cœur de géranium et santal. Le parfum de ceux qui mènent. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084556",
@@ -1218,7 +1328,8 @@
   "image": "8682035084556.webp",
   "tagline": "Épicé & fumé",
   "description": "Poivre rose, bergamote et pamplemousse, cœur de cannelle et safran, fond de tabac. Une bombe épicée assumée. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
-  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées."
+  "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
+  "box_qty": 24
  },
  {
   "ean": "8682035089520",
@@ -1229,7 +1340,8 @@
   "image": "8682035089520.webp",
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
-  "usage": "Vaporiser sur peau propre et sèche."
+  "usage": "Vaporiser sur peau propre et sèche.",
+  "box_qty": 96
  },
  {
   "ean": "8682035089537",
@@ -1240,7 +1352,8 @@
   "image": "8682035089537.webp",
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
-  "usage": "Vaporiser sur peau propre et sèche."
+  "usage": "Vaporiser sur peau propre et sèche.",
+  "box_qty": 96
  },
  {
   "ean": "8682035089544",
@@ -1251,7 +1364,8 @@
   "image": "8682035089544.webp",
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
-  "usage": "Vaporiser sur peau propre et sèche."
+  "usage": "Vaporiser sur peau propre et sèche.",
+  "box_qty": 96
  },
  {
   "ean": "8682035089551",
@@ -1262,7 +1376,8 @@
   "image": "8682035089551.webp",
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
-  "usage": "Vaporiser sur peau propre et sèche."
+  "usage": "Vaporiser sur peau propre et sèche.",
+  "box_qty": 96
  },
  {
   "ean": "8682035089575",
@@ -1273,7 +1388,8 @@
   "image": "8682035089575.webp",
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
-  "usage": "Vaporiser sur peau propre et sèche."
+  "usage": "Vaporiser sur peau propre et sèche.",
+  "box_qty": 96
  },
  {
   "ean": "8682035083153",
@@ -1284,7 +1400,8 @@
   "image": "8682035083153.webp",
   "tagline": "Shampoing barbe",
   "description": "Shampoing spécifique barbe et moustache : nettoie sans dessécher le poil ni irriter la peau du visage. La base d'une barbe saine et douce.",
-  "usage": "Masser sur barbe humide, rincer abondamment. Usage quotidien possible."
+  "usage": "Masser sur barbe humide, rincer abondamment. Usage quotidien possible.",
+  "box_qty": 35
  },
  {
   "ean": "8682035083160",
@@ -1295,7 +1412,8 @@
   "image": "8682035083160.webp",
   "tagline": "Après-shampoing barbe",
   "description": "Après-shampoing barbe et moustache : adoucit le poil dru, facilite le coiffage et hydrate la peau sous la barbe. Le complément idéal du shampoing barbe.",
-  "usage": "Appliquer après le shampoing, laisser poser 1-2 minutes, rincer."
+  "usage": "Appliquer après le shampoing, laisser poser 1-2 minutes, rincer.",
+  "box_qty": 35
  },
  {
   "ean": "8684736675231",
@@ -1306,7 +1424,8 @@
   "image": "8684736675231.webp",
   "tagline": "Huile barbe & moustache",
   "description": "Huile de soin pour barbe et moustache : nourrit le poil, adoucit, discipline et apaise la peau sous la barbe. Fini non gras, parfum subtil.",
-  "usage": "Quelques gouttes dans les paumes, masser dans la barbe de la racine aux pointes."
+  "usage": "Quelques gouttes dans les paumes, masser dans la barbe de la racine aux pointes.",
+  "box_qty": 48
  },
  {
   "ean": "8682035084648",
@@ -1317,7 +1436,8 @@
   "image": "8682035084648.webp",
   "tagline": "Baume barbe voyage",
   "description": "Baume de soin barbe au format voyage : discipline, nourrit et fait briller légèrement. Le format parfait à glisser dans la trousse ou à proposer à la vente au comptoir.",
-  "usage": "Prélever une petite quantité, réchauffer entre les doigts, appliquer dans la barbe."
+  "usage": "Prélever une petite quantité, réchauffer entre les doigts, appliquer dans la barbe.",
+  "box_qty": 108
  },
  {
   "ean": "8682035088875",
@@ -1328,7 +1448,8 @@
   "image": "8682035088875.webp",
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
-  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette."
+  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
+  "box_qty": 12
  },
  {
   "ean": "8682035088899",
@@ -1339,7 +1460,8 @@
   "image": "8682035088899.webp",
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
-  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette."
+  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
+  "box_qty": 12
  },
  {
   "ean": "8682035081722",
@@ -1350,7 +1472,8 @@
   "image": "8682035081722.webp",
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
-  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette."
+  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
+  "box_qty": 12
  },
  {
   "ean": "8682035089254",
@@ -1361,7 +1484,8 @@
   "image": "8682035089254.webp",
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
-  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette."
+  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
+  "box_qty": 12
  },
  {
   "ean": "8684736670441",
@@ -1372,7 +1496,8 @@
   "image": "8684736670441.webp",
   "tagline": "Nettoyant 5-en-1",
   "description": "Spray d'entretien 5-en-1 pour tondeuses et rasoirs : nettoie, désinfecte, lubrifie, refroidit et protège de la corrosion. Parfum citron. L'hygiène professionnelle en un geste.",
-  "usage": "Vaporiser sur la lame en fonctionnement quelques secondes, essuyer l'excédent."
+  "usage": "Vaporiser sur la lame en fonctionnement quelques secondes, essuyer l'excédent.",
+  "box_qty": 12
  },
  {
   "ean": "8682035089100",
@@ -1383,7 +1508,8 @@
   "image": "8682035089100.webp",
   "tagline": "Entretien tondeuse",
   "description": "Huile de lubrification pour lames de tondeuse : réduit la friction et l'échauffement, prolonge la durée de vie des lames et garantit une coupe nette.",
-  "usage": "Quelques gouttes sur la lame avant et après chaque journée d'utilisation."
+  "usage": "Quelques gouttes sur la lame avant et après chaque journée d'utilisation.",
+  "box_qty": 24
  },
  {
   "ean": "8682035080084",
@@ -1394,7 +1520,8 @@
   "image": "8682035080084.webp",
   "tagline": "Format salon — usage intensif",
   "description": "Shampoing professionnel grand format, usage intensif : conçu pour l'usage intensif du bac, nettoie en douceur sans agresser ni décaper les cheveux traités.",
-  "usage": "Une noisette au bac suffit. Émulsionner, masser, rincer."
+  "usage": "Une noisette au bac suffit. Émulsionner, masser, rincer.",
+  "box_qty": 4
  },
  {
   "ean": "8682035080701",
@@ -1405,7 +1532,8 @@
   "image": "8682035080701.webp",
   "tagline": "Format salon",
   "description": "Après-shampoing professionnel grand format : démêle, adoucit et referme les écailles pour un toucher soyeux, sans alourdir. Pensé pour l'usage intensif au bac.",
-  "usage": "Appliquer sur longueurs essorées, laisser poser 2 minutes, rincer."
+  "usage": "Appliquer sur longueurs essorées, laisser poser 2 minutes, rincer.",
+  "box_qty": 4
  },
  {
   "ean": "8691665066628",
@@ -1416,7 +1544,8 @@
   "image": "8691665066628.webp",
   "tagline": "Cire d'épilation pro",
   "description": "Cire d'épilation dure professionnelle à l'azulène, apaisante : s'utilise sans bande, épouse les zones précises (nuque, pommettes, oreilles) et retire le poil net sans agresser la peau.",
-  "usage": "Chauffer, appliquer en couche épaisse, laisser durcir puis retirer d'un geste sec."
+  "usage": "Chauffer, appliquer en couche épaisse, laisser durcir puis retirer d'un geste sec.",
+  "box_qty": 24
  },
  {
   "ean": "8681665066635",
@@ -1427,7 +1556,8 @@
   "image": "8681665066635.webp",
   "tagline": "Cire d'épilation pro",
   "description": "Cire d'épilation dure professionnelle noire, haute adhérence : s'utilise sans bande, épouse les zones précises (nuque, pommettes, oreilles) et retire le poil net sans agresser la peau.",
-  "usage": "Chauffer, appliquer en couche épaisse, laisser durcir puis retirer d'un geste sec."
+  "usage": "Chauffer, appliquer en couche épaisse, laisser durcir puis retirer d'un geste sec.",
+  "box_qty": 24
  },
  {
   "ean": "8681665066277",
@@ -1438,7 +1568,8 @@
   "image": "8681665066277.webp",
   "tagline": "Hygiène du service",
   "description": "Bande de cou jetable blanche classique : protège le col du client des coupes de cheveux et garantit une hygiène irréprochable à chaque service.",
-  "usage": "Dérouler, fixer autour du cou avant la cape, jeter après usage."
+  "usage": "Dérouler, fixer autour du cou avant la cape, jeter après usage.",
+  "box_qty": 100
  },
  {
   "ean": "8682035086314",
@@ -1449,7 +1580,8 @@
   "image": "8682035086314.webp",
   "tagline": "Hygiène du service",
   "description": "Bande de cou jetable noire, assortie aux capes foncées : protège le col du client des coupes de cheveux et garantit une hygiène irréprochable à chaque service.",
-  "usage": "Dérouler, fixer autour du cou avant la cape, jeter après usage."
+  "usage": "Dérouler, fixer autour du cou avant la cape, jeter après usage.",
+  "box_qty": 100
  },
  {
   "ean": "8682035083641",
@@ -1460,7 +1592,8 @@
   "image": "8682035083641.webp",
   "tagline": "Talc barbier",
   "description": "Talc professionnel du barbier : absorbe l'humidité, apaise la peau après le rasage ou la tonte de nuque, et laisse un fini sec et confortable.",
-  "usage": "Saupoudrer sur la brosse à cou ou directement sur la peau, en fin de service."
+  "usage": "Saupoudrer sur la brosse à cou ou directement sur la peau, en fin de service.",
+  "box_qty": 24
  },
  {
   "ean": "8682035083054",
@@ -1471,7 +1604,8 @@
   "image": "8682035083054.webp",
   "tagline": "Pierre d'alun",
   "description": "Sticks de pierre d'alun à usage unique : stoppent les microcoupures instantanément et apaisent la peau. Format hygiénique individuel, indispensable au poste de rasage.",
-  "usage": "Humidifier et appliquer directement sur la microcoupure."
+  "usage": "Humidifier et appliquer directement sur la microcoupure.",
+  "box_qty": 42
  },
  {
   "ean": "8682035082989",
@@ -1482,7 +1616,8 @@
   "image": "8682035082989.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035083351",
@@ -1493,7 +1628,8 @@
   "image": "8682035083351.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035083368",
@@ -1504,7 +1640,8 @@
   "image": "8682035083368.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035083375",
@@ -1515,7 +1652,8 @@
   "image": "8682035083375.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035083382",
@@ -1526,7 +1664,8 @@
   "image": "8682035083382.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035083399",
@@ -1537,7 +1676,8 @@
   "image": "8682035083399.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035081999",
@@ -1548,7 +1688,8 @@
   "image": "8682035081999.webp",
   "tagline": "Brosse à dégradés",
   "description": "Brosse de précision pour dégradés : élimine les cheveux coupés au fil du travail et révèle la netteté du fade. Un indispensable qui ne quitte jamais la poche du barbier.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035081333",
@@ -1559,7 +1700,8 @@
   "image": "8682035081333.webp",
   "tagline": "Brosse à dégradés",
   "description": "Brosse de précision pour dégradés : élimine les cheveux coupés au fil du travail et révèle la netteté du fade. Un indispensable qui ne quitte jamais la poche du barbier.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035081340",
@@ -1570,7 +1712,8 @@
   "image": "8682035081340.webp",
   "tagline": "Brosse à dégradés",
   "description": "Brosse de précision pour dégradés : élimine les cheveux coupés au fil du travail et révèle la netteté du fade. Un indispensable qui ne quitte jamais la poche du barbier.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035084297",
@@ -1581,7 +1724,8 @@
   "image": "8682035084297.webp",
   "tagline": "Brosse barbe premium",
   "description": "Brosse à barbe premium : fibres denses qui disciplinent le poil, stimulent la peau et répartissent uniformément huiles et baumes. Finition soignée, prise en main naturelle.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035084303",
@@ -1592,7 +1736,8 @@
   "image": "8682035084303.webp",
   "tagline": "Brosse à dégradés",
   "description": "Brosse de précision pour dégradés : élimine les cheveux coupés au fil du travail et révèle la netteté du fade. Un indispensable qui ne quitte jamais la poche du barbier.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035081623",
@@ -1603,7 +1748,8 @@
   "image": "8682035081623.webp",
   "tagline": "Balai à cou",
   "description": "Balai à cou professionnel : chasse les cheveux coupés du visage et de la nuque avec douceur. Fibres denses et agréables sur la peau, manche équilibré.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035083337",
@@ -1614,7 +1760,8 @@
   "image": "8682035083337.webp",
   "tagline": "Balai à cou",
   "description": "Balai à cou professionnel : chasse les cheveux coupés du visage et de la nuque avec douceur. Fibres denses et agréables sur la peau, manche équilibré.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035083405",
@@ -1625,7 +1772,8 @@
   "image": "8682035083405.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035081364",
@@ -1636,7 +1784,8 @@
   "image": "8682035081364.webp",
   "tagline": "Brosse de coiffage",
   "description": "Brosse de coiffage professionnelle : démêle, lisse et met en forme sans casser le poil. Conçue pour résister à l'usage quotidien en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 24
  },
  {
   "ean": "8682035081630",
@@ -1647,7 +1796,8 @@
   "image": "8682035081630.webp",
   "tagline": "Brosse de coiffage",
   "description": "Brosse de coiffage professionnelle : démêle, lisse et met en forme sans casser le poil. Conçue pour résister à l'usage quotidien en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 24
  },
  {
   "ean": "8682035081371",
@@ -1658,7 +1808,8 @@
   "image": "8682035081371.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035081647",
@@ -1669,7 +1820,8 @@
   "image": "8682035081647.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035081661",
@@ -1680,7 +1832,8 @@
   "image": "8682035081661.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035081388",
@@ -1691,7 +1844,8 @@
   "image": "8682035081388.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035081654",
@@ -1702,7 +1856,8 @@
   "image": "8682035081654.webp",
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
-  "usage": null
+  "usage": null,
+  "box_qty": 12
  },
  {
   "ean": "8682035082966",
@@ -1713,7 +1868,8 @@
   "image": "8682035082966.webp",
   "tagline": "Coupe-chou / shavette",
   "description": "Shavette professionnelle à lames interchangeables : prise en main sûre, remplacement de lame rapide, hygiène irréprochable entre deux clients. L'outil de précision des finitions et contours.",
-  "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage."
+  "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage.",
+  "box_qty": 100
  },
  {
   "ean": "8682035082967",
@@ -1724,7 +1880,8 @@
   "image": "8682035082967.webp",
   "tagline": "Coupe-chou / shavette",
   "description": "Shavette professionnelle à lames interchangeables : prise en main sûre, remplacement de lame rapide, hygiène irréprochable entre deux clients. L'outil de précision des finitions et contours.",
-  "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage."
+  "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage.",
+  "box_qty": 100
  },
  {
   "ean": "8682035082968",
@@ -1735,7 +1892,8 @@
   "image": "8682035082968.webp",
   "tagline": "Coupe-chou / shavette",
   "description": "Shavette professionnelle à lames interchangeables : prise en main sûre, remplacement de lame rapide, hygiène irréprochable entre deux clients. L'outil de précision des finitions et contours.",
-  "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage."
+  "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage.",
+  "box_qty": 100
  },
  {
   "ean": "8684736670120",
@@ -1746,7 +1904,8 @@
   "image": "8684736670120.webp",
   "tagline": "Stylo barbe brun foncé + brosse",
   "description": "Stylo correcteur barbe brun foncé avec brosse intégrée : redessine les contours, densifie les zones clairsemées et corrige les asymétries en quelques traits. Résultat naturel, tenue journée.",
-  "usage": "Tracer par petits traits dans le sens du poil, estomper à la brosse."
+  "usage": "Tracer par petits traits dans le sens du poil, estomper à la brosse.",
+  "box_qty": 24
  },
  {
   "ean": "8684736670113",
@@ -1757,7 +1916,8 @@
   "image": "8684736670113.webp",
   "tagline": "Stylo barbe noir + brosse",
   "description": "Stylo correcteur barbe noir avec brosse intégrée : redessine les contours, densifie les zones clairsemées et corrige les asymétries en quelques traits. Résultat naturel, tenue journée.",
-  "usage": "Tracer par petits traits dans le sens du poil, estomper à la brosse."
+  "usage": "Tracer par petits traits dans le sens du poil, estomper à la brosse.",
+  "box_qty": 24
  },
  {
   "ean": "868987776358",
@@ -1768,7 +1928,8 @@
   "image": "868987776358.webp",
   "tagline": "Coupe-chou / shavette",
   "description": "Shavette professionnelle à lames interchangeables : prise en main sûre, remplacement de lame rapide, hygiène irréprochable entre deux clients. L'outil de précision des finitions et contours.",
-  "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage."
+  "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage.",
+  "box_qty": 25
  },
  {
   "ean": "8684736673350",
@@ -1779,7 +1940,8 @@
   "image": "8684736673350.webp",
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
-  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts."
+  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
+  "box_qty": 48
  },
  {
   "ean": "8684736674036",
@@ -1790,7 +1952,8 @@
   "image": "8684736674036.webp",
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format pratique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
-  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette."
+  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
+  "box_qty": 24
  },
  {
   "ean": "8682035084655",
@@ -1801,7 +1964,8 @@
   "image": "8682035084655.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 108
  },
  {
   "ean": "8682035088158",
@@ -1812,7 +1976,8 @@
   "image": "8682035088158.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088455",
@@ -1823,7 +1988,8 @@
   "image": "8682035088455.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088509",
@@ -1834,7 +2000,8 @@
   "image": "8682035088509.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088516",
@@ -1845,7 +2012,8 @@
   "image": "8682035088516.webp",
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
-  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides."
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
+  "box_qty": 48
  },
  {
   "ean": "8682035081616",
@@ -1856,7 +2024,8 @@
   "image": "8682035081616.webp",
   "tagline": "Gel fixation ultra forte",
   "description": "Gel coiffant à fixation ultra forte, effet gomme longue durée. Le style reste impeccable du matin au soir, sans effet carton ni résidus blancs.",
-  "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit."
+  "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit.",
+  "box_qty": 36
  },
  {
   "ean": "8682035088851",
@@ -1867,7 +2036,8 @@
   "image": "8682035088851.webp",
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
-  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts."
+  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
+  "box_qty": 48
  },
  {
   "ean": "8684736670991",
@@ -1878,7 +2048,8 @@
   "image": "8684736670991.webp",
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
-  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts."
+  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
+  "box_qty": 48
  },
  {
   "ean": "8684736671004",
@@ -1889,7 +2060,8 @@
   "image": "8684736671004.webp",
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
-  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts."
+  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
+  "box_qty": 48
  },
  {
   "ean": "8684736671011",
@@ -1900,7 +2072,8 @@
   "image": "8684736671011.webp",
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
-  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts."
+  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
+  "box_qty": 48
  },
  {
   "ean": "8684736671028",
@@ -1911,7 +2084,8 @@
   "image": "8684736671028.webp",
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
-  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts."
+  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
+  "box_qty": 48
  },
  {
   "ean": "8682035084518",
@@ -1922,7 +2096,8 @@
   "image": "8682035084518.webp",
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
-  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts."
+  "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
+  "box_qty": 48
  },
  {
   "ean": "8682035080152",
@@ -1933,7 +2108,8 @@
   "image": "8682035080152.webp",
   "tagline": "Parfum barbe Adonis — sans alcool",
   "description": "Parfum pour barbe et moustache Adonis, sans alcool : parfume sans dessécher le poil ni irriter la peau. La touche finale du service barbe.",
-  "usage": "Une à deux vaporisations directement dans la barbe."
+  "usage": "Une à deux vaporisations directement dans la barbe.",
+  "box_qty": 48
  },
  {
   "ean": "8682035080169",
@@ -1944,7 +2120,8 @@
   "image": "8682035080169.webp",
   "tagline": "Parfum barbe Genius — sans alcool",
   "description": "Parfum pour barbe et moustache Genius, sans alcool : parfume sans dessécher le poil ni irriter la peau. La touche finale du service barbe.",
-  "usage": "Une à deux vaporisations directement dans la barbe."
+  "usage": "Une à deux vaporisations directement dans la barbe.",
+  "box_qty": 48
  },
  {
   "ean": "8682035088691",
@@ -1955,6 +2132,7 @@
   "image": "8682035088691.webp",
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version City Senior, aux notes fraîches et urbaines.",
-  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption."
+  "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
+  "box_qty": 24
  }
 ]
