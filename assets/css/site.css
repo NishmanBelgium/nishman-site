@@ -1356,3 +1356,12 @@ body.card-dark .label-row.primary { border-color: transparent; }
 body.card-dark .fallback p { color: rgba(255, 255, 255, 0.55); }
 body.card-dark .footer-note { color: rgba(255, 255, 255, 0.38); }
 body.card-dark .footer-note a { color: rgba(255, 255, 255, 0.55); }
+
+/* Cartes QR : la pastille de chaque bouton en doré (liseré sombre pour
+   rester lisible sur le bouton WhatsApp orange) */
+body.card-dark .label-row .swatch,
+body.card-dark .label-row.primary .swatch {
+  background: var(--gold);
+  opacity: 1;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+}
