@@ -1318,3 +1318,41 @@ button, .label-row, .cat-cell, .product-card { touch-action: manipulation; }
 .swatch-instagram { background: linear-gradient(135deg, #ffb340, #ff8a00); }
 .swatch-catalog { background: #0a0a0a; }
 .swatch-website { background: var(--ink-soft); }
+
+/* ==========================================================================
+   THÈME SOMBRE DES CARTES DE CONTACT (QR) — body.card-dark
+   Le site catalogue n'est pas concerné : ces règles ne s'appliquent
+   qu'aux pages cartes (/dilhan, /guilem, /bekir et URL inconnues).
+   ========================================================================== */
+
+body.card-dark { background: #0a0a0a; }
+
+body.card-dark .card {
+  background: #141414;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.9);
+}
+
+body.card-dark .eyebrow { color: rgba(255, 255, 255, 0.45); }
+body.card-dark .hairline { background: rgba(255, 255, 255, 0.09); border: 0; height: 1px; }
+body.card-dark .agent-role { color: var(--gold); }
+body.card-dark .agent-name { color: #ffffff; }
+body.card-dark .agent-bio { color: rgba(255, 255, 255, 0.55); }
+body.card-dark .section-label { color: rgba(255, 255, 255, 0.45); }
+
+body.card-dark .label-row {
+  background: #1d1d1f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+body.card-dark .label-row:hover { border-color: rgba(255, 138, 0, 0.5); }
+body.card-dark .label-row .row-sub { color: rgba(255, 255, 255, 0.45); }
+body.card-dark .label-row .chevron { color: rgba(255, 255, 255, 0.35); }
+
+/* Le bouton principal (WhatsApp) garde son dégradé orange, texte noir */
+body.card-dark .label-row.primary { border-color: transparent; }
+
+body.card-dark .fallback p { color: rgba(255, 255, 255, 0.55); }
+body.card-dark .footer-note { color: rgba(255, 255, 255, 0.38); }
+body.card-dark .footer-note a { color: rgba(255, 255, 255, 0.55); }
