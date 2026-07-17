@@ -8,7 +8,11 @@
   "tagline": "Peigne à barbe",
   "description": "Peigne à barbe format poche : discipline et structure la barbe sans casser le poil ni créer d'électricité statique. L'accessoire du quotidien entre deux passages au salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Beard comb",
+  "tagline_nl": "Baardkam",
+  "description_en": "Pocket-size beard comb: disciplines and structures the beard without breaking the hair or creating static. The everyday accessory between two visits to the shop.",
+  "description_nl": "Baardkam op zakformaat: disciplineert en structureert de baard zonder het haar te breken of statisch te maken. Hét dagelijkse accessoire tussen twee salonbezoeken door."
  },
  {
   "ean": "8684736671523",
@@ -19,7 +23,11 @@
   "tagline": "Après-shampoing barbe",
   "description": "Après-shampoing barbe et moustache : adoucit le poil dru, facilite le coiffage et hydrate la peau sous la barbe. Le complément idéal du shampoing barbe.",
   "usage": "Appliquer après le shampoing, laisser poser 1-2 minutes, rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Beard conditioner",
+  "tagline_nl": "Baardconditioner",
+  "description_en": "Beard and mustache conditioner: softens coarse hair, makes styling easier and moisturizes the skin beneath the beard. The ideal companion to beard shampoo.",
+  "description_nl": "Baard- en snorconditioner: verzacht stug haar, vergemakkelijkt het stylen en hydrateert de huid onder de baard. De ideale aanvulling op de baardshampoo."
  },
  {
   "ean": "8684736673473",
@@ -30,7 +38,11 @@
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
   "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Clear & precise",
+  "tagline_nl": "Transparant & precies",
+  "description_en": "Clear shaving gel, economical salon size: full visibility on the shave line for ultra-sharp outlines. Optimal glide, protected skin, no drying out.",
+  "description_nl": "Transparante scheergel, voordelig salonformaat: volledig zicht op de scheerlijn voor haarscherpe contouren. Optimale glij, beschermde huid, droogt niet uit."
  },
  {
   "ean": "8684736673664",
@@ -41,7 +53,11 @@
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
   "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Clear & precise",
+  "tagline_nl": "Transparant & precies",
+  "description_en": "Clear shaving gel, economical salon size: full visibility on the shave line for ultra-sharp outlines. Optimal glide, protected skin, no drying out.",
+  "description_nl": "Transparante scheergel, voordelig salonformaat: volledig zicht op de scheerlijn voor haarscherpe contouren. Optimale glij, beschermde huid, droogt niet uit."
  },
  {
   "ean": "8684736673572",
@@ -52,7 +68,11 @@
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
   "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Texturizing powder",
+  "tagline_nl": "Texturizing poeder",
+  "description_en": "The new-generation styling powder: instant volume, mattifying effect and invisible hold. Barbers' favorite for quick finishes between two visits.",
+  "description_nl": "Het stylingpoeder van de nieuwe generatie: onmiddellijk volume, matterend effect en onzichtbare hold. De favoriet van barbiers voor snelle finishes tussendoor."
  },
  {
   "ean": "8684736673671",
@@ -63,7 +83,11 @@
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux. Enrichie au sel de mer pour un effet texturisé coiffé-décoiffé.",
   "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Matte finish — strong hold",
+  "tagline_nl": "Matte finish — sterke hold",
+  "description_en": "100% matte finish styling wax, for defined styles without grease or shine. Strong, reworkable hold, suitable for all hair types. Enriched with sea salt for a tousled, textured effect.",
+  "description_nl": "Stylingwax met 100% matte finish, voor gedefinieerde looks zonder vet effect of glans. Sterke, herwerkbare hold, geschikt voor elk haartype. Verrijkt met zeezout voor een nonchalant, getextureerd effect."
  },
  {
   "ean": "8684736673947",
@@ -74,7 +98,11 @@
   "tagline": "Shampoing colorant noir",
   "description": "Shampoing colorant noir cheveux et barbe : estompe progressivement les poils blancs pour un résultat naturel, sans effet racine. Se dose selon l'intensité souhaitée.",
   "usage": "Appliquer sur cheveux/barbe humides, laisser poser quelques minutes, rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Black color shampoo",
+  "tagline_nl": "Zwarte kleurshampoo",
+  "description_en": "Black color shampoo for hair and beard: gradually blends away white hairs for a natural, root-free result. Dose according to the desired intensity.",
+  "description_nl": "Zwarte kleurshampoo voor haar en baard: vervaagt witte haren geleidelijk voor een natuurlijk resultaat zonder uitgroeieffect. Doseer volgens de gewenste intensiteit."
  },
  {
   "ean": "8684736673954",
@@ -85,7 +113,11 @@
   "tagline": "Shampoing colorant brun",
   "description": "Shampoing colorant brun cheveux et barbe : estompe progressivement les poils blancs pour un résultat naturel, sans effet racine. Se dose selon l'intensité souhaitée.",
   "usage": "Appliquer sur cheveux/barbe humides, laisser poser quelques minutes, rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Brown color shampoo",
+  "tagline_nl": "Bruine kleurshampoo",
+  "description_en": "Brown color shampoo for hair and beard: gradually blends away white hairs for a natural, root-free result. Dose according to the desired intensity.",
+  "description_nl": "Bruine kleurshampoo voor haar en baard: vervaagt witte haren geleidelijk voor een natuurlijk resultaat zonder uitgroeieffect. Doseer volgens de gewenste intensiteit."
  },
  {
   "ean": "8684736673824",
@@ -96,7 +128,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8684736675224",
@@ -107,7 +143,11 @@
   "tagline": "Peigne multifonction",
   "description": "Le peigne « magique » multifonction : dents étudiées pour lisser, texturiser et discipliner tous types de cheveux. Un outil polyvalent à avoir à chaque poste.",
   "usage": null,
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Multi-purpose comb",
+  "tagline_nl": "Multifunctionele kam",
+  "description_en": "The multi-purpose “magic” comb: teeth designed to smooth, texturize and discipline all hair types. A versatile tool for every station.",
+  "description_nl": "De multifunctionele “magische” kam: tanden ontworpen om elk haartype glad te maken, te texturiseren en te disciplineren. Een veelzijdig hulpmiddel voor elke werkplek."
  },
  {
   "ean": "8684736674012",
@@ -118,7 +158,11 @@
   "tagline": "Mousse de rasage",
   "description": "Mousse de rasage onctueuse, menthol apaisant, effet fraîcheur immédiat. Prépare le poil, protège la peau et laisse un toucher confortable après rasage.",
   "usage": "Appliquer sur peau humide, raser, rincer à l'eau claire.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Shaving foam",
+  "tagline_nl": "Scheerschuim",
+  "description_en": "Creamy shaving foam with soothing menthol and an instant cooling effect. Prepares the hair, protects the skin and leaves a comfortable after-shave feel.",
+  "description_nl": "Romig scheerschuim met verzachtende menthol en een onmiddellijk verfrissend effect. Bereidt het haar voor, beschermt de huid en laat een comfortabel gevoel na het scheren achter."
  },
  {
   "ean": "8684736674029",
@@ -129,7 +173,11 @@
   "tagline": "Mousse de rasage",
   "description": "Mousse de rasage onctueuse, formule douce pour peaux sensibles. Prépare le poil, protège la peau et laisse un toucher confortable après rasage.",
   "usage": "Appliquer sur peau humide, raser, rincer à l'eau claire.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Shaving foam",
+  "tagline_nl": "Scheerschuim",
+  "description_en": "Creamy shaving foam with a gentle formula for sensitive skin. Prepares the hair, protects the skin and leaves a comfortable after-shave feel.",
+  "description_nl": "Romig scheerschuim met een milde formule voor de gevoelige huid. Bereidt het haar voor, beschermt de huid en laat een comfortabel gevoel na het scheren achter."
  },
  {
   "ean": "8684736674470",
@@ -140,7 +188,11 @@
   "tagline": "Texture gelée hybride",
   "description": "Cire-gelée hybride à la texture surprenante : la brillance d'un gel, la souplesse d'une cire. Tenue forte et fini frais.",
   "usage": "Prélever, réchauffer entre les paumes et appliquer sur cheveux secs ou humides.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Hybrid jelly texture",
+  "tagline_nl": "Hybride geltextuur",
+  "description_en": "Hybrid wax-jelly with a surprising texture: the shine of a gel, the flexibility of a wax. Strong hold and a fresh finish.",
+  "description_nl": "Hybride wax-gel met een verrassende textuur: de glans van een gel, de soepelheid van een wax. Sterke hold en een frisse finish."
  },
  {
   "ean": "8682035088462",
@@ -151,7 +203,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035088479",
@@ -162,7 +218,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035088486",
@@ -173,7 +233,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035088493",
@@ -184,7 +248,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035088165",
@@ -195,7 +263,11 @@
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
   "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Matte finish — strong hold",
+  "tagline_nl": "Matte finish — sterke hold",
+  "description_en": "100% matte finish styling wax, for defined styles without grease or shine. Strong, reworkable hold, suitable for all hair types.",
+  "description_nl": "Stylingwax met 100% matte finish, voor gedefinieerde looks zonder vet effect of glans. Sterke, herwerkbare hold, geschikt voor elk haartype."
  },
  {
   "ean": "8684736672636",
@@ -206,7 +278,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8684736673176",
@@ -217,7 +293,11 @@
   "tagline": "Brillance rétro",
   "description": "La brillantine classique revisitée : brillance intense et contrôle souple pour les styles rétro et élégants. Discipline les cheveux sans les figer.",
   "usage": "Répartir quelques gouttes dans les paumes et appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Retro shine",
+  "tagline_nl": "Retro glans",
+  "description_en": "The classic brilliantine revisited: intense shine and supple control for retro, elegant styles. Disciplines the hair without freezing it.",
+  "description_nl": "De klassieke brillantine in een nieuw jasje: intense glans en soepele controle voor retro, elegante looks. Disciplineert het haar zonder het te verstijven."
  },
  {
   "ean": "8682035087984",
@@ -228,7 +308,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035088547",
@@ -239,7 +323,11 @@
   "tagline": "Effet toile — Black Widow",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, fini légèrement brillant, se rince facilement au shampoing.",
   "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Web effect — Black Widow",
+  "tagline_nl": "Web-effect — Black Widow",
+  "description_en": "Nishman's cult spider-web effect wax: a unique fibrous texture that adds thickness and body, with strong yet flexible all-day hold. Water-based, lightly shiny finish, rinses out easily with shampoo.",
+  "description_nl": "De iconische spinnenweb-wax van Nishman: een unieke vezelachtige textuur die dikte en volume toevoegt, met een sterke maar flexibele hold de hele dag. Op waterbasis, licht glanzende finish, spoelt makkelijk uit met shampoo."
  },
  {
   "ean": "8682035088554",
@@ -250,7 +338,11 @@
   "tagline": "Effet toile — Tarantula",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, fini brillant, parfum masculin, se rince facilement au shampoing.",
   "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Web effect — Tarantula",
+  "tagline_nl": "Web-effect — Tarantula",
+  "description_en": "Nishman's cult spider-web effect wax: a unique fibrous texture that adds thickness and body, with strong yet flexible all-day hold. Water-based, shiny finish, masculine fragrance, rinses out easily with shampoo.",
+  "description_nl": "De iconische spinnenweb-wax van Nishman: een unieke vezelachtige textuur die dikte en volume toevoegt, met een sterke maar flexibele hold de hele dag. Op waterbasis, glanzende finish, mannelijke geur, spoelt makkelijk uit met shampoo."
  },
  {
   "ean": "8682035080411",
@@ -261,7 +353,11 @@
   "tagline": "Effet toile — Blue Web",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, fini soigné et brillant, se rince facilement au shampoing.",
   "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Web effect — Blue Web",
+  "tagline_nl": "Web-effect — Blue Web",
+  "description_en": "Nishman's cult spider-web effect wax: a unique fibrous texture that adds thickness and body, with strong yet flexible all-day hold. Water-based, polished shiny finish, rinses out easily with shampoo.",
+  "description_nl": "De iconische spinnenweb-wax van Nishman: een unieke vezelachtige textuur die dikte en volume toevoegt, met een sterke maar flexibele hold de hele dag. Op waterbasis, verzorgde glanzende finish, spoelt makkelijk uit met shampoo."
  },
  {
   "ean": "8682035083658",
@@ -272,7 +368,11 @@
   "tagline": "Effet toile — Argan",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, enrichie en argan, fini naturel, se rince facilement au shampoing.",
   "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Web effect — Argan",
+  "tagline_nl": "Web-effect — Argan",
+  "description_en": "Nishman's cult spider-web effect wax: a unique fibrous texture that adds thickness and body, with strong yet flexible all-day hold. Water-based, enriched with argan, natural finish, rinses out easily with shampoo.",
+  "description_nl": "De iconische spinnenweb-wax van Nishman: een unieke vezelachtige textuur die dikte en volume toevoegt, met een sterke maar flexibele hold de hele dag. Op waterbasis, verrijkt met argan, natuurlijke finish, spoelt makkelijk uit met shampoo."
  },
  {
   "ean": "8682035083665",
@@ -283,7 +383,11 @@
   "tagline": "Effet toile — Keratin",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, enrichie en kératine, parfum coco, se rince facilement au shampoing.",
   "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Web effect — Keratin",
+  "tagline_nl": "Web-effect — Keratine",
+  "description_en": "Nishman's cult spider-web effect wax: a unique fibrous texture that adds thickness and body, with strong yet flexible all-day hold. Water-based, enriched with keratin, coconut fragrance, rinses out easily with shampoo.",
+  "description_nl": "De iconische spinnenweb-wax van Nishman: een unieke vezelachtige textuur die dikte en volume toevoegt, met een sterke maar flexibele hold de hele dag. Op waterbasis, verrijkt met keratine, kokosgeur, spoelt makkelijk uit met shampoo."
  },
  {
   "ean": "8682035083672",
@@ -294,7 +398,11 @@
   "tagline": "Effet toile — Keratin",
   "description": "La cire à effet « toile d'araignée » culte de Nishman : une texture fibreuse unique qui ajoute épaisseur et matière, avec une tenue forte et flexible toute la journée. Base aqueuse, enrichie en kératine, contrôle maximal, se rince facilement au shampoing.",
   "usage": "Réchauffer entre les paumes en claquant des mains pour créer l'effet toile, puis appliquer et coiffer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Web effect — Keratin",
+  "tagline_nl": "Web-effect — Keratine",
+  "description_en": "Nishman's cult spider-web effect wax: a unique fibrous texture that adds thickness and body, with strong yet flexible all-day hold. Water-based, enriched with keratin, maximum control, rinses out easily with shampoo.",
+  "description_nl": "De iconische spinnenweb-wax van Nishman: een unieke vezelachtige textuur die dikte en volume toevoegt, met een sterke maar flexibele hold de hele dag. Op waterbasis, verrijkt met keratine, maximale controle, spoelt makkelijk uit met shampoo."
  },
  {
   "ean": "8681665066826",
@@ -305,7 +413,11 @@
   "tagline": "Crème coiffante",
   "description": "Crème coiffante à tenue extra-forte : contrôle et définition avec un toucher naturel, sans rigidité. Convient aux cheveux épais et indisciplinés.",
   "usage": "Répartir une noisette sur cheveux secs ou humides et coiffer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Styling cream",
+  "tagline_nl": "Stylingcrème",
+  "description_en": "Extra-strong hold styling cream: control and definition with a natural feel, no stiffness. Suits thick, unruly hair.",
+  "description_nl": "Stylingcrème met extra sterke hold: controle en definitie met een natuurlijk gevoel, zonder stijfheid. Geschikt voor dik, weerbarstig haar."
  },
  {
   "ean": "8682035084686",
@@ -316,7 +428,11 @@
   "tagline": "Format découverte 30 ml",
   "description": "Format testeur / voyage de la cire M1 : idéal à proposer au comptoir, à offrir aux nouveaux clients ou à glisser dans un kit découverte. Petit format, vraie formule.",
   "usage": "Identique au format standard.",
-  "box_qty": 108
+  "box_qty": 108,
+  "tagline_en": "30 ml discovery size",
+  "tagline_nl": "Ontdekkingsformaat 30 ml",
+  "description_en": "Tester / travel size of the M1 wax: ideal at the counter, as a gift for new clients or in a discovery kit. Small size, real formula.",
+  "description_nl": "Tester / reisformaat van de M1 wax: ideaal aan de toonbank, als attentie voor nieuwe klanten of in een ontdekkingskit. Klein formaat, echte formule."
  },
  {
   "ean": "8682035084632",
@@ -327,7 +443,11 @@
   "tagline": "Format découverte 30 ml",
   "description": "Format testeur / voyage de la cire M2 : idéal à proposer au comptoir, à offrir aux nouveaux clients ou à glisser dans un kit découverte. Petit format, vraie formule.",
   "usage": "Identique au format standard.",
-  "box_qty": 108
+  "box_qty": 108,
+  "tagline_en": "30 ml discovery size",
+  "tagline_nl": "Ontdekkingsformaat 30 ml",
+  "description_en": "Tester / travel size of the M2 wax: ideal at the counter, as a gift for new clients or in a discovery kit. Small size, real formula.",
+  "description_nl": "Tester / reisformaat van de M2 wax: ideaal aan de toonbank, als attentie voor nieuwe klanten of in een ontdekkingskit. Klein formaat, echte formule."
  },
  {
   "ean": "8682035084709",
@@ -338,7 +458,11 @@
   "tagline": "Format découverte 30 ml",
   "description": "Format testeur / voyage de la cire M3 : idéal à proposer au comptoir, à offrir aux nouveaux clients ou à glisser dans un kit découverte. Petit format, vraie formule.",
   "usage": "Identique au format standard.",
-  "box_qty": 90
+  "box_qty": 90,
+  "tagline_en": "30 ml discovery size",
+  "tagline_nl": "Ontdekkingsformaat 30 ml",
+  "description_en": "Tester / travel size of the M3 wax: ideal at the counter, as a gift for new clients or in a discovery kit. Small size, real formula.",
+  "description_nl": "Tester / reisformaat van de M3 wax: ideaal aan de toonbank, als attentie voor nieuwe klanten of in een ontdekkingskit. Klein formaat, echte formule."
  },
  {
   "ean": "8682035084716",
@@ -349,7 +473,11 @@
   "tagline": "Format découverte 30 ml",
   "description": "Format testeur / voyage de la cire M4 : idéal à proposer au comptoir, à offrir aux nouveaux clients ou à glisser dans un kit découverte. Petit format, vraie formule.",
   "usage": "Identique au format standard.",
-  "box_qty": 108
+  "box_qty": 108,
+  "tagline_en": "30 ml discovery size",
+  "tagline_nl": "Ontdekkingsformaat 30 ml",
+  "description_en": "Tester / travel size of the M4 wax: ideal at the counter, as a gift for new clients or in a discovery kit. Small size, real formula.",
+  "description_nl": "Tester / reisformaat van de M4 wax: ideaal aan de toonbank, als attentie voor nieuwe klanten of in een ontdekkingskit. Klein formaat, echte formule."
  },
  {
   "ean": "8682035081098",
@@ -360,7 +488,11 @@
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
   "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Matte finish — strong hold",
+  "tagline_nl": "Matte finish — sterke hold",
+  "description_en": "100% matte finish styling wax, for defined styles without grease or shine. Strong, reworkable hold, suitable for all hair types.",
+  "description_nl": "Stylingwax met 100% matte finish, voor gedefinieerde looks zonder vet effect of glans. Sterke, herwerkbare hold, geschikt voor elk haartype."
  },
  {
   "ean": "8682035081326",
@@ -371,7 +503,11 @@
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
   "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Matte finish — strong hold",
+  "tagline_nl": "Matte finish — sterke hold",
+  "description_en": "100% matte finish styling wax, for defined styles without grease or shine. Strong, reworkable hold, suitable for all hair types.",
+  "description_nl": "Stylingwax met 100% matte finish, voor gedefinieerde looks zonder vet effect of glans. Sterke, herwerkbare hold, geschikt voor elk haartype."
  },
  {
   "ean": "8682035085072",
@@ -382,7 +518,11 @@
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
   "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Matte finish — strong hold",
+  "tagline_nl": "Matte finish — sterke hold",
+  "description_en": "100% matte finish styling wax, for defined styles without grease or shine. Strong, reworkable hold, suitable for all hair types.",
+  "description_nl": "Stylingwax met 100% matte finish, voor gedefinieerde looks zonder vet effect of glans. Sterke, herwerkbare hold, geschikt voor elk haartype."
  },
  {
   "ean": "8682035085089",
@@ -393,7 +533,11 @@
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
   "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Matte finish — strong hold",
+  "tagline_nl": "Matte finish — sterke hold",
+  "description_en": "100% matte finish styling wax, for defined styles without grease or shine. Strong, reworkable hold, suitable for all hair types.",
+  "description_nl": "Stylingwax met 100% matte finish, voor gedefinieerde looks zonder vet effect of glans. Sterke, herwerkbare hold, geschikt voor elk haartype."
  },
  {
   "ean": "8682035085096",
@@ -404,7 +548,11 @@
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
   "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Matte finish — strong hold",
+  "tagline_nl": "Matte finish — sterke hold",
+  "description_en": "100% matte finish styling wax, for defined styles without grease or shine. Strong, reworkable hold, suitable for all hair types.",
+  "description_nl": "Stylingwax met 100% matte finish, voor gedefinieerde looks zonder vet effect of glans. Sterke, herwerkbare hold, geschikt voor elk haartype."
  },
  {
   "ean": "8682035087991",
@@ -415,7 +563,11 @@
   "tagline": "Fini mat — tenue forte",
   "description": "Cire coiffante au fini 100 % mat, pour des styles définis sans effet gras ni brillance. Tenue forte et remodelable, adaptée à tous types de cheveux.",
   "usage": "Prélever une noisette, réchauffer entre les paumes, appliquer sur cheveux secs ou légèrement humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Matte finish — strong hold",
+  "tagline_nl": "Matte finish — sterke hold",
+  "description_en": "100% matte finish styling wax, for defined styles without grease or shine. Strong, reworkable hold, suitable for all hair types.",
+  "description_nl": "Stylingwax met 100% matte finish, voor gedefinieerde looks zonder vet effect of glans. Sterke, herwerkbare hold, geschikt voor elk haartype."
  },
  {
   "ean": "8682035087502",
@@ -426,7 +578,11 @@
   "tagline": "Pommade coiffante",
   "description": "Pommade coiffante pour les styles structurés et élégants : side part, pompadour, slick back. Tenue solide, fini soigné, se retravaille au peigne dans la journée.",
   "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Styling pomade",
+  "tagline_nl": "Stylingpommade",
+  "description_en": "Styling pomade for structured, elegant styles: side part, pompadour, slick back. Solid hold, polished finish, can be re-combed through the day.",
+  "description_nl": "Stylingpommade voor gestructureerde, elegante looks: side part, pompadour, slick back. Stevige hold, verzorgde finish, kan doorheen de dag opnieuw gekamd worden."
  },
  {
   "ean": "8682035085065",
@@ -437,7 +593,11 @@
   "tagline": "Pommade coiffante",
   "description": "Pommade coiffante pour les styles structurés et élégants : side part, pompadour, slick back. Tenue solide, fini soigné, se retravaille au peigne dans la journée.",
   "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Styling pomade",
+  "tagline_nl": "Stylingpommade",
+  "description_en": "Styling pomade for structured, elegant styles: side part, pompadour, slick back. Solid hold, polished finish, can be re-combed through the day.",
+  "description_nl": "Stylingpommade voor gestructureerde, elegante looks: side part, pompadour, slick back. Stevige hold, verzorgde finish, kan doorheen de dag opnieuw gekamd worden."
  },
  {
   "ean": "8682035081104",
@@ -448,7 +608,11 @@
   "tagline": "Pommade coiffante",
   "description": "Pommade coiffante pour les styles structurés et élégants : side part, pompadour, slick back. Tenue solide, fini soigné, se retravaille au peigne dans la journée.",
   "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Styling pomade",
+  "tagline_nl": "Stylingpommade",
+  "description_en": "Styling pomade for structured, elegant styles: side part, pompadour, slick back. Solid hold, polished finish, can be re-combed through the day.",
+  "description_nl": "Stylingpommade voor gestructureerde, elegante looks: side part, pompadour, slick back. Stevige hold, verzorgde finish, kan doorheen de dag opnieuw gekamd worden."
  },
  {
   "ean": "8684736671349",
@@ -459,7 +623,11 @@
   "tagline": "Pommade coiffante",
   "description": "Pommade coiffante pour les styles structurés et élégants : side part, pompadour, slick back. Tenue solide, fini soigné, se retravaille au peigne dans la journée.",
   "usage": "Réchauffer une noisette entre les paumes et répartir sur cheveux secs ou humides, puis peigner.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Styling pomade",
+  "tagline_nl": "Stylingpommade",
+  "description_en": "Styling pomade for structured, elegant styles: side part, pompadour, slick back. Solid hold, polished finish, can be re-combed through the day.",
+  "description_nl": "Stylingpommade voor gestructureerde, elegante looks: side part, pompadour, slick back. Stevige hold, verzorgde finish, kan doorheen de dag opnieuw gekamd worden."
  },
  {
   "ean": "8682035082910",
@@ -470,7 +638,11 @@
   "tagline": "Cire colorante",
   "description": "Cire coiffante colorante noir profond : coiffe et intensifie la couleur en un seul geste. Couvre les cheveux blancs le temps d'une journée, s'élimine au shampoing.",
   "usage": "Réchauffer entre les paumes, appliquer mèche par mèche sur cheveux secs.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Coloring wax",
+  "tagline_nl": "Kleurwax",
+  "description_en": "Deep black coloring styling wax: styles and intensifies color in one gesture. Covers white hairs for a day, washes out with shampoo.",
+  "description_nl": "Diepzwarte kleurwax: stylet en intensifieert de kleur in één beweging. Bedekt witte haren voor één dag, wast uit met shampoo."
  },
  {
   "ean": "8682035080978",
@@ -481,7 +653,11 @@
   "tagline": "Gel fixation ultra forte",
   "description": "Gel coiffant à fixation ultra forte, effet gomme longue durée. Le style reste impeccable du matin au soir, sans effet carton ni résidus blancs.",
   "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Ultra strong hold gel",
+  "tagline_nl": "Gel met ultrasterke hold",
+  "description_en": "Ultra-strong fixing gel with a long-lasting gum effect. The style stays flawless from morning to night, with no cardboard effect or white residue.",
+  "description_nl": "Stylinggel met ultrasterke fixatie en langdurig gum-effect. De look blijft onberispelijk van 's ochtends tot 's avonds, zonder kartonnen effect of witte resten."
  },
  {
   "ean": "8682035085850",
@@ -492,7 +668,11 @@
   "tagline": "Gel fixation ultra forte",
   "description": "Gel coiffant à fixation ultra forte, effet gomme longue durée. Le style reste impeccable du matin au soir, sans effet carton ni résidus blancs.",
   "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Ultra strong hold gel",
+  "tagline_nl": "Gel met ultrasterke hold",
+  "description_en": "Ultra-strong fixing gel with a long-lasting gum effect. The style stays flawless from morning to night, with no cardboard effect or white residue.",
+  "description_nl": "Stylinggel met ultrasterke fixatie en langdurig gum-effect. De look blijft onberispelijk van 's ochtends tot 's avonds, zonder kartonnen effect of witte resten."
  },
  {
   "ean": "8682035080589",
@@ -503,7 +683,11 @@
   "tagline": "Gel fixation ultra forte",
   "description": "Gel coiffant à fixation ultra forte, effet gomme longue durée. Le style reste impeccable du matin au soir, sans effet carton ni résidus blancs.",
   "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Ultra strong hold gel",
+  "tagline_nl": "Gel met ultrasterke hold",
+  "description_en": "Ultra-strong fixing gel with a long-lasting gum effect. The style stays flawless from morning to night, with no cardboard effect or white residue.",
+  "description_nl": "Stylinggel met ultrasterke fixatie en langdurig gum-effect. De look blijft onberispelijk van 's ochtends tot 's avonds, zonder kartonnen effect of witte resten."
  },
  {
   "ean": "8682035080183",
@@ -514,7 +698,11 @@
   "tagline": "Fixation longue durée",
   "description": "Spray fixant professionnel : verrouille la coiffure sans effet carton, résiste à l'humidité et se brosse facilement en fin de journée.",
   "usage": "Vaporiser à 25-30 cm sur la coiffure terminée.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Long-lasting hold",
+  "tagline_nl": "Langdurige fixatie",
+  "description_en": "Professional fixing spray: locks the hairstyle without stiffness, resists humidity and brushes out easily at the end of the day.",
+  "description_nl": "Professionele fixatiespray: vergrendelt het kapsel zonder stijf effect, is vochtbestendig en borstelt er 's avonds makkelijk uit."
  },
  {
   "ean": "8682035086444",
@@ -525,7 +713,11 @@
   "tagline": "Brillance & nutrition",
   "description": "Spray de brillance à l'huile d'olive et de coco : ravive l'éclat, nourrit la fibre et facilite le coiffage sans alourdir. Parfait en touche finale.",
   "usage": "Vaporiser légèrement à 20 cm sur cheveux secs, en finition.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Shine & nourishment",
+  "tagline_nl": "Glans & voeding",
+  "description_en": "Shine spray with olive and coconut oil: revives radiance, nourishes the fiber and makes styling easier without weighing hair down. Perfect as a finishing touch.",
+  "description_nl": "Glansspray met olijf- en kokosolie: herstelt de glans, voedt de haarvezel en vergemakkelijkt het stylen zonder te verzwaren. Perfect als finishing touch."
  },
  {
   "ean": "8682035084389",
@@ -536,7 +728,11 @@
   "tagline": "Couleur temporaire blanc",
   "description": "Spray colorant temporaire blanc pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
   "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Temporary color — white",
+  "tagline_nl": "Tijdelijke kleur — wit",
+  "description_en": "Temporary white color spray for streaks and creative effects: intense color on application, no pre-bleaching, washes out with shampoo. Perfect for events and daring clients.",
+  "description_nl": "Tijdelijke witte kleurspray voor lokken en creatieve effecten: intense kleur bij het aanbrengen, zonder voorafgaand blonderen, wast uit met shampoo. Perfect voor evenementen en gedurfde klanten."
  },
  {
   "ean": "8682035084402",
@@ -547,7 +743,11 @@
   "tagline": "Couleur temporaire doré",
   "description": "Spray colorant temporaire doré pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
   "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Temporary color — gold",
+  "tagline_nl": "Tijdelijke kleur — goud",
+  "description_en": "Temporary gold color spray for streaks and creative effects: intense color on application, no pre-bleaching, washes out with shampoo. Perfect for events and daring clients.",
+  "description_nl": "Tijdelijke gouden kleurspray voor lokken en creatieve effecten: intense kleur bij het aanbrengen, zonder voorafgaand blonderen, wast uit met shampoo. Perfect voor evenementen en gedurfde klanten."
  },
  {
   "ean": "8682035084334",
@@ -558,7 +758,11 @@
   "tagline": "Couleur temporaire rouge",
   "description": "Spray colorant temporaire rouge pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
   "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Temporary color — red",
+  "tagline_nl": "Tijdelijke kleur — rood",
+  "description_en": "Temporary red color spray for streaks and creative effects: intense color on application, no pre-bleaching, washes out with shampoo. Perfect for events and daring clients.",
+  "description_nl": "Tijdelijke rode kleurspray voor lokken en creatieve effecten: intense kleur bij het aanbrengen, zonder voorafgaand blonderen, wast uit met shampoo. Perfect voor evenementen en gedurfde klanten."
  },
  {
   "ean": "8682035084327",
@@ -569,7 +773,11 @@
   "tagline": "Couleur temporaire bleu",
   "description": "Spray colorant temporaire bleu pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
   "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Temporary color — blue",
+  "tagline_nl": "Tijdelijke kleur — blauw",
+  "description_en": "Temporary blue color spray for streaks and creative effects: intense color on application, no pre-bleaching, washes out with shampoo. Perfect for events and daring clients.",
+  "description_nl": "Tijdelijke blauwe kleurspray voor lokken en creatieve effecten: intense kleur bij het aanbrengen, zonder voorafgaand blonderen, wast uit met shampoo. Perfect voor evenementen en gedurfde klanten."
  },
  {
   "ean": "8682035084341",
@@ -580,7 +788,11 @@
   "tagline": "Couleur temporaire vert",
   "description": "Spray colorant temporaire vert pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
   "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Temporary color — green",
+  "tagline_nl": "Tijdelijke kleur — groen",
+  "description_en": "Temporary green color spray for streaks and creative effects: intense color on application, no pre-bleaching, washes out with shampoo. Perfect for events and daring clients.",
+  "description_nl": "Tijdelijke groene kleurspray voor lokken en creatieve effecten: intense kleur bij het aanbrengen, zonder voorafgaand blonderen, wast uit met shampoo. Perfect voor evenementen en gedurfde klanten."
  },
  {
   "ean": "8682035084372",
@@ -591,7 +803,11 @@
   "tagline": "Couleur temporaire rose",
   "description": "Spray colorant temporaire rose pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
   "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Temporary color — pink",
+  "tagline_nl": "Tijdelijke kleur — roze",
+  "description_en": "Temporary pink color spray for streaks and creative effects: intense color on application, no pre-bleaching, washes out with shampoo. Perfect for events and daring clients.",
+  "description_nl": "Tijdelijke roze kleurspray voor lokken en creatieve effecten: intense kleur bij het aanbrengen, zonder voorafgaand blonderen, wast uit met shampoo. Perfect voor evenementen en gedurfde klanten."
  },
  {
   "ean": "8682035084365",
@@ -602,7 +818,11 @@
   "tagline": "Couleur temporaire violet",
   "description": "Spray colorant temporaire violet pour mèches et effets créatifs : couleur intense dès l'application, sans décoloration préalable, s'élimine au shampoing. Parfait pour événements et clients audacieux.",
   "usage": "Vaporiser à 15-20 cm sur cheveux secs, laisser sécher quelques secondes.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Temporary color — purple",
+  "tagline_nl": "Tijdelijke kleur — paars",
+  "description_en": "Temporary purple color spray for streaks and creative effects: intense color on application, no pre-bleaching, washes out with shampoo. Perfect for events and daring clients.",
+  "description_nl": "Tijdelijke paarse kleurspray voor lokken en creatieve effecten: intense kleur bij het aanbrengen, zonder voorafgaand blonderen, wast uit met shampoo. Perfect voor evenementen en gedurfde klanten."
  },
  {
   "ean": "8682035084419",
@@ -613,7 +833,11 @@
   "tagline": "Paillettes événementielles",
   "description": "Spray pailleté doré pour les occasions qui sortent de l'ordinaire : événements, fêtes, shootings. S'élimine au shampoing.",
   "usage": "Vaporiser à 20 cm sur la coiffure terminée.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Party glitter",
+  "tagline_nl": "Feestglitters",
+  "description_en": "Gold glitter spray for out-of-the-ordinary occasions: events, parties, photo shoots. Washes out with shampoo.",
+  "description_nl": "Gouden glitterspray voor buitengewone gelegenheden: evenementen, feesten, shoots. Wast uit met shampoo."
  },
  {
   "ean": "8682035081753",
@@ -624,7 +848,11 @@
   "tagline": "Fibres densifiantes brun moyen",
   "description": "Fibres de kératine brun moyen : camouflent instantanément les zones clairsemées et densifient visiblement la chevelure. Résultat naturel, tenue toute la journée, résiste au vent.",
   "usage": "Saupoudrer sur les zones clairsemées, cheveux secs, puis tapoter pour fixer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Medium brown thickening fibers",
+  "tagline_nl": "Verdikkende vezels middenbruin",
+  "description_en": "Medium brown keratin fibers: instantly conceal thinning areas and visibly thicken the hair. Natural result, all-day hold, wind-resistant.",
+  "description_nl": "Keratinevezels middenbruin: camoufleren dunner wordende zones onmiddellijk en geven het haar zichtbaar meer volume. Natuurlijk resultaat, houdt de hele dag, windbestendig."
  },
  {
   "ean": "8682035081760",
@@ -635,7 +863,11 @@
   "tagline": "Fibres densifiantes brun foncé",
   "description": "Fibres de kératine brun foncé : camouflent instantanément les zones clairsemées et densifient visiblement la chevelure. Résultat naturel, tenue toute la journée, résiste au vent.",
   "usage": "Saupoudrer sur les zones clairsemées, cheveux secs, puis tapoter pour fixer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Dark brown thickening fibers",
+  "tagline_nl": "Verdikkende vezels donkerbruin",
+  "description_en": "Dark brown keratin fibers: instantly conceal thinning areas and visibly thicken the hair. Natural result, all-day hold, wind-resistant.",
+  "description_nl": "Keratinevezels donkerbruin: camoufleren dunner wordende zones onmiddellijk en geven het haar zichtbaar meer volume. Natuurlijk resultaat, houdt de hele dag, windbestendig."
  },
  {
   "ean": "8682035081739",
@@ -646,7 +878,11 @@
   "tagline": "Fibres densifiantes noir",
   "description": "Fibres de kératine noir : camouflent instantanément les zones clairsemées et densifient visiblement la chevelure. Résultat naturel, tenue toute la journée, résiste au vent.",
   "usage": "Saupoudrer sur les zones clairsemées, cheveux secs, puis tapoter pour fixer.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Black thickening fibers",
+  "tagline_nl": "Verdikkende vezels zwart",
+  "description_en": "Black keratin fibers: instantly conceal thinning areas and visibly thicken the hair. Natural result, all-day hold, wind-resistant.",
+  "description_nl": "Keratinevezels zwart: camoufleren dunner wordende zones onmiddellijk en geven het haar zichtbaar meer volume. Natuurlijk resultaat, houdt de hele dag, windbestendig."
  },
  {
   "ean": "8682035081784",
@@ -657,7 +893,11 @@
   "tagline": "Applicateur de précision",
   "description": "Embout applicateur pour fibres capillaires : pulvérise les fibres avec précision sur les zones ciblées (ligne frontale, tempes, raie) pour un résultat net et maîtrisé.",
   "usage": "Visser sur le flacon de fibres et presser pour pulvériser.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Precision applicator",
+  "tagline_nl": "Precisie-applicator",
+  "description_en": "Applicator nozzle for hair fibers: sprays the fibers precisely onto targeted areas (hairline, temples, parting) for a clean, controlled result.",
+  "description_nl": "Applicatormondstuk voor haarvezels: verstuift de vezels nauwkeurig op gerichte zones (haarlijn, slapen, scheiding) voor een net en beheerst resultaat."
  },
  {
   "ean": "8684736672841",
@@ -668,7 +908,11 @@
   "tagline": "Poudre de contours noire",
   "description": "Poudre correctrice noire pour les contours : redessine la ligne frontale, densifie les tempes et parfait les dégradés. L'arme secrète des finitions impeccables, avec son applicateur éponge.",
   "usage": "Tamponner l'applicateur dans la poudre et appliquer par touches légères sur la ligne à redessiner.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Black outline powder",
+  "tagline_nl": "Zwart contourpoeder",
+  "description_en": "Black outline correction powder: redraws the front hairline, densifies the temples and perfects fades. The secret weapon for flawless finishes, with its sponge applicator.",
+  "description_nl": "Contourpoeder zwart: hertekent de haarlijn, verdicht de slapen en perfectioneert fades. Het geheime wapen voor onberispelijke finishes, met sponsapplicator."
  },
  {
   "ean": "8684736672865",
@@ -679,7 +923,11 @@
   "tagline": "Poudre de contours brun moyen",
   "description": "Poudre correctrice brun moyen pour les contours : redessine la ligne frontale, densifie les tempes et parfait les dégradés. L'arme secrète des finitions impeccables, avec son applicateur éponge.",
   "usage": "Tamponner l'applicateur dans la poudre et appliquer par touches légères sur la ligne à redessiner.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Medium brown outline powder",
+  "tagline_nl": "Contourpoeder middenbruin",
+  "description_en": "Medium brown outline correction powder: redraws the front hairline, densifies the temples and perfects fades. The secret weapon for flawless finishes, with its sponge applicator.",
+  "description_nl": "Contourpoeder middenbruin: hertekent de haarlijn, verdicht de slapen en perfectioneert fades. Het geheime wapen voor onberispelijke finishes, met sponsapplicator."
  },
  {
   "ean": "8684736672858",
@@ -690,7 +938,11 @@
   "tagline": "Poudre de contours brun foncé",
   "description": "Poudre correctrice brun foncé pour les contours : redessine la ligne frontale, densifie les tempes et parfait les dégradés. L'arme secrète des finitions impeccables, avec son applicateur éponge.",
   "usage": "Tamponner l'applicateur dans la poudre et appliquer par touches légères sur la ligne à redessiner.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Dark brown outline powder",
+  "tagline_nl": "Contourpoeder donkerbruin",
+  "description_en": "Dark brown outline correction powder: redraws the front hairline, densifies the temples and perfects fades. The secret weapon for flawless finishes, with its sponge applicator.",
+  "description_nl": "Contourpoeder donkerbruin: hertekent de haarlijn, verdicht de slapen en perfectioneert fades. Het geheime wapen voor onberispelijke finishes, met sponsapplicator."
  },
  {
   "ean": "8684736673305",
@@ -701,7 +953,11 @@
   "tagline": "Boucles définies",
   "description": "Crème pour boucles : définit, hydrate et discipline les cheveux bouclés à frisés sans effet cartonné. Anti-frisottis, toucher souple.",
   "usage": "Appliquer sur cheveux humides, mèche par mèche, puis laisser sécher à l'air libre ou au diffuseur.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Defined curls",
+  "tagline_nl": "Gedefinieerde krullen",
+  "description_en": "Curl cream: defines, moisturizes and disciplines curly to frizzy hair without a crunchy effect. Anti-frizz, supple feel.",
+  "description_nl": "Krullencrème: definieert, hydrateert en disciplineert krullend tot kroeshaar zonder hard effect. Anti-pluis, soepel gevoel."
  },
  {
   "ean": "8682035085799",
@@ -712,7 +968,11 @@
   "tagline": "Mousse coiffante",
   "description": "Cire en mousse légère : volume, souplesse et définition sans alourdir. Idéale pour un style naturel au quotidien.",
   "usage": "Une noisette de mousse dans les paumes, répartir sur cheveux humides et coiffer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Styling mousse",
+  "tagline_nl": "Stylingmousse",
+  "description_en": "Light foam wax: volume, suppleness and definition without weighing hair down. Ideal for a natural everyday style.",
+  "description_nl": "Lichte mousse-wax: volume, soepelheid en definitie zonder te verzwaren. Ideaal voor een natuurlijke look elke dag."
  },
  {
   "ean": "8682035084815",
@@ -723,7 +983,11 @@
   "tagline": "Effet retour de plage",
   "description": "Spray au sel de mer, enrichi en kératine et aloe vera : texture, volume et ondulations naturelles, comme au retour de la plage.",
   "usage": "Vaporiser sur cheveux humides ou secs, froisser à la main, laisser sécher.",
-  "box_qty": 35
+  "box_qty": 35,
+  "tagline_en": "Beach-back effect",
+  "tagline_nl": "Beach-effect",
+  "description_en": "Sea salt spray, enriched with keratin and aloe vera: texture, volume and natural waves, straight off the beach.",
+  "description_nl": "Zeezoutspray, verrijkt met keratine en aloë vera: textuur, volume en natuurlijke golven, alsof je net van het strand komt."
  },
  {
   "ean": "8684736672278",
@@ -734,7 +998,11 @@
   "tagline": "Sachets colorants (boîte de 10)",
   "description": "Shampoing colorant noir — ravive les cheveux foncés en dosettes individuelles de 25 ml. Estompe les cheveux blancs en quelques minutes, résultat naturel et progressif. Boîte de 10 sachets.",
   "usage": "Appliquer sur cheveux humides, laisser poser selon l'intensité souhaitée, rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Color sachets (box of 10)",
+  "tagline_nl": "Kleursachets (doos van 10)",
+  "description_en": "Black color shampoo — revives dark hair in individual 25 ml sachets. Blends away white hairs in minutes, natural and gradual result. Box of 10 sachets.",
+  "description_nl": "Zwarte kleurshampoo — frist donker haar op in individuele sachets van 25 ml. Vervaagt witte haren in enkele minuten, natuurlijk en geleidelijk resultaat. Doos van 10 sachets."
  },
  {
   "ean": "8684736672285",
@@ -745,7 +1013,11 @@
   "tagline": "Sachets colorants (boîte de 10)",
   "description": "Shampoing colorant brun — ravive les tons châtains en dosettes individuelles de 25 ml. Estompe les cheveux blancs en quelques minutes, résultat naturel et progressif. Boîte de 10 sachets.",
   "usage": "Appliquer sur cheveux humides, laisser poser selon l'intensité souhaitée, rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Color sachets (box of 10)",
+  "tagline_nl": "Kleursachets (doos van 10)",
+  "description_en": "Brown color shampoo — revives chestnut tones in individual 25 ml sachets. Blends away white hairs in minutes, natural and gradual result. Box of 10 sachets.",
+  "description_nl": "Bruine kleurshampoo — frist kastanjetinten op in individuele sachets van 25 ml. Vervaagt witte haren in enkele minuten, natuurlijk en geleidelijk resultaat. Doos van 10 sachets."
  },
  {
   "ean": "8682035088912",
@@ -756,7 +1028,11 @@
   "tagline": "Format salon — sans sel ni parabène",
   "description": "Shampoing professionnel grand format, sans sel ni parabène : conçu pour l'usage intensif du bac, nettoie en douceur sans agresser ni décaper les cheveux traités.",
   "usage": "Une noisette au bac suffit. Émulsionner, masser, rincer.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Salon size — salt & paraben free",
+  "tagline_nl": "Salonformaat — zonder zout & parabenen",
+  "description_en": "Large professional shampoo, salt- and paraben-free: designed for intensive backwash use, cleanses gently without stripping treated hair.",
+  "description_nl": "Professionele shampoo in groot formaat, zonder zout en parabenen: ontworpen voor intensief gebruik aan de wasbak, reinigt zacht zonder behandeld haar aan te tasten."
  },
  {
   "ean": "8682035083504",
@@ -767,7 +1043,11 @@
   "tagline": "Format salon — sans sulfate",
   "description": "Shampoing professionnel grand format, sans sulfate : conçu pour l'usage intensif du bac, nettoie en douceur sans agresser ni décaper les cheveux traités.",
   "usage": "Une noisette au bac suffit. Émulsionner, masser, rincer.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Salon size — sulfate free",
+  "tagline_nl": "Salonformaat — sulfaatvrij",
+  "description_en": "Large professional shampoo, sulfate-free: designed for intensive backwash use, cleanses gently without stripping treated hair.",
+  "description_nl": "Professionele shampoo in groot formaat, sulfaatvrij: ontworpen voor intensief gebruik aan de wasbak, reinigt zacht zonder behandeld haar aan te tasten."
  },
  {
   "ean": "8682035080688",
@@ -778,7 +1058,11 @@
   "tagline": "Format salon",
   "description": "Après-shampoing professionnel grand format : démêle, adoucit et referme les écailles pour un toucher soyeux, sans alourdir. Pensé pour l'usage intensif au bac.",
   "usage": "Appliquer sur longueurs essorées, laisser poser 2 minutes, rincer.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Salon size",
+  "tagline_nl": "Salonformaat",
+  "description_en": "Large professional conditioner: detangles, softens and seals the cuticles for a silky feel, without weighing down. Designed for intensive backwash use.",
+  "description_nl": "Professionele conditioner in groot formaat: ontwart, verzacht en sluit de haarschubben voor een zijdezacht gevoel, zonder te verzwaren. Ontworpen voor intensief gebruik aan de wasbak."
  },
  {
   "ean": "8684736671837",
@@ -789,7 +1073,11 @@
   "tagline": "Ail & ortie — fortifiant",
   "description": "Shampoing fortifiant à l'ail et à l'ortie, le duo traditionnel anti-chute : stimule le cuir chevelu et renforce les cheveux affaiblis. Sans odeur d'ail après rinçage.",
   "usage": "Masser sur cuir chevelu humide, laisser agir, rincer abondamment.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Garlic & nettle — strengthening",
+  "tagline_nl": "Look & brandnetel — versterkend",
+  "description_en": "Strengthening shampoo with garlic and nettle, the traditional anti-hair-loss duo: stimulates the scalp and strengthens weakened hair. No garlic smell after rinsing.",
+  "description_nl": "Versterkende shampoo met look en brandnetel, het traditionele duo tegen haaruitval: stimuleert de hoofdhuid en versterkt verzwakt haar. Geen lookgeur na het uitspoelen."
  },
  {
   "ean": "8684736671820",
@@ -800,7 +1088,11 @@
   "tagline": "Anti-chute",
   "description": "Shampoing anti-chute : fortifie la fibre et le bulbe, aide à réduire la chute liée à la casse et redonne densité et vigueur aux cheveux fins.",
   "usage": "Utiliser régulièrement, masser le cuir chevelu, rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Anti-hair loss",
+  "tagline_nl": "Tegen haaruitval",
+  "description_en": "Anti-hair-loss shampoo: strengthens the fiber and bulb, helps reduce breakage-related loss and restores density and vigor to fine hair.",
+  "description_nl": "Shampoo tegen haaruitval: versterkt vezel en haarwortel, helpt uitval door breuk te verminderen en geeft fijn haar opnieuw densiteit en kracht."
  },
  {
   "ean": "8684736671813",
@@ -811,7 +1103,11 @@
   "tagline": "Antipelliculaire",
   "description": "Shampoing antipelliculaire : élimine les pellicules visibles dès les premiers lavages, apaise les démangeaisons et purifie le cuir chevelu.",
   "usage": "Masser sur cuir chevelu humide, laisser agir 2 minutes, rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Anti-dandruff",
+  "tagline_nl": "Anti-roos",
+  "description_en": "Anti-dandruff shampoo: removes visible dandruff from the first washes, soothes itching and purifies the scalp.",
+  "description_nl": "Anti-roos shampoo: verwijdert zichtbare schilfers vanaf de eerste wasbeurten, verzacht jeuk en zuivert de hoofdhuid."
  },
  {
   "ean": "8682035084143",
@@ -822,7 +1118,11 @@
   "tagline": "Masque réparateur",
   "description": "Masque capillaire au complexe Inca Inchi : répare, nourrit intensément et redonne souplesse et brillance aux cheveux secs ou sensibilisés.",
   "usage": "Appliquer sur cheveux lavés et essorés, laisser poser 5-10 min, rincer.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Repairing mask",
+  "tagline_nl": "Herstellend masker",
+  "description_en": "Hair mask with Inca Inchi complex: repairs, deeply nourishes and restores suppleness and shine to dry or sensitized hair.",
+  "description_nl": "Haarmasker met Inca Inchi-complex: herstelt, voedt intensief en geeft droog of gevoelig haar opnieuw soepelheid en glans."
  },
  {
   "ean": "8682035080473",
@@ -833,7 +1133,11 @@
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage à la kératine — répare et renforce. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
   "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Leave-in two-phase",
+  "tagline_nl": "Leave-in tweefasen",
+  "description_en": "Two-phase leave-in conditioner with keratin — repairs and strengthens. Detangles instantly, protects from heat and makes styling easier without weighing hair down.",
+  "description_nl": "Tweefasen leave-in conditioner met keratine — herstelt en versterkt. Ontwart onmiddellijk, beschermt tegen hitte en vergemakkelijkt het stylen zonder te verzwaren."
  },
  {
   "ean": "8684736671288",
@@ -844,7 +1148,11 @@
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage protéines de lait — douceur et souplesse. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
   "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Leave-in two-phase",
+  "tagline_nl": "Leave-in tweefasen",
+  "description_en": "Two-phase leave-in conditioner with milk proteins — softness and suppleness. Detangles instantly, protects from heat and makes styling easier without weighing hair down.",
+  "description_nl": "Tweefasen leave-in conditioner met melkproteïnen — zachtheid en soepelheid. Ontwart onmiddellijk, beschermt tegen hitte en vergemakkelijkt het stylen zonder te verzwaren."
  },
  {
   "ean": "8682035088233",
@@ -855,7 +1163,11 @@
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage à l'argan — nourrit et fait briller. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
   "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Leave-in two-phase",
+  "tagline_nl": "Leave-in tweefasen",
+  "description_en": "Two-phase leave-in conditioner with argan — nourishes and adds shine. Detangles instantly, protects from heat and makes styling easier without weighing hair down.",
+  "description_nl": "Tweefasen leave-in conditioner met argan — voedt en geeft glans. Ontwart onmiddellijk, beschermt tegen hitte en vergemakkelijkt het stylen zonder te verzwaren."
  },
  {
   "ean": "8682035088240",
@@ -866,7 +1178,11 @@
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage protéines de lait — douceur et souplesse. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
   "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Leave-in two-phase",
+  "tagline_nl": "Leave-in tweefasen",
+  "description_en": "Two-phase leave-in conditioner with milk proteins — softness and suppleness. Detangles instantly, protects from heat and makes styling easier without weighing hair down.",
+  "description_nl": "Tweefasen leave-in conditioner met melkproteïnen — zachtheid en soepelheid. Ontwart onmiddellijk, beschermt tegen hitte en vergemakkelijkt het stylen zonder te verzwaren."
  },
  {
   "ean": "8684736671271",
@@ -877,7 +1193,11 @@
   "tagline": "Biphasé sans rinçage",
   "description": "Après-shampoing biphasé sans rinçage à la kératine — répare et renforce. Démêle instantanément, protège de la chaleur et facilite le coiffage sans alourdir.",
   "usage": "Agiter, vaporiser sur cheveux humides ou secs, ne pas rincer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Leave-in two-phase",
+  "tagline_nl": "Leave-in tweefasen",
+  "description_en": "Two-phase leave-in conditioner with keratin — repairs and strengthens. Detangles instantly, protects from heat and makes styling easier without weighing hair down.",
+  "description_nl": "Tweefasen leave-in conditioner met keratine — herstelt en versterkt. Ontwart onmiddellijk, beschermt tegen hitte en vergemakkelijkt het stylen zonder te verzwaren."
  },
  {
   "ean": "8681665066949",
@@ -888,7 +1208,11 @@
   "tagline": "Le classique du barbier",
   "description": "Tonique capillaire traditionnel : rafraîchit le cuir chevelu, facilite le coiffage au peigne et laisse un parfum propre et net. L'indispensable du service à l'ancienne.",
   "usage": "Verser dans les paumes, masser le cuir chevelu, puis coiffer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "The barber's classic",
+  "tagline_nl": "De klassieker van de barbier",
+  "description_en": "Traditional hair tonic: refreshes the scalp, makes comb styling easier and leaves a clean, crisp scent. The essential of old-school service.",
+  "description_nl": "Traditionele haartonic: verfrist de hoofdhuid, vergemakkelijkt het kammen en laat een frisse, nette geur achter. Onmisbaar bij de old-school service."
  },
  {
   "ean": "8682035084525",
@@ -899,7 +1223,11 @@
   "tagline": "Masque peel-off",
   "description": "Masque peel-off noir au charbon actif — désincruste pores et points noirs. S'applique en couche fine, sèche, puis se retire d'un geste en emportant impuretés et cellules mortes. Peau nette et lisse immédiatement.",
   "usage": "Appliquer en couche fine sur peau propre, laisser sécher 15-20 min, retirer délicatement.",
-  "box_qty": 35
+  "box_qty": 35,
+  "tagline_en": "Peel-off mask",
+  "tagline_nl": "Peel-off masker",
+  "description_en": "Black peel-off mask with activated charcoal — deep-cleans pores and blackheads. Apply in a thin layer, let dry, then peel off in one motion, lifting away impurities and dead cells. Instantly clean, smooth skin.",
+  "description_nl": "Zwart peel-off masker met actieve kool — verwijdert onzuiverheden en mee-eters diepgaand. Breng in een dunne laag aan, laat drogen en trek in één beweging af, samen met onzuiverheden en dode huidcellen. Onmiddellijk een zuivere, gladde huid."
  },
  {
   "ean": "8682035084532",
@@ -910,7 +1238,11 @@
   "tagline": "Masque peel-off",
   "description": "Masque peel-off doré — éclat et fermeté. S'applique en couche fine, sèche, puis se retire d'un geste en emportant impuretés et cellules mortes. Peau nette et lisse immédiatement.",
   "usage": "Appliquer en couche fine sur peau propre, laisser sécher 15-20 min, retirer délicatement.",
-  "box_qty": 35
+  "box_qty": 35,
+  "tagline_en": "Peel-off mask",
+  "tagline_nl": "Peel-off masker",
+  "description_en": "Gold peel-off mask — radiance and firmness. Apply in a thin layer, let dry, then peel off in one motion, lifting away impurities and dead cells. Instantly clean, smooth skin.",
+  "description_nl": "Gouden peel-off masker — uitstraling en stevigheid. Breng in een dunne laag aan, laat drogen en trek in één beweging af, samen met onzuiverheden en dode huidcellen. Onmiddellijk een zuivere, gladde huid."
  },
  {
   "ean": "8682035084549",
@@ -921,7 +1253,11 @@
   "tagline": "Masque peel-off",
   "description": "Masque peel-off argenté — purifie et resserre les pores. S'applique en couche fine, sèche, puis se retire d'un geste en emportant impuretés et cellules mortes. Peau nette et lisse immédiatement.",
   "usage": "Appliquer en couche fine sur peau propre, laisser sécher 15-20 min, retirer délicatement.",
-  "box_qty": 35
+  "box_qty": 35,
+  "tagline_en": "Peel-off mask",
+  "tagline_nl": "Peel-off masker",
+  "description_en": "Silver peel-off mask — purifies and tightens the pores. Apply in a thin layer, let dry, then peel off in one motion, lifting away impurities and dead cells. Instantly clean, smooth skin.",
+  "description_nl": "Zilveren peel-off masker — zuivert en verfijnt de poriën. Breng in een dunne laag aan, laat drogen en trek in één beweging af, samen met onzuiverheden en dode huidcellen. Onmiddellijk een zuivere, gladde huid."
  },
  {
   "ean": "8682035086024",
@@ -932,7 +1268,11 @@
   "tagline": "Gommage à l'abricot",
   "description": "Gommage visage à l'abricot : exfolie en douceur, élimine les cellules mortes et affine le grain de peau. Idéal avant rasage pour prévenir les poils incarnés.",
   "usage": "Masser en mouvements circulaires sur peau humide, rincer. 1 à 2 fois par semaine.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Apricot scrub",
+  "tagline_nl": "Abrikozenscrub",
+  "description_en": "Apricot face scrub: gently exfoliates, removes dead cells and refines skin texture. Ideal before shaving to prevent ingrown hairs.",
+  "description_nl": "Gezichtsscrub met abrikoos: exfolieert zacht, verwijdert dode huidcellen en verfijnt de huidstructuur. Ideaal vóór het scheren om ingegroeide haren te voorkomen."
  },
  {
   "ean": "8682035086017",
@@ -943,7 +1283,11 @@
   "tagline": "Gommage à l'avocat",
   "description": "Gommage visage à l'avocat : exfolie en douceur, élimine les cellules mortes et affine le grain de peau. Idéal avant rasage pour prévenir les poils incarnés.",
   "usage": "Masser en mouvements circulaires sur peau humide, rincer. 1 à 2 fois par semaine.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Avocado scrub",
+  "tagline_nl": "Avocadoscrub",
+  "description_en": "Avocado face scrub: gently exfoliates, removes dead cells and refines skin texture. Ideal before shaving to prevent ingrown hairs.",
+  "description_nl": "Gezichtsscrub met avocado: exfolieert zacht, verwijdert dode huidcellen en verfijnt de huidstructuur. Ideaal vóór het scheren om ingegroeide haren te voorkomen."
  },
  {
   "ean": "8682035083689",
@@ -954,7 +1298,11 @@
   "tagline": "Masque à l'argile",
   "description": "Masque à l'argile visage : absorbe l'excès de sébum, purifie en profondeur et resserre les pores. Format généreux pensé pour l'usage en cabine.",
   "usage": "Appliquer en couche uniforme, laisser poser 10-15 min, rincer à l'eau tiède.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Clay mask",
+  "tagline_nl": "Kleimasker",
+  "description_en": "Face clay mask: absorbs excess sebum, deeply purifies and tightens the pores. Generous size designed for professional use.",
+  "description_nl": "Kleimasker voor het gezicht: absorbeert overtollig talg, zuivert diep en verfijnt de poriën. Royaal formaat voor professioneel gebruik."
  },
  {
   "ean": "8682035088561",
@@ -965,7 +1313,11 @@
   "tagline": "Masque à l'argile",
   "description": "Masque à l'argile cuir chevelu et visage : absorbe l'excès de sébum, purifie en profondeur et resserre les pores. Format généreux pensé pour l'usage en cabine.",
   "usage": "Appliquer en couche uniforme, laisser poser 10-15 min, rincer à l'eau tiède.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Clay mask",
+  "tagline_nl": "Kleimasker",
+  "description_en": "Scalp and face clay mask: absorbs excess sebum, deeply purifies and tightens the pores. Generous size designed for professional use.",
+  "description_nl": "Kleimasker voor hoofdhuid en gezicht: absorbeert overtollig talg, zuivert diep en verfijnt de poriën. Royaal formaat voor professioneel gebruik."
  },
  {
   "ean": "8682035080794",
@@ -976,7 +1328,11 @@
   "tagline": "Crème mains & visage — grenade",
   "description": "Crème hydratante mains et visage parfum grenade : texture riche, absorption rapide, sans film gras. Nourrit les mains sollicitées par les lavages répétés du métier.",
   "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Hand & face cream — pomegranate",
+  "tagline_nl": "Hand- & gezichtscrème — granaatappel",
+  "description_en": "Moisturizing hand and face cream, pomegranate fragrance: rich texture, fast absorption, no greasy film. Nourishes hands strained by the trade's repeated washing.",
+  "description_nl": "Hydraterende hand- en gezichtscrème met granaatappelgeur: rijke textuur, snelle absorptie, geen vettige film. Voedt handen die door het vele wassen in het vak op de proef worden gesteld."
  },
  {
   "ean": "8682035080800",
@@ -987,7 +1343,11 @@
   "tagline": "Crème mains & visage — mûre",
   "description": "Crème hydratante mains et visage parfum mûre : texture riche, absorption rapide, sans film gras. Nourrit les mains sollicitées par les lavages répétés du métier.",
   "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Hand & face cream — blackberry",
+  "tagline_nl": "Hand- & gezichtscrème — braambes",
+  "description_en": "Moisturizing hand and face cream, blackberry fragrance: rich texture, fast absorption, no greasy film. Nourishes hands strained by the trade's repeated washing.",
+  "description_nl": "Hydraterende hand- en gezichtscrème met braambesgeur: rijke textuur, snelle absorptie, geen vettige film. Voedt handen die door het vele wassen in het vak op de proef worden gesteld."
  },
  {
   "ean": "8682035083955",
@@ -998,7 +1358,11 @@
   "tagline": "Crème mains & visage — huile d'olive",
   "description": "Crème hydratante mains et visage parfum huile d'olive : texture riche, absorption rapide, sans film gras. Nourrit les mains sollicitées par les lavages répétés du métier.",
   "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Hand & face cream — olive oil",
+  "tagline_nl": "Hand- & gezichtscrème — olijfolie",
+  "description_en": "Moisturizing hand and face cream, olive oil fragrance: rich texture, fast absorption, no greasy film. Nourishes hands strained by the trade's repeated washing.",
+  "description_nl": "Hydraterende hand- en gezichtscrème met olijfolie-geur: rijke textuur, snelle absorptie, geen vettige film. Voedt handen die door het vele wassen in het vak op de proef worden gesteld."
  },
  {
   "ean": "8682035089292",
@@ -1009,7 +1373,11 @@
   "tagline": "Crème mains & visage — figue & pamplemousse",
   "description": "Crème hydratante mains et visage parfum figue & pamplemousse : texture riche, absorption rapide, sans film gras. Nourrit les mains sollicitées par les lavages répétés du métier.",
   "usage": "Appliquer sur mains ou visage, masser jusqu'à absorption.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Hand & face cream — fig & grapefruit",
+  "tagline_nl": "Hand- & gezichtscrème — vijg & pompelmoes",
+  "description_en": "Moisturizing hand and face cream, fig & grapefruit fragrance: rich texture, fast absorption, no greasy film. Nourishes hands strained by the trade's repeated washing.",
+  "description_nl": "Hydraterende hand- en gezichtscrème met vijg-pompelmoesgeur: rijke textuur, snelle absorptie, geen vettige film. Voedt handen die door het vele wassen in het vak op de proef worden gesteld."
  },
  {
   "ean": "8682035088905",
@@ -1020,7 +1388,11 @@
   "tagline": "Sans alcool — peaux sensibles",
   "description": "Lotion après-rasage sans alcool, idéale pour les peaux sensibles ou réactives. Apaise, hydrate et protège des rougeurs et sensations de brûlure, sans piquer.",
   "usage": "Appliquer sur peau propre après le rasage, masser légèrement.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Alcohol-free — sensitive skin",
+  "tagline_nl": "Alcoholvrij — gevoelige huid",
+  "description_en": "Alcohol-free aftershave lotion, ideal for sensitive or reactive skin. Soothes, moisturizes and protects from redness and burning sensations, without stinging.",
+  "description_nl": "Alcoholvrije aftershave lotion, ideaal voor de gevoelige of reactieve huid. Kalmeert, hydrateert en beschermt tegen roodheid en branderigheid, zonder te prikken."
  },
  {
   "ean": "8684736673657",
@@ -1031,7 +1403,11 @@
   "tagline": "Mousse coiffante",
   "description": "Cire en mousse légère : volume, souplesse et définition sans alourdir. Idéale pour un style naturel au quotidien. Enrichie au sel de mer pour un effet texturisé naturel.",
   "usage": "Une noisette de mousse dans les paumes, répartir sur cheveux humides et coiffer.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Styling mousse",
+  "tagline_nl": "Stylingmousse",
+  "description_en": "Light foam wax: volume, suppleness and definition without weighing hair down. Ideal for a natural everyday style. Enriched with sea salt for a natural textured effect.",
+  "description_nl": "Lichte mousse-wax: volume, soepelheid en definitie zonder te verzwaren. Ideaal voor een natuurlijke look elke dag. Verrijkt met zeezout voor een natuurlijk getextureerd effect."
  },
  {
   "ean": "8682035088707",
@@ -1042,7 +1418,11 @@
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version Arctic Blue, à la fraîcheur polaire, saline et agrume.",
   "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "2-in-1 balm + cologne",
+  "tagline_nl": "2-in-1 balsem + cologne",
+  "description_en": "The smart 2-in-1: the freshness of a cologne and the comfort of a moisturizing balm in one gesture. Non-greasy texture, fast absorption, soothed skin after shaving. Arctic Blue version, with polar, saline and citrus freshness.",
+  "description_nl": "De slimme 2-in-1: de frisheid van een cologne en het comfort van een hydraterende balsem in één beweging. Niet-vette textuur, snelle absorptie, gekalmeerde huid na het scheren. Versie Arctic Blue, met polaire, zilte en citrusfrisheid."
  },
  {
   "ean": "8682035088714",
@@ -1053,7 +1433,11 @@
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version Pyrogenous, au sillage frais et vivifiant.",
   "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "2-in-1 balm + cologne",
+  "tagline_nl": "2-in-1 balsem + cologne",
+  "description_en": "The smart 2-in-1: the freshness of a cologne and the comfort of a moisturizing balm in one gesture. Non-greasy texture, fast absorption, soothed skin after shaving. Pyrogenous version, with a fresh, invigorating trail.",
+  "description_nl": "De slimme 2-in-1: de frisheid van een cologne en het comfort van een hydraterende balsem in één beweging. Niet-vette textuur, snelle absorptie, gekalmeerde huid na het scheren. Versie Pyrogenous, met een fris en verkwikkend spoor."
  },
  {
   "ean": "8682035088721",
@@ -1064,7 +1448,11 @@
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version Gold One, aux notes chaudes de mandarine et d'ambre.",
   "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "2-in-1 balm + cologne",
+  "tagline_nl": "2-in-1 balsem + cologne",
+  "description_en": "The smart 2-in-1: the freshness of a cologne and the comfort of a moisturizing balm in one gesture. Non-greasy texture, fast absorption, soothed skin after shaving. Gold One version, with warm notes of mandarin and amber.",
+  "description_nl": "De slimme 2-in-1: de frisheid van een cologne en het comfort van een hydraterende balsem in één beweging. Niet-vette textuur, snelle absorptie, gekalmeerde huid na het scheren. Versie Gold One, met warme tonen van mandarijn en amber."
  },
  {
   "ean": "8681665066840",
@@ -1075,7 +1463,11 @@
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version Invisible Touch, au parfum discret ylang-ylang, santal et musc poudré.",
   "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "2-in-1 balm + cologne",
+  "tagline_nl": "2-in-1 balsem + cologne",
+  "description_en": "The smart 2-in-1: the freshness of a cologne and the comfort of a moisturizing balm in one gesture. Non-greasy texture, fast absorption, soothed skin after shaving. Invisible Touch version, with a discreet fragrance of ylang-ylang, sandalwood and powdery musk.",
+  "description_nl": "De slimme 2-in-1: de frisheid van een cologne en het comfort van een hydraterende balsem in één beweging. Niet-vette textuur, snelle absorptie, gekalmeerde huid na het scheren. Versie Invisible Touch, met een discrete geur van ylang-ylang, sandelhout en poederige muskus."
  },
  {
   "ean": "8682035088004",
@@ -1086,7 +1478,11 @@
   "tagline": "Fraîcheur nordique",
   "description": "Un sillage frais et atmosphérique évoquant les grands espaces du Nord : notes de pluie, fleurs sauvages et conifères. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Nordic freshness",
+  "tagline_nl": "Noordse frisheid",
+  "description_en": "A fresh, atmospheric trail evoking the great Nordic outdoors: notes of rain, wildflowers and conifers. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Een fris, atmosferisch spoor dat aan de weidse noordse natuur doet denken: noten van regen, wilde bloemen en naaldbomen. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035088134",
@@ -1097,7 +1493,11 @@
   "tagline": "Agrumes glacés",
   "description": "La fraîcheur à l'état pur : pamplemousse, mandarine et eau marine pour un effet glaçon immédiat après le rasage. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Iced citrus",
+  "tagline_nl": "IJskoude citrus",
+  "description_en": "Pure freshness: grapefruit, mandarin and marine water for an instant ice-cube effect after shaving. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Pure frisheid: pompelmoes, mandarijn en zeewater voor een onmiddellijk ijsblokjeseffect na het scheren. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035088141",
@@ -1108,7 +1508,11 @@
   "tagline": "Vanille caramélisée & café",
   "description": "Un caractère affirmé : vanille caramélisée, café et lavande apaisante sur un fond d'ambre, santal et patchouli. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Caramelized vanilla & coffee",
+  "tagline_nl": "Gekarameliseerde vanille & koffie",
+  "description_en": "An assertive character: caramelized vanilla, coffee and soothing lavender over a base of amber, sandalwood and patchouli. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Een uitgesproken karakter: gekarameliseerde vanille, koffie en kalmerende lavendel op een basis van amber, sandelhout en patchoeli. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035082736",
@@ -1119,7 +1523,11 @@
   "tagline": "Citron & fleurs blanches",
   "description": "Un citron éclatant accompagné de fleurs blanches et de patchouli — une signature élégante et moderne. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Lemon & white flowers",
+  "tagline_nl": "Citroen & witte bloemen",
+  "description_en": "A vibrant lemon accompanied by white flowers and patchouli — an elegant, modern signature. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Een sprankelende citroen met witte bloemen en patchoeli — een elegante, moderne signatuur. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035082002",
@@ -1130,7 +1538,11 @@
   "tagline": "Citron traditionnel",
   "description": "La cologne au citron dans sa plus pure tradition, relevée de fleur d'oranger et d'une pointe de rose. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Traditional lemon",
+  "tagline_nl": "Traditionele citroen",
+  "description_en": "Lemon cologne in its purest tradition, lifted by orange blossom and a hint of rose. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Citroencologne in haar puurste traditie, opgefrist met oranjebloesem en een vleugje roos. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035080176",
@@ -1141,7 +1553,11 @@
   "tagline": "Agrumes & ambre oriental",
   "description": "Départ pétillant de mandarine, citron et bergamote, puis un cœur floral crémeux réchauffé de cannelle et d'ambre oriental. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Citrus & oriental amber",
+  "tagline_nl": "Citrus & oosterse amber",
+  "description_en": "A sparkling opening of mandarin, lemon and bergamot, then a creamy floral heart warmed by cinnamon and oriental amber. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Een sprankelende start van mandarijn, citroen en bergamot, gevolgd door een romig bloemenhart, verwarmd door kaneel en oosterse amber. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035083696",
@@ -1152,7 +1568,11 @@
   "tagline": "Aquatique salin",
   "description": "Une fraîcheur aquatique saline, citron et lime, qui s'adoucit vers un fond de cèdre musqué. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Salty aquatic",
+  "tagline_nl": "Zilte aquatische geur",
+  "description_en": "A salty aquatic freshness of lemon and lime, softening into a musky cedar base. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Een zilte aquatische frisheid van citroen en limoen, die verzacht naar een muskusachtige cederbasis. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035083702",
@@ -1163,7 +1583,11 @@
   "tagline": "Mandarine sanguine & cuir",
   "description": "Mandarine sanguine, pamplemousse et menthe en tête ; cannelle et rose en cœur ; ambre, cuir et patchouli en fond. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Blood mandarin & leather",
+  "tagline_nl": "Bloedmandarijn & leder",
+  "description_en": "Blood mandarin, grapefruit and mint on top; cinnamon and rose at heart; amber, leather and patchouli at the base. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Bloedmandarijn, pompelmoes en munt in de kop; kaneel en roos in het hart; amber, leder en patchoeli in de basis. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035083719",
@@ -1174,7 +1598,11 @@
   "tagline": "Solaire & chaleureux",
   "description": "Un parfum solaire et chaleureux qui évoque les fins de journée d'été — rond, lumineux, facile à porter. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Sunny & warm",
+  "tagline_nl": "Zonnig & warm",
+  "description_en": "A sunny, warm fragrance that evokes late summer afternoons — round, luminous, easy to wear. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Een zonnige, warme geur die aan late zomerdagen doet denken — rond, lichtvol, makkelijk draagbaar. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035083726",
@@ -1185,7 +1613,11 @@
   "tagline": "Marine & fraîcheur",
   "description": "L'iode et la fraîcheur marine en signature : nette, propre, universelle. Un classique du barbershop. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Marine & fresh",
+  "tagline_nl": "Marine & fris",
+  "description_en": "Iodine and marine freshness as a signature: clean, crisp, universal. A barbershop classic. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Jodium en mariene frisheid als signatuur: zuiver, fris, universeel. Een barbershopklassieker. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035083733",
@@ -1196,7 +1628,11 @@
   "tagline": "Ambre masculin",
   "description": "Un ambre masculin, profond et enveloppant, pour une fin de service qui laisse une impression durable. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Masculine amber",
+  "tagline_nl": "Mannelijke amber",
+  "description_en": "A deep, enveloping masculine amber, for an end of service that leaves a lasting impression. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Een diepe, omhullende mannelijke amber, voor een einde van de service dat een blijvende indruk nalaat. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035083740",
@@ -1207,7 +1643,11 @@
   "tagline": "Aromatique & boisé",
   "description": "Bergamote, lavande, menthe fraîche et thym en tête, sur un cœur de géranium et santal. Le parfum de ceux qui mènent. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Aromatic & woody",
+  "tagline_nl": "Aromatisch & houtachtig",
+  "description_en": "Bergamot, lavender, fresh mint and thyme on top, over a heart of geranium and sandalwood. The fragrance of those who lead. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Bergamot, lavendel, frisse munt en tijm in de kop, op een hart van geranium en sandelhout. De geur van wie leidt. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035084556",
@@ -1218,7 +1658,11 @@
   "tagline": "Épicé & fumé",
   "description": "Poivre rose, bergamote et pamplemousse, cœur de cannelle et safran, fond de tabac. Une bombe épicée assumée. Cette cologne après-rasage rafraîchit instantanément, resserre les pores et apaise le feu du rasoir — la touche finale signature du barbershop.",
   "usage": "Verser dans les paumes et appliquer par tapotements sur les zones rasées.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Spicy & smoky",
+  "tagline_nl": "Kruidig & rokerig",
+  "description_en": "Pink pepper, bergamot and grapefruit, a heart of cinnamon and saffron, a tobacco base. An unapologetic spice bomb. This aftershave cologne instantly refreshes, tightens the pores and soothes razor burn — the barbershop's signature finishing touch.",
+  "description_nl": "Roze peper, bergamot en pompelmoes, een hart van kaneel en saffraan, een tabaksbasis. Een uitgesproken kruidenbom. Deze aftershave cologne verfrist onmiddellijk, verfijnt de poriën en verzacht het vuur van het scheermes — de kenmerkende finishing touch van de barbershop."
  },
  {
   "ean": "8682035089520",
@@ -1229,7 +1673,11 @@
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
   "usage": "Vaporiser sur peau propre et sèche.",
-  "box_qty": 96
+  "box_qty": 96,
+  "tagline_en": "Scented deodorant",
+  "tagline_nl": "Geparfumeerde deodorant",
+  "description_en": "Deodorant spray with Nishman's signature scent: long-lasting freshness and a trail matching the cologne range. The perfect add-on at the counter.",
+  "description_nl": "Deodorantspray met de kenmerkende Nishman-geur: langdurige frisheid en een spoor dat aansluit bij het colognegamma. De perfecte extra aan de toonbank."
  },
  {
   "ean": "8682035089537",
@@ -1240,7 +1688,11 @@
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
   "usage": "Vaporiser sur peau propre et sèche.",
-  "box_qty": 96
+  "box_qty": 96,
+  "tagline_en": "Scented deodorant",
+  "tagline_nl": "Geparfumeerde deodorant",
+  "description_en": "Deodorant spray with Nishman's signature scent: long-lasting freshness and a trail matching the cologne range. The perfect add-on at the counter.",
+  "description_nl": "Deodorantspray met de kenmerkende Nishman-geur: langdurige frisheid en een spoor dat aansluit bij het colognegamma. De perfecte extra aan de toonbank."
  },
  {
   "ean": "8682035089544",
@@ -1251,7 +1703,11 @@
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
   "usage": "Vaporiser sur peau propre et sèche.",
-  "box_qty": 96
+  "box_qty": 96,
+  "tagline_en": "Scented deodorant",
+  "tagline_nl": "Geparfumeerde deodorant",
+  "description_en": "Deodorant spray with Nishman's signature scent: long-lasting freshness and a trail matching the cologne range. The perfect add-on at the counter.",
+  "description_nl": "Deodorantspray met de kenmerkende Nishman-geur: langdurige frisheid en een spoor dat aansluit bij het colognegamma. De perfecte extra aan de toonbank."
  },
  {
   "ean": "8682035089551",
@@ -1262,7 +1718,11 @@
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
   "usage": "Vaporiser sur peau propre et sèche.",
-  "box_qty": 96
+  "box_qty": 96,
+  "tagline_en": "Scented deodorant",
+  "tagline_nl": "Geparfumeerde deodorant",
+  "description_en": "Deodorant spray with Nishman's signature scent: long-lasting freshness and a trail matching the cologne range. The perfect add-on at the counter.",
+  "description_nl": "Deodorantspray met de kenmerkende Nishman-geur: langdurige frisheid en een spoor dat aansluit bij het colognegamma. De perfecte extra aan de toonbank."
  },
  {
   "ean": "8682035089575",
@@ -1273,7 +1733,11 @@
   "tagline": "Déodorant parfumé",
   "description": "Spray déodorant à la signature parfumée Nishman : fraîcheur longue durée et sillage assorti à la gamme cologne. Le petit plus à proposer au comptoir.",
   "usage": "Vaporiser sur peau propre et sèche.",
-  "box_qty": 96
+  "box_qty": 96,
+  "tagline_en": "Scented deodorant",
+  "tagline_nl": "Geparfumeerde deodorant",
+  "description_en": "Deodorant spray with Nishman's signature scent: long-lasting freshness and a trail matching the cologne range. The perfect add-on at the counter.",
+  "description_nl": "Deodorantspray met de kenmerkende Nishman-geur: langdurige frisheid en een spoor dat aansluit bij het colognegamma. De perfecte extra aan de toonbank."
  },
  {
   "ean": "8682035083153",
@@ -1284,7 +1748,11 @@
   "tagline": "Shampoing barbe",
   "description": "Shampoing spécifique barbe et moustache : nettoie sans dessécher le poil ni irriter la peau du visage. La base d'une barbe saine et douce.",
   "usage": "Masser sur barbe humide, rincer abondamment. Usage quotidien possible.",
-  "box_qty": 35
+  "box_qty": 35,
+  "tagline_en": "Beard shampoo",
+  "tagline_nl": "Baardshampoo",
+  "description_en": "Dedicated beard and mustache shampoo: cleanses without drying out the hair or irritating facial skin. The foundation of a healthy, soft beard.",
+  "description_nl": "Specifieke baard- en snorshampoo: reinigt zonder het haar uit te drogen of de gezichtshuid te irriteren. De basis van een gezonde, zachte baard."
  },
  {
   "ean": "8682035083160",
@@ -1295,7 +1763,11 @@
   "tagline": "Après-shampoing barbe",
   "description": "Après-shampoing barbe et moustache : adoucit le poil dru, facilite le coiffage et hydrate la peau sous la barbe. Le complément idéal du shampoing barbe.",
   "usage": "Appliquer après le shampoing, laisser poser 1-2 minutes, rincer.",
-  "box_qty": 35
+  "box_qty": 35,
+  "tagline_en": "Beard conditioner",
+  "tagline_nl": "Baardconditioner",
+  "description_en": "Beard and mustache conditioner: softens coarse hair, makes styling easier and moisturizes the skin beneath the beard. The ideal companion to beard shampoo.",
+  "description_nl": "Baard- en snorconditioner: verzacht stug haar, vergemakkelijkt het stylen en hydrateert de huid onder de baard. De ideale aanvulling op de baardshampoo."
  },
  {
   "ean": "8684736675231",
@@ -1306,7 +1778,11 @@
   "tagline": "Huile barbe & moustache",
   "description": "Huile de soin pour barbe et moustache : nourrit le poil, adoucit, discipline et apaise la peau sous la barbe. Fini non gras, parfum subtil.",
   "usage": "Quelques gouttes dans les paumes, masser dans la barbe de la racine aux pointes.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Beard & mustache oil",
+  "tagline_nl": "Baard- & snorolie",
+  "description_en": "Beard and mustache care oil: nourishes the hair, softens, disciplines and soothes the skin under the beard. Non-greasy finish, subtle fragrance.",
+  "description_nl": "Verzorgende baard- en snorolie: voedt het haar, verzacht, disciplineert en kalmeert de huid onder de baard. Niet-vette finish, subtiele geur."
  },
  {
   "ean": "8682035084648",
@@ -1317,7 +1793,11 @@
   "tagline": "Baume barbe voyage",
   "description": "Baume de soin barbe au format voyage : discipline, nourrit et fait briller légèrement. Le format parfait à glisser dans la trousse ou à proposer à la vente au comptoir.",
   "usage": "Prélever une petite quantité, réchauffer entre les doigts, appliquer dans la barbe.",
-  "box_qty": 108
+  "box_qty": 108,
+  "tagline_en": "Travel beard balm",
+  "tagline_nl": "Reisbaardbalsem",
+  "description_en": "Travel-size beard balm: disciplines, nourishes and adds a light shine. The perfect size for the kit bag or counter sales.",
+  "description_nl": "Baardbalsem op reisformaat: disciplineert, voedt en geeft een lichte glans. Het perfecte formaat voor de toilettas of de verkoop aan de toonbank."
  },
  {
   "ean": "8682035088875",
@@ -1328,7 +1808,11 @@
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
   "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Clear & precise",
+  "tagline_nl": "Transparant & precies",
+  "description_en": "Clear shaving gel, economical salon size: full visibility on the shave line for ultra-sharp outlines. Optimal glide, protected skin, no drying out.",
+  "description_nl": "Transparante scheergel, voordelig salonformaat: volledig zicht op de scheerlijn voor haarscherpe contouren. Optimale glij, beschermde huid, droogt niet uit."
  },
  {
   "ean": "8682035088899",
@@ -1339,7 +1823,11 @@
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
   "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Clear & precise",
+  "tagline_nl": "Transparant & precies",
+  "description_en": "Clear shaving gel, economical salon size: full visibility on the shave line for ultra-sharp outlines. Optimal glide, protected skin, no drying out.",
+  "description_nl": "Transparante scheergel, voordelig salonformaat: volledig zicht op de scheerlijn voor haarscherpe contouren. Optimale glij, beschermde huid, droogt niet uit."
  },
  {
   "ean": "8682035081722",
@@ -1350,7 +1838,11 @@
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
   "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Clear & precise",
+  "tagline_nl": "Transparant & precies",
+  "description_en": "Clear shaving gel, economical salon size: full visibility on the shave line for ultra-sharp outlines. Optimal glide, protected skin, no drying out.",
+  "description_nl": "Transparante scheergel, voordelig salonformaat: volledig zicht op de scheerlijn voor haarscherpe contouren. Optimale glij, beschermde huid, droogt niet uit."
  },
  {
   "ean": "8682035089254",
@@ -1361,7 +1853,11 @@
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format salon économique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
   "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Clear & precise",
+  "tagline_nl": "Transparant & precies",
+  "description_en": "Clear shaving gel, economical salon size: full visibility on the shave line for ultra-sharp outlines. Optimal glide, protected skin, no drying out.",
+  "description_nl": "Transparante scheergel, voordelig salonformaat: volledig zicht op de scheerlijn voor haarscherpe contouren. Optimale glij, beschermde huid, droogt niet uit."
  },
  {
   "ean": "8684736670441",
@@ -1372,7 +1868,11 @@
   "tagline": "Nettoyant 5-en-1",
   "description": "Spray d'entretien 5-en-1 pour tondeuses et rasoirs : nettoie, désinfecte, lubrifie, refroidit et protège de la corrosion. Parfum citron. L'hygiène professionnelle en un geste.",
   "usage": "Vaporiser sur la lame en fonctionnement quelques secondes, essuyer l'excédent.",
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "5-in-1 cleaner",
+  "tagline_nl": "5-in-1 reiniger",
+  "description_en": "5-in-1 maintenance spray for clippers and razors: cleans, disinfects, lubricates, cools and protects from corrosion. Lemon scent. Professional hygiene in one gesture.",
+  "description_nl": "5-in-1 onderhoudsspray voor tondeuses en scheerapparaten: reinigt, ontsmet, smeert, koelt en beschermt tegen corrosie. Citroengeur. Professionele hygiëne in één beweging."
  },
  {
   "ean": "8682035089100",
@@ -1383,7 +1883,11 @@
   "tagline": "Entretien tondeuse",
   "description": "Huile de lubrification pour lames de tondeuse : réduit la friction et l'échauffement, prolonge la durée de vie des lames et garantit une coupe nette.",
   "usage": "Quelques gouttes sur la lame avant et après chaque journée d'utilisation.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Clipper care",
+  "tagline_nl": "Tondeuse-onderhoud",
+  "description_en": "Lubricating oil for clipper blades: reduces friction and heat, extends blade life and guarantees a clean cut.",
+  "description_nl": "Smeerolie voor tondeusemessen: vermindert wrijving en verhitting, verlengt de levensduur van de messen en garandeert een zuivere snit."
  },
  {
   "ean": "8682035080084",
@@ -1394,7 +1898,11 @@
   "tagline": "Format salon — usage intensif",
   "description": "Shampoing professionnel grand format, usage intensif : conçu pour l'usage intensif du bac, nettoie en douceur sans agresser ni décaper les cheveux traités.",
   "usage": "Une noisette au bac suffit. Émulsionner, masser, rincer.",
-  "box_qty": 4
+  "box_qty": 4,
+  "tagline_en": "Salon size — intensive use",
+  "tagline_nl": "Salonformaat — intensief gebruik",
+  "description_en": "Large professional shampoo, for intensive use: designed for intensive backwash use, cleanses gently without stripping treated hair.",
+  "description_nl": "Professionele shampoo in groot formaat, voor intensief gebruik: ontworpen voor intensief gebruik aan de wasbak, reinigt zacht zonder behandeld haar aan te tasten."
  },
  {
   "ean": "8682035080701",
@@ -1405,7 +1913,11 @@
   "tagline": "Format salon",
   "description": "Après-shampoing professionnel grand format : démêle, adoucit et referme les écailles pour un toucher soyeux, sans alourdir. Pensé pour l'usage intensif au bac.",
   "usage": "Appliquer sur longueurs essorées, laisser poser 2 minutes, rincer.",
-  "box_qty": 4
+  "box_qty": 4,
+  "tagline_en": "Salon size",
+  "tagline_nl": "Salonformaat",
+  "description_en": "Large professional conditioner: detangles, softens and seals the cuticles for a silky feel, without weighing down. Designed for intensive backwash use.",
+  "description_nl": "Professionele conditioner in groot formaat: ontwart, verzacht en sluit de haarschubben voor een zijdezacht gevoel, zonder te verzwaren. Ontworpen voor intensief gebruik aan de wasbak."
  },
  {
   "ean": "8691665066628",
@@ -1416,7 +1928,11 @@
   "tagline": "Cire d'épilation pro",
   "description": "Cire d'épilation dure professionnelle à l'azulène, apaisante : s'utilise sans bande, épouse les zones précises (nuque, pommettes, oreilles) et retire le poil net sans agresser la peau.",
   "usage": "Chauffer, appliquer en couche épaisse, laisser durcir puis retirer d'un geste sec.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Pro depilatory wax",
+  "tagline_nl": "Professionele ontharingswax",
+  "description_en": "Professional hard depilatory wax, soothing, with azulene: used without strips, hugs precise areas (neckline, cheekbones, ears) and removes hair cleanly without harming the skin.",
+  "description_nl": "Professionele harde ontharingswax, kalmerend, met azuleen: wordt zonder strips gebruikt, volgt precieze zones (nek, jukbeenderen, oren) en verwijdert het haar netjes zonder de huid aan te tasten."
  },
  {
   "ean": "8681665066635",
@@ -1427,7 +1943,11 @@
   "tagline": "Cire d'épilation pro",
   "description": "Cire d'épilation dure professionnelle noire, haute adhérence : s'utilise sans bande, épouse les zones précises (nuque, pommettes, oreilles) et retire le poil net sans agresser la peau.",
   "usage": "Chauffer, appliquer en couche épaisse, laisser durcir puis retirer d'un geste sec.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Pro depilatory wax",
+  "tagline_nl": "Professionele ontharingswax",
+  "description_en": "Professional hard depilatory wax, black, high adherence: used without strips, hugs precise areas (neckline, cheekbones, ears) and removes hair cleanly without harming the skin.",
+  "description_nl": "Professionele harde ontharingswax, zwart, met hoge hechting: wordt zonder strips gebruikt, volgt precieze zones (nek, jukbeenderen, oren) en verwijdert het haar netjes zonder de huid aan te tasten."
  },
  {
   "ean": "8681665066277",
@@ -1438,7 +1958,11 @@
   "tagline": "Hygiène du service",
   "description": "Bande de cou jetable blanche classique : protège le col du client des coupes de cheveux et garantit une hygiène irréprochable à chaque service.",
   "usage": "Dérouler, fixer autour du cou avant la cape, jeter après usage.",
-  "box_qty": 100
+  "box_qty": 100,
+  "tagline_en": "Service hygiene",
+  "tagline_nl": "Servicehygiëne",
+  "description_en": "Classic white disposable neck strip: protects the client's collar from cut hair and guarantees impeccable hygiene at every service.",
+  "description_nl": "Wegwerp-nekpapier klassiek wit: beschermt de kraag van de klant tegen geknipt haar en garandeert een onberispelijke hygiëne bij elke service."
  },
  {
   "ean": "8682035086314",
@@ -1449,7 +1973,11 @@
   "tagline": "Hygiène du service",
   "description": "Bande de cou jetable noire, assortie aux capes foncées : protège le col du client des coupes de cheveux et garantit une hygiène irréprochable à chaque service.",
   "usage": "Dérouler, fixer autour du cou avant la cape, jeter après usage.",
-  "box_qty": 100
+  "box_qty": 100,
+  "tagline_en": "Service hygiene",
+  "tagline_nl": "Servicehygiëne",
+  "description_en": "Black disposable neck strip to match dark capes: protects the client's collar from cut hair and guarantees impeccable hygiene at every service.",
+  "description_nl": "Wegwerp-nekpapier zwart, passend bij donkere kapmantels: beschermt de kraag van de klant tegen geknipt haar en garandeert een onberispelijke hygiëne bij elke service."
  },
  {
   "ean": "8682035083641",
@@ -1460,7 +1988,11 @@
   "tagline": "Talc barbier",
   "description": "Talc professionnel du barbier : absorbe l'humidité, apaise la peau après le rasage ou la tonte de nuque, et laisse un fini sec et confortable.",
   "usage": "Saupoudrer sur la brosse à cou ou directement sur la peau, en fin de service.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Barber talc",
+  "tagline_nl": "Barbierstalk",
+  "description_en": "Professional barber talc: absorbs moisture, soothes the skin after shaving or neck trimming, and leaves a dry, comfortable finish.",
+  "description_nl": "Professionele barbierstalk: absorbeert vocht, kalmeert de huid na het scheren of het trimmen van de nek en laat een droge, comfortabele finish achter."
  },
  {
   "ean": "8682035083054",
@@ -1471,7 +2003,11 @@
   "tagline": "Pierre d'alun",
   "description": "Sticks de pierre d'alun à usage unique : stoppent les microcoupures instantanément et apaisent la peau. Format hygiénique individuel, indispensable au poste de rasage.",
   "usage": "Humidifier et appliquer directement sur la microcoupure.",
-  "box_qty": 42
+  "box_qty": 42,
+  "tagline_en": "Alum stone",
+  "tagline_nl": "Aluinsteen",
+  "description_en": "Single-use alum stone sticks: stop micro-cuts instantly and soothe the skin. Individual hygienic format, essential at the shaving station.",
+  "description_nl": "Aluinsteenstiften voor eenmalig gebruik: stoppen microsneetjes onmiddellijk en kalmeren de huid. Hygiënisch individueel formaat, onmisbaar aan de scheerpost."
  },
  {
   "ean": "8682035082989",
@@ -1482,7 +2018,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035083351",
@@ -1493,7 +2033,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035083368",
@@ -1504,7 +2048,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035083375",
@@ -1515,7 +2063,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035083382",
@@ -1526,7 +2078,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035083399",
@@ -1537,7 +2093,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035081999",
@@ -1548,7 +2108,11 @@
   "tagline": "Brosse à dégradés",
   "description": "Brosse de précision pour dégradés : élimine les cheveux coupés au fil du travail et révèle la netteté du fade. Un indispensable qui ne quitte jamais la poche du barbier.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Fade brush",
+  "tagline_nl": "Fade-borstel",
+  "description_en": "Precision fade brush: sweeps away cut hair as you work and reveals the sharpness of the fade. An essential that never leaves the barber's pocket.",
+  "description_nl": "Precisieborstel voor fades: veegt geknipt haar weg tijdens het werk en onthult de scherpte van de fade. Een onmisbaar hulpmiddel dat de zak van de barbier nooit verlaat."
  },
  {
   "ean": "8682035081333",
@@ -1559,7 +2123,11 @@
   "tagline": "Brosse à dégradés",
   "description": "Brosse de précision pour dégradés : élimine les cheveux coupés au fil du travail et révèle la netteté du fade. Un indispensable qui ne quitte jamais la poche du barbier.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Fade brush",
+  "tagline_nl": "Fade-borstel",
+  "description_en": "Precision fade brush: sweeps away cut hair as you work and reveals the sharpness of the fade. An essential that never leaves the barber's pocket.",
+  "description_nl": "Precisieborstel voor fades: veegt geknipt haar weg tijdens het werk en onthult de scherpte van de fade. Een onmisbaar hulpmiddel dat de zak van de barbier nooit verlaat."
  },
  {
   "ean": "8682035081340",
@@ -1570,7 +2138,11 @@
   "tagline": "Brosse à dégradés",
   "description": "Brosse de précision pour dégradés : élimine les cheveux coupés au fil du travail et révèle la netteté du fade. Un indispensable qui ne quitte jamais la poche du barbier.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Fade brush",
+  "tagline_nl": "Fade-borstel",
+  "description_en": "Precision fade brush: sweeps away cut hair as you work and reveals the sharpness of the fade. An essential that never leaves the barber's pocket.",
+  "description_nl": "Precisieborstel voor fades: veegt geknipt haar weg tijdens het werk en onthult de scherpte van de fade. Een onmisbaar hulpmiddel dat de zak van de barbier nooit verlaat."
  },
  {
   "ean": "8682035084297",
@@ -1581,7 +2153,11 @@
   "tagline": "Brosse barbe premium",
   "description": "Brosse à barbe premium : fibres denses qui disciplinent le poil, stimulent la peau et répartissent uniformément huiles et baumes. Finition soignée, prise en main naturelle.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Premium beard brush",
+  "tagline_nl": "Premium baardborstel",
+  "description_en": "Premium beard brush: dense fibers that discipline the hair, stimulate the skin and evenly distribute oils and balms. Refined finish, natural grip.",
+  "description_nl": "Premium baardborstel: dichte vezels die het haar disciplineren, de huid stimuleren en oliën en balsems gelijkmatig verdelen. Verzorgde afwerking, natuurlijke grip."
  },
  {
   "ean": "8682035084303",
@@ -1592,7 +2168,11 @@
   "tagline": "Brosse à dégradés",
   "description": "Brosse de précision pour dégradés : élimine les cheveux coupés au fil du travail et révèle la netteté du fade. Un indispensable qui ne quitte jamais la poche du barbier.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Fade brush",
+  "tagline_nl": "Fade-borstel",
+  "description_en": "Precision fade brush: sweeps away cut hair as you work and reveals the sharpness of the fade. An essential that never leaves the barber's pocket.",
+  "description_nl": "Precisieborstel voor fades: veegt geknipt haar weg tijdens het werk en onthult de scherpte van de fade. Een onmisbaar hulpmiddel dat de zak van de barbier nooit verlaat."
  },
  {
   "ean": "8682035081623",
@@ -1603,7 +2183,11 @@
   "tagline": "Balai à cou",
   "description": "Balai à cou professionnel : chasse les cheveux coupés du visage et de la nuque avec douceur. Fibres denses et agréables sur la peau, manche équilibré.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Neck duster",
+  "tagline_nl": "Nekkwast",
+  "description_en": "Professional neck duster: gently sweeps cut hair from the face and neck. Dense, skin-friendly fibers, balanced handle.",
+  "description_nl": "Professionele nekkwast: veegt geknipt haar zacht van gezicht en nek. Dichte, huidvriendelijke vezels, uitgebalanceerd handvat."
  },
  {
   "ean": "8682035083337",
@@ -1614,7 +2198,11 @@
   "tagline": "Balai à cou",
   "description": "Balai à cou professionnel : chasse les cheveux coupés du visage et de la nuque avec douceur. Fibres denses et agréables sur la peau, manche équilibré.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Neck duster",
+  "tagline_nl": "Nekkwast",
+  "description_en": "Professional neck duster: gently sweeps cut hair from the face and neck. Dense, skin-friendly fibers, balanced handle.",
+  "description_nl": "Professionele nekkwast: veegt geknipt haar zacht van gezicht en nek. Dichte, huidvriendelijke vezels, uitgebalanceerd handvat."
  },
  {
   "ean": "8682035083405",
@@ -1625,7 +2213,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035081364",
@@ -1636,7 +2228,11 @@
   "tagline": "Brosse de coiffage",
   "description": "Brosse de coiffage professionnelle : démêle, lisse et met en forme sans casser le poil. Conçue pour résister à l'usage quotidien en salon.",
   "usage": null,
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Styling brush",
+  "tagline_nl": "Stylingborstel",
+  "description_en": "Professional styling brush: detangles, smooths and shapes without breaking the hair. Built to withstand daily salon use.",
+  "description_nl": "Professionele stylingborstel: ontwart, maakt glad en vormt zonder het haar te breken. Gemaakt om dagelijks salongebruik te doorstaan."
  },
  {
   "ean": "8682035081630",
@@ -1647,7 +2243,11 @@
   "tagline": "Brosse de coiffage",
   "description": "Brosse de coiffage professionnelle : démêle, lisse et met en forme sans casser le poil. Conçue pour résister à l'usage quotidien en salon.",
   "usage": null,
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Styling brush",
+  "tagline_nl": "Stylingborstel",
+  "description_en": "Professional styling brush: detangles, smooths and shapes without breaking the hair. Built to withstand daily salon use.",
+  "description_nl": "Professionele stylingborstel: ontwart, maakt glad en vormt zonder het haar te breken. Gemaakt om dagelijks salongebruik te doorstaan."
  },
  {
   "ean": "8682035081371",
@@ -1658,7 +2258,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035081647",
@@ -1669,7 +2273,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035081661",
@@ -1680,7 +2288,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035081388",
@@ -1691,7 +2303,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035081654",
@@ -1702,7 +2318,11 @@
   "tagline": "Peigne professionnel",
   "description": "Peigne de coupe professionnel : denture précise, matériau résistant à la chaleur et aux produits, équilibre parfait en main. Conçu pour l'usage intensif en salon.",
   "usage": null,
-  "box_qty": 12
+  "box_qty": 12,
+  "tagline_en": "Professional comb",
+  "tagline_nl": "Professionele kam",
+  "description_en": "Professional cutting comb: precise teeth, heat- and product-resistant material, perfect balance in hand. Built for intensive salon use.",
+  "description_nl": "Professionele knipkam: precieze tanden, hitte- en productbestendig materiaal, perfecte balans in de hand. Gemaakt voor intensief salongebruik."
  },
  {
   "ean": "8682035082966",
@@ -1713,7 +2333,11 @@
   "tagline": "Coupe-chou / shavette",
   "description": "Shavette professionnelle à lames interchangeables : prise en main sûre, remplacement de lame rapide, hygiène irréprochable entre deux clients. L'outil de précision des finitions et contours.",
   "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage.",
-  "box_qty": 100
+  "box_qty": 100,
+  "tagline_en": "Cut-throat / shavette",
+  "tagline_nl": "Open scheermes / shavette",
+  "description_en": "Professional shavette with interchangeable blades: secure grip, quick blade change, impeccable hygiene between clients. The precision tool for finishes and outlines.",
+  "description_nl": "Professionele shavette met verwisselbare mesjes: veilige grip, snelle mesjeswissel, onberispelijke hygiëne tussen twee klanten. Het precisie-instrument voor finishes en contouren."
  },
  {
   "ean": "8682035082967",
@@ -1724,7 +2348,11 @@
   "tagline": "Coupe-chou / shavette",
   "description": "Shavette professionnelle à lames interchangeables : prise en main sûre, remplacement de lame rapide, hygiène irréprochable entre deux clients. L'outil de précision des finitions et contours.",
   "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage.",
-  "box_qty": 100
+  "box_qty": 100,
+  "tagline_en": "Cut-throat / shavette",
+  "tagline_nl": "Open scheermes / shavette",
+  "description_en": "Professional shavette with interchangeable blades: secure grip, quick blade change, impeccable hygiene between clients. The precision tool for finishes and outlines.",
+  "description_nl": "Professionele shavette met verwisselbare mesjes: veilige grip, snelle mesjeswissel, onberispelijke hygiëne tussen twee klanten. Het precisie-instrument voor finishes en contouren."
  },
  {
   "ean": "8682035082968",
@@ -1735,7 +2363,11 @@
   "tagline": "Coupe-chou / shavette",
   "description": "Shavette professionnelle à lames interchangeables : prise en main sûre, remplacement de lame rapide, hygiène irréprochable entre deux clients. L'outil de précision des finitions et contours.",
   "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage.",
-  "box_qty": 100
+  "box_qty": 100,
+  "tagline_en": "Cut-throat / shavette",
+  "tagline_nl": "Open scheermes / shavette",
+  "description_en": "Professional shavette with interchangeable blades: secure grip, quick blade change, impeccable hygiene between clients. The precision tool for finishes and outlines.",
+  "description_nl": "Professionele shavette met verwisselbare mesjes: veilige grip, snelle mesjeswissel, onberispelijke hygiëne tussen twee klanten. Het precisie-instrument voor finishes en contouren."
  },
  {
   "ean": "8684736670120",
@@ -1746,7 +2378,11 @@
   "tagline": "Stylo barbe brun foncé + brosse",
   "description": "Stylo correcteur barbe brun foncé avec brosse intégrée : redessine les contours, densifie les zones clairsemées et corrige les asymétries en quelques traits. Résultat naturel, tenue journée.",
   "usage": "Tracer par petits traits dans le sens du poil, estomper à la brosse.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Dark brown beard pen + brush",
+  "tagline_nl": "Baardpen donkerbruin + borstel",
+  "description_en": "Dark brown beard filler pen with built-in brush: redraws outlines, densifies sparse areas and corrects asymmetries in a few strokes. Natural result, all-day hold.",
+  "description_nl": "Baardpen donkerbruin met geïntegreerde borstel: hertekent contouren, verdicht schaarse zones en corrigeert asymmetrieën in enkele streken. Natuurlijk resultaat, houdt de hele dag."
  },
  {
   "ean": "8684736670113",
@@ -1757,7 +2393,11 @@
   "tagline": "Stylo barbe noir + brosse",
   "description": "Stylo correcteur barbe noir avec brosse intégrée : redessine les contours, densifie les zones clairsemées et corrige les asymétries en quelques traits. Résultat naturel, tenue journée.",
   "usage": "Tracer par petits traits dans le sens du poil, estomper à la brosse.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Black beard pen + brush",
+  "tagline_nl": "Baardpen zwart + borstel",
+  "description_en": "Black beard filler pen with built-in brush: redraws outlines, densifies sparse areas and corrects asymmetries in a few strokes. Natural result, all-day hold.",
+  "description_nl": "Baardpen zwart met geïntegreerde borstel: hertekent contouren, verdicht schaarse zones en corrigeert asymmetrieën in enkele streken. Natuurlijk resultaat, houdt de hele dag."
  },
  {
   "ean": "868987776358",
@@ -1768,7 +2408,11 @@
   "tagline": "Coupe-chou / shavette",
   "description": "Shavette professionnelle à lames interchangeables : prise en main sûre, remplacement de lame rapide, hygiène irréprochable entre deux clients. L'outil de précision des finitions et contours.",
   "usage": "Insérer une lame neuve pour chaque client. Nettoyer et désinfecter après usage.",
-  "box_qty": 25
+  "box_qty": 25,
+  "tagline_en": "Cut-throat / shavette",
+  "tagline_nl": "Open scheermes / shavette",
+  "description_en": "Professional shavette with interchangeable blades: secure grip, quick blade change, impeccable hygiene between clients. The precision tool for finishes and outlines.",
+  "description_nl": "Professionele shavette met verwisselbare mesjes: veilige grip, snelle mesjeswissel, onberispelijke hygiëne tussen twee klanten. Het precisie-instrument voor finishes en contouren."
  },
  {
   "ean": "8684736673350",
@@ -1779,7 +2423,11 @@
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
   "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Texturizing powder",
+  "tagline_nl": "Texturizing poeder",
+  "description_en": "The new-generation styling powder: instant volume, mattifying effect and invisible hold. Barbers' favorite for quick finishes between two visits.",
+  "description_nl": "Het stylingpoeder van de nieuwe generatie: onmiddellijk volume, matterend effect en onzichtbare hold. De favoriet van barbiers voor snelle finishes tussendoor."
  },
  {
   "ean": "8684736674036",
@@ -1790,7 +2438,11 @@
   "tagline": "Transparence & précision",
   "description": "Gel de rasage transparent, format pratique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
   "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "Clear & precise",
+  "tagline_nl": "Transparant & precies",
+  "description_en": "Clear shaving gel, practical size: full visibility on the shave line for ultra-sharp outlines. Optimal glide, protected skin, no drying out.",
+  "description_nl": "Transparante scheergel, praktisch formaat: volledig zicht op de scheerlijn voor haarscherpe contouren. Optimale glij, beschermde huid, droogt niet uit."
  },
  {
   "ean": "8682035084655",
@@ -1801,7 +2453,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 108
+  "box_qty": 108,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035088158",
@@ -1812,7 +2468,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035088455",
@@ -1823,7 +2483,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035088509",
@@ -1834,7 +2498,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035088516",
@@ -1845,7 +2513,11 @@
   "tagline": "Base aqueuse — fini brillant",
   "description": "Cire coiffante à base aqueuse : application facile, fini brillant et tenue forte toute la journée. Ne laisse pas de résidus et se rince en un seul shampoing.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Water-based — shiny finish",
+  "tagline_nl": "Op waterbasis — glanzende finish",
+  "description_en": "Water-based styling wax: easy application, shiny finish and strong all-day hold. Leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis: makkelijk aan te brengen, glanzende finish en sterke hold de hele dag. Laat geen residu achter en spoelt uit met één shampoobeurt."
  },
  {
   "ean": "8682035081616",
@@ -1856,7 +2528,11 @@
   "tagline": "Gel fixation ultra forte",
   "description": "Gel coiffant à fixation ultra forte, effet gomme longue durée. Le style reste impeccable du matin au soir, sans effet carton ni résidus blancs.",
   "usage": "Appliquer sur cheveux humides et coiffer. Une petite quantité suffit.",
-  "box_qty": 36
+  "box_qty": 36,
+  "tagline_en": "Ultra strong hold gel",
+  "tagline_nl": "Gel met ultrasterke hold",
+  "description_en": "Ultra-strong fixing gel with a long-lasting gum effect. The style stays flawless from morning to night, with no cardboard effect or white residue.",
+  "description_nl": "Stylinggel met ultrasterke fixatie en langdurig gum-effect. De look blijft onberispelijk van 's ochtends tot 's avonds, zonder kartonnen effect of witte resten."
  },
  {
   "ean": "8682035088851",
@@ -1867,7 +2543,11 @@
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
   "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Texturizing powder",
+  "tagline_nl": "Texturizing poeder",
+  "description_en": "The new-generation styling powder: instant volume, mattifying effect and invisible hold. Barbers' favorite for quick finishes between two visits.",
+  "description_nl": "Het stylingpoeder van de nieuwe generatie: onmiddellijk volume, matterend effect en onzichtbare hold. De favoriet van barbiers voor snelle finishes tussendoor."
  },
  {
   "ean": "8684736670991",
@@ -1878,7 +2558,11 @@
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
   "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Texturizing powder",
+  "tagline_nl": "Texturizing poeder",
+  "description_en": "The new-generation styling powder: instant volume, mattifying effect and invisible hold. Barbers' favorite for quick finishes between two visits.",
+  "description_nl": "Het stylingpoeder van de nieuwe generatie: onmiddellijk volume, matterend effect en onzichtbare hold. De favoriet van barbiers voor snelle finishes tussendoor."
  },
  {
   "ean": "8684736671004",
@@ -1889,7 +2573,11 @@
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
   "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Texturizing powder",
+  "tagline_nl": "Texturizing poeder",
+  "description_en": "The new-generation styling powder: instant volume, mattifying effect and invisible hold. Barbers' favorite for quick finishes between two visits.",
+  "description_nl": "Het stylingpoeder van de nieuwe generatie: onmiddellijk volume, matterend effect en onzichtbare hold. De favoriet van barbiers voor snelle finishes tussendoor."
  },
  {
   "ean": "8684736671011",
@@ -1900,7 +2588,11 @@
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
   "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Texturizing powder",
+  "tagline_nl": "Texturizing poeder",
+  "description_en": "The new-generation styling powder: instant volume, mattifying effect and invisible hold. Barbers' favorite for quick finishes between two visits.",
+  "description_nl": "Het stylingpoeder van de nieuwe generatie: onmiddellijk volume, matterend effect en onzichtbare hold. De favoriet van barbiers voor snelle finishes tussendoor."
  },
  {
   "ean": "8684736671028",
@@ -1911,7 +2603,11 @@
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
   "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Texturizing powder",
+  "tagline_nl": "Texturizing poeder",
+  "description_en": "The new-generation styling powder: instant volume, mattifying effect and invisible hold. Barbers' favorite for quick finishes between two visits.",
+  "description_nl": "Het stylingpoeder van de nieuwe generatie: onmiddellijk volume, matterend effect en onzichtbare hold. De favoriet van barbiers voor snelle finishes tussendoor."
  },
  {
   "ean": "8682035084518",
@@ -1922,7 +2618,11 @@
   "tagline": "Poudre texturisante",
   "description": "La poudre coiffante nouvelle génération : volume instantané, effet matifiant et tenue invisible. Le produit favori des barbiers pour les finitions rapides entre deux passages.",
   "usage": "Saupoudrer légèrement sur les racines, cheveux secs, puis travailler du bout des doigts.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Texturizing powder",
+  "tagline_nl": "Texturizing poeder",
+  "description_en": "The new-generation styling powder: instant volume, mattifying effect and invisible hold. Barbers' favorite for quick finishes between two visits.",
+  "description_nl": "Het stylingpoeder van de nieuwe generatie: onmiddellijk volume, matterend effect en onzichtbare hold. De favoriet van barbiers voor snelle finishes tussendoor."
  },
  {
   "ean": "8682035080152",
@@ -1933,7 +2633,11 @@
   "tagline": "Parfum barbe Adonis — sans alcool",
   "description": "Parfum pour barbe et moustache Adonis, sans alcool : parfume sans dessécher le poil ni irriter la peau. La touche finale du service barbe.",
   "usage": "Une à deux vaporisations directement dans la barbe.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Adonis beard fragrance — alcohol-free",
+  "tagline_nl": "Adonis baardparfum — alcoholvrij",
+  "description_en": "Adonis beard and mustache fragrance, alcohol-free: scents without drying out the hair or irritating the skin. The finishing touch of the beard service.",
+  "description_nl": "Baard- en snorparfum Adonis, alcoholvrij: parfumeert zonder het haar uit te drogen of de huid te irriteren. De finishing touch van de baardservice."
  },
  {
   "ean": "8682035080169",
@@ -1944,7 +2648,11 @@
   "tagline": "Parfum barbe Genius — sans alcool",
   "description": "Parfum pour barbe et moustache Genius, sans alcool : parfume sans dessécher le poil ni irriter la peau. La touche finale du service barbe.",
   "usage": "Une à deux vaporisations directement dans la barbe.",
-  "box_qty": 48
+  "box_qty": 48,
+  "tagline_en": "Genius beard fragrance — alcohol-free",
+  "tagline_nl": "Genius baardparfum — alcoholvrij",
+  "description_en": "Genius beard and mustache fragrance, alcohol-free: scents without drying out the hair or irritating the skin. The finishing touch of the beard service.",
+  "description_nl": "Baard- en snorparfum Genius, alcoholvrij: parfumeert zonder het haar uit te drogen of de huid te irriteren. De finishing touch van de baardservice."
  },
  {
   "ean": "8682035088691",
@@ -1955,6 +2663,10 @@
   "tagline": "Baume + cologne 2-en-1",
   "description": "Le 2-en-1 malin : la fraîcheur d'une cologne et le confort d'un baume hydratant en un seul geste. Texture non grasse, absorption rapide, peau apaisée après le rasage. Version City Senior, aux notes fraîches et urbaines.",
   "usage": "Appliquer une petite quantité sur le visage après le rasage et masser jusqu'à absorption.",
-  "box_qty": 24
+  "box_qty": 24,
+  "tagline_en": "2-in-1 balm + cologne",
+  "tagline_nl": "2-in-1 balsem + cologne",
+  "description_en": "The smart 2-in-1: the freshness of a cologne and the comfort of a moisturizing balm in one gesture. Non-greasy texture, fast absorption, soothed skin after shaving. City Senior version, with fresh, urban notes.",
+  "description_nl": "De slimme 2-in-1: de frisheid van een cologne en het comfort van een hydraterende balsem in één beweging. Niet-vette textuur, snelle absorptie, gekalmeerde huid na het scheren. Versie City Senior, met frisse, urban tonen."
  }
 ]
