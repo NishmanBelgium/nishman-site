@@ -1563,3 +1563,42 @@ body.card-dark .label-row.primary .swatch {
 @media (max-width: 480px) {
   .lang-btn { padding: 12px 11px; }
 }
+
+/* ---------- Validation du panier sur la fiche + total du tiroir ---------- */
+
+.sheet-confirm {
+  margin-top: 6px;
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 15px;
+  background: var(--gradient);
+  color: #0a0a0a;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 14px 30px -12px rgba(255, 138, 0, 0.5);
+  transition: transform 0.18s var(--ease), opacity 0.18s ease;
+}
+
+.sheet-confirm:hover:not(:disabled) { transform: translateY(-1px); }
+.sheet-confirm:disabled { opacity: 0.4; cursor: default; box-shadow: none; }
+
+.drawer-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding: 14px 4px 2px;
+  border-top: 1px solid var(--line-strong);
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.drawer-total strong {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}

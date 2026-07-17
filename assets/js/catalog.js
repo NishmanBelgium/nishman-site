@@ -53,9 +53,11 @@
       enterCode: "Entrez votre code d'accès pour afficher les prix.",
       codePlaceholder: "Code d'accès", unlock: "Afficher les prix",
       wrongCode: "Code incorrect — vérifiez et réessayez.",
-      noCode: "Pas encore de code ? Demandez-le à votre commercial :",
+      noCode: "Pas encore de code ? Contactez notre équipe :",
       codeMsg: "Bonjour, je souhaite un code d'accès professionnel pour voir les prix sur nishman.be.",
       lockedNote: "Prix réservés aux professionnels",
+      addCart: "Ajouter au panier", updateCart: "Mettre à jour le panier",
+      totalHT: "Total HT", salesTeam: "Service commercial Nishman",
       logout: "Masquer les prix",
       waMsg: "Bonjour, je souhaite une offre de prix pour les produits suivants :",
       boxDetail: (b, n, tot) => b + " carton" + (b > 1 ? "s" : "") + " de " + n + " (" + tot + " unités)",
@@ -76,9 +78,11 @@
       enterCode: "Enter your access code to display prices.",
       codePlaceholder: "Access code", unlock: "Show prices",
       wrongCode: "Invalid code — please check and try again.",
-      noCode: "No code yet? Ask your sales contact:",
+      noCode: "No code yet? Contact our team:",
       codeMsg: "Hello, I would like a professional access code to see prices on nishman.be.",
       lockedNote: "Prices reserved for professionals",
+      addCart: "Add to cart", updateCart: "Update cart",
+      totalHT: "Total excl. VAT", salesTeam: "Nishman sales team",
       logout: "Hide prices",
       waMsg: "Hello, I would like a price offer for the following products:",
       boxDetail: (b, n, tot) => b + " box" + (b > 1 ? "es" : "") + " of " + n + " (" + tot + " units)",
@@ -99,9 +103,11 @@
       enterCode: "Voer uw toegangscode in om de prijzen te tonen.",
       codePlaceholder: "Toegangscode", unlock: "Prijzen tonen",
       wrongCode: "Ongeldige code — controleer en probeer opnieuw.",
-      noCode: "Nog geen code? Vraag ernaar bij uw vertegenwoordiger:",
+      noCode: "Nog geen code? Contacteer ons team:",
       codeMsg: "Hallo, ik wil graag een professionele toegangscode om de prijzen op nishman.be te zien.",
       lockedNote: "Prijzen voorbehouden aan professionals",
+      addCart: "In winkelmand", updateCart: "Winkelmand bijwerken",
+      totalHT: "Totaal excl. btw", salesTeam: "Nishman verkoopdienst",
       logout: "Prijzen verbergen",
       waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
       boxDetail: (b, n, tot) => b + " do" + (b > 1 ? "zen" : "os") + " van " + n + " (" + tot + " stuks)",
@@ -338,12 +344,7 @@
     grid.querySelectorAll("[data-action='add']").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        const p = PRODUCTS.find((x) => x.ean === btn.dataset.ean);
-        if (p && p.box_qty) {
-          openProductSheet(p.ean); // le choix unité / carton se fait sur la fiche
-        } else {
-          changeQty(btn.dataset.ean, 1, "u");
-        }
+        openProductSheet(btn.dataset.ean); // quantités et validation sur la fiche
       });
     });
     grid.querySelectorAll("[data-open]").forEach((card) => {
@@ -445,51 +446,60 @@
     const zone = document.getElementById("sheet-qty-zone");
     if (!zone) return;
     const p = PRODUCTS.find((x) => x.ean === ean);
-    const q = selection[ean] || { u: 0, b: 0 };
+    const existing = selection[ean] || { u: 0, b: 0 };
+    // Quantités en cours de composition : rien n'entre au panier avant "Ajouter"
+    const pending = { u: existing.u || 0, b: existing.b || 0 };
+    const wasInCart = pending.u > 0 || pending.b > 0;
 
-    function row(kind, label) {
-      const val = q[kind] || 0;
-      if (val > 0) {
-        return `
-          <div class="buy-row">
-            <span class="buy-row-label">${label}</span>
-            <div class="qty-stepper" data-kind="${kind}">
-              <button data-action="dec">−</button>
-              <span>${val}</span>
-              <button data-action="inc">+</button>
-            </div>
-          </div>`;
-      }
-      return `
+    function draw() {
+      const row = (kind, label) => `
         <div class="buy-row">
           <span class="buy-row-label">${label}</span>
-          <button class="buy-add" data-kind="${kind}">${T.add}</button>
+          <div class="qty-stepper" data-kind="${kind}">
+            <button data-action="dec">−</button>
+            <span>${pending[kind]}</span>
+            <button data-action="inc">+</button>
+          </div>
         </div>`;
+
+      const empty = pending.u === 0 && pending.b === 0;
+      zone.innerHTML =
+        row("u", T.perUnit) +
+        (p && p.box_qty ? row("b", T.boxOf(p.box_qty)) : "") +
+        `<button class="sheet-confirm" id="sheet-confirm" ${empty && !wasInCart ? "disabled" : ""}>
+           ${wasInCart ? T.updateCart : T.addCart}
+         </button>`;
+
+      zone.querySelectorAll(".qty-stepper").forEach((st) => {
+        const kind = st.dataset.kind;
+        st.querySelector("[data-action='inc']").addEventListener("click", () => {
+          pending[kind] += 1; draw();
+        });
+        st.querySelector("[data-action='dec']").addEventListener("click", () => {
+          pending[kind] = Math.max(0, pending[kind] - 1); draw();
+        });
+      });
+
+      const confirm = document.getElementById("sheet-confirm");
+      if (confirm) {
+        confirm.addEventListener("click", () => {
+          if (pending.u === 0 && pending.b === 0) {
+            delete selection[ean];
+          } else {
+            selection[ean] = { u: pending.u, b: pending.b };
+          }
+          saveSelection();
+          renderGrid();
+          renderFloatBar();
+          closeProductSheet(); // retour direct au catalogue
+        });
+      }
     }
 
-    zone.innerHTML =
-      row("u", T.perUnit) +
-      (p && p.box_qty ? row("b", T.boxOf(p.box_qty)) : "");
+    draw();
 
     document.querySelectorAll("#product-sheet [data-action='access']").forEach((btn) => {
       btn.addEventListener("click", () => { closeProductSheet(); openAccessModal(); });
-    });
-    zone.querySelectorAll(".buy-add").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        changeQty(ean, 1, btn.dataset.kind);
-        renderSheetQty(ean);
-      });
-    });
-    zone.querySelectorAll(".qty-stepper").forEach((st) => {
-      const kind = st.dataset.kind;
-      st.querySelector("[data-action='inc']").addEventListener("click", () => {
-        changeQty(ean, 1, kind);
-        renderSheetQty(ean);
-      });
-      st.querySelector("[data-action='dec']").addEventListener("click", () => {
-        changeQty(ean, -1, kind);
-        renderSheetQty(ean);
-      });
     });
   }
 
@@ -547,6 +557,22 @@
           .join("");
       })
       .join("");
+
+    // Total HT (uniquement quand les prix sont déverrouillés)
+    if (unlocked()) {
+      let total = 0;
+      let known = true;
+      Object.keys(selection).forEach((ean) => {
+        const p = PRODUCTS.find((x) => x.ean === ean);
+        const price = p ? priceOf(p) : null;
+        if (price === null) { known = false; return; }
+        const q = selection[ean];
+        total += (q.u || 0) * price + (q.b || 0) * (p.box_qty || 0) * price;
+      });
+      if (known && total > 0) {
+        list.innerHTML += `<div class="drawer-total"><span>${T.totalHT}</span><strong>${formatPrice(total)}</strong></div>`;
+      }
+    }
 
     list.querySelectorAll(".drawer-remove").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -808,15 +834,10 @@
     document.getElementById("access-input").value = "";
     // Boutons "demander un code" vers les commerciaux
     const zone = document.getElementById("access-agents");
-    if (zone && typeof AGENTS !== "undefined") {
-      zone.innerHTML = Object.keys(AGENTS)
-        .map((slug) => {
-          const a = AGENTS[slug];
-          return `<a class="access-agent" target="_blank" rel="noopener"
-            href="https://wa.me/${a.whatsapp}?text=${encodeURIComponent(T.codeMsg)}">
-            <span class="access-agent-dot"></span>${a.name}</a>`;
-        })
-        .join("");
+    if (zone && typeof AGENTS !== "undefined" && AGENTS.dilhan) {
+      zone.innerHTML = `<a class="access-agent" target="_blank" rel="noopener"
+        href="https://wa.me/${AGENTS.dilhan.whatsapp}?text=${encodeURIComponent(T.codeMsg)}">
+        <span class="access-agent-dot"></span>${T.salesTeam}</a>`;
     }
     ov.hidden = false;
     document.body.style.overflow = "hidden";
