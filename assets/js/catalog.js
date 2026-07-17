@@ -44,7 +44,7 @@
       unitNote: "HT / unité", perUnit: "À l'unité",
       boxOf: (n) => "Carton de " + n, add: "Ajouter",
       packaging: (n, price) => "Conditionnement : carton de " + n + " unités" + (price ? " — " + price + " HT / carton" : ""),
-      mySelection: "Ma sélection", sendTo: "Envoyer cette sélection sur WhatsApp à :",
+      mySelection: "Ma sélection", sendTo: "Envoyer cette demande sur WhatsApp :",
       remove: "retirer", unit: (n) => n + " unité" + (n > 1 ? "s" : ""),
       box: (n) => n + " carton" + (n > 1 ? "s" : ""),
       articles: (n) => n + " article" + (n > 1 ? "s" : ""),
@@ -69,7 +69,7 @@
       unitNote: "excl. VAT / unit", perUnit: "Per unit",
       boxOf: (n) => "Box of " + n, add: "Add",
       packaging: (n, price) => "Packaging: box of " + n + " units" + (price ? " — " + price + " excl. VAT / box" : ""),
-      mySelection: "My selection", sendTo: "Send this selection on WhatsApp to:",
+      mySelection: "My selection", sendTo: "Send this request on WhatsApp:",
       remove: "remove", unit: (n) => n + " unit" + (n > 1 ? "s" : ""),
       box: (n) => n + " box" + (n > 1 ? "es" : ""),
       articles: (n) => n + " item" + (n > 1 ? "s" : ""),
@@ -94,7 +94,7 @@
       unitNote: "excl. btw / stuk", perUnit: "Per stuk",
       boxOf: (n) => "Doos van " + n, add: "Toevoegen",
       packaging: (n, price) => "Verpakking: doos van " + n + " stuks" + (price ? " — " + price + " excl. btw / doos" : ""),
-      mySelection: "Mijn selectie", sendTo: "Stuur deze selectie via WhatsApp naar:",
+      mySelection: "Mijn selectie", sendTo: "Verstuur deze aanvraag via WhatsApp:",
       remove: "verwijderen", unit: (n) => n + " stuk" + (n > 1 ? "s" : ""),
       box: (n) => n + " do" + (n > 1 ? "zen" : "os"),
       articles: (n) => n + " artikel" + (n > 1 ? "en" : ""),
@@ -609,22 +609,18 @@
   function renderAgentPicker() {
     const wrap = document.getElementById("agent-pick-list");
     wrap.innerHTML = "";
-    Object.keys(AGENTS).forEach((slug) => {
-      const agent = AGENTS[slug];
-      const btn = document.createElement("a");
-      btn.className = "label-row primary";
-      btn.style.marginBottom = "8px";
-      btn.target = "_blank";
-      btn.rel = "noopener";
-      const message = encodeURIComponent(buildSelectionMessage());
-      btn.href = `https://wa.me/${agent.whatsapp}?text=${message}`;
-      btn.innerHTML = `
-        <span class="swatch swatch-whatsapp"></span>
-        <span class="row-text">Envoyer à ${agent.name}</span>
-        <span class="chevron">&#8250;</span>
-      `;
-      wrap.appendChild(btn);
-    });
+    if (typeof AGENTS === "undefined" || !AGENTS.dilhan) return;
+    const btn = document.createElement("a");
+    btn.className = "label-row primary";
+    btn.target = "_blank";
+    btn.rel = "noopener";
+    btn.href = `https://wa.me/${AGENTS.dilhan.whatsapp}?text=${encodeURIComponent(buildSelectionMessage())}`;
+    btn.innerHTML = `
+      <span class="swatch swatch-whatsapp"></span>
+      <span class="row-text">${T.salesTeam}</span>
+      <span class="chevron">&#8250;</span>
+    `;
+    wrap.appendChild(btn);
   }
 
   // ---------- Initialisation ----------
