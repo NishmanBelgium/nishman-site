@@ -1734,3 +1734,48 @@ body.card-dark .label-row.primary .swatch {
 /* Le pied de carte ne déborde jamais, même prix long + badge */
 .product-footer { gap: 8px; }
 .product-footer .product-price { min-width: 0; }
+
+
+/* ==========================================================================
+   PIED DE CARTE INFAILLIBLE — le bouton + ne peut plus être rogné
+   ========================================================================== */
+
+/* La zone de gauche (prix ou "Prix sur demande" ou badge) absorbe toute la
+   contrainte de largeur ; le bouton + est intouchable. */
+.product-footer > :first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.product-footer .add-btn,
+.product-footer .qty-stepper {
+  flex: 0 0 auto;
+}
+
+.price-locked,
+.sel-chip {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-price {
+  overflow: hidden;
+}
+
+.product-price .vat-note {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Très petits écrans : on compacte encore la zone prix, le + garde ses
+   40px tactiles réglementaires */
+@media (max-width: 380px) {
+  .product-card { padding: 9px; }
+  .price-locked { padding: 7px 8px; font-size: 10px; }
+  .sel-chip { padding: 7px 8px; font-size: 10.5px; }
+  .product-price { font-size: 13px; }
+  .product-footer { gap: 6px; }
+}

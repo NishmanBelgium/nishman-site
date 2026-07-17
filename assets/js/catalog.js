@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "20"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "21"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
