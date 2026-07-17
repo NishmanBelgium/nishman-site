@@ -17,6 +17,123 @@
   let activeCategory = "Tous";
   let searchTerm = "";
 
+  // ==========================================================================
+  // LANGUES — fr par défaut ; le choix est mémorisé et recharge la page.
+  // Les noms de produits restent dans leur langue d'origine (marque).
+  // ==========================================================================
+
+  const LANGS = ["fr", "en", "nl"];
+
+  function getLang() {
+    const saved = localStorage.getItem("nishman-lang");
+    return LANGS.includes(saved) ? saved : "fr";
+  }
+
+  function setLang(l) {
+    localStorage.setItem("nishman-lang", l);
+    window.location.reload();
+  }
+
+  const LANG = getLang();
+
+  const I18N = {
+    fr: {
+      search: "Rechercher un produit ou un code EAN...",
+      all: "Toutes", allRange: "Toute la gamme", categories: "Catégories",
+      results: (n) => n + " produit" + (n > 1 ? "s" : ""),
+      unitNote: "HT / unité", perUnit: "À l'unité",
+      boxOf: (n) => "Carton de " + n, add: "Ajouter",
+      packaging: (n, price) => "Conditionnement : carton de " + n + " unités" + (price ? " — " + price + " HT / carton" : ""),
+      mySelection: "Ma sélection", sendTo: "Envoyer cette sélection sur WhatsApp à :",
+      remove: "retirer", unit: (n) => n + " unité" + (n > 1 ? "s" : ""),
+      box: (n) => n + " carton" + (n > 1 ? "s" : ""),
+      articles: (n) => n + " article" + (n > 1 ? "s" : ""),
+      seeSelection: "voir ma sélection", discover: "Découvrir",
+      askPrice: "Prix sur demande", proAccess: "Accès professionnel",
+      enterCode: "Entrez votre code d'accès pour afficher les prix.",
+      codePlaceholder: "Code d'accès", unlock: "Afficher les prix",
+      wrongCode: "Code incorrect — vérifiez et réessayez.",
+      noCode: "Pas encore de code ? Demandez-le à votre commercial :",
+      codeMsg: "Bonjour, je souhaite un code d'accès professionnel pour voir les prix sur nishman.be.",
+      lockedNote: "Prix réservés aux professionnels",
+      logout: "Masquer les prix",
+      waMsg: "Bonjour, je souhaite une offre de prix pour les produits suivants :",
+      boxDetail: (b, n, tot) => b + " carton" + (b > 1 ? "s" : "") + " de " + n + " (" + tot + " unités)",
+    },
+    en: {
+      search: "Search a product or EAN code...",
+      all: "All", allRange: "Full range", categories: "Categories",
+      results: (n) => n + " product" + (n > 1 ? "s" : ""),
+      unitNote: "excl. VAT / unit", perUnit: "Per unit",
+      boxOf: (n) => "Box of " + n, add: "Add",
+      packaging: (n, price) => "Packaging: box of " + n + " units" + (price ? " — " + price + " excl. VAT / box" : ""),
+      mySelection: "My selection", sendTo: "Send this selection on WhatsApp to:",
+      remove: "remove", unit: (n) => n + " unit" + (n > 1 ? "s" : ""),
+      box: (n) => n + " box" + (n > 1 ? "es" : ""),
+      articles: (n) => n + " item" + (n > 1 ? "s" : ""),
+      seeSelection: "view my selection", discover: "Discover",
+      askPrice: "Price on request", proAccess: "Professional access",
+      enterCode: "Enter your access code to display prices.",
+      codePlaceholder: "Access code", unlock: "Show prices",
+      wrongCode: "Invalid code — please check and try again.",
+      noCode: "No code yet? Ask your sales contact:",
+      codeMsg: "Hello, I would like a professional access code to see prices on nishman.be.",
+      lockedNote: "Prices reserved for professionals",
+      logout: "Hide prices",
+      waMsg: "Hello, I would like a price offer for the following products:",
+      boxDetail: (b, n, tot) => b + " box" + (b > 1 ? "es" : "") + " of " + n + " (" + tot + " units)",
+    },
+    nl: {
+      search: "Zoek een product of EAN-code...",
+      all: "Alle", allRange: "Volledig gamma", categories: "Categorieën",
+      results: (n) => n + " product" + (n > 1 ? "en" : ""),
+      unitNote: "excl. btw / stuk", perUnit: "Per stuk",
+      boxOf: (n) => "Doos van " + n, add: "Toevoegen",
+      packaging: (n, price) => "Verpakking: doos van " + n + " stuks" + (price ? " — " + price + " excl. btw / doos" : ""),
+      mySelection: "Mijn selectie", sendTo: "Stuur deze selectie via WhatsApp naar:",
+      remove: "verwijderen", unit: (n) => n + " stuk" + (n > 1 ? "s" : ""),
+      box: (n) => n + " do" + (n > 1 ? "zen" : "os"),
+      articles: (n) => n + " artikel" + (n > 1 ? "en" : ""),
+      seeSelection: "bekijk mijn selectie", discover: "Ontdekken",
+      askPrice: "Prijs op aanvraag", proAccess: "Professionele toegang",
+      enterCode: "Voer uw toegangscode in om de prijzen te tonen.",
+      codePlaceholder: "Toegangscode", unlock: "Prijzen tonen",
+      wrongCode: "Ongeldige code — controleer en probeer opnieuw.",
+      noCode: "Nog geen code? Vraag ernaar bij uw vertegenwoordiger:",
+      codeMsg: "Hallo, ik wil graag een professionele toegangscode om de prijzen op nishman.be te zien.",
+      lockedNote: "Prijzen voorbehouden aan professionals",
+      logout: "Prijzen verbergen",
+      waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
+      boxDetail: (b, n, tot) => b + " do" + (b > 1 ? "zen" : "os") + " van " + n + " (" + tot + " stuks)",
+    },
+  };
+
+  const T = I18N[LANG];
+
+  const CAT_I18N = {
+    "Coiffage & Style": { en: "Hair Styling", nl: "Haarstyling" },
+    "Peignes & Brosses": { en: "Combs & Brushes", nl: "Kammen & Borstels" },
+    "Après-rasage & Cologne": { en: "Aftershave & Cologne", nl: "Aftershave & Cologne" },
+    "Rasage": { en: "Shaving", nl: "Scheren" },
+    "Coloration": { en: "Hair Color", nl: "Haarkleuring" },
+    "Shampoings & Après-shampoings": { en: "Shampoo & Conditioner", nl: "Shampoo & Conditioner" },
+    "Soins mains & corps": { en: "Hand & Body Care", nl: "Hand- & Lichaamsverzorging" },
+    "Soins barbe": { en: "Beard Care", nl: "Baardverzorging" },
+    "Masques & Soins visage": { en: "Masks & Face Care", nl: "Maskers & Gezichtsverzorging" },
+    "Testeurs & Miniatures": { en: "Testers & Minis", nl: "Testers & Mini's" },
+  };
+
+  function catLabel(cat) {
+    if (LANG === "fr") return cat;
+    return (CAT_I18N[cat] && CAT_I18N[cat][LANG]) || cat;
+  }
+
+  // Texte produit dans la langue courante, repli sur le français
+  function pText(p, field) {
+    if (LANG !== "fr" && p[field + "_" + LANG]) return p[field + "_" + LANG];
+    return p[field] || "";
+  }
+
   // Source de l'image d'un produit. Centralisé ici : la version "aperçu
   // hors-ligne" (fichier unique) surcharge IMAGE_BASE avec des images
   // embarquées, sans toucher au reste du code.
@@ -93,7 +210,7 @@
     const btn = document.getElementById("cat-btn");
     const label = document.getElementById("cat-btn-label");
     const filtered = activeCategory !== "Tous";
-    label.textContent = filtered ? activeCategory : "Toutes";
+    label.textContent = filtered ? catLabel(activeCategory) : T.all;
     btn.classList.toggle("filtered", filtered);
   }
 
@@ -112,7 +229,7 @@
       .map(
         (c) => `
           <button class="cat-cell${c.name === activeCategory ? " active" : ""}${c.wide ? " wide" : ""}" data-cat="${escapeAttr(c.name)}">
-            <span>${escapeHtml(c.name === "Tous" ? "Toute la gamme" : c.name)}</span>
+            <span>${escapeHtml(c.name === "Tous" ? T.allRange : catLabel(c.name))}</span>
             <span class="cat-cell-count">${c.count}</span>
           </button>`
       )
@@ -161,8 +278,17 @@
   }
 
   function formatPrice(price) {
-    if (price === null || price === undefined) return "Nous consulter";
+    if (price === null || price === undefined) return T.askPrice;
     return price.toFixed(2).replace(".", ",") + " €";
+  }
+
+  // Zone prix d'un produit : montant si déverrouillé, sinon invitation
+  function priceZone(p, cls) {
+    if (unlocked()) {
+      const v = priceOf(p);
+      return `<span class="product-price ${cls || ""}">${formatPrice(v)}<span class="vat-note">${T.unitNote}</span></span>`;
+    }
+    return `<button class="price-locked" data-action="access">&#128274; ${T.askPrice}</button>`;
   }
 
   function renderGrid() {
@@ -170,7 +296,7 @@
     const countEl = document.getElementById("result-count");
     const filtered = getFiltered();
 
-    countEl.textContent = `${filtered.length} produit${filtered.length > 1 ? "s" : ""}`;
+    countEl.textContent = T.results(filtered.length);
 
     if (filtered.length === 0) {
       grid.innerHTML = `<p class="no-results">Aucun produit ne correspond à votre recherche.</p>`;
@@ -187,14 +313,11 @@
             <div class="product-image-wrap">
               <img src="${productImageSrc(p)}" alt="${escapeHtml(p.name)}" loading="lazy" />
             </div>
-            <p class="product-cat">${escapeHtml(p.tagline || p.category)}</p>
+            <p class="product-cat">${escapeHtml(pText(p, "tagline") || catLabel(p.category))}</p>
             <p class="product-name">${escapeHtml(p.name)}</p>
             <p class="product-vol">${escapeHtml(p.volume || "")}</p>
             <div class="product-footer">
-              <span class="product-price">
-                ${formatPrice(p.price_ht)}
-                <span class="vat-note">HT / unité</span>
-              </span>
+              ${priceZone(p, "")}
               ${
                 inSel
                   ? `<button class="sel-chip" data-action="add" data-ean="${p.ean}">${summary}</button>`
@@ -206,6 +329,12 @@
       })
       .join("");
 
+    grid.querySelectorAll("[data-action='access']").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openAccessModal();
+      });
+    });
     grid.querySelectorAll("[data-action='add']").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -276,10 +405,10 @@
       return;
     }
     const parts = [];
-    if (u) parts.push(u + " article" + (u > 1 ? "s" : ""));
-    if (b) parts.push(b + " carton" + (b > 1 ? "s" : ""));
+    if (u) parts.push(T.articles(u));
+    if (b) parts.push(T.box(b));
     bar.hidden = false;
-    bar.innerHTML = `<span class="fb-count">${u + b}</span> ${parts.join(" + ")} — voir ma sélection`;
+    bar.innerHTML = `<span class="fb-count">${u + b}</span> ${parts.join(" + ")} — ${T.seeSelection}`;
   }
 
   // ---------- Tiroir de sélection ----------
@@ -299,13 +428,10 @@
       <p class="sheet-tagline">${escapeHtml(p.tagline || p.category)}</p>
       <h2 class="sheet-name">${escapeHtml(p.name)}</h2>
       <p class="sheet-meta">${escapeHtml(p.volume || "")}${p.volume ? " · " : ""}EAN ${p.ean}</p>
-      <p class="sheet-desc">${escapeHtml(p.description || "")}</p>
-      ${p.box_qty ? `<p class="sheet-packaging">Conditionnement : carton de ${p.box_qty} unités${p.price_ht ? " — " + formatPrice(p.price_ht * p.box_qty) + " HT / carton" : ""}</p>` : ""}
+      <p class="sheet-desc">${escapeHtml(pText(p, "description"))}</p>
+      ${p.box_qty ? `<p class="sheet-packaging">${T.packaging(p.box_qty, unlocked() && priceOf(p) ? formatPrice(priceOf(p) * p.box_qty) : "")}</p>` : ""}
       <div class="sheet-buy">
-        <span class="product-price sheet-price">
-          ${formatPrice(p.price_ht)}
-          <span class="vat-note">HT / unité</span>
-        </span>
+        ${priceZone(p, "sheet-price")}
         <div class="sheet-qty-rows" id="sheet-qty-zone"></div>
       </div>
     `;
@@ -337,14 +463,17 @@
       return `
         <div class="buy-row">
           <span class="buy-row-label">${label}</span>
-          <button class="buy-add" data-kind="${kind}">Ajouter</button>
+          <button class="buy-add" data-kind="${kind}">${T.add}</button>
         </div>`;
     }
 
     zone.innerHTML =
-      row("u", "À l'unité") +
-      (p && p.box_qty ? row("b", "Carton de " + p.box_qty) : "");
+      row("u", T.perUnit) +
+      (p && p.box_qty ? row("b", T.boxOf(p.box_qty)) : "");
 
+    document.querySelectorAll("#product-sheet [data-action='access']").forEach((btn) => {
+      btn.addEventListener("click", () => { closeProductSheet(); openAccessModal(); });
+    });
     zone.querySelectorAll(".buy-add").forEach((btn) => {
       btn.addEventListener("click", () => {
         changeQty(ean, 1, btn.dataset.kind);
@@ -404,15 +533,15 @@
         if (!p) return "";
         const q = selection[ean];
         const rows = [];
-        if (q.u > 0) rows.push({ kind: "u", label: `× ${q.u} unité${q.u > 1 ? "s" : ""}` });
-        if (q.b > 0) rows.push({ kind: "b", label: `× ${q.b} carton${q.b > 1 ? "s" : ""} de ${p.box_qty}` });
+        if (q.u > 0) rows.push({ kind: "u", label: `× ${T.unit(q.u)}` });
+        if (q.b > 0) rows.push({ kind: "b", label: `× ${T.box(q.b)} · ${p.box_qty}` });
         return rows
           .map(
             (r) => `
           <div class="drawer-item">
             <img src="${productImageSrc(p)}" alt="" />
             <span class="drawer-item-name">${escapeHtml(p.name)} ${r.label}</span>
-            <button class="drawer-remove" data-ean="${ean}" data-kind="${r.kind}">retirer</button>
+            <button class="drawer-remove" data-ean="${ean}" data-kind="${r.kind}">${T.remove}</button>
           </div>`
           )
           .join("");
@@ -444,11 +573,11 @@
       if (!p) return null;
       const q = selection[ean];
       const parts = [];
-      if (q.u > 0) parts.push(`${q.u} unité${q.u > 1 ? "s" : ""}`);
-      if (q.b > 0) parts.push(`${q.b} carton${q.b > 1 ? "s" : ""} de ${p.box_qty} (${q.b * p.box_qty} unités)`);
+      if (q.u > 0) parts.push(T.unit(q.u));
+      if (q.b > 0) parts.push(T.boxDetail(q.b, p.box_qty, q.b * p.box_qty));
       return `• ${p.name} — ${parts.join(" + ")}`;
     }).filter(Boolean);
-    return `Bonjour, je souhaite une offre de prix pour les produits suivants :\n\n${lines.join("\n")}`;
+    return `${T.waMsg}\n\n${lines.join("\n")}`;
   }
 
   function renderAgentPicker() {
@@ -476,10 +605,13 @@
 
   async function init() {
     loadSelection();
-    await loadProducts();
+    applyStaticI18n();
+    await Promise.all([loadProducts(), initPriceLock()]);
     renderCatButton();
     renderGrid();
     renderFloatBar();
+    initLangControls();
+    initAccessControls();
 
     document.getElementById("search-input").addEventListener("input", (e) => {
       searchTerm = e.target.value;
@@ -492,7 +624,7 @@
       if (e.target.id === "cat-overlay") closeCatPanel();
     });
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") { closeCatPanel(); closeProductSheet(); closeDrawer(); }
+      if (e.key === "Escape") { closeCatPanel(); closeProductSheet(); closeDrawer(); closeAccessModal(); }
     });
 
     initIntro();
@@ -612,7 +744,181 @@
     apply();
   }
 
+  // ==========================================================================
+  // PRIX VERROUILLÉS — chiffrés dans prices.enc.json, déchiffrés dans le
+  // navigateur avec un code d'accès professionnel. Sans code valide, les
+  // prix sont mathématiquement illisibles (AES-GCM + PBKDF2).
+  // ==========================================================================
+
+  let PRICES = null; // { ean: prix } après déverrouillage
+  let PRICE_META = null;
+
+  function b64buf(s) {
+    const bin = atob(s);
+    const buf = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    return buf;
+  }
+
+  async function tryUnlock(code) {
+    if (!PRICE_META || !window.crypto || !window.crypto.subtle) return false;
+    try {
+      const enc = new TextEncoder();
+      const baseKey = await crypto.subtle.importKey("raw", enc.encode(code.trim()), "PBKDF2", false, ["deriveKey"]);
+      const kek = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: b64buf(PRICE_META.kdf.salt), iterations: PRICE_META.kdf.iter, hash: "SHA-256" },
+        baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
+      );
+      for (const w of PRICE_META.wrapped) {
+        try {
+          const masterRaw = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64buf(w.iv) }, kek, b64buf(w.ct));
+          const master = await crypto.subtle.importKey("raw", masterRaw, { name: "AES-GCM" }, false, ["decrypt"]);
+          const data = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64buf(PRICE_META.data.iv) }, master, b64buf(PRICE_META.data.ct));
+          PRICES = JSON.parse(new TextDecoder().decode(data));
+          return true;
+        } catch (e) { /* pas cet emballage : code suivant */ }
+      }
+    } catch (e) { /* code invalide */ }
+    return false;
+  }
+
+  function priceOf(p) {
+    return PRICES ? (PRICES[p.ean] !== undefined ? PRICES[p.ean] : null) : null;
+  }
+
+  function unlocked() { return PRICES !== null; }
+
+  async function initPriceLock() {
+    try {
+      const res = await fetch("/assets/data/prices.enc.json");
+      PRICE_META = await res.json();
+    } catch (e) {
+      PRICE_META = null;
+    }
+    const saved = localStorage.getItem("nishman-access-code");
+    if (saved && (await tryUnlock(saved)) === false) {
+      localStorage.removeItem("nishman-access-code");
+    }
+  }
+
+  function openAccessModal() {
+    const ov = document.getElementById("access-overlay");
+    if (!ov) return;
+    document.getElementById("access-error").hidden = true;
+    document.getElementById("access-input").value = "";
+    // Boutons "demander un code" vers les commerciaux
+    const zone = document.getElementById("access-agents");
+    if (zone && typeof AGENTS !== "undefined") {
+      zone.innerHTML = Object.keys(AGENTS)
+        .map((slug) => {
+          const a = AGENTS[slug];
+          return `<a class="access-agent" target="_blank" rel="noopener"
+            href="https://wa.me/${a.whatsapp}?text=${encodeURIComponent(T.codeMsg)}">
+            <span class="access-agent-dot"></span>${a.name}</a>`;
+        })
+        .join("");
+    }
+    ov.hidden = false;
+    document.body.style.overflow = "hidden";
+    setTimeout(() => document.getElementById("access-input").focus(), 60);
+  }
+
+  function closeAccessModal() {
+    const ov = document.getElementById("access-overlay");
+    if (ov) ov.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  async function submitAccessCode() {
+    const input = document.getElementById("access-input");
+    const err = document.getElementById("access-error");
+    const btn = document.getElementById("access-submit");
+    btn.disabled = true;
+    const ok = await tryUnlock(input.value);
+    btn.disabled = false;
+    if (ok) {
+      localStorage.setItem("nishman-access-code", input.value.trim());
+      closeAccessModal();
+      renderGrid();
+      renderProAccessBtn();
+    } else {
+      err.hidden = false;
+    }
+  }
+
+  function lockPrices() {
+    PRICES = null;
+    localStorage.removeItem("nishman-access-code");
+    renderGrid();
+    renderProAccessBtn();
+  }
+
+  function renderProAccessBtn() {
+    const btn = document.getElementById("pro-access");
+    if (!btn) return;
+    btn.textContent = unlocked() ? T.logout : T.proAccess;
+    btn.classList.toggle("unlocked", unlocked());
+  }
+
+  function initAccessControls() {
+    const btn = document.getElementById("pro-access");
+    if (btn) btn.addEventListener("click", () => (unlocked() ? lockPrices() : openAccessModal()));
+    const close = document.getElementById("access-close");
+    if (close) close.addEventListener("click", closeAccessModal);
+    const ov = document.getElementById("access-overlay");
+    if (ov) ov.addEventListener("click", (e) => { if (e.target.id === "access-overlay") closeAccessModal(); });
+    const submit = document.getElementById("access-submit");
+    if (submit) submit.addEventListener("click", submitAccessCode);
+    const input = document.getElementById("access-input");
+    if (input) input.addEventListener("keydown", (e) => { if (e.key === "Enter") submitAccessCode(); });
+    renderProAccessBtn();
+  }
+
   // Monogramme sticky + bouton retour haut.
+  // Sélecteur de langue : bouton compact + mini panneau
+  function initLangControls() {
+    const btn = document.getElementById("lang-btn");
+    const panel = document.getElementById("lang-overlay");
+    if (!btn || !panel) return;
+    btn.textContent = LANG.toUpperCase();
+    btn.addEventListener("click", () => { panel.hidden = false; });
+    panel.addEventListener("click", (e) => {
+      if (e.target.id === "lang-overlay") panel.hidden = true;
+      const choice = e.target.closest("[data-lang]");
+      if (choice) setLang(choice.dataset.lang);
+    });
+    panel.querySelectorAll("[data-lang]").forEach((el) => {
+      el.classList.toggle("active", el.dataset.lang === LANG);
+    });
+  }
+
+  // Textes statiques du HTML dans la langue courante
+  function applyStaticI18n() {
+    const search = document.getElementById("search-input");
+    if (search) search.placeholder = T.search;
+    const catTitle = document.querySelector("#cat-overlay .drawer-title");
+    if (catTitle) catTitle.textContent = T.categories;
+    const drawerTitle = document.querySelector("#drawer-overlay .drawer-title");
+    if (drawerTitle) drawerTitle.textContent = T.mySelection;
+    const pick = document.querySelector(".agent-pick-title");
+    if (pick) pick.textContent = T.sendTo;
+    const cue = document.querySelector(".cue-text");
+    if (cue) cue.textContent = T.discover;
+    const accTitle = document.getElementById("access-title");
+    if (accTitle) accTitle.textContent = T.proAccess;
+    const accDesc = document.getElementById("access-desc");
+    if (accDesc) accDesc.textContent = T.enterCode;
+    const accInput = document.getElementById("access-input");
+    if (accInput) accInput.placeholder = T.codePlaceholder;
+    const accSubmit = document.getElementById("access-submit");
+    if (accSubmit) accSubmit.textContent = T.unlock;
+    const accErr = document.getElementById("access-error");
+    if (accErr) accErr.textContent = T.wrongCode;
+    const accNo = document.getElementById("access-nocode");
+    if (accNo) accNo.textContent = T.noCode;
+    document.documentElement.lang = LANG;
+  }
+
   function initTopControls() {
     const toTop = document.getElementById("to-top");
     const brand = document.getElementById("sticky-brand");

@@ -1434,3 +1434,132 @@ body.card-dark .label-row.primary .swatch {
 }
 
 .buy-add:hover { border-color: var(--gold); }
+
+/* ==========================================================================
+   LANGUES & ACCÈS PROFESSIONNEL
+   ========================================================================== */
+
+.lang-btn {
+  flex-shrink: 0;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 13px 14px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.18s ease;
+}
+
+.lang-btn:hover { border-color: var(--gold); }
+
+.lang-panel { width: min(300px, 86vw); display: flex; flex-direction: column; gap: 9px; }
+
+.lang-choice {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.16s var(--ease);
+}
+
+.lang-choice:hover { border-color: var(--gold); }
+.lang-choice.active { background: var(--gradient); border-color: transparent; color: #0a0a0a; }
+
+.pro-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pro-row .result-count { margin: 0; }
+
+.pro-access {
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 8px 15px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.pro-access:hover { border-color: var(--gold); }
+.pro-access.unlocked { color: var(--ink-faint); border-color: var(--line); }
+
+.price-locked {
+  border: 0;
+  background: var(--bg-soft);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.price-locked:hover { color: var(--ink); }
+
+.access-panel { width: min(430px, 92vw); }
+.access-desc { font-size: 14px; color: var(--ink-soft); line-height: 1.55; margin: 0 0 16px; }
+
+.access-form { display: flex; gap: 9px; }
+
+.access-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 13px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+}
+
+.access-form input:focus { border-color: var(--gold); }
+.access-submit { padding: 13px 20px; font-size: 13px; }
+
+.access-error { color: #c62828; font-size: 13px; font-weight: 600; margin: 12px 0 0; }
+.access-nocode { font-size: 13px; color: var(--ink-soft); margin: 20px 0 10px; }
+
+.access-agents { display: flex; flex-wrap: wrap; gap: 9px; }
+
+.access-agent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.18s ease;
+}
+
+.access-agent:hover { border-color: var(--whatsapp); }
+.access-agent-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--whatsapp); }
+
+@media (max-width: 480px) {
+  .lang-btn { padding: 12px 11px; }
+}

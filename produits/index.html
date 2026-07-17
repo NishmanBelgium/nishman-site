@@ -60,6 +60,7 @@
           placeholder="Rechercher un produit ou un code EAN..."
           autocomplete="off"
         />
+        <button class="lang-btn" id="lang-btn" aria-haspopup="dialog" aria-label="Langue">FR</button>
         <button class="cat-btn" id="cat-btn" aria-haspopup="dialog">
           <span class="cat-btn-dot" aria-hidden="true"></span>
           <span class="cat-btn-label" id="cat-btn-label">Toutes</span>
@@ -68,7 +69,10 @@
       </div>
     </div>
 
-    <p class="result-count" id="result-count"></p>
+    <div class="pro-row">
+      <p class="result-count" id="result-count"></p>
+      <button class="pro-access" id="pro-access"></button>
+    </div>
 
     <div class="product-grid" id="grid"></div>
 
@@ -102,6 +106,33 @@
       <div id="drawer-list"></div>
       <p class="agent-pick-title">Envoyer cette sélection sur WhatsApp à :</p>
       <div id="agent-pick-list"></div>
+    </div>
+  </div>
+
+  <!-- Choix de langue -->
+  <div class="drawer-overlay cat-overlay" id="lang-overlay" hidden>
+    <div class="cat-panel lang-panel">
+      <button class="lang-choice" data-lang="fr">Français</button>
+      <button class="lang-choice" data-lang="en">English</button>
+      <button class="lang-choice" data-lang="nl">Nederlands</button>
+    </div>
+  </div>
+
+  <!-- Accès professionnel : code pour afficher les prix -->
+  <div class="drawer-overlay cat-overlay" id="access-overlay" hidden>
+    <div class="cat-panel access-panel">
+      <div class="cat-panel-head">
+        <p class="drawer-title" id="access-title"></p>
+        <button class="drawer-close" id="access-close">&times;</button>
+      </div>
+      <p class="access-desc" id="access-desc"></p>
+      <div class="access-form">
+        <input id="access-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+        <button class="hero-cta access-submit" id="access-submit"></button>
+      </div>
+      <p class="access-error" id="access-error" hidden></p>
+      <p class="access-nocode" id="access-nocode"></p>
+      <div class="access-agents" id="access-agents"></div>
     </div>
   </div>
 
