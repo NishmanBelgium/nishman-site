@@ -10,6 +10,8 @@
 (function () {
   "use strict";
 
+  const ASSET_V = "16"; // incrémenté à chaque mise à jour pour contourner les caches
+
   const STORAGE_KEY = "nishman_selection_v1";
 
   let PRODUCTS = [];
@@ -57,6 +59,7 @@
       codeMsg: "Bonjour, je souhaite un code d'accès professionnel pour voir les prix sur nishman.be.",
       lockedNote: "Prix réservés aux professionnels",
       addCart: "Ajouter au panier", updateCart: "Mettre à jour le panier",
+      toastAdded: "Ajouté au panier", toastUpdated: "Panier mis à jour",
       totalHT: "Total HT", salesTeam: "Service commercial Nishman",
       logout: "Masquer les prix",
       waMsg: "Bonjour, je souhaite une offre de prix pour les produits suivants :",
@@ -82,6 +85,7 @@
       codeMsg: "Hello, I would like a professional access code to see prices on nishman.be.",
       lockedNote: "Prices reserved for professionals",
       addCart: "Add to cart", updateCart: "Update cart",
+      toastAdded: "Added to cart", toastUpdated: "Cart updated",
       totalHT: "Total excl. VAT", salesTeam: "Nishman sales team",
       logout: "Hide prices",
       waMsg: "Hello, I would like a price offer for the following products:",
@@ -107,6 +111,7 @@
       codeMsg: "Hallo, ik wil graag een professionele toegangscode om de prijzen op nishman.be te zien.",
       lockedNote: "Prijzen voorbehouden aan professionals",
       addCart: "In winkelmand", updateCart: "Winkelmand bijwerken",
+      toastAdded: "Toegevoegd aan winkelmand", toastUpdated: "Winkelmand bijgewerkt",
       totalHT: "Totaal excl. btw", salesTeam: "Nishman verkoopdienst",
       logout: "Prijzen verbergen",
       waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
@@ -196,7 +201,7 @@
   // ---------- Chargement des produits ----------
 
   async function loadProducts() {
-    const res = await fetch("/assets/data/products.json");
+    const res = await fetch("/assets/data/products.json?v=" + ASSET_V);
     PRODUCTS = await res.json();
   }
 
@@ -488,10 +493,12 @@
           } else {
             selection[ean] = { u: pending.u, b: pending.b };
           }
+          const removed = pending.u === 0 && pending.b === 0;
           saveSelection();
           renderGrid();
           renderFloatBar();
           closeProductSheet(); // retour direct au catalogue
+          if (!removed) showToast(wasInCart ? T.toastUpdated : T.toastAdded);
         });
       }
     }
@@ -521,6 +528,24 @@
     document.body.style.overflow = "";
   }
 
+  // Toast de confirmation : bref, non bloquant, un seul à la fois
+  let toastTimer = null;
+  function showToast(text) {
+    let el = document.getElementById("toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "toast";
+      el.className = "toast";
+      document.body.appendChild(el);
+    }
+    el.innerHTML = `<span class="toast-check">&#10003;</span>${text}`;
+    el.classList.remove("show");
+    void el.offsetWidth; // relance l'animation
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 1900);
+  }
+
   function renderDrawer() {
     const list = document.getElementById("drawer-list");
     const pickTitle = document.querySelector(".agent-pick-title");
@@ -543,15 +568,19 @@
         if (!p) return "";
         const q = selection[ean];
         const rows = [];
-        if (q.u > 0) rows.push({ kind: "u", label: `× ${T.unit(q.u)}` });
-        if (q.b > 0) rows.push({ kind: "b", label: `× ${T.box(q.b)} · ${p.box_qty}` });
+        if (q.u > 0) rows.push({ kind: "u", qty: q.u, kindLabel: T.perUnit });
+        if (q.b > 0) rows.push({ kind: "b", qty: q.b, kindLabel: T.boxOf(p.box_qty) });
         return rows
           .map(
             (r) => `
           <div class="drawer-item">
             <img src="${productImageSrc(p)}" alt="" />
-            <span class="drawer-item-name">${escapeHtml(p.name)} ${r.label}</span>
-            <button class="drawer-remove" data-ean="${ean}" data-kind="${r.kind}">${T.remove}</button>
+            <span class="drawer-item-name">${escapeHtml(p.name)}<span class="drawer-item-kind">${r.kindLabel}</span></span>
+            <div class="qty-stepper drawer-stepper" data-ean="${ean}" data-kind="${r.kind}">
+              <button data-action="dec">−</button>
+              <span>${r.qty}</span>
+              <button data-action="inc">+</button>
+            </div>
           </div>`
           )
           .join("");
@@ -574,17 +603,16 @@
       }
     }
 
-    list.querySelectorAll(".drawer-remove").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const e = selection[btn.dataset.ean];
-        if (e) {
-          e[btn.dataset.kind] = 0;
-          if (!e.u && !e.b) delete selection[btn.dataset.ean];
-        }
-        saveSelection();
+    list.querySelectorAll(".drawer-stepper").forEach((st) => {
+      const ean = st.dataset.ean;
+      const kind = st.dataset.kind;
+      st.querySelector("[data-action='inc']").addEventListener("click", () => {
+        changeQty(ean, 1, kind);
         renderDrawer();
-        renderGrid();
-        renderFloatBar();
+      });
+      st.querySelector("[data-action='dec']").addEventListener("click", () => {
+        changeQty(ean, -1, kind); // à zéro, la ligne disparaît d'elle-même
+        renderDrawer();
       });
     });
 
@@ -812,7 +840,7 @@
 
   async function initPriceLock() {
     try {
-      const res = await fetch("/assets/data/prices.enc.json");
+      const res = await fetch("/assets/data/prices.enc.json?v=" + ASSET_V);
       PRICE_META = await res.json();
     } catch (e) {
       PRICE_META = null;

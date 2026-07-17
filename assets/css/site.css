@@ -1595,11 +1595,13 @@ body.card-dark .label-row.primary .swatch {
 }
 
 /* Bouton d'envoi du panier : la pastille reprend le vert WhatsApp,
-   comme dans la fenêtre de demande de code (portée limitée au tiroir,
-   les cartes QR gardent leurs pastilles dorées) */
-.drawer .label-row.primary .swatch-whatsapp {
-  background: var(--whatsapp);
-  opacity: 1;
+   comme dans la fenêtre de demande de code. Règle volontairement
+   prioritaire (id + !important) pour neutraliser l'assombrissement
+   hérité des boutons principaux. Les cartes QR ne sont pas concernées. */
+#agent-pick-list .label-row .swatch-whatsapp,
+#agent-pick-list .label-row.primary .swatch-whatsapp {
+  background: var(--whatsapp) !important;
+  opacity: 1 !important;
 }
 
 /* ---------- Panier : compteurs par ligne + type d'achat ---------- */
