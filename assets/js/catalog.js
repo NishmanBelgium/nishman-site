@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "18"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "19"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -793,27 +793,68 @@
 
   // Transition 3D : pendant que la feuille blanche monte, la scène du logo
   // bascule vers l'arrière (profondeur), rétrécit et s'éteint.
+  // Transition 3D d'entrée — version stabilisée mobile :
+  // - hauteurs verrouillées en pixels (la barre d'adresse mobile ne fait
+  //   plus sauter les calculs en plein scroll) ;
+  // - la feuille catalogue n'est jamais transformée sur écran tactile, et
+  //   sur desktop une hystérésis évite qu'elle rebascule en 3D quand on
+  //   remonte vite (une feuille transformée casse la barre sticky).
   function initIntroScroll() {
     const scene = document.getElementById("intro-scene");
     const cue = document.getElementById("intro-cue");
     const sheet = document.getElementById("catalog-sheet");
-    if (!scene || !sheet) return;
+    const intro = document.getElementById("intro");
+    const track = document.getElementById("intro-track");
+    if (!scene || !sheet || !intro || !track) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
 
+    let H = window.innerHeight || 1;
+    let lastW = window.innerWidth;
+
+    function lockHeights() {
+      H = window.innerHeight || 1;
+      intro.style.height = H + "px";
+      track.style.height = H * 2 + "px";
+    }
+
+    // Ne re-verrouiller qu'aux vrais changements (rotation, redimensionnement),
+    // jamais au simple repli de la barre d'adresse pendant le scroll.
+    window.addEventListener("resize", () => {
+      if (window.innerWidth !== lastW) {
+        lastW = window.innerWidth;
+        lockHeights();
+        apply();
+      }
+    });
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => { lastW = window.innerWidth; lockHeights(); apply(); }, 250);
+    });
+
+    let sheetLanded = false; // hystérésis : la feuille reste plate une fois arrivée
     let ticking = false;
+
     function apply() {
       ticking = false;
-      const vh = window.innerHeight || 1;
-      const p = Math.min(Math.max(window.scrollY / vh, 0), 1);
+      const p = Math.min(Math.max(window.scrollY / H, 0), 1);
       if (!reduced) {
         scene.style.transform = `translateY(${p * -40}px) translateZ(${p * -260}px) rotateX(${p * 22}deg) scale(${1 - p * 0.12})`;
-        scene.style.opacity = String(1 - p * 1.25);
-        // La feuille arrive légèrement inclinée puis s'aplatit en fin de course.
-        const flat = Math.min(p / 0.85, 1);
-        sheet.style.transform = p < 1 ? `perspective(1200px) rotateX(${(1 - flat) * 3.5}deg)` : "none";
+        scene.style.opacity = String(Math.max(0, 1 - p * 1.25));
+        if (!coarse) {
+          if (p >= 1) sheetLanded = true;
+          else if (p < 0.9) sheetLanded = false;
+          if (sheetLanded || p >= 1) {
+            sheet.style.transform = "";
+          } else {
+            const flat = Math.min(p / 0.85, 1);
+            sheet.style.transform = `perspective(1200px) rotateX(${(1 - flat) * 3.5}deg)`;
+          }
+        }
       }
       if (cue) cue.style.opacity = p > 0.04 ? "0" : "";
     }
+
+    lockHeights();
     window.addEventListener("scroll", () => {
       if (!ticking) { ticking = true; requestAnimationFrame(apply); }
     }, { passive: true });
