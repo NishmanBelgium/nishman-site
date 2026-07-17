@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "17"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "18"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -24,7 +24,7 @@
   // Les noms de produits restent dans leur langue d'origine (marque).
   // ==========================================================================
 
-  const LANGS = ["fr", "en", "nl"];
+  const LANGS = ["fr", "en", "nl", "de"];
 
   function getLang() {
     const saved = localStorage.getItem("nishman-lang");
@@ -117,21 +117,47 @@
       waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
       boxDetail: (b, n, tot) => b + " do" + (b > 1 ? "zen" : "os") + " van " + n + " (" + tot + " stuks)",
     },
+    de: {
+      search: "Produkt oder EAN-Code suchen...",
+      all: "Alle", allRange: "Gesamtes Sortiment", categories: "Kategorien",
+      results: (n) => n + " Produkt" + (n > 1 ? "e" : ""),
+      unitNote: "zzgl. MwSt. / Stück", perUnit: "Pro Stück",
+      boxOf: (n) => "Karton mit " + n, add: "Hinzufügen",
+      packaging: (n, price) => "Verpackung: Karton mit " + n + " Stück" + (price ? " — " + price + " zzgl. MwSt. / Karton" : ""),
+      mySelection: "Meine Auswahl", sendTo: "Diese Anfrage per WhatsApp senden:",
+      remove: "entfernen", unit: (n) => n + " Stück",
+      box: (n) => n + " Karton" + (n > 1 ? "s" : ""),
+      articles: (n) => n + " Artikel",
+      seeSelection: "meine Auswahl ansehen", discover: "Entdecken",
+      askPrice: "Preis auf Anfrage", proAccess: "Professioneller Zugang",
+      enterCode: "Geben Sie Ihren Zugangscode ein, um die Preise anzuzeigen.",
+      codePlaceholder: "Zugangscode", unlock: "Preise anzeigen",
+      wrongCode: "Ungültiger Code — bitte prüfen und erneut versuchen.",
+      noCode: "Noch keinen Code? Kontaktieren Sie unser Team:",
+      codeMsg: "Hallo, ich hätte gerne einen professionellen Zugangscode, um die Preise auf nishman.be zu sehen.",
+      lockedNote: "Preise Fachkunden vorbehalten",
+      logout: "Preise ausblenden",
+      waMsg: "Hallo, ich bitte um ein Preisangebot für folgende Produkte:",
+      boxDetail: (b, n, tot) => b + " Karton" + (b > 1 ? "s" : "") + " mit " + n + " (" + tot + " Stück)",
+      addCart: "In den Warenkorb", updateCart: "Warenkorb aktualisieren",
+      toastAdded: "Zum Warenkorb hinzugefügt", toastUpdated: "Warenkorb aktualisiert",
+      totalHT: "Gesamt zzgl. MwSt.", salesTeam: "Nishman Vertriebsteam",
+    },
   };
 
   const T = I18N[LANG];
 
   const CAT_I18N = {
-    "Coiffage & Style": { en: "Hair Styling", nl: "Haarstyling" },
-    "Peignes & Brosses": { en: "Combs & Brushes", nl: "Kammen & Borstels" },
-    "Après-rasage & Cologne": { en: "Aftershave & Cologne", nl: "Aftershave & Cologne" },
-    "Rasage": { en: "Shaving", nl: "Scheren" },
-    "Coloration": { en: "Hair Color", nl: "Haarkleuring" },
-    "Shampoings & Après-shampoings": { en: "Shampoo & Conditioner", nl: "Shampoo & Conditioner" },
-    "Soins mains & corps": { en: "Hand & Body Care", nl: "Hand- & Lichaamsverzorging" },
-    "Soins barbe": { en: "Beard Care", nl: "Baardverzorging" },
-    "Masques & Soins visage": { en: "Masks & Face Care", nl: "Maskers & Gezichtsverzorging" },
-    "Testeurs & Miniatures": { en: "Testers & Minis", nl: "Testers & Mini's" },
+    "Coiffage & Style": { en: "Hair Styling", nl: "Haarstyling", de: "Haarstyling" },
+    "Peignes & Brosses": { en: "Combs & Brushes", nl: "Kammen & Borstels", de: "Kämme & Bürsten" },
+    "Après-rasage & Cologne": { en: "Aftershave & Cologne", nl: "Aftershave & Cologne", de: "Aftershave & Cologne" },
+    "Rasage": { en: "Shaving", nl: "Scheren", de: "Rasur" },
+    "Coloration": { en: "Hair Color", nl: "Haarkleuring", de: "Haarfarbe" },
+    "Shampoings & Après-shampoings": { en: "Shampoo & Conditioner", nl: "Shampoo & Conditioner", de: "Shampoo & Conditioner" },
+    "Soins mains & corps": { en: "Hand & Body Care", nl: "Hand- & Lichaamsverzorging", de: "Hand- & Körperpflege" },
+    "Soins barbe": { en: "Beard Care", nl: "Baardverzorging", de: "Bartpflege" },
+    "Masques & Soins visage": { en: "Masks & Face Care", nl: "Maskers & Gezichtsverzorging", de: "Masken & Gesichtspflege" },
+    "Testeurs & Miniatures": { en: "Testers & Minis", nl: "Testers & Mini's", de: "Tester & Minis" },
   };
 
   function catLabel(cat) {
