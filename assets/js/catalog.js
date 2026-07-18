@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "21"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "23"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -907,7 +907,7 @@
 
   async function initPriceLock() {
     try {
-      const res = await fetch("/assets/data/prices.enc.json?v=" + ASSET_V);
+      const res = await fetch("/assets/data/prices.enc.json?v=" + ASSET_V, { cache: "no-store" });
       PRICE_META = await res.json();
     } catch (e) {
       PRICE_META = null;
