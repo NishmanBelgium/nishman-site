@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "23"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "24"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -24,7 +24,7 @@
   // Les noms de produits restent dans leur langue d'origine (marque).
   // ==========================================================================
 
-  const LANGS = ["fr", "en", "nl", "de"];
+  const LANGS = ["fr", "en", "nl", "de", "tr"];
 
   function getLang() {
     const saved = localStorage.getItem("nishman-lang");
@@ -143,21 +143,47 @@
       toastAdded: "Zum Warenkorb hinzugefügt", toastUpdated: "Warenkorb aktualisiert",
       totalHT: "Gesamt zzgl. MwSt.", salesTeam: "Nishman Vertriebsteam",
     },
+    tr: {
+      search: "Ürün veya EAN kodu ara...",
+      all: "Tümü", allRange: "Tüm seri", categories: "Kategoriler",
+      results: (n) => n + " ürün",
+      unitNote: "KDV hariç / adet", perUnit: "Adet olarak",
+      boxOf: (n) => n + "'lu koli", add: "Ekle",
+      packaging: (n, price) => "Koli içeriği: " + n + " adet" + (price ? " — " + price + " KDV hariç / koli" : ""),
+      mySelection: "Seçimim", sendTo: "Bu talebi WhatsApp ile gönder:",
+      remove: "kaldır", unit: (n) => n + " adet",
+      box: (n) => n + " koli",
+      articles: (n) => n + " ürün",
+      seeSelection: "seçimimi gör", discover: "Keşfet",
+      askPrice: "Fiyat için sorunuz", proAccess: "Profesyonel erişim",
+      enterCode: "Fiyatları görüntülemek için erişim kodunuzu girin.",
+      codePlaceholder: "Erişim kodu", unlock: "Fiyatları göster",
+      wrongCode: "Geçersiz kod — kontrol edip tekrar deneyin.",
+      noCode: "Kodunuz yok mu? Ekibimizle iletişime geçin:",
+      codeMsg: "Merhaba, nishman.be sitesinde fiyatları görebilmek için profesyonel erişim kodu talep ediyorum.",
+      lockedNote: "Fiyatlar profesyonellere özeldir",
+      logout: "Fiyatları gizle",
+      waMsg: "Merhaba, aşağıdaki ürünler için fiyat teklifi rica ediyorum:",
+      boxDetail: (b, n, tot) => b + " adet " + n + "'lu koli (" + tot + " adet)",
+      addCart: "Sepete ekle", updateCart: "Sepeti güncelle",
+      toastAdded: "Sepete eklendi", toastUpdated: "Sepet güncellendi",
+      totalHT: "Toplam (KDV hariç)", salesTeam: "Nishman Satış Ekibi",
+    },
   };
 
   const T = I18N[LANG];
 
   const CAT_I18N = {
-    "Coiffage & Style": { en: "Hair Styling", nl: "Haarstyling", de: "Haarstyling" },
-    "Peignes & Brosses": { en: "Combs & Brushes", nl: "Kammen & Borstels", de: "Kämme & Bürsten" },
-    "Après-rasage & Cologne": { en: "Aftershave & Cologne", nl: "Aftershave & Cologne", de: "Aftershave & Cologne" },
-    "Rasage": { en: "Shaving", nl: "Scheren", de: "Rasur" },
-    "Coloration": { en: "Hair Color", nl: "Haarkleuring", de: "Haarfarbe" },
-    "Shampoings & Après-shampoings": { en: "Shampoo & Conditioner", nl: "Shampoo & Conditioner", de: "Shampoo & Conditioner" },
-    "Soins mains & corps": { en: "Hand & Body Care", nl: "Hand- & Lichaamsverzorging", de: "Hand- & Körperpflege" },
-    "Soins barbe": { en: "Beard Care", nl: "Baardverzorging", de: "Bartpflege" },
-    "Masques & Soins visage": { en: "Masks & Face Care", nl: "Maskers & Gezichtsverzorging", de: "Masken & Gesichtspflege" },
-    "Testeurs & Miniatures": { en: "Testers & Minis", nl: "Testers & Mini's", de: "Tester & Minis" },
+    "Coiffage & Style": { en: "Hair Styling", nl: "Haarstyling", de: "Haarstyling", tr: "Saç Şekillendirme" },
+    "Peignes & Brosses": { en: "Combs & Brushes", nl: "Kammen & Borstels", de: "Kämme & Bürsten", tr: "Tarak & Fırça" },
+    "Après-rasage & Cologne": { en: "Aftershave & Cologne", nl: "Aftershave & Cologne", de: "Aftershave & Cologne", tr: "Tıraş Sonrası & Kolonya" },
+    "Rasage": { en: "Shaving", nl: "Scheren", de: "Rasur", tr: "Tıraş" },
+    "Coloration": { en: "Hair Color", nl: "Haarkleuring", de: "Haarfarbe", tr: "Saç Boyası" },
+    "Shampoings & Après-shampoings": { en: "Shampoo & Conditioner", nl: "Shampoo & Conditioner", de: "Shampoo & Conditioner", tr: "Şampuan & Saç Kremi" },
+    "Soins mains & corps": { en: "Hand & Body Care", nl: "Hand- & Lichaamsverzorging", de: "Hand- & Körperpflege", tr: "El & Vücut Bakımı" },
+    "Soins barbe": { en: "Beard Care", nl: "Baardverzorging", de: "Bartpflege", tr: "Sakal Bakımı" },
+    "Masques & Soins visage": { en: "Masks & Face Care", nl: "Maskers & Gezichtsverzorging", de: "Masken & Gesichtspflege", tr: "Maske & Yüz Bakımı" },
+    "Testeurs & Miniatures": { en: "Testers & Minis", nl: "Testers & Mini's", de: "Tester & Minis", tr: "Tester & Mini Boy" },
   };
 
   function catLabel(cat) {
