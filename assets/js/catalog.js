@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "24"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "25"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -622,19 +622,26 @@
         const rows = [];
         if (q.u > 0) rows.push({ kind: "u", qty: q.u, kindLabel: T.perUnit });
         if (q.b > 0) rows.push({ kind: "b", qty: q.b, kindLabel: T.boxOf(p.box_qty) });
+        const unit = unlocked() ? priceOf(p) : null;
         return rows
-          .map(
-            (r) => `
+          .map((r) => {
+            // Prix de la ligne : unités = prix × qté ; cartons = prix × box_qty × qté
+            let lineTotal = null;
+            if (unit !== null) {
+              lineTotal = r.kind === "b" ? unit * (p.box_qty || 0) * r.qty : unit * r.qty;
+            }
+            return `
           <div class="drawer-item">
             <img src="${productImageSrc(p)}" alt="" />
             <span class="drawer-item-name">${escapeHtml(p.name)}<span class="drawer-item-kind">${r.kindLabel}</span></span>
+            ${lineTotal !== null ? `<span class="drawer-item-price" style="font-weight:700;font-size:13px;white-space:nowrap;margin-left:auto;padding:0 10px;">${formatPrice(lineTotal)}</span>` : ""}
             <div class="qty-stepper drawer-stepper" data-ean="${ean}" data-kind="${r.kind}">
               <button data-action="dec">−</button>
               <span>${r.qty}</span>
               <button data-action="inc">+</button>
             </div>
-          </div>`
-          )
+          </div>`;
+          })
           .join("");
       })
       .join("");
@@ -674,6 +681,9 @@
   // ---------- Envoi WhatsApp ----------
 
   function buildSelectionMessage() {
+    const showPrices = unlocked();
+    let grand = 0;
+    let allKnown = showPrices;
     const lines = Object.keys(selection).map((ean) => {
       const p = PRODUCTS.find((x) => x.ean === ean);
       if (!p) return null;
@@ -681,9 +691,24 @@
       const parts = [];
       if (q.u > 0) parts.push(T.unit(q.u));
       if (q.b > 0) parts.push(T.boxDetail(q.b, p.box_qty, q.b * p.box_qty));
-      return `• ${p.name} — ${parts.join(" + ")}`;
+      let line = `• ${p.name} — ${parts.join(" + ")}`;
+      if (showPrices) {
+        const unit = priceOf(p);
+        if (unit === null) {
+          allKnown = false;
+        } else {
+          const lineTotal = (q.u || 0) * unit + (q.b || 0) * (p.box_qty || 0) * unit;
+          grand += lineTotal;
+          line += ` = ${formatPrice(lineTotal)}`;
+        }
+      }
+      return line;
     }).filter(Boolean);
-    return `${T.waMsg}\n\n${lines.join("\n")}`;
+    let msg = `${T.waMsg}\n\n${lines.join("\n")}`;
+    if (showPrices && allKnown && grand > 0) {
+      msg += `\n\n${T.totalHT} : ${formatPrice(grand)}`;
+    }
+    return msg;
   }
 
   function renderAgentPicker() {
