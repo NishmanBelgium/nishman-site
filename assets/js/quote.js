@@ -8,8 +8,10 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "27";
-  const SEL_KEY = "nishman-selection";
+  const ASSET_V = "28";
+  // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
+  const SEL_KEY = "nishman_selection_v1";
+  const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
   const CLIENT_KEY = "nishman-client";
   const LANG_KEY = "nishman-lang";
   const CODE_KEY = "nishman-access-code";
@@ -156,13 +158,23 @@
   // ---------- Chargement des données ----------
 
   function loadSelection() {
-    try {
-      const raw = localStorage.getItem(SEL_KEY);
-      selection = raw ? JSON.parse(raw) : {};
-      Object.keys(selection).forEach((k) => {
-        if (typeof selection[k] === "number") selection[k] = { u: selection[k], b: 0 };
-      });
-    } catch (e) { selection = {}; }
+    selection = {};
+    const keys = [SEL_KEY].concat(SEL_KEYS_FALLBACK);
+    for (const k of keys) {
+      try {
+        const raw = localStorage.getItem(k);
+        if (!raw) continue;
+        const parsed = JSON.parse(raw);
+        if (parsed && Object.keys(parsed).length) {
+          selection = parsed;
+          break;
+        }
+      } catch (e) { /* clé suivante */ }
+    }
+    // Migration : ancien format où la valeur était un simple nombre d'unités
+    Object.keys(selection).forEach((k) => {
+      if (typeof selection[k] === "number") selection[k] = { u: selection[k], b: 0 };
+    });
   }
 
   function loadClient() {
@@ -358,7 +370,7 @@
     if (!ok) { err.textContent = T.sendfail; err.hidden = false; return; }
 
     // Panier vidé : la demande est partie
-    localStorage.removeItem(SEL_KEY);
+    [SEL_KEY].concat(SEL_KEYS_FALLBACK).forEach((k) => localStorage.removeItem(k));
     $("step-recap").hidden = true;
     $("step-done").hidden = false;
     $("doc-done-text").textContent = T.donetext(client.email);
@@ -396,7 +408,7 @@
 
     if (Object.keys(selection).length === 0) {
       $("step-form").innerHTML =
-        '<h1 class="quote-title">' + esc(T.donetitle === T.donetitle ? T.empty : T.empty) + "</h1>" +
+        '<h1 class="quote-title">' + esc(T.empty) + "</h1>" +
         '<a class="quote-alt" href="/produits/">' + esc(T.back) + "</a>";
       return;
     }
