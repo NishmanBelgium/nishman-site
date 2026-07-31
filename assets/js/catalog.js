@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "25"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "27"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -61,6 +61,7 @@
       addCart: "Ajouter au panier", updateCart: "Mettre à jour le panier",
       toastAdded: "Ajouté au panier", toastUpdated: "Panier mis à jour",
       totalHT: "Total HT", salesTeam: "Service commercial Nishman",
+      askQuote: "Demander un devis",
       logout: "Masquer les prix",
       waMsg: "Bonjour, je souhaite une offre de prix pour les produits suivants :",
       boxDetail: (b, n, tot) => b + " carton" + (b > 1 ? "s" : "") + " de " + n + " (" + tot + " unités)",
@@ -87,6 +88,7 @@
       addCart: "Add to cart", updateCart: "Update cart",
       toastAdded: "Added to cart", toastUpdated: "Cart updated",
       totalHT: "Total excl. VAT", salesTeam: "Nishman sales team",
+      askQuote: "Request a quotation",
       logout: "Hide prices",
       waMsg: "Hello, I would like a price offer for the following products:",
       boxDetail: (b, n, tot) => b + " box" + (b > 1 ? "es" : "") + " of " + n + " (" + tot + " units)",
@@ -113,6 +115,7 @@
       addCart: "In winkelmand", updateCart: "Winkelmand bijwerken",
       toastAdded: "Toegevoegd aan winkelmand", toastUpdated: "Winkelmand bijgewerkt",
       totalHT: "Totaal excl. btw", salesTeam: "Nishman verkoopdienst",
+      askQuote: "Offerte aanvragen",
       logout: "Prijzen verbergen",
       waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
       boxDetail: (b, n, tot) => b + " do" + (b > 1 ? "zen" : "os") + " van " + n + " (" + tot + " stuks)",
@@ -142,6 +145,7 @@
       addCart: "In den Warenkorb", updateCart: "Warenkorb aktualisieren",
       toastAdded: "Zum Warenkorb hinzugefügt", toastUpdated: "Warenkorb aktualisiert",
       totalHT: "Gesamt zzgl. MwSt.", salesTeam: "Nishman Vertriebsteam",
+      askQuote: "Angebot anfordern",
     },
     tr: {
       search: "Ürün veya EAN kodu ara...",
@@ -168,6 +172,7 @@
       addCart: "Sepete ekle", updateCart: "Sepeti güncelle",
       toastAdded: "Sepete eklendi", toastUpdated: "Sepet güncellendi",
       totalHT: "Toplam (KDV hariç)", salesTeam: "Nishman Satış Ekibi",
+      askQuote: "Fiyat teklifi iste",
     },
   };
 
@@ -711,21 +716,91 @@
     return msg;
   }
 
+  // ==========================================================================
+  // REGISTRE DES COMMANDES — envoi discret vers Google Sheets (Apps Script).
+  // Une ligne par commande. N'interrompt jamais le parcours WhatsApp :
+  // en cas d'échec réseau, la commande part quand même sur WhatsApp.
+  // L'URL est renseignée dans config.js (SHARED.orderLog) ; vide = désactivé.
+  // ==========================================================================
+
+  function orderLogUrl() {
+    return (typeof SHARED !== "undefined" && SHARED.orderLog) ? SHARED.orderLog : "";
+  }
+
+  function buildOrderPayload() {
+    const items = [];
+    let grand = 0;
+    let priced = unlocked();
+    Object.keys(selection).forEach((ean) => {
+      const p = PRODUCTS.find((x) => x.ean === ean);
+      if (!p) return;
+      const q = selection[ean];
+      const unit = priced ? priceOf(p) : null;
+      const parts = [];
+      if (q.u > 0) parts.push(q.u + " u");
+      if (q.b > 0) parts.push(q.b + " ct(" + p.box_qty + ")");
+      let lineTotal = null;
+      if (unit !== null) {
+        lineTotal = (q.u || 0) * unit + (q.b || 0) * (p.box_qty || 0) * unit;
+        grand += lineTotal;
+      }
+      items.push(p.name + " — " + parts.join(" + ") + (lineTotal !== null ? " = " + formatPrice(lineTotal) : ""));
+    });
+    return {
+      date: new Date().toISOString(),
+      lang: LANG,
+      access: ACCESS_LABEL || "—",       // quel code a servi (traçabilité)
+      itemCount: Object.keys(selection).length,
+      items: items.join(" | "),
+      totalHT: priced ? grand.toFixed(2) : "",
+    };
+  }
+
+  function logOrder() {
+    const url = orderLogUrl();
+    if (!url || Object.keys(selection).length === 0) return;
+    try {
+      const body = JSON.stringify(buildOrderPayload());
+      // sendBeacon : envoi "tire et oublie", survit même si l'onglet part sur WhatsApp
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(url, body);
+      } else {
+        fetch(url, { method: "POST", body: body, mode: "no-cors", keepalive: true });
+      }
+    } catch (e) { /* le registre ne doit jamais bloquer la commande */ }
+  }
+
   function renderAgentPicker() {
     const wrap = document.getElementById("agent-pick-list");
     wrap.innerHTML = "";
-    if (typeof AGENTS === "undefined" || !AGENTS.dilhan) return;
-    const btn = document.createElement("a");
-    btn.className = "label-row primary";
-    btn.target = "_blank";
-    btn.rel = "noopener";
-    btn.href = `https://wa.me/${AGENTS.dilhan.whatsapp}?text=${encodeURIComponent(buildSelectionMessage())}`;
-    btn.innerHTML = `
-      <span class="swatch swatch-whatsapp"></span>
-      <span class="row-text">${T.salesTeam}</span>
+
+    // 1) Parcours principal : demande de devis (formulaire + document + envoi)
+    const quote = document.createElement("a");
+    quote.className = "label-row primary";
+    quote.href = "/devis/";
+    quote.innerHTML = `
+      <span class="swatch swatch-quote"></span>
+      <span class="row-text">${T.askQuote}</span>
       <span class="chevron">&#8250;</span>
     `;
-    wrap.appendChild(btn);
+    wrap.appendChild(quote);
+
+    // 2) Raccourci WhatsApp conservé pour les habitués
+    if (typeof AGENTS !== "undefined" && AGENTS.dilhan) {
+      const btn = document.createElement("a");
+      btn.className = "label-row";
+      btn.style.marginTop = "9px";
+      btn.target = "_blank";
+      btn.rel = "noopener";
+      btn.href = `https://wa.me/${AGENTS.dilhan.whatsapp}?text=${encodeURIComponent(buildSelectionMessage())}`;
+      btn.addEventListener("click", logOrder);
+      btn.innerHTML = `
+        <span class="swatch swatch-whatsapp"></span>
+        <span class="row-text">${T.salesTeam}</span>
+        <span class="chevron">&#8250;</span>
+      `;
+      wrap.appendChild(btn);
+    }
   }
 
   // ---------- Initialisation ----------
@@ -919,6 +994,7 @@
   // ==========================================================================
 
   let PRICES = null; // { ean: prix } après déverrouillage
+  let ACCESS_LABEL = null; // libellé du code ayant déverrouillé (traçabilité)
   let PRICE_META = null;
 
   function b64buf(s) {
@@ -927,6 +1003,9 @@
     for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
     return buf;
   }
+
+  // Ordre = ordre des codes dans prices.enc.json (Global, Dilhan, Guilem, Bekir)
+  const ACCESS_LABELS = ["Global", "Dilhan", "Guilem", "Bekir"];
 
   async function tryUnlock(code) {
     if (!PRICE_META || !window.crypto || !window.crypto.subtle) return false;
@@ -937,12 +1016,14 @@
         { name: "PBKDF2", salt: b64buf(PRICE_META.kdf.salt), iterations: PRICE_META.kdf.iter, hash: "SHA-256" },
         baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
       );
-      for (const w of PRICE_META.wrapped) {
+      for (let i = 0; i < PRICE_META.wrapped.length; i++) {
+        const w = PRICE_META.wrapped[i];
         try {
           const masterRaw = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64buf(w.iv) }, kek, b64buf(w.ct));
           const master = await crypto.subtle.importKey("raw", masterRaw, { name: "AES-GCM" }, false, ["decrypt"]);
           const data = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64buf(PRICE_META.data.iv) }, master, b64buf(PRICE_META.data.ct));
           PRICES = JSON.parse(new TextDecoder().decode(data));
+          ACCESS_LABEL = ACCESS_LABELS[i] || ("code#" + (i + 1));
           return true;
         } catch (e) { /* pas cet emballage : code suivant */ }
       }
@@ -1011,6 +1092,7 @@
 
   function lockPrices() {
     PRICES = null;
+    ACCESS_LABEL = null;
     localStorage.removeItem("nishman-access-code");
     renderGrid();
     renderProAccessBtn();

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Demande de devis — Nishman</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=27" />
+  <link rel="stylesheet" href="/assets/css/quote.css?v=27" />
+</head>
+<body class="quote-body">
+
+  <header class="quote-top">
+    <a class="quote-back" href="/produits/" id="back-link">&#8249; <span id="t-back">Retour au catalogue</span></a>
+    <img class="quote-top-logo" src="/assets/img/logo-black.png" alt="Nishman" />
+  </header>
+
+  <main class="quote-main">
+
+    <!-- ÉTAPE 1 : coordonnées professionnelles -->
+    <section class="quote-card" id="step-form">
+      <p class="quote-eyebrow" id="t-step1">Étape 1 sur 2</p>
+      <h1 class="quote-title" id="t-formtitle">Vos coordonnées professionnelles</h1>
+      <p class="quote-lead" id="t-formlead">
+        Nous vendons exclusivement aux professionnels. Ces informations figureront sur votre devis.
+      </p>
+
+      <div class="field-grid">
+        <label class="field">
+          <span id="t-f-first">Prénom</span>
+          <input type="text" id="f-first" autocomplete="given-name" required />
+        </label>
+        <label class="field">
+          <span id="t-f-last">Nom</span>
+          <input type="text" id="f-last" autocomplete="family-name" required />
+        </label>
+        <label class="field field-wide">
+          <span id="t-f-company">Nom du salon / société</span>
+          <input type="text" id="f-company" autocomplete="organization" required />
+        </label>
+        <label class="field field-wide">
+          <span id="t-f-vat">Numéro d'entreprise / TVA</span>
+          <input type="text" id="f-vat" placeholder="BE0123456789" required />
+        </label>
+        <label class="field">
+          <span id="t-f-phone">Téléphone</span>
+          <input type="tel" id="f-phone" autocomplete="tel" required />
+        </label>
+        <label class="field">
+          <span id="t-f-email">E-mail</span>
+          <input type="email" id="f-email" autocomplete="email" required />
+        </label>
+        <label class="field field-wide">
+          <span id="t-f-street">Adresse (rue et numéro)</span>
+          <input type="text" id="f-street" autocomplete="street-address" required />
+        </label>
+        <label class="field">
+          <span id="t-f-zip">Code postal</span>
+          <input type="text" id="f-zip" autocomplete="postal-code" required />
+        </label>
+        <label class="field">
+          <span id="t-f-city">Ville</span>
+          <input type="text" id="f-city" autocomplete="address-level2" required />
+        </label>
+        <label class="field field-wide">
+          <span id="t-f-country">Pays</span>
+          <select id="f-country">
+            <option value="Belgique">Belgique</option>
+            <option value="France">France</option>
+            <option value="Luxembourg">Luxembourg</option>
+            <option value="Pays-Bas">Pays-Bas</option>
+            <option value="Allemagne">Allemagne</option>
+          </select>
+        </label>
+      </div>
+
+      <p class="quote-error" id="form-error" hidden></p>
+
+      <button class="quote-cta" id="to-recap"><span id="t-continue">Continuer</span> &#8250;</button>
+      <p class="quote-note" id="t-saved">Vos coordonnées sont conservées sur cet appareil pour vos prochaines demandes.</p>
+    </section>
+
+    <!-- ÉTAPE 2 : le devis -->
+    <section class="quote-card" id="step-recap" hidden>
+      <p class="quote-eyebrow" id="t-step2">Étape 2 sur 2</p>
+
+      <div class="doc" id="doc">
+        <div class="doc-head">
+          <div>
+            <img class="doc-logo" src="/assets/img/logo-black.png" alt="Nishman" />
+            <p class="doc-issuer">
+              NBD Distribution SRL<br />
+              Rue de la Poire d'Or 26, 7033 Mons, Belgique<br />
+              BCE / TVA : BE 0817.750.283<br />
+              contact@nishman.be
+            </p>
+          </div>
+          <div class="doc-meta">
+            <p class="doc-kind" id="t-doctitle">DEMANDE DE DEVIS</p>
+            <p><span id="t-ref">Référence</span> : <strong id="doc-ref">—</strong></p>
+            <p><span id="t-date">Date</span> : <strong id="doc-date">—</strong></p>
+          </div>
+        </div>
+
+        <div class="doc-client">
+          <p class="doc-block-title" id="t-client">Client</p>
+          <p id="doc-client-body">—</p>
+        </div>
+
+        <div class="doc-table-wrap">
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th id="t-th-prod">Produit</th>
+                <th id="t-th-ean">EAN</th>
+                <th class="num" id="t-th-u">Unités</th>
+                <th class="num" id="t-th-b">Cartons</th>
+                <th class="num" id="t-th-tot">Total pièces</th>
+                <th class="num price-col" id="t-th-pu">P.U. HT</th>
+                <th class="num price-col" id="t-th-sub">Sous-total</th>
+              </tr>
+            </thead>
+            <tbody id="doc-lines"></tbody>
+          </table>
+        </div>
+
+        <div class="doc-total" id="doc-total-row">
+          <span id="t-totalht">Total HT</span>
+          <strong id="doc-total">—</strong>
+        </div>
+
+        <p class="doc-legal" id="t-legal">
+          Document non contractuel — sous réserve de confirmation, de disponibilité
+          et de validation des conditions par NBD Distribution SRL. Prix hors TVA,
+          hors frais de livraison éventuels. Validité indicative : 30 jours.
+        </p>
+      </div>
+
+      <div class="quote-actions">
+        <button class="quote-cta" id="btn-send"><span id="t-send">Envoyer ma demande de devis</span></button>
+        <div class="quote-actions-row">
+          <button class="quote-alt" id="btn-print"><span id="t-print">Imprimer / PDF</span></button>
+          <button class="quote-alt" id="btn-edit"><span id="t-edit">Modifier mes coordonnées</span></button>
+        </div>
+      </div>
+
+      <p class="quote-error" id="send-error" hidden></p>
+    </section>
+
+    <!-- ÉTAPE 3 : confirmation -->
+    <section class="quote-card quote-done" id="step-done" hidden>
+      <div class="done-check">&#10003;</div>
+      <h1 class="quote-title" id="t-donetitle">Demande envoyée</h1>
+      <p class="quote-lead" id="doc-done-text">—</p>
+      <div class="quote-actions-row">
+        <button class="quote-alt" id="btn-print-2"><span id="t-print2">Imprimer / PDF</span></button>
+        <a class="quote-alt" href="/produits/" id="t-backcat">Retour au catalogue</a>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/assets/js/config.js?v=27"></script>
+  <script src="/assets/js/quote.js?v=27"></script>
+</body>
+</html>

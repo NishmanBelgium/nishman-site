@@ -1,0 +1,305 @@
+/* ==========================================================================
+   PAGE DEMANDE DE DEVIS — reprend les variables de site.css
+   ========================================================================== */
+
+.quote-body {
+  background: var(--bg-soft);
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+.quote-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 18px 20px;
+}
+
+.quote-back {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.quote-back:hover { color: var(--gold-deep); }
+.quote-top-logo { height: 22px; width: auto; display: block; }
+
+.quote-main { max-width: 900px; margin: 0 auto; padding: 0 16px; }
+
+.quote-card {
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 28px 24px;
+  margin-bottom: 20px;
+}
+
+.quote-eyebrow {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  margin: 0 0 10px;
+}
+
+.quote-title {
+  font-family: var(--font-display);
+  font-size: clamp(21px, 4vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+
+.quote-lead {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 22px;
+}
+
+/* ---------- Formulaire ---------- */
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field-wide { grid-column: 1 / -1; }
+
+.field span {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: var(--radius-sm, 12px);
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.18s ease;
+}
+
+.field input:focus,
+.field select:focus { border-color: var(--gold); }
+.field input.invalid { border-color: #c62828; background: rgba(198, 40, 40, 0.03); }
+
+.quote-error {
+  color: #c62828;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 16px 0 0;
+}
+
+.quote-cta {
+  width: 100%;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 999px;
+  padding: 16px;
+  background: var(--gradient);
+  color: #0a0a0a;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 16px 34px -14px rgba(255, 138, 0, 0.6);
+  transition: transform 0.18s var(--ease), opacity 0.18s ease;
+}
+
+.quote-cta:hover:not(:disabled) { transform: translateY(-1px); }
+.quote-cta:disabled { opacity: 0.55; cursor: default; box-shadow: none; }
+
+.quote-note {
+  font-size: 12px;
+  color: var(--ink-faint);
+  text-align: center;
+  margin: 14px 0 0;
+}
+
+.quote-actions { margin-top: 22px; }
+
+.quote-actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.quote-alt {
+  flex: 1;
+  text-align: center;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 13px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.18s ease;
+}
+
+.quote-alt:hover { border-color: var(--gold); }
+
+/* ---------- Le document ---------- */
+
+.doc { color: var(--ink); }
+
+.doc-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.doc-logo { height: 26px; width: auto; display: block; margin-bottom: 10px; }
+
+.doc-issuer {
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.doc-meta { text-align: right; font-size: 12px; color: var(--ink-soft); }
+.doc-meta p { margin: 0 0 3px; }
+.doc-meta strong { color: var(--ink); }
+
+.doc-kind {
+  font-family: var(--font-display);
+  font-size: 15px !important;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gold-deep) !important;
+  margin-bottom: 8px !important;
+}
+
+.doc-client { padding: 16px 0; border-bottom: 1px solid var(--line); }
+
+.doc-block-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 6px;
+}
+
+.doc-client p:last-child {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.doc-table-wrap { overflow-x: auto; margin: 4px -4px; }
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.doc-table th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 12px 6px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.doc-table td {
+  padding: 11px 6px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.doc-table .num { text-align: right; }
+.doc-table .prod-name { font-weight: 700; line-height: 1.35; }
+.doc-table .ean { font-size: 11.5px; color: var(--ink-soft); white-space: nowrap; }
+
+.doc-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 18px;
+  padding: 16px 6px 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.doc-total strong {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.doc-legal {
+  margin: 20px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ink-faint);
+}
+
+/* ---------- Confirmation ---------- */
+
+.quote-done { text-align: center; }
+
+.done-check {
+  width: 56px;
+  height: 56px;
+  margin: 4px auto 16px;
+  border-radius: 50%;
+  background: var(--gradient);
+  color: #0a0a0a;
+  font-size: 27px;
+  line-height: 56px;
+  font-weight: 700;
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 560px) {
+  .field-grid { grid-template-columns: 1fr; }
+  .quote-card { padding: 22px 16px; }
+  .doc-head { flex-direction: column; }
+  .doc-meta { text-align: left; }
+  .doc-table { font-size: 11.5px; }
+  .doc-table th, .doc-table td { padding: 9px 4px; }
+  .quote-actions-row { flex-direction: column; }
+}
+
+/* ---------- Impression / PDF ---------- */
+
+@media print {
+  .quote-top, .quote-actions, .quote-eyebrow, .quote-note, .quote-error { display: none !important; }
+  .quote-body { background: #fff; padding: 0; }
+  .quote-card { box-shadow: none; border-radius: 0; padding: 0; margin: 0; }
+  .doc-table-wrap { overflow: visible; }
+  @page { margin: 14mm; }
+}

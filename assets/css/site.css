@@ -1779,3 +1779,7 @@ body.card-dark .label-row.primary .swatch {
   .product-price { font-size: 13px; }
   .product-footer { gap: 6px; }
 }
+
+/* Pastille du bouton « Demander un devis » dans le panier */
+.swatch-quote { background: #0a0a0a; }
+.drawer .label-row.primary .swatch-quote { background: #0a0a0a !important; opacity: 1 !important; }

@@ -1,10 +1,8 @@
 /* ==========================================================================
    CONFIG — SEUL FICHIER À MODIFIER AU QUOTIDIEN.
-   Changements de cette version :
-   - "catalog" pointe vers le catalogue en ligne (/produits/) au lieu du PDF ;
-   - "instagram" est renseigné : le bouton apparaît sur les cartes QR.
-   Les slugs (dilhan, guilem, bekir) ne doivent JAMAIS changer : ce sont eux
-   qui sont gravés dans les QR codes imprimés.
+   - AGENTS : les commerciaux (slug = URL des cartes QR, ne jamais changer).
+   - SHARED.orderLog : URL du registre Google Sheets (voir REGISTRE-GUIDE.txt).
+     Laisser vide ("") tant que le registre n'est pas configuré.
    ========================================================================== */
 
 const AGENTS = {
@@ -18,4 +16,6 @@ const SHARED = {
   catalog: "/produits/",
   website: "https://nishman.be",
   bio: "Distributeur officiel Nishman pour la Belgique, la France et le Luxembourg. Produits professionnels pour barbers et coiffeurs.",
+  // Collez ici l'URL /exec de votre script Google (entre les guillemets) :
+  orderLog: "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec",
 };
