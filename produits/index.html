@@ -23,7 +23,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=28" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=29" />
 </head>
 <body class="catalog-body">
 
@@ -120,21 +120,47 @@
     </div>
   </div>
 
-  <!-- Accès professionnel : code pour afficher les prix -->
+  <!-- Accès professionnel : saisie du code ou inscription -->
   <div class="drawer-overlay cat-overlay" id="access-overlay" hidden>
     <div class="cat-panel access-panel">
       <div class="cat-panel-head">
         <p class="drawer-title" id="access-title"></p>
         <button class="drawer-close" id="access-close">&times;</button>
       </div>
-      <p class="access-desc" id="access-desc"></p>
-      <div class="access-form">
-        <input id="access-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
-        <button class="access-submit" id="access-submit"></button>
+
+      <div id="access-step-code">
+        <p class="access-desc" id="access-desc"></p>
+        <div class="access-form">
+          <input id="access-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+          <button class="access-submit" id="access-submit"></button>
+        </div>
+        <p class="access-error" id="access-error" hidden></p>
+        <p class="access-nocode" id="access-nocode"></p>
+        <button class="access-link" id="go-signup"></button>
       </div>
-      <p class="access-error" id="access-error" hidden></p>
-      <p class="access-nocode" id="access-nocode"></p>
-      <div class="access-agents" id="access-agents"></div>
+
+      <div id="access-step-signup" hidden>
+        <p class="access-desc" id="signup-intro"></p>
+        <div class="signup-fields">
+          <label class="signup-field">
+            <span id="t-signup-vat"></span>
+            <input id="signup-vat" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="BE0123456789" />
+          </label>
+          <label class="signup-field">
+            <span id="t-signup-email"></span>
+            <input id="signup-email" type="email" autocomplete="email" />
+          </label>
+        </div>
+        <button class="access-submit signup-btn" id="signup-submit"></button>
+        <p class="access-error" id="signup-error" hidden></p>
+        <button class="access-link" id="go-code"></button>
+      </div>
+
+      <div id="access-step-sent" hidden>
+        <div class="sent-check">&#10003;</div>
+        <p class="access-desc" id="sent-text"></p>
+        <button class="access-submit" id="sent-close"></button>
+      </div>
     </div>
   </div>
 
@@ -145,8 +171,8 @@
     </div>
   </div>
 
-  <script src="/assets/js/config.js?v=28"></script>
-  <script src="/assets/js/catalog.js?v=28"></script>
+  <script src="/assets/js/config.js?v=29"></script>
+  <script src="/assets/js/catalog.js?v=29"></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 </body>
 </html>

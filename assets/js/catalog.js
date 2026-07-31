@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "28"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "29"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -55,7 +55,20 @@
       enterCode: "Entrez votre code d'accès pour afficher les prix.",
       codePlaceholder: "Code d'accès", unlock: "Afficher les prix",
       wrongCode: "Code incorrect — vérifiez et réessayez.",
-      noCode: "Pas encore de code ? Contactez notre équipe :",
+      noCode: "Pas encore de code ?",
+      checking: "Vérification...",
+      signupLink: "Obtenir un accès professionnel",
+      signupTitle: "Accès réservé aux professionnels",
+      signupIntro: "Indiquez votre numéro d'entreprise et votre e-mail : votre code d'accès vous sera envoyé immédiatement.",
+      signupVat: "Numéro d'entreprise / TVA",
+      signupEmail: "E-mail professionnel",
+      signupSubmit: "Recevoir mon code",
+      signupInvalid: "Vérifiez le numéro d'entreprise et l'adresse e-mail.",
+      signupFailed: "La vérification a échoué. Réessayez dans un instant.",
+      signupSent: (m) => "Votre code d'accès vient d'être envoyé à " + m + ". Pensez à vérifier vos courriers indésirables.",
+      signupPending: "Votre demande a bien été reçue. Notre équipe la validera manuellement et vous recevrez votre code par e-mail.",
+      haveCode: "J'ai déjà un code",
+      sentOk: "Continuer",
       codeMsg: "Bonjour, je souhaite un code d'accès professionnel pour voir les prix sur nishman.be.",
       lockedNote: "Prix réservés aux professionnels",
       addCart: "Ajouter au panier", updateCart: "Mettre à jour le panier",
@@ -82,7 +95,20 @@
       enterCode: "Enter your access code to display prices.",
       codePlaceholder: "Access code", unlock: "Show prices",
       wrongCode: "Invalid code — please check and try again.",
-      noCode: "No code yet? Contact our team:",
+      noCode: "No code yet?",
+      checking: "Checking...",
+      signupLink: "Get professional access",
+      signupTitle: "Access reserved for professionals",
+      signupIntro: "Enter your company number and e-mail: your access code will be sent immediately.",
+      signupVat: "Company / VAT number",
+      signupEmail: "Business e-mail",
+      signupSubmit: "Get my code",
+      signupInvalid: "Please check the company number and e-mail address.",
+      signupFailed: "Verification failed. Please try again shortly.",
+      signupSent: (m) => "Your access code has just been sent to " + m + ". Please also check your spam folder.",
+      signupPending: "Your request has been received. Our team will review it and you will get your code by e-mail.",
+      haveCode: "I already have a code",
+      sentOk: "Continue",
       codeMsg: "Hello, I would like a professional access code to see prices on nishman.be.",
       lockedNote: "Prices reserved for professionals",
       addCart: "Add to cart", updateCart: "Update cart",
@@ -109,7 +135,20 @@
       enterCode: "Voer uw toegangscode in om de prijzen te tonen.",
       codePlaceholder: "Toegangscode", unlock: "Prijzen tonen",
       wrongCode: "Ongeldige code — controleer en probeer opnieuw.",
-      noCode: "Nog geen code? Contacteer ons team:",
+      noCode: "Nog geen code?",
+      checking: "Controleren...",
+      signupLink: "Professionele toegang aanvragen",
+      signupTitle: "Toegang voorbehouden aan professionals",
+      signupIntro: "Geef uw ondernemingsnummer en e-mailadres op: uw toegangscode wordt onmiddellijk verstuurd.",
+      signupVat: "Ondernemings- / btw-nummer",
+      signupEmail: "Professioneel e-mailadres",
+      signupSubmit: "Mijn code ontvangen",
+      signupInvalid: "Controleer het ondernemingsnummer en het e-mailadres.",
+      signupFailed: "De controle is mislukt. Probeer het zo dadelijk opnieuw.",
+      signupSent: (m) => "Uw toegangscode is zonet verstuurd naar " + m + ". Controleer ook uw ongewenste e-mail.",
+      signupPending: "Uw aanvraag is goed ontvangen. Ons team bekijkt ze en u ontvangt uw code per e-mail.",
+      haveCode: "Ik heb al een code",
+      sentOk: "Doorgaan",
       codeMsg: "Hallo, ik wil graag een professionele toegangscode om de prijzen op nishman.be te zien.",
       lockedNote: "Prijzen voorbehouden aan professionals",
       addCart: "In winkelmand", updateCart: "Winkelmand bijwerken",
@@ -136,7 +175,20 @@
       enterCode: "Geben Sie Ihren Zugangscode ein, um die Preise anzuzeigen.",
       codePlaceholder: "Zugangscode", unlock: "Preise anzeigen",
       wrongCode: "Ungültiger Code — bitte prüfen und erneut versuchen.",
-      noCode: "Noch keinen Code? Kontaktieren Sie unser Team:",
+      noCode: "Noch keinen Code?",
+      checking: "Prüfung läuft...",
+      signupLink: "Professionellen Zugang erhalten",
+      signupTitle: "Zugang nur für Fachkunden",
+      signupIntro: "Geben Sie Ihre Unternehmensnummer und E-Mail an: Ihr Zugangscode wird sofort versendet.",
+      signupVat: "Unternehmens- / USt-Nummer",
+      signupEmail: "Geschäftliche E-Mail",
+      signupSubmit: "Code erhalten",
+      signupInvalid: "Bitte prüfen Sie Unternehmensnummer und E-Mail-Adresse.",
+      signupFailed: "Die Prüfung ist fehlgeschlagen. Bitte versuchen Sie es gleich erneut.",
+      signupSent: (m) => "Ihr Zugangscode wurde soeben an " + m + " gesendet. Prüfen Sie auch den Spam-Ordner.",
+      signupPending: "Ihre Anfrage ist eingegangen. Unser Team prüft sie und Sie erhalten Ihren Code per E-Mail.",
+      haveCode: "Ich habe bereits einen Code",
+      sentOk: "Weiter",
       codeMsg: "Hallo, ich hätte gerne einen professionellen Zugangscode, um die Preise auf nishman.be zu sehen.",
       lockedNote: "Preise Fachkunden vorbehalten",
       logout: "Preise ausblenden",
@@ -163,7 +215,20 @@
       enterCode: "Fiyatları görüntülemek için erişim kodunuzu girin.",
       codePlaceholder: "Erişim kodu", unlock: "Fiyatları göster",
       wrongCode: "Geçersiz kod — kontrol edip tekrar deneyin.",
-      noCode: "Kodunuz yok mu? Ekibimizle iletişime geçin:",
+      noCode: "Kodunuz yok mu?",
+      checking: "Kontrol ediliyor...",
+      signupLink: "Profesyonel erişim al",
+      signupTitle: "Erişim yalnızca profesyonellere açıktır",
+      signupIntro: "Vergi numaranızı ve e-posta adresinizi girin: erişim kodunuz anında gönderilecektir.",
+      signupVat: "Firma / vergi numarası",
+      signupEmail: "Kurumsal e-posta",
+      signupSubmit: "Kodumu al",
+      signupInvalid: "Vergi numarasını ve e-posta adresini kontrol edin.",
+      signupFailed: "Doğrulama başarısız oldu. Lütfen birazdan tekrar deneyin.",
+      signupSent: (m) => "Erişim kodunuz " + m + " adresine gönderildi. Lütfen istenmeyen posta klasörünü de kontrol edin.",
+      signupPending: "Talebiniz alındı. Ekibimiz inceleyecek ve kodunuz e-posta ile gönderilecektir.",
+      haveCode: "Zaten bir kodum var",
+      sentOk: "Devam",
       codeMsg: "Merhaba, nishman.be sitesinde fiyatları görebilmek için profesyonel erişim kodu talep ediyorum.",
       lockedNote: "Fiyatlar profesyonellere özeldir",
       logout: "Fiyatları gizle",
@@ -988,46 +1053,58 @@
   }
 
   // ==========================================================================
-  // PRIX VERROUILLÉS — chiffrés dans prices.enc.json, déchiffrés dans le
-  // navigateur avec un code d'accès professionnel. Sans code valide, les
-  // prix sont mathématiquement illisibles (AES-GCM + PBKDF2).
+  // PRIX PROTÉGÉS — servis par le portier (script Google) après validation
+  // du code d'accès professionnel. Aucun prix n'existe dans les fichiers du
+  // site : sans code valide, il n'y a rien à télécharger ni à déchiffrer.
   // ==========================================================================
 
-  let PRICES = null; // { ean: prix } après déverrouillage
-  let ACCESS_LABEL = null; // libellé du code ayant déverrouillé (traçabilité)
-  let PRICE_META = null;
+  let PRICES = null;        // { ean: prix } une fois l'accès validé
+  let ACCESS_LABEL = null;  // entreprise associée au code (traçabilité)
 
-  function b64buf(s) {
-    const bin = atob(s);
-    const buf = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
-    return buf;
+  function gateUrl() {
+    return (typeof SHARED !== "undefined" && SHARED.orderLog) ? SHARED.orderLog : "";
   }
 
-  // Ordre = ordre des codes dans prices.enc.json (Global, Dilhan, Guilem, Bekir)
-  const ACCESS_LABELS = ["Global", "Dilhan", "Guilem", "Bekir"];
+  // Appel au portier. mode=jsonp car le script Google ne renvoie pas
+  // d'en-têtes CORS exploitables en lecture depuis un site tiers.
+  function callGate(params) {
+    return new Promise((resolve) => {
+      const url = gateUrl();
+      if (!url) return resolve(null);
+      const cb = "nishmanCb" + Date.now() + Math.floor(Math.random() * 1000);
+      const timer = setTimeout(() => {
+        cleanup();
+        resolve(null);
+      }, 12000);
 
-  async function tryUnlock(code) {
-    if (!PRICE_META || !window.crypto || !window.crypto.subtle) return false;
-    try {
-      const enc = new TextEncoder();
-      const baseKey = await crypto.subtle.importKey("raw", enc.encode(code.trim()), "PBKDF2", false, ["deriveKey"]);
-      const kek = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: b64buf(PRICE_META.kdf.salt), iterations: PRICE_META.kdf.iter, hash: "SHA-256" },
-        baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
-      );
-      for (let i = 0; i < PRICE_META.wrapped.length; i++) {
-        const w = PRICE_META.wrapped[i];
-        try {
-          const masterRaw = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64buf(w.iv) }, kek, b64buf(w.ct));
-          const master = await crypto.subtle.importKey("raw", masterRaw, { name: "AES-GCM" }, false, ["decrypt"]);
-          const data = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64buf(PRICE_META.data.iv) }, master, b64buf(PRICE_META.data.ct));
-          PRICES = JSON.parse(new TextDecoder().decode(data));
-          ACCESS_LABEL = ACCESS_LABELS[i] || ("code#" + (i + 1));
-          return true;
-        } catch (e) { /* pas cet emballage : code suivant */ }
+      function cleanup() {
+        clearTimeout(timer);
+        delete window[cb];
+        if (script.parentNode) script.parentNode.removeChild(script);
       }
-    } catch (e) { /* code invalide */ }
+
+      window[cb] = (data) => { cleanup(); resolve(data); };
+
+      const qs = Object.keys(params)
+        .map((k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]))
+        .join("&");
+      const script = document.createElement("script");
+      script.src = url + "?" + qs + "&callback=" + cb;
+      script.onerror = () => { cleanup(); resolve(null); };
+      document.head.appendChild(script);
+    });
+  }
+
+  // Valide un code et récupère les prix
+  async function tryUnlock(code) {
+    const clean = (code || "").trim().toUpperCase();
+    if (!clean) return false;
+    const res = await callGate({ action: "unlock", code: clean });
+    if (res && res.ok && res.prices) {
+      PRICES = res.prices;
+      ACCESS_LABEL = res.company || clean;
+      return true;
+    }
     return false;
   }
 
@@ -1038,30 +1115,28 @@
   function unlocked() { return PRICES !== null; }
 
   async function initPriceLock() {
-    try {
-      const res = await fetch("/assets/data/prices.enc.json?v=" + ASSET_V, { cache: "no-store" });
-      PRICE_META = await res.json();
-    } catch (e) {
-      PRICE_META = null;
-    }
     const saved = localStorage.getItem("nishman-access-code");
     if (saved && (await tryUnlock(saved)) === false) {
       localStorage.removeItem("nishman-access-code");
     }
   }
 
+  // ---------- Fenêtre d'accès : saisie du code OU inscription ----------
+
+  function showAccessStep(step) {
+    ["access-step-code", "access-step-signup", "access-step-sent"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.hidden = (id !== step);
+    });
+  }
+
   function openAccessModal() {
     const ov = document.getElementById("access-overlay");
     if (!ov) return;
     document.getElementById("access-error").hidden = true;
+    document.getElementById("signup-error").hidden = true;
     document.getElementById("access-input").value = "";
-    // Boutons "demander un code" vers les commerciaux
-    const zone = document.getElementById("access-agents");
-    if (zone && typeof AGENTS !== "undefined" && AGENTS.dilhan) {
-      zone.innerHTML = `<a class="access-agent" target="_blank" rel="noopener"
-        href="https://wa.me/${AGENTS.dilhan.whatsapp}?text=${encodeURIComponent(T.codeMsg)}">
-        <span class="access-agent-dot"></span>${T.salesTeam}</a>`;
-    }
+    showAccessStep("access-step-code");
     ov.hidden = false;
     document.body.style.overflow = "hidden";
     setTimeout(() => document.getElementById("access-input").focus(), 60);
@@ -1077,15 +1152,54 @@
     const input = document.getElementById("access-input");
     const err = document.getElementById("access-error");
     const btn = document.getElementById("access-submit");
+    err.hidden = true;
     btn.disabled = true;
+    btn.textContent = T.checking;
     const ok = await tryUnlock(input.value);
     btn.disabled = false;
+    btn.textContent = T.unlock;
     if (ok) {
-      localStorage.setItem("nishman-access-code", input.value.trim());
+      localStorage.setItem("nishman-access-code", input.value.trim().toUpperCase());
       closeAccessModal();
       renderGrid();
       renderProAccessBtn();
     } else {
+      err.textContent = T.wrongCode;
+      err.hidden = false;
+    }
+  }
+
+  // ---------- Inscription : vérification du numéro de TVA ----------
+
+  async function submitSignup() {
+    const vat = document.getElementById("signup-vat");
+    const mail = document.getElementById("signup-email");
+    const err = document.getElementById("signup-error");
+    const btn = document.getElementById("signup-submit");
+    err.hidden = true;
+
+    const v = (vat.value || "").replace(/[\s.\-]/g, "").toUpperCase();
+    const m = (mail.value || "").trim();
+    vat.classList.toggle("invalid", v.length < 8);
+    mail.classList.toggle("invalid", !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m));
+    if (v.length < 8 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) {
+      err.textContent = T.signupInvalid;
+      err.hidden = false;
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = T.checking;
+    const res = await callGate({ action: "signup", vat: v, email: m, lang: LANG });
+    btn.disabled = false;
+    btn.textContent = T.signupSubmit;
+
+    if (res && res.ok) {
+      document.getElementById("sent-text").textContent =
+        (res.pending ? T.signupPending : T.signupSent(m));
+      showAccessStep("access-step-sent");
+    } else {
+      err.textContent = (res && res.message) ? res.message : T.signupFailed;
       err.hidden = false;
     }
   }
@@ -1112,10 +1226,31 @@
     if (close) close.addEventListener("click", closeAccessModal);
     const ov = document.getElementById("access-overlay");
     if (ov) ov.addEventListener("click", (e) => { if (e.target.id === "access-overlay") closeAccessModal(); });
+
     const submit = document.getElementById("access-submit");
     if (submit) submit.addEventListener("click", submitAccessCode);
     const input = document.getElementById("access-input");
     if (input) input.addEventListener("keydown", (e) => { if (e.key === "Enter") submitAccessCode(); });
+
+    // Navigation entre saisie du code et inscription
+    const toSignup = document.getElementById("go-signup");
+    if (toSignup) toSignup.addEventListener("click", (e) => {
+      e.preventDefault();
+      showAccessStep("access-step-signup");
+      setTimeout(() => document.getElementById("signup-vat").focus(), 60);
+    });
+    const toCode = document.getElementById("go-code");
+    if (toCode) toCode.addEventListener("click", (e) => {
+      e.preventDefault();
+      showAccessStep("access-step-code");
+    });
+    const sSubmit = document.getElementById("signup-submit");
+    if (sSubmit) sSubmit.addEventListener("click", submitSignup);
+    const sMail = document.getElementById("signup-email");
+    if (sMail) sMail.addEventListener("keydown", (e) => { if (e.key === "Enter") submitSignup(); });
+    const done = document.getElementById("sent-close");
+    if (done) done.addEventListener("click", () => showAccessStep("access-step-code"));
+
     renderProAccessBtn();
   }
 
@@ -1161,6 +1296,19 @@
     if (accErr) accErr.textContent = T.wrongCode;
     const accNo = document.getElementById("access-nocode");
     if (accNo) accNo.textContent = T.noCode;
+    const map2 = {
+      "go-signup": T.signupLink,
+      "signup-intro": T.signupIntro,
+      "t-signup-vat": T.signupVat,
+      "t-signup-email": T.signupEmail,
+      "signup-submit": T.signupSubmit,
+      "go-code": T.haveCode,
+      "sent-close": T.sentOk,
+    };
+    Object.keys(map2).forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = map2[id];
+    });
     document.documentElement.lang = LANG;
   }
 
