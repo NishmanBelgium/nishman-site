@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "28";
+  const ASSET_V = "31";
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
   const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
@@ -42,6 +42,7 @@
       donetitle: "Demande envoyée",
       donetext: (mail) => "Votre devis a été envoyé à " + mail + ". Notre équipe commerciale revient vers vous rapidement.",
       askPrice: "Sur demande",
+      docSent: "Demande envoyée",
     },
     en: {
       back: "Back to catalogue", step1: "Step 1 of 2", step2: "Step 2 of 2",
@@ -64,6 +65,7 @@
       donetitle: "Request sent",
       donetext: (mail) => "Your quotation has been sent to " + mail + ". Our sales team will get back to you shortly.",
       askPrice: "On request",
+      docSent: "Request sent",
     },
     nl: {
       back: "Terug naar catalogus", step1: "Stap 1 van 2", step2: "Stap 2 van 2",
@@ -86,6 +88,7 @@
       donetitle: "Aanvraag verzonden",
       donetext: (mail) => "Uw offerte is verzonden naar " + mail + ". Ons verkoopteam neemt binnenkort contact met u op.",
       askPrice: "Op aanvraag",
+      docSent: "Aanvraag verzonden",
     },
     de: {
       back: "Zurück zum Katalog", step1: "Schritt 1 von 2", step2: "Schritt 2 von 2",
@@ -108,6 +111,7 @@
       donetitle: "Anfrage gesendet",
       donetext: (mail) => "Ihr Angebot wurde an " + mail + " gesendet. Unser Vertriebsteam meldet sich in Kürze bei Ihnen.",
       askPrice: "Auf Anfrage",
+      docSent: "Anfrage gesendet",
     },
     tr: {
       back: "Katalog'a dön", step1: "Adım 1 / 2", step2: "Adım 2 / 2",
@@ -130,6 +134,7 @@
       donetitle: "Talep gönderildi",
       donetext: (mail) => "Teklifiniz " + mail + " adresine gönderildi. Satış ekibimiz kısa süre içinde sizinle iletişime geçecek.",
       askPrice: "Talep üzerine",
+      docSent: "Talep gönderildi",
     },
   };
 
@@ -371,9 +376,17 @@
 
     // Panier vidé : la demande est partie
     [SEL_KEY].concat(SEL_KEYS_FALLBACK).forEach((k) => localStorage.removeItem(k));
-    $("step-recap").hidden = true;
+
+    // Le document reste visible sous la confirmation : le client garde une
+    // trace de sa demande et peut encore l'imprimer.
     $("step-done").hidden = false;
     $("doc-done-text").textContent = T.donetext(client.email);
+    document.querySelector("#step-recap .quote-actions").hidden = true;
+    const eyebrow = document.querySelector("#step-recap .quote-eyebrow");
+    if (eyebrow) eyebrow.textContent = T.docSent;
+    // On replace la confirmation AVANT le document
+    const main = document.querySelector(".quote-main");
+    main.insertBefore($("step-done"), $("step-recap"));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 

@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "29"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "31"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -46,7 +46,7 @@
       unitNote: "HT / unité", perUnit: "À l'unité",
       boxOf: (n) => "Carton de " + n, add: "Ajouter",
       packaging: (n, price) => "Conditionnement : carton de " + n + " unités" + (price ? " — " + price + " HT / carton" : ""),
-      mySelection: "Ma sélection", sendTo: "Envoyer cette demande sur WhatsApp :",
+      mySelection: "Ma sélection", sendTo: "Finaliser ma demande",
       remove: "retirer", unit: (n) => n + " unité" + (n > 1 ? "s" : ""),
       box: (n) => n + " carton" + (n > 1 ? "s" : ""),
       articles: (n) => n + " article" + (n > 1 ? "s" : ""),
@@ -74,6 +74,8 @@
       addCart: "Ajouter au panier", updateCart: "Mettre à jour le panier",
       toastAdded: "Ajouté au panier", toastUpdated: "Panier mis à jour",
       totalHT: "Total HT", salesTeam: "Service commercial Nishman",
+      contactTitle: "Une question ? Écrivez-nous", contactWa: "WhatsApp", contactMail: "E-mail",
+      contactMsg: "Bonjour, j'ai une question concernant les produits Nishman.",
       askQuote: "Demander un devis",
       logout: "Masquer les prix",
       waMsg: "Bonjour, je souhaite une offre de prix pour les produits suivants :",
@@ -86,7 +88,7 @@
       unitNote: "excl. VAT / unit", perUnit: "Per unit",
       boxOf: (n) => "Box of " + n, add: "Add",
       packaging: (n, price) => "Packaging: box of " + n + " units" + (price ? " — " + price + " excl. VAT / box" : ""),
-      mySelection: "My selection", sendTo: "Send this request on WhatsApp:",
+      mySelection: "My selection", sendTo: "Complete my request",
       remove: "remove", unit: (n) => n + " unit" + (n > 1 ? "s" : ""),
       box: (n) => n + " box" + (n > 1 ? "es" : ""),
       articles: (n) => n + " item" + (n > 1 ? "s" : ""),
@@ -114,6 +116,8 @@
       addCart: "Add to cart", updateCart: "Update cart",
       toastAdded: "Added to cart", toastUpdated: "Cart updated",
       totalHT: "Total excl. VAT", salesTeam: "Nishman sales team",
+      contactTitle: "A question? Write to us", contactWa: "WhatsApp", contactMail: "E-mail",
+      contactMsg: "Hello, I have a question about Nishman products.",
       askQuote: "Request a quotation",
       logout: "Hide prices",
       waMsg: "Hello, I would like a price offer for the following products:",
@@ -126,7 +130,7 @@
       unitNote: "excl. btw / stuk", perUnit: "Per stuk",
       boxOf: (n) => "Doos van " + n, add: "Toevoegen",
       packaging: (n, price) => "Verpakking: doos van " + n + " stuks" + (price ? " — " + price + " excl. btw / doos" : ""),
-      mySelection: "Mijn selectie", sendTo: "Verstuur deze aanvraag via WhatsApp:",
+      mySelection: "Mijn selectie", sendTo: "Mijn aanvraag afronden",
       remove: "verwijderen", unit: (n) => n + " stuk" + (n > 1 ? "s" : ""),
       box: (n) => n + " do" + (n > 1 ? "zen" : "os"),
       articles: (n) => n + " artikel" + (n > 1 ? "en" : ""),
@@ -154,6 +158,8 @@
       addCart: "In winkelmand", updateCart: "Winkelmand bijwerken",
       toastAdded: "Toegevoegd aan winkelmand", toastUpdated: "Winkelmand bijgewerkt",
       totalHT: "Totaal excl. btw", salesTeam: "Nishman verkoopdienst",
+      contactTitle: "Een vraag? Schrijf ons", contactWa: "WhatsApp", contactMail: "E-mail",
+      contactMsg: "Hallo, ik heb een vraag over de Nishman-producten.",
       askQuote: "Offerte aanvragen",
       logout: "Prijzen verbergen",
       waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
@@ -166,7 +172,7 @@
       unitNote: "zzgl. MwSt. / Stück", perUnit: "Pro Stück",
       boxOf: (n) => "Karton mit " + n, add: "Hinzufügen",
       packaging: (n, price) => "Verpackung: Karton mit " + n + " Stück" + (price ? " — " + price + " zzgl. MwSt. / Karton" : ""),
-      mySelection: "Meine Auswahl", sendTo: "Diese Anfrage per WhatsApp senden:",
+      mySelection: "Meine Auswahl", sendTo: "Meine Anfrage abschließen",
       remove: "entfernen", unit: (n) => n + " Stück",
       box: (n) => n + " Karton" + (n > 1 ? "s" : ""),
       articles: (n) => n + " Artikel",
@@ -197,6 +203,8 @@
       addCart: "In den Warenkorb", updateCart: "Warenkorb aktualisieren",
       toastAdded: "Zum Warenkorb hinzugefügt", toastUpdated: "Warenkorb aktualisiert",
       totalHT: "Gesamt zzgl. MwSt.", salesTeam: "Nishman Vertriebsteam",
+      contactTitle: "Eine Frage? Schreiben Sie uns", contactWa: "WhatsApp", contactMail: "E-Mail",
+      contactMsg: "Guten Tag, ich habe eine Frage zu den Nishman-Produkten.",
       askQuote: "Angebot anfordern",
     },
     tr: {
@@ -206,7 +214,7 @@
       unitNote: "KDV hariç / adet", perUnit: "Adet olarak",
       boxOf: (n) => n + "'lu koli", add: "Ekle",
       packaging: (n, price) => "Koli içeriği: " + n + " adet" + (price ? " — " + price + " KDV hariç / koli" : ""),
-      mySelection: "Seçimim", sendTo: "Bu talebi WhatsApp ile gönder:",
+      mySelection: "Seçimim", sendTo: "Talebimi tamamla",
       remove: "kaldır", unit: (n) => n + " adet",
       box: (n) => n + " koli",
       articles: (n) => n + " ürün",
@@ -237,6 +245,8 @@
       addCart: "Sepete ekle", updateCart: "Sepeti güncelle",
       toastAdded: "Sepete eklendi", toastUpdated: "Sepet güncellendi",
       totalHT: "Toplam (KDV hariç)", salesTeam: "Nishman Satış Ekibi",
+      contactTitle: "Sorunuz mu var? Bize yazın", contactWa: "WhatsApp", contactMail: "E-posta",
+      contactMsg: "Merhaba, Nishman ürünleri hakkında bir sorum var.",
       askQuote: "Fiyat teklifi iste",
     },
   };
@@ -896,6 +906,7 @@
 
     initIntro();
     initTopControls();
+    renderFooterContact();
 
     document.getElementById("float-bar").addEventListener("click", openDrawer);
     document.getElementById("drawer-close").addEventListener("click", closeDrawer);
@@ -1310,6 +1321,22 @@
       if (el) el.textContent = map2[id];
     });
     document.documentElement.lang = LANG;
+  }
+
+  // Contact permanent en pied de page : une question hors commande reste
+  // possible même avec un panier vide.
+  function renderFooterContact() {
+    const zone = document.getElementById("footer-contact");
+    if (!zone) return;
+    const wa = (typeof AGENTS !== "undefined" && AGENTS.dilhan) ? AGENTS.dilhan.whatsapp : "";
+    const parts = [];
+    if (wa) {
+      parts.push(`<a class="foot-btn foot-wa" target="_blank" rel="noopener"
+        href="https://wa.me/${wa}?text=${encodeURIComponent(T.contactMsg)}">
+        <span class="foot-dot"></span>${T.contactWa}</a>`);
+    }
+    parts.push(`<a class="foot-btn" href="mailto:contact@nishman.be">${T.contactMail}</a>`);
+    zone.innerHTML = `<p class="foot-title">${T.contactTitle}</p><div class="foot-row">${parts.join("")}</div>`;
   }
 
   function initTopControls() {

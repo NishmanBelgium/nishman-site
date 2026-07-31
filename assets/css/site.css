@@ -1846,3 +1846,54 @@ body.card-dark .label-row.primary .swatch {
 }
 
 #access-step-sent .access-submit { width: 100%; margin-top: 18px; }
+
+/* ---------- Contact permanent en pied de page ---------- */
+
+.footer-contact {
+  margin-bottom: 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.foot-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+
+.foot-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.foot-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.18s ease, transform 0.18s var(--ease);
+}
+
+.foot-btn:hover { border-color: var(--gold); transform: translateY(-1px); }
+.foot-wa:hover { border-color: var(--whatsapp); }
+
+.foot-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--whatsapp);
+  flex-shrink: 0;
+}
+
+@media (max-width: 420px) {
+  .foot-btn { flex: 1; justify-content: center; padding: 11px 14px; }
+}
