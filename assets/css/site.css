@@ -1447,7 +1447,7 @@ body.card-dark .label-row.primary .swatch {
 
 .pro-access {
   flex-shrink: 0;
-  border: 1px solid var(--gold);
+  border: 1px solid var(--line-strong);
   background: var(--bg);
   border-radius: 999px;
   padding: 13px 17px;
@@ -1460,7 +1460,7 @@ body.card-dark .label-row.primary .swatch {
   transition: all 0.18s ease;
 }
 
-.pro-access:hover { background: var(--gradient); border-color: transparent; color: #0a0a0a; }
+.pro-access:hover { border-color: var(--ink); }
 
 /* Une fois identifié, le bouton se fait discret */
 .pro-access.unlocked {
