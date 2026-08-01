@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "33"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "34"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -487,7 +487,9 @@
             <div class="product-footer">
               ${priceZone(p, "")}
               ${
-                inSel
+                !unlocked()
+                  ? ""
+                  : inSel
                   ? `<button class="sel-chip" data-action="add" data-ean="${p.ean}">${summary}</button>`
                   : `<button class="add-btn" data-action="add" data-ean="${p.ean}">+</button>`
               }
@@ -607,6 +609,15 @@
   function renderSheetQty(ean) {
     const zone = document.getElementById("sheet-qty-zone");
     if (!zone) return;
+
+    // Sans accès professionnel : aucune possibilité d'ajouter au panier.
+    if (!unlocked()) {
+      zone.innerHTML = `<p class="sheet-locked">${T.lockedNote}</p>
+        <button class="buy-add sheet-unlock" data-action="access">${T.proAccess}</button>`;
+      const b = zone.querySelector("[data-action='access']");
+      if (b) b.addEventListener("click", () => { closeProductSheet(); openAccessModal(); });
+      return;
+    }
     const p = PRODUCTS.find((x) => x.ean === ean);
     const existing = selection[ean] || { u: 0, b: 0 };
     // Quantités en cours de composition : rien n'entre au panier avant "Ajouter"
@@ -1243,6 +1254,9 @@
   function lockPrices() {
     PRICES = null;
     ACCESS_LABEL = null;
+    // Sans prix, le panier n'a plus de sens : on repart d'une base propre.
+    selection = {};
+    saveSelection();
     localStorage.removeItem("nishman-access-code");
     renderGrid();
     renderProAccessBtn();

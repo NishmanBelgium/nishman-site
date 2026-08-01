@@ -1969,3 +1969,18 @@ body.card-dark .label-row.primary .swatch {
   .foot-btn { width: 100%; justify-content: center; }
   .foot-links { align-items: stretch; }
 }
+
+/* Fiche produit sans accès professionnel : invitation à s'identifier */
+.sheet-locked {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+}
+
+.sheet-unlock {
+  width: 100%;
+  border-color: var(--gold);
+  font-size: 13.5px;
+}
+
+.sheet-unlock:hover { background: var(--gradient); border-color: transparent; color: #0a0a0a; }
