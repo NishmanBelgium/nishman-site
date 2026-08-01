@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "40"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "41"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -1040,12 +1040,10 @@
   function initIntroScroll() {
     const scene = document.getElementById("intro-scene");
     const cue = document.getElementById("intro-cue");
-    const sheet = document.getElementById("catalog-sheet");
     const intro = document.getElementById("intro");
     const track = document.getElementById("intro-track");
-    if (!scene || !sheet || !intro || !track) return;
+    if (!scene || !intro || !track) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const coarse = window.matchMedia("(pointer: coarse)").matches;
 
     let H = window.innerHeight || 1;
     let lastW = window.innerWidth;
@@ -1069,7 +1067,6 @@
       setTimeout(() => { lastW = window.innerWidth; lockHeights(); apply(); }, 250);
     });
 
-    let sheetLanded = false; // hystérésis : la feuille reste plate une fois arrivée
     let ticking = false;
 
     function apply() {
@@ -1078,16 +1075,9 @@
       if (!reduced) {
         scene.style.transform = `translateY(${p * -40}px) translateZ(${p * -260}px) rotateX(${p * 22}deg) scale(${1 - p * 0.12})`;
         scene.style.opacity = String(Math.max(0, 1 - p * 1.25));
-        if (!coarse) {
-          if (p >= 1) sheetLanded = true;
-          else if (p < 0.9) sheetLanded = false;
-          if (sheetLanded || p >= 1) {
-            sheet.style.transform = "";
-          } else {
-            const flat = Math.min(p / 0.85, 1);
-            sheet.style.transform = `perspective(1200px) rotateX(${(1 - flat) * 3.5}deg)`;
-          }
-        }
+        // La feuille n'est JAMAIS transformée : un transform sur elle créerait
+        // un cadre de référence et décrocherait la barre de recherche collante.
+        // L'effet de profondeur reste porté par la scène du logo, isolée.
       }
       if (cue) cue.style.opacity = p > 0.04 ? "0" : "";
     }
