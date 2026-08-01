@@ -1445,30 +1445,42 @@ body.card-dark .label-row.primary .swatch {
 .lang-choice:hover { border-color: var(--gold); }
 .lang-choice.active { background: var(--gradient); border-color: transparent; color: #0a0a0a; }
 
-.pro-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.pro-row .result-count { margin: 0; }
-
 .pro-access {
-  border: 1px solid var(--line-strong);
+  flex-shrink: 0;
+  border: 1px solid var(--gold);
   background: var(--bg);
   border-radius: 999px;
-  padding: 8px 15px;
+  padding: 13px 17px;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--ink);
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.18s ease;
 }
 
-.pro-access:hover { border-color: var(--gold); }
-.pro-access.unlocked { color: var(--ink-faint); border-color: var(--line); }
+.pro-access:hover { background: var(--gradient); border-color: transparent; color: #0a0a0a; }
+
+/* Une fois identifié, le bouton se fait discret */
+.pro-access.unlocked {
+  border-color: var(--line-strong);
+  color: var(--ink-faint);
+  font-weight: 600;
+}
+
+.pro-access.unlocked:hover { background: var(--bg); color: var(--ink); border-color: var(--line-strong); }
+
+@media (max-width: 760px) {
+  .pro-access { padding: 12px 13px; font-size: 12px; }
+}
+
+@media (max-width: 480px) {
+  /* Sur petit écran, la barre passe sur deux niveaux pour rester lisible */
+  .filter-row { flex-wrap: wrap; }
+  .filter-row .search-input { flex: 1 1 100%; order: -1; }
+  .lang-btn, .cat-btn, .pro-access { flex: 1 1 auto; }
+}
 
 .price-locked {
   border: 0;
