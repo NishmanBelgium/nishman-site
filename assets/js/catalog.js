@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "35"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "36"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -1370,14 +1370,11 @@
       const parts = [];
       if (wa) {
         parts.push(`<a class="foot-btn foot-wa" target="_blank" rel="noopener"
-          href="https://wa.me/${wa}?text=${encodeURIComponent(T.contactMsg)}">
-          <span class="foot-dot dot-wa"></span>${T.contactWa}</a>`);
+          href="https://wa.me/${wa}?text=${encodeURIComponent(T.contactMsg)}">${T.contactWa}</a>`);
       }
-      parts.push(`<a class="foot-btn foot-mail" href="mailto:contact@nishman.be">
-        <span class="foot-dot dot-mail"></span>${T.contactMail}</a>`);
+      parts.push(`<a class="foot-btn foot-mail" href="mailto:contact@nishman.be">${T.contactMail}</a>`);
       if (wa) {
-        parts.push(`<a class="foot-btn foot-tel" href="tel:+${wa}">
-          <span class="foot-dot dot-tel"></span>+32 489 97 00 87</a>`);
+        parts.push(`<a class="foot-btn foot-tel" href="tel:+${wa}">+32 489 97 00 87</a>`);
       }
       zone.innerHTML = parts.join("");
 

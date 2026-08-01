@@ -1029,7 +1029,6 @@ body.catalog-body::before { display: none; }
 @media (prefers-reduced-motion: reduce) {
 }
 
-
 /* ==========================================================================
    ÉCRAN D'ACCUEIL — noir, logo orange, cinématique de chargement,
    puis feuille catalogue qui monte en 3D par-dessus au scroll.
@@ -1196,7 +1195,6 @@ body.catalog-body { background: #0a0a0a; }
   .catalog-sheet { margin-top: 0; }
 }
 
-
 /* ---------- Monogramme de marque dans la barre sticky ---------- */
 
 .sticky-brand {
@@ -1245,7 +1243,6 @@ body.catalog-body { background: #0a0a0a; }
 }
 
 .to-top:hover { transform: translateY(-2px); }
-
 
 /* ==========================================================================
    RESPONSIVE & TACTILE — smartphone, tablette, desktop
@@ -1689,7 +1686,6 @@ body.card-dark .label-row.primary .swatch {
    sauter leur recalcul pendant le scroll (gain net sur 178 cartes) */
 .product-card { contain: layout paint; }
 
-
 /* ---------- Cartes compactes et infaillibles sur petit écran ---------- */
 
 @media (max-width: 420px) {
@@ -1704,7 +1700,6 @@ body.card-dark .label-row.primary .swatch {
 /* Le pied de carte ne déborde jamais, même prix long + badge */
 .product-footer { gap: 8px; }
 .product-footer .product-price { min-width: 0; }
-
 
 /* ==========================================================================
    PIED DE CARTE INFAILLIBLE — le bouton + ne peut plus être rogné
@@ -1820,7 +1815,6 @@ body.card-dark .label-row.primary .swatch {
 @media (max-width: 420px) {
   }
 
-
 /* ==========================================================================
    PIED DE PAGE — bande noire pleine largeur, en écho à l'écran d'accueil
    ========================================================================== */
@@ -1919,16 +1913,6 @@ body.card-dark .label-row.primary .swatch {
 
 .foot-wa:hover { border-color: var(--whatsapp); background: rgba(37, 211, 102, 0.08); }
 
-.foot-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.dot-wa   { background: var(--whatsapp); }
-.dot-mail { background: var(--whatsapp); }
-.dot-tel  { background: var(--whatsapp); }
 .foot-ig-icon {
   width: 17px;
   height: 17px;
