@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "42"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "43"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -988,7 +988,8 @@
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.round(Math.min(60, (w * h) / 15000));
+      const coarse = window.matchMedia("(pointer: coarse)").matches;
+      const count = Math.round(Math.min(coarse ? 26 : 60, (w * h) / (coarse ? 26000 : 15000)));
       dots = Array.from({ length: count }, () => ({
         x: Math.random() * w,
         y: Math.random() * h,
@@ -1000,7 +1001,15 @@
       }));
     }
 
-    function frame() {
+    const slow = window.matchMedia("(pointer: coarse)").matches;
+    let last = 0;
+
+    function frame(ts) {
+      raf = requestAnimationFrame(frame);
+      // Sur mobile, 30 images/s suffisent largement et libèrent le processeur
+      // pour un défilement fluide.
+      if (slow && ts - last < 33) return;
+      last = ts || 0;
       ctx.clearRect(0, 0, w, h);
       dots.forEach((d) => {
         d.x += d.vx; d.y += d.vy; d.tw += 0.018;
@@ -1013,10 +1022,9 @@
         ctx.fillStyle = `rgba(255, 156, 40, ${alpha})`;
         ctx.fill();
       });
-      raf = requestAnimationFrame(frame);
     }
 
-    function start() { if (!raf) frame(); }
+    function start() { if (!raf) raf = requestAnimationFrame(frame); }
     function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
 
     resize();
@@ -1074,10 +1082,16 @@
     });
 
     let ticking = false;
+    let lastP = -1;
 
     function apply() {
       ticking = false;
       const p = Math.min(Math.max(window.scrollY / H, 0), 1);
+      // Rien à faire si la position n'a pas bougé, ou si l'intro est déjà
+      // entièrement passée : on évite d'écrire dans la page à chaque image.
+      if (p === lastP) return;
+      if (p === 1 && lastP === 1) return;
+      lastP = p;
       if (!reduced) {
         scene.style.transform = `translateY(${p * -40}px) translateZ(${p * -260}px) rotateX(${p * 22}deg) scale(${1 - p * 0.12})`;
         scene.style.opacity = String(Math.max(0, 1 - p * 1.25));
