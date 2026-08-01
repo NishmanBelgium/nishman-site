@@ -1182,7 +1182,8 @@ html { background: #0a0a0a; }
   will-change: transform;
   padding-top: 26px;
   padding-bottom: 0;
-  overflow: hidden;   /* le pied de page noir borde la feuille jusqu'en bas */
+  /* Ne jamais rogner le contenu ici : cela romprait le comportement collant
+     de la barre de recherche. Le fond de fin de page est traité plus bas. */
 }
 
 .catalog-shell { padding-top: 8px; }
@@ -1841,6 +1842,21 @@ body.card-dark .label-row.primary .swatch {
   padding: 0 100vw;
   background: #0a0a0a;
   color: rgba(255, 255, 255, 0.62);
+  position: relative;
+  z-index: 3;
+}
+
+/* Prolonge le noir sous le pied de page, quelle que soit la hauteur
+   restante de la feuille (rebond de scroll mobile compris). */
+.site-footer::after {
+  content: "";
+  position: absolute;
+  left: -100vw;
+  right: -100vw;
+  top: 100%;
+  height: 100vh;
+  background: #0a0a0a;
+  pointer-events: none;
 }
 
 .foot-inner {
