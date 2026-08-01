@@ -297,7 +297,7 @@ body.catalog-body::before { display: none; }
   z-index: 1;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0 20px 120px;
+  padding: 0 20px;
 }
 
 /* ---------- Barre de recherche sticky ---------- */
@@ -1035,6 +1035,7 @@ body.catalog-body::before { display: none; }
    ========================================================================== */
 
 body.catalog-body { background: #0a0a0a; }
+html { background: #0a0a0a; }
 
 /* La piste fait 2 écrans : le 1er pour l'accueil, le 2e pour la transition. */
 .intro-track {
@@ -1180,6 +1181,8 @@ body.catalog-body { background: #0a0a0a; }
   transform-origin: top center;
   will-change: transform;
   padding-top: 26px;
+  padding-bottom: 0;
+  overflow: hidden;   /* le pied de page noir borde la feuille jusqu'en bas */
 }
 
 .catalog-shell { padding-top: 8px; }
@@ -1820,7 +1823,9 @@ body.card-dark .label-row.primary .swatch {
    ========================================================================== */
 
 .site-footer {
-  margin: 80px -100vw 0;
+  /* Déborde la feuille blanche pour occuper toute la largeur, et la ferme :
+     le noir est la dernière chose visible du site. */
+  margin: 100px -100vw 0;
   padding: 0 100vw;
   background: #0a0a0a;
   color: rgba(255, 255, 255, 0.62);
