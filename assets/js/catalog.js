@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "34"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "35"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -1386,7 +1386,7 @@
         const ig = (typeof SHARED !== "undefined" && SHARED.instagram) ? SHARED.instagram : "";
         social.innerHTML = ig
           ? `<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">
-               <span class="foot-dot dot-ig"></span>Instagram</a>`
+               <img class="foot-ig-icon" src="/assets/img/instagram.png" alt="" />Instagram</a>`
           : "";
       }
     }

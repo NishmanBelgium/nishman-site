@@ -1929,11 +1929,20 @@ body.card-dark .label-row.primary .swatch {
 .dot-wa   { background: var(--whatsapp); }
 .dot-mail { background: var(--whatsapp); }
 .dot-tel  { background: var(--whatsapp); }
-.dot-ig   { background: linear-gradient(135deg, #F9CE34, #EE2A7B 55%, #6228D7); }
+.foot-ig-icon {
+  width: 17px;
+  height: 17px;
+  display: block;
+  flex-shrink: 0;
+  opacity: 0.9;
+  transition: opacity 0.18s ease;
+}
+
+.foot-ig:hover .foot-ig-icon { opacity: 1; }
 
 .foot-mail:hover { border-color: var(--whatsapp); background: rgba(37, 211, 102, 0.08); }
 .foot-tel:hover  { border-color: var(--whatsapp); background: rgba(37, 211, 102, 0.08); }
-.foot-ig:hover   { border-color: #EE2A7B; background: rgba(238, 42, 123, 0.10); }
+.foot-ig:hover   { border-color: #ffffff; background: rgba(255, 255, 255, 0.08); }
 
 .foot-bottom {
   max-width: 1180px;
