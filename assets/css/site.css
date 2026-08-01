@@ -1834,8 +1834,8 @@ body.card-dark .label-row.primary .swatch {
 
 .foot-inner {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 44px;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 38px;
   max-width: 1180px;
   margin: 0 auto;
   padding: 54px 0 40px;
@@ -1875,12 +1875,12 @@ body.card-dark .label-row.primary .swatch {
 
 .foot-head {
   font-family: var(--font-display);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--gold);
-  margin: 0 0 16px;
+  margin: 0 0 18px;
 }
 
 .foot-line {
@@ -1923,9 +1923,17 @@ body.card-dark .label-row.primary .swatch {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--whatsapp);
   flex-shrink: 0;
 }
+
+.dot-wa   { background: var(--whatsapp); }
+.dot-mail { background: var(--whatsapp); }
+.dot-tel  { background: var(--whatsapp); }
+.dot-ig   { background: linear-gradient(135deg, #F9CE34, #EE2A7B 55%, #6228D7); }
+
+.foot-mail:hover { border-color: var(--whatsapp); background: rgba(37, 211, 102, 0.08); }
+.foot-tel:hover  { border-color: var(--whatsapp); background: rgba(37, 211, 102, 0.08); }
+.foot-ig:hover   { border-color: #EE2A7B; background: rgba(238, 42, 123, 0.10); }
 
 .foot-bottom {
   max-width: 1180px;
@@ -1945,7 +1953,7 @@ body.card-dark .label-row.primary .swatch {
   margin: 0;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1000px) {
   .foot-inner { grid-template-columns: 1fr 1fr; gap: 34px; }
   .foot-col-brand { grid-column: 1 / -1; }
 }

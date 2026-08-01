@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "32"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "33"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -78,6 +78,7 @@
       contactMsg: "Bonjour, j'ai une question concernant les produits Nishman.",
       footTag: "Distributeur officiel Nishman pour la Belgique, la France et le Luxembourg. Produits professionnels pour barbers et coiffeurs.",
       footContact: "Contact", footCompany: "Société",
+      footSocial: "Retrouvez-nous sur",
       footRights: "Tous droits réservés.",
       footLegal: "Prix hors TVA réservés aux professionnels.",
       askQuote: "Demander un devis",
@@ -124,6 +125,7 @@
       contactMsg: "Hello, I have a question about Nishman products.",
       footTag: "Official Nishman distributor for Belgium, France and Luxembourg. Professional products for barbers and hairdressers.",
       footContact: "Contact", footCompany: "Company",
+      footSocial: "Follow us on",
       footRights: "All rights reserved.",
       footLegal: "Prices excl. VAT, reserved for professionals.",
       askQuote: "Request a quotation",
@@ -170,6 +172,7 @@
       contactMsg: "Hallo, ik heb een vraag over de Nishman-producten.",
       footTag: "Officiële Nishman-verdeler voor België, Frankrijk en Luxemburg. Professionele producten voor barbiers en kappers.",
       footContact: "Contact", footCompany: "Onderneming",
+      footSocial: "Volg ons op",
       footRights: "Alle rechten voorbehouden.",
       footLegal: "Prijzen excl. btw, voorbehouden aan professionals.",
       askQuote: "Offerte aanvragen",
@@ -219,6 +222,7 @@
       contactMsg: "Guten Tag, ich habe eine Frage zu den Nishman-Produkten.",
       footTag: "Offizieller Nishman-Distributor für Belgien, Frankreich und Luxemburg. Professionelle Produkte für Barbiere und Friseure.",
       footContact: "Kontakt", footCompany: "Unternehmen",
+      footSocial: "Folgen Sie uns",
       footRights: "Alle Rechte vorbehalten.",
       footLegal: "Preise zzgl. MwSt., Fachkunden vorbehalten.",
       askQuote: "Angebot anfordern",
@@ -265,6 +269,7 @@
       contactMsg: "Merhaba, Nishman ürünleri hakkında bir sorum var.",
       footTag: "Belçika, Fransa ve Lüksemburg için resmi Nishman distribütörü. Barber ve kuaförler için profesyonel ürünler.",
       footContact: "İletişim", footCompany: "Firma",
+      footSocial: "Bizi takip edin",
       footRights: "Tüm hakları saklıdır.",
       footLegal: "Fiyatlar KDV hariçtir, profesyonellere özeldir.",
       askQuote: "Fiyat teklifi iste",
@@ -1352,13 +1357,24 @@
       if (wa) {
         parts.push(`<a class="foot-btn foot-wa" target="_blank" rel="noopener"
           href="https://wa.me/${wa}?text=${encodeURIComponent(T.contactMsg)}">
-          <span class="foot-dot"></span>${T.contactWa}</a>`);
+          <span class="foot-dot dot-wa"></span>${T.contactWa}</a>`);
       }
-      parts.push(`<a class="foot-btn" href="mailto:contact@nishman.be">${T.contactMail}</a>`);
+      parts.push(`<a class="foot-btn foot-mail" href="mailto:contact@nishman.be">
+        <span class="foot-dot dot-mail"></span>${T.contactMail}</a>`);
       if (wa) {
-        parts.push(`<a class="foot-btn" href="tel:+${wa}">+32 489 97 00 87</a>`);
+        parts.push(`<a class="foot-btn foot-tel" href="tel:+${wa}">
+          <span class="foot-dot dot-tel"></span>+32 489 97 00 87</a>`);
       }
       zone.innerHTML = parts.join("");
+
+      const social = document.getElementById("footer-social");
+      if (social) {
+        const ig = (typeof SHARED !== "undefined" && SHARED.instagram) ? SHARED.instagram : "";
+        social.innerHTML = ig
+          ? `<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">
+               <span class="foot-dot dot-ig"></span>Instagram</a>`
+          : "";
+      }
     }
 
     const flags = document.getElementById("foot-flags");
@@ -1371,6 +1387,7 @@
       "t-foot-tag": T.footTag,
       "t-foot-contact": T.footContact,
       "t-foot-company": T.footCompany,
+      "t-foot-social": T.footSocial,
       "t-foot-rights": T.footRights,
       "t-foot-legal": T.footLegal,
     };
