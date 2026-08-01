@@ -1035,7 +1035,11 @@ body.catalog-body::before { display: none; }
    ========================================================================== */
 
 body.catalog-body { background: #0a0a0a; }
-html { background: #0a0a0a; }
+html {
+  background: #0a0a0a;
+  overflow-x: hidden;
+  max-width: 100%;
+}
 
 /* La piste fait 2 écrans : le 1er pour l'accueil, le 2e pour la transition. */
 .intro-track {
@@ -1174,7 +1178,7 @@ html { background: #0a0a0a; }
 .catalog-sheet {
   position: relative;
   z-index: 2;
-  margin-top: -100vh;
+  margin-top: -100vh;   /* valeur de repli ; le script la fixe en pixels */
   background: var(--bg);
   border-radius: 34px 34px 0 0;
   box-shadow: 0 -30px 80px -20px rgba(0, 0, 0, 0.65);
@@ -1838,8 +1842,10 @@ body.card-dark .label-row.primary .swatch {
 .site-footer {
   /* Déborde la feuille blanche pour occuper toute la largeur, et la ferme :
      le noir est la dernière chose visible du site. */
-  margin: 100px -100vw 0;
-  padding: 0 100vw;
+  /* Placé hors du conteneur limité : occupe toute la largeur sans marge
+     négative, donc aucun débordement horizontal possible sur mobile. */
+  margin: 100px 0 0;
+  padding: 0 20px;
   background: #0a0a0a;
   color: rgba(255, 255, 255, 0.62);
   position: relative;
@@ -1851,10 +1857,10 @@ body.card-dark .label-row.primary .swatch {
 .site-footer::after {
   content: "";
   position: absolute;
-  left: -100vw;
-  right: -100vw;
+  left: 0;
+  right: 0;
   top: 100%;
-  height: 100vh;
+  height: 60vh;
   background: #0a0a0a;
   pointer-events: none;
 }
@@ -1863,7 +1869,7 @@ body.card-dark .label-row.primary .swatch {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
   gap: 38px;
-  max-width: 1180px;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 54px 0 40px;
   text-align: left;
@@ -1962,7 +1968,7 @@ body.card-dark .label-row.primary .swatch {
 .foot-ig:hover   { border-color: #ffffff; background: rgba(255, 255, 255, 0.08); }
 
 .foot-bottom {
-  max-width: 1180px;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 18px 0 26px;
   border-top: 1px solid rgba(255, 255, 255, 0.09);
@@ -2010,3 +2016,37 @@ body.card-dark .label-row.primary .swatch {
 }
 
 .sheet-unlock:hover { background: var(--gradient); border-color: transparent; color: #0a0a0a; }
+
+
+/* ==========================================================================
+   GARDE-FOUS RESPONSIVE — rien ne peut déborder horizontalement
+   ========================================================================== */
+
+body.catalog-body,
+.catalog-sheet,
+.catalog-shell,
+.site-footer,
+.product-grid {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Les mots très longs (noms de produits, e-mails) ne poussent jamais la page */
+.product-name,
+.drawer-item-name,
+.foot-line,
+.foot-tag,
+.sheet-name,
+.sheet-desc {
+  overflow-wrap: anywhere;
+}
+
+/* Les images restent dans leur cadre quoi qu'il arrive */
+img { max-width: 100%; }
+
+@media (max-width: 560px) {
+  .catalog-sheet { border-radius: 22px 22px 0 0; }
+  .site-footer { padding: 0 16px; margin-top: 60px; }
+  .catalog-shell { padding-left: 16px; padding-right: 16px; }
+  .search-sticky { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+}

@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "41"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "42"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -1048,10 +1048,16 @@
     let H = window.innerHeight || 1;
     let lastW = window.innerWidth;
 
+    const sheet = document.getElementById("catalog-sheet");
+
     function lockHeights() {
       H = window.innerHeight || 1;
       intro.style.height = H + "px";
       track.style.height = H * 2 + "px";
+      // La remontée de la feuille est fixée en PIXELS, comme les hauteurs
+      // ci-dessus : sinon le repli de la barre d'adresse mobile recalcule
+      // les unités vh en plein scroll et toute la page se décale.
+      if (sheet) sheet.style.marginTop = -H + "px";
     }
 
     // Ne re-verrouiller qu'aux vrais changements (rotation, redimensionnement),
