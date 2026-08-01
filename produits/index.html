@@ -23,7 +23,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=31" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=32" />
 </head>
 <body class="catalog-body">
 
@@ -77,11 +77,32 @@
     <div class="product-grid" id="grid"></div>
 
     <footer class="site-footer">
-      <div class="footer-contact" id="footer-contact"></div>
-      <p class="footer-brand">NISHMAN — Distribution officielle Belgique · France · Luxembourg</p>
-      <p>NBD Distribution SRL — Rue de la Poire d'Or 26, 7033 Cuesmes, Belgique</p>
-      <p>BCE / TVA : BE 0817.750.283 — <a href="mailto:contact@nishman.be">contact@nishman.be</a></p>
-      <p>&copy; <span id="footer-year"></span> NBD Distribution SRL. Tous droits réservés.</p>
+      <div class="foot-inner">
+
+        <div class="foot-col foot-col-brand">
+          <img class="foot-logo" src="/assets/img/logo-gold.png" alt="Nishman" />
+          <p class="foot-tag" id="t-foot-tag"></p>
+          <div class="foot-flags" id="foot-flags"></div>
+        </div>
+
+        <div class="foot-col">
+          <p class="foot-head" id="t-foot-contact"></p>
+          <div class="foot-links" id="footer-contact"></div>
+        </div>
+
+        <div class="foot-col">
+          <p class="foot-head" id="t-foot-company"></p>
+          <p class="foot-line">NBD Distribution SRL</p>
+          <p class="foot-line">Rue de la Poire d'Or 26<br />7033 Cuesmes — Belgique</p>
+          <p class="foot-line">BCE / TVA : BE 0817.750.283</p>
+        </div>
+
+      </div>
+
+      <div class="foot-bottom">
+        <p>&copy; <span id="footer-year"></span> NBD Distribution SRL. <span id="t-foot-rights"></span></p>
+        <p id="t-foot-legal"></p>
+      </div>
     </footer>
   </div>
   </div>
@@ -172,8 +193,8 @@
     </div>
   </div>
 
-  <script src="/assets/js/config.js?v=31"></script>
-  <script src="/assets/js/catalog.js?v=31"></script>
+  <script src="/assets/js/config.js?v=32"></script>
+  <script src="/assets/js/catalog.js?v=32"></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 </body>
 </html>

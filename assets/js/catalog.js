@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "31"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "32"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -76,6 +76,10 @@
       totalHT: "Total HT", salesTeam: "Service commercial Nishman",
       contactTitle: "Une question ? Écrivez-nous", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Bonjour, j'ai une question concernant les produits Nishman.",
+      footTag: "Distributeur officiel Nishman pour la Belgique, la France et le Luxembourg. Produits professionnels pour barbers et coiffeurs.",
+      footContact: "Contact", footCompany: "Société",
+      footRights: "Tous droits réservés.",
+      footLegal: "Prix hors TVA réservés aux professionnels.",
       askQuote: "Demander un devis",
       logout: "Masquer les prix",
       waMsg: "Bonjour, je souhaite une offre de prix pour les produits suivants :",
@@ -118,6 +122,10 @@
       totalHT: "Total excl. VAT", salesTeam: "Nishman sales team",
       contactTitle: "A question? Write to us", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hello, I have a question about Nishman products.",
+      footTag: "Official Nishman distributor for Belgium, France and Luxembourg. Professional products for barbers and hairdressers.",
+      footContact: "Contact", footCompany: "Company",
+      footRights: "All rights reserved.",
+      footLegal: "Prices excl. VAT, reserved for professionals.",
       askQuote: "Request a quotation",
       logout: "Hide prices",
       waMsg: "Hello, I would like a price offer for the following products:",
@@ -160,6 +168,10 @@
       totalHT: "Totaal excl. btw", salesTeam: "Nishman verkoopdienst",
       contactTitle: "Een vraag? Schrijf ons", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hallo, ik heb een vraag over de Nishman-producten.",
+      footTag: "Officiële Nishman-verdeler voor België, Frankrijk en Luxemburg. Professionele producten voor barbiers en kappers.",
+      footContact: "Contact", footCompany: "Onderneming",
+      footRights: "Alle rechten voorbehouden.",
+      footLegal: "Prijzen excl. btw, voorbehouden aan professionals.",
       askQuote: "Offerte aanvragen",
       logout: "Prijzen verbergen",
       waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
@@ -205,6 +217,10 @@
       totalHT: "Gesamt zzgl. MwSt.", salesTeam: "Nishman Vertriebsteam",
       contactTitle: "Eine Frage? Schreiben Sie uns", contactWa: "WhatsApp", contactMail: "E-Mail",
       contactMsg: "Guten Tag, ich habe eine Frage zu den Nishman-Produkten.",
+      footTag: "Offizieller Nishman-Distributor für Belgien, Frankreich und Luxemburg. Professionelle Produkte für Barbiere und Friseure.",
+      footContact: "Kontakt", footCompany: "Unternehmen",
+      footRights: "Alle Rechte vorbehalten.",
+      footLegal: "Preise zzgl. MwSt., Fachkunden vorbehalten.",
       askQuote: "Angebot anfordern",
     },
     tr: {
@@ -247,6 +263,10 @@
       totalHT: "Toplam (KDV hariç)", salesTeam: "Nishman Satış Ekibi",
       contactTitle: "Sorunuz mu var? Bize yazın", contactWa: "WhatsApp", contactMail: "E-posta",
       contactMsg: "Merhaba, Nishman ürünleri hakkında bir sorum var.",
+      footTag: "Belçika, Fransa ve Lüksemburg için resmi Nishman distribütörü. Barber ve kuaförler için profesyonel ürünler.",
+      footContact: "İletişim", footCompany: "Firma",
+      footRights: "Tüm hakları saklıdır.",
+      footLegal: "Fiyatlar KDV hariçtir, profesyonellere özeldir.",
       askQuote: "Fiyat teklifi iste",
     },
   };
@@ -906,7 +926,7 @@
 
     initIntro();
     initTopControls();
-    renderFooterContact();
+    renderFooter();
 
     document.getElementById("float-bar").addEventListener("click", openDrawer);
     document.getElementById("drawer-close").addEventListener("click", closeDrawer);
@@ -1323,20 +1343,41 @@
     document.documentElement.lang = LANG;
   }
 
-  // Contact permanent en pied de page : une question hors commande reste
-  // possible même avec un panier vide.
-  function renderFooterContact() {
+  // Pied de page : contact permanent, drapeaux pays, textes traduits.
+  function renderFooter() {
     const zone = document.getElementById("footer-contact");
-    if (!zone) return;
-    const wa = (typeof AGENTS !== "undefined" && AGENTS.dilhan) ? AGENTS.dilhan.whatsapp : "";
-    const parts = [];
-    if (wa) {
-      parts.push(`<a class="foot-btn foot-wa" target="_blank" rel="noopener"
-        href="https://wa.me/${wa}?text=${encodeURIComponent(T.contactMsg)}">
-        <span class="foot-dot"></span>${T.contactWa}</a>`);
+    if (zone) {
+      const wa = (typeof AGENTS !== "undefined" && AGENTS.dilhan) ? AGENTS.dilhan.whatsapp : "";
+      const parts = [];
+      if (wa) {
+        parts.push(`<a class="foot-btn foot-wa" target="_blank" rel="noopener"
+          href="https://wa.me/${wa}?text=${encodeURIComponent(T.contactMsg)}">
+          <span class="foot-dot"></span>${T.contactWa}</a>`);
+      }
+      parts.push(`<a class="foot-btn" href="mailto:contact@nishman.be">${T.contactMail}</a>`);
+      if (wa) {
+        parts.push(`<a class="foot-btn" href="tel:+${wa}">+32 489 97 00 87</a>`);
+      }
+      zone.innerHTML = parts.join("");
     }
-    parts.push(`<a class="foot-btn" href="mailto:contact@nishman.be">${T.contactMail}</a>`);
-    zone.innerHTML = `<p class="foot-title">${T.contactTitle}</p><div class="foot-row">${parts.join("")}</div>`;
+
+    const flags = document.getElementById("foot-flags");
+    if (flags) {
+      flags.innerHTML = ["Belgique", "France", "Luxembourg"]
+        .map((c) => `<span class="foot-flag">${c}</span>`).join("");
+    }
+
+    const map = {
+      "t-foot-tag": T.footTag,
+      "t-foot-contact": T.footContact,
+      "t-foot-company": T.footCompany,
+      "t-foot-rights": T.footRights,
+      "t-foot-legal": T.footLegal,
+    };
+    Object.keys(map).forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = map[id];
+    });
   }
 
   function initTopControls() {
