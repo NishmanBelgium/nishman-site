@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "43"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "45"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -419,12 +419,12 @@
   function openCatPanel() {
     renderCatGrid();
     document.getElementById("cat-overlay").hidden = false;
-    document.body.style.overflow = "hidden";
+    syncScrollLock();
   }
 
   function closeCatPanel() {
     document.getElementById("cat-overlay").hidden = true;
-    document.body.style.overflow = "";
+    syncScrollLock();
   }
 
   function escapeAttr(str) {
@@ -603,7 +603,7 @@
 
     renderSheetQty(ean);
     document.getElementById("sheet-overlay").hidden = false;
-    document.body.style.overflow = "hidden";
+    syncScrollLock();
   }
 
   function renderSheetQty(ean) {
@@ -680,7 +680,7 @@
 
   function closeProductSheet() {
     document.getElementById("sheet-overlay").hidden = true;
-    document.body.style.overflow = "";
+    syncScrollLock();
   }
 
   // ---------- Tiroir de sélection ----------
@@ -688,12 +688,12 @@
   function openDrawer() {
     renderDrawer();
     document.getElementById("drawer-overlay").hidden = false;
-    document.body.style.overflow = "hidden";
+    syncScrollLock();
   }
 
   function closeDrawer() {
     document.getElementById("drawer-overlay").hidden = true;
-    document.body.style.overflow = "";
+    syncScrollLock();
   }
 
   // Toast de confirmation : bref, non bloquant, un seul à la fois
@@ -942,6 +942,12 @@
 
     initIntro();
     initTopControls();
+    // Filet : si la page revient d'un arrière-plan avec un état incohérent,
+    // on rétablit un défilement correct.
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) syncScrollLock();
+    });
+    window.addEventListener("pageshow", syncScrollLock);
     renderFooter();
 
     document.getElementById("float-bar").addEventListener("click", openDrawer);
@@ -1052,6 +1058,24 @@
     const track = document.getElementById("intro-track");
     if (!scene || !intro || !track) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Sur écran tactile : mise en page simple gérée par le CSS. Le script
+    // ne touche à rien — c'est ce qui garantit un défilement natif et fluide.
+    const simple = window.matchMedia("(pointer: coarse), (max-width: 860px)").matches;
+    if (simple) {
+      if (cue) {
+        let t = false;
+        window.addEventListener("scroll", () => {
+          if (t) return;
+          t = true;
+          requestAnimationFrame(() => {
+            t = false;
+            cue.style.opacity = window.scrollY > 40 ? "0" : "";
+          });
+        }, { passive: true });
+      }
+      return;
+    }
 
     let H = window.innerHeight || 1;
     let lastW = window.innerWidth;
@@ -1180,6 +1204,23 @@
 
   // ---------- Fenêtre d'accès : saisie du code OU inscription ----------
 
+  // ==========================================================================
+  // VERROU DE DÉFILEMENT — centralisé.
+  // Chaque panneau appelait son propre déverrouillage ; si l'un se refermait
+  // sans le faire, la page restait figée. On recalcule désormais l'état réel :
+  // le défilement n'est bloqué que s'il reste effectivement un panneau ouvert.
+  // ==========================================================================
+
+  const OVERLAYS = ["cat-overlay", "sheet-overlay", "drawer-overlay", "access-overlay", "lang-overlay"];
+
+  function syncScrollLock() {
+    const open = OVERLAYS.some((id) => {
+      const el = document.getElementById(id);
+      return el && !el.hidden;
+    });
+    document.body.style.overflow = open ? "hidden" : "";
+  }
+
   function showAccessStep(step) {
     ["access-step-code", "access-step-signup", "access-step-sent"].forEach((id) => {
       const el = document.getElementById(id);
@@ -1195,14 +1236,14 @@
     document.getElementById("access-input").value = "";
     showAccessStep("access-step-code");
     ov.hidden = false;
-    document.body.style.overflow = "hidden";
+    syncScrollLock();
     setTimeout(() => document.getElementById("access-input").focus(), 60);
   }
 
   function closeAccessModal() {
     const ov = document.getElementById("access-overlay");
     if (ov) ov.hidden = true;
-    document.body.style.overflow = "";
+    syncScrollLock();
   }
 
   async function submitAccessCode() {

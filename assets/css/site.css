@@ -2066,3 +2066,39 @@ img { max-width: 100%; }
   .intro-scene { will-change: auto; }
   .catalog-sheet { box-shadow: 0 -18px 40px -18px rgba(0, 0, 0, 0.5); }
 }
+
+
+/* ==========================================================================
+   MOBILE — mise en page simple et incassable
+   L'empilement « piste de 2 écrans + section collante + feuille remontée en
+   marge négative » est trop fragile sur téléphone (défilement qui se fige).
+   Sur écran tactile, on empile normalement : accueil, puis catalogue.
+   ========================================================================== */
+
+@media (pointer: coarse), (max-width: 860px) {
+  .intro-track {
+    height: auto;
+    min-height: 0;
+  }
+
+  .intro {
+    position: relative;      /* plus de sticky : plus rien à figer */
+    top: auto;
+    height: 100svh;
+    min-height: 480px;
+    max-height: 900px;
+    perspective: none;
+  }
+
+  .catalog-sheet {
+    margin-top: 0 !important;  /* neutralise la valeur posée par le script */
+    border-radius: 26px 26px 0 0;
+    box-shadow: 0 -14px 30px -16px rgba(0, 0, 0, 0.45);
+    padding-top: 20px;
+  }
+
+  .intro-scene {
+    transform: none !important;   /* aucune 3D pilotée au scroll */
+    opacity: 1 !important;
+  }
+}
