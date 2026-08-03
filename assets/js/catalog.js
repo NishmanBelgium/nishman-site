@@ -15,7 +15,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "51"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "52"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -462,6 +462,20 @@
       return `<span class="product-price ${cls || ""}">${formatPrice(v)}<span class="vat-note">${T.unitNote}</span></span>`;
     }
     return `<button class="price-locked" data-action="access">&#128274; ${T.askPrice}</button>`;
+  }
+
+  // Squelette affiché pendant le chargement des produits : le visiteur voit
+  // immédiatement que le catalogue arrive, au lieu d'une page vide.
+  function showSkeleton() {
+    const grid = document.getElementById("grid");
+    if (!grid) return;
+    let html = "";
+    for (let i = 0; i < 8; i++) {
+      html += '<div class="skeleton-card"><div class="sk-img"></div>' +
+              '<div class="sk-line sk-short"></div><div class="sk-line"></div>' +
+              '<div class="sk-line sk-mid"></div></div>';
+    }
+    grid.innerHTML = html;
   }
 
   function renderGrid() {
@@ -931,6 +945,7 @@
   async function init() {
     if (!window.location.hash) window.scrollTo(0, 0);
 
+    showSkeleton();
     loadSelection();
     applyStaticI18n();
 

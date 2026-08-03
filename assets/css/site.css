@@ -2138,3 +2138,42 @@ img { max-width: 100%; height: auto; }
 
 /* Le contenu de la fenêtre reste sélectionnable pour le copier-coller */
 .access-panel, .access-panel * { -webkit-user-select: text; user-select: text; }
+
+/* ---------- Squelette de chargement ---------- */
+
+.skeleton-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.sk-img {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+  margin-bottom: 12px;
+}
+
+.sk-line {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--bg-soft);
+  margin-bottom: 8px;
+}
+
+.sk-short { width: 45%; height: 8px; }
+.sk-mid { width: 65%; }
+
+.skeleton-card .sk-img,
+.skeleton-card .sk-line { animation: sk-pulse 1.3s ease-in-out infinite; }
+
+@keyframes sk-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-card .sk-img,
+  .skeleton-card .sk-line { animation: none; }
+}

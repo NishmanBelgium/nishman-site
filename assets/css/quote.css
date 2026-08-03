@@ -3,9 +3,14 @@
    ========================================================================== */
 
 .quote-body {
+  /* Annule la mise en page centrée héritée du style de base : sans cela, la
+     page s'affichait dans une colonne étroite au milieu de l'écran. */
+  display: block;
+  align-items: initial;
+  justify-content: initial;
+  padding: 0 0 60px;
+  min-height: 0;
   background: var(--bg-soft);
-  min-height: 100vh;
-  padding-bottom: 60px;
 }
 
 .quote-top {
@@ -302,4 +307,69 @@
   .quote-card { box-shadow: none; border-radius: 0; padding: 0; margin: 0; }
   .doc-table-wrap { overflow: visible; }
   @page { margin: 14mm; }
+}
+
+
+/* ==========================================================================
+   PAGE DEVIS — mobile et tablette
+   ========================================================================== */
+
+@media (max-width: 720px) {
+  .quote-top {
+    padding: 14px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .quote-main { padding: 0 12px; }
+
+  .quote-card {
+    padding: 20px 16px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+
+  .quote-title { font-size: 20px; }
+  .quote-lead { font-size: 13.5px; margin-bottom: 18px; }
+
+  /* Champs confortables : 16px évite le zoom automatique de Safari iOS */
+  .field input,
+  .field select {
+    font-size: 16px;
+    padding: 14px;
+    min-height: 48px;
+  }
+
+  .field span { font-size: 12.5px; }
+
+  .quote-cta { padding: 17px; font-size: 15px; min-height: 52px; }
+  .quote-alt { min-height: 48px; display: flex; align-items: center; justify-content: center; }
+
+  /* Le document : tableau lisible sans défilement horizontal */
+  .doc-head { gap: 14px; padding-bottom: 14px; }
+  .doc-logo { height: 22px; }
+  .doc-issuer { font-size: 11px; }
+  .doc-meta { font-size: 11.5px; }
+
+  .doc-table-wrap {
+    margin: 0 -16px;
+    padding: 0 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .doc-table { font-size: 11.5px; min-width: 480px; }
+  .doc-table th, .doc-table td { padding: 8px 5px; }
+
+  .doc-total { padding-top: 14px; }
+  .doc-total strong { font-size: 19px; }
+  .doc-legal { font-size: 10.5px; }
+}
+
+@media (max-width: 400px) {
+  .quote-main { padding: 0 8px; }
+  .quote-card { padding: 18px 14px; }
+  .quote-title { font-size: 18px; }
 }
