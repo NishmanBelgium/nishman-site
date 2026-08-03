@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "46"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "47"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -1501,7 +1501,8 @@
     const cue = document.getElementById("intro-cue");
     if (cue) {
       cue.addEventListener("click", () => {
-        document.getElementById("catalog-sheet").scrollIntoView({ behavior: "smooth", block: "start" });
+        const target = document.getElementById("search-sticky") || document.getElementById("catalog-sheet");
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
   }

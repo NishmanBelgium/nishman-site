@@ -2072,14 +2072,22 @@ img { max-width: 100%; }
   .intro {
     position: relative;      /* plus de sticky : plus rien à figer */
     top: auto;
-    height: 100svh;
-    min-height: 480px;
-    max-height: 900px;
+    /* 72% de l'écran : le haut du catalogue est déjà visible, donc un seul
+       glissement suffit pour y arriver. Un écran plein obligeait à scroller
+       une première fois « dans le vide ». */
+    height: 72svh;
+    min-height: 360px;
+    max-height: 620px;
     perspective: none;
   }
 
+  /* Le catalogue déborde visiblement sous l'accueil : on comprend d'emblée
+     qu'il y a du contenu en dessous. */
   .catalog-sheet {
-    margin-top: 0 !important;  /* neutralise la valeur posée par le script */
+    margin-top: -26px !important;
+  }
+
+  .catalog-sheet {
     border-radius: 26px 26px 0 0;
     box-shadow: 0 -14px 30px -16px rgba(0, 0, 0, 0.45);
     padding-top: 20px;
