@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "47"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "48"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -479,7 +479,7 @@
         return `
           <div class="product-card" data-open="${p.ean}" role="button" tabindex="0">
             <div class="product-image-wrap">
-              <img src="${productImageSrc(p)}" alt="${escapeHtml(p.name)}" loading="lazy" />
+              <img src="${productImageSrc(p)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" width="900" height="900" />
             </div>
             <p class="product-cat">${escapeHtml(pText(p, "tagline") || catLabel(p.category))}</p>
             <p class="product-name">${escapeHtml(p.name)}</p>
@@ -595,7 +595,7 @@
 
     sheet.querySelector(".sheet-body").innerHTML = `
       <div class="sheet-image">
-        <img src="${productImageSrc(p)}" alt="${escapeHtml(p.name)}" />
+        <img src="${productImageSrc(p)}" alt="${escapeHtml(p.name)}" decoding="async" width="900" height="900" />
       </div>
       <p class="sheet-tagline">${escapeHtml(p.tagline || p.category)}</p>
       <h2 class="sheet-name">${escapeHtml(p.name)}</h2>
@@ -755,7 +755,7 @@
             }
             return `
           <div class="drawer-item">
-            <img src="${productImageSrc(p)}" alt="" />
+            <img src="${productImageSrc(p)}" alt="" loading="lazy" decoding="async" width="900" height="900" />
             <span class="drawer-item-name">${escapeHtml(p.name)}<span class="drawer-item-kind">${r.kindLabel}</span></span>
             ${lineTotal !== null ? `<span class="drawer-item-price" style="font-weight:700;font-size:13px;white-space:nowrap;margin-left:auto;padding:0 10px;">${formatPrice(lineTotal)}</span>` : ""}
             <div class="qty-stepper drawer-stepper" data-ean="${ean}" data-kind="${r.kind}">
@@ -926,10 +926,22 @@
   async function init() {
     loadSelection();
     applyStaticI18n();
-    await Promise.all([loadProducts(), initPriceLock()]);
+
+    // Les produits s'affichent dès qu'ils sont là. La validation du code
+    // d'accès (aller-retour réseau vers Google, 1 à 3 s) se fait EN PARALLÈLE
+    // et rafraîchit simplement les prix quand elle aboutit : plus d'attente
+    // avant de voir le catalogue.
+    await loadProducts();
     renderCatButton();
     renderGrid();
     renderFloatBar();
+
+    initPriceLock().then(() => {
+      if (unlocked()) {
+        renderGrid();
+        renderProAccessBtn();
+      }
+    });
     initLangControls();
     initAccessControls();
 
