@@ -2112,3 +2112,29 @@ img { max-width: 100%; height: auto; }
   .foot-tag { max-width: 100%; }
   .foot-flags { justify-content: center; }
 }
+
+
+/* ---------- Fenêtre d'accès : lisible et utilisable sur téléphone ---------- */
+
+@media (max-width: 620px) {
+  /* La fenêtre se cale en haut : le clavier iOS ne la pousse plus hors écran */
+  .cat-overlay { align-items: flex-start; padding-top: 8vh; }
+
+  .access-panel {
+    width: calc(100vw - 28px);
+    max-width: none;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px 18px;
+  }
+
+  /* Champ et bouton l'un sous l'autre : plus rien ne déborde à droite */
+  .access-form { flex-direction: column; gap: 10px; }
+  .access-form input { width: 100%; font-size: 16px; }  /* 16px = pas de zoom auto iOS */
+  .access-submit { width: 100%; }
+
+  .signup-field input { font-size: 16px; }
+}
+
+/* Le contenu de la fenêtre reste sélectionnable pour le copier-coller */
+.access-panel, .access-panel * { -webkit-user-select: text; user-select: text; }

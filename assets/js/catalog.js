@@ -15,7 +15,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "50"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "51"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -1359,7 +1359,25 @@
     const close = document.getElementById("access-close");
     if (close) close.addEventListener("click", closeAccessModal);
     const ov = document.getElementById("access-overlay");
-    if (ov) ov.addEventListener("click", (e) => { if (e.target.id === "access-overlay") closeAccessModal(); });
+    if (ov) {
+      // Sur iOS, l'appui long pour coller déclenche un « clic » sur le fond
+      // et refermait la fenêtre. On ne ferme que sur un vrai appui bref,
+      // commencé ET terminé sur le fond, sans sélection de texte en cours.
+      let downOnBackdrop = false;
+      let downAt = 0;
+      ov.addEventListener("pointerdown", (e) => {
+        downOnBackdrop = e.target.id === "access-overlay";
+        downAt = Date.now();
+      });
+      ov.addEventListener("pointerup", (e) => {
+        const bref = Date.now() - downAt < 400;
+        const selection = window.getSelection && String(window.getSelection());
+        if (downOnBackdrop && e.target.id === "access-overlay" && bref && !selection) {
+          closeAccessModal();
+        }
+        downOnBackdrop = false;
+      });
+    }
 
     const submit = document.getElementById("access-submit");
     if (submit) submit.addEventListener("click", submitAccessCode);
