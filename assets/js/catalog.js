@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "45"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "46"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -523,6 +523,13 @@
   let observer = null;
 
   function observeCards() {
+    // Sur écran tactile : les cartes s'affichent directement. Observer 178
+    // éléments et animer leur entrée coûte cher pour un effet peu visible.
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      document.querySelectorAll(".product-card:not(.in-view)")
+        .forEach((c) => c.classList.add("in-view"));
+      return;
+    }
     if (!observer) {
       observer = new IntersectionObserver(
         (entries) => {
@@ -983,6 +990,13 @@
     const canvas = document.getElementById("intro-particles");
     if (!canvas) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // Sur écran tactile, aucune particule : c'est la charge la plus lourde
+    // du site et elle empêche un défilement parfaitement fluide.
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      canvas.style.display = "none";
+      return;
+    }
 
     const ctx = canvas.getContext("2d");
     let w = 0, h = 0, dots = [], raf = null;
