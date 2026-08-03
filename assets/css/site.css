@@ -2008,9 +2008,11 @@ img { max-width: 100%; height: auto; }
   .intro {
     position: relative;
     top: auto;
-    height: 72svh;
-    min-height: 360px;
-    max-height: 620px;
+    /* Écran d'accueil PLEIN : on ne voit que lui à l'ouverture.
+       svh = hauteur stable, non affectée par le repli de la barre Safari. */
+    height: 100svh;
+    min-height: 420px;
+    max-height: none;
     perspective: none;
   }
 
@@ -2018,7 +2020,7 @@ img { max-width: 100%; height: auto; }
   .intro-glow { display: none; }
 
   .catalog-sheet {
-    margin-top: -26px !important;
+    margin-top: 0 !important;
     border-radius: 26px 26px 0 0;
     box-shadow: 0 -14px 30px -16px rgba(0, 0, 0, 0.4);
     padding-top: 20px;
@@ -2093,4 +2095,20 @@ img { max-width: 100%; height: auto; }
 @media (max-width: 640px) {
   body.has-float .to-top { bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
   .float-bar { max-width: calc(100% - 36px); }
+}
+
+
+/* ---------- Pied de page mobile : bloc marque centré ---------- */
+
+@media (max-width: 620px) {
+  .foot-col-brand {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .foot-logo { margin-left: auto; margin-right: auto; }
+  .foot-tag { max-width: 100%; }
+  .foot-flags { justify-content: center; }
 }
