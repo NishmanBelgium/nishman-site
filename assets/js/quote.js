@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "52";
+  const ASSET_V = "53";
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
   const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
@@ -193,33 +193,38 @@
   }
 
   // Déverrouillage des prix : même mécanique que le catalogue, avec le code déjà saisi
-  function b64buf(s) {
-    const bin = atob(s);
-    const buf = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
-    return buf;
+  // Récupération des prix auprès du portier (script Google), exactement comme
+  // le catalogue. L'ancien fichier chiffré prices.enc.json n'existe plus.
+  function callGate(params) {
+    return new Promise((resolve) => {
+      const url = (typeof SHARED !== "undefined" && SHARED.orderLog) ? SHARED.orderLog : "";
+      if (!url) return resolve(null);
+      const cb = "nishmanQ" + Date.now() + Math.floor(Math.random() * 1000);
+      const timer = setTimeout(() => { cleanup(); resolve(null); }, 12000);
+
+      function cleanup() {
+        clearTimeout(timer);
+        delete window[cb];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[cb] = (data) => { cleanup(); resolve(data); };
+
+      const qs = Object.keys(params)
+        .map((k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]))
+        .join("&");
+      const script = document.createElement("script");
+      script.src = url + "?" + qs + "&callback=" + cb;
+      script.onerror = () => { cleanup(); resolve(null); };
+      document.head.appendChild(script);
+    });
   }
 
   async function loadPrices() {
     const code = localStorage.getItem(CODE_KEY);
-    if (!code || !window.crypto || !window.crypto.subtle) return;
-    try {
-      const meta = await (await fetch("/assets/data/prices.enc.json?v=" + ASSET_V, { cache: "no-store" })).json();
-      const baseKey = await crypto.subtle.importKey("raw", new TextEncoder().encode(code.trim()), "PBKDF2", false, ["deriveKey"]);
-      const kek = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: b64buf(meta.kdf.salt), iterations: meta.kdf.iter, hash: "SHA-256" },
-        baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
-      );
-      for (const w of meta.wrapped) {
-        try {
-          const masterRaw = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64buf(w.iv) }, kek, b64buf(w.ct));
-          const master = await crypto.subtle.importKey("raw", masterRaw, { name: "AES-GCM" }, false, ["decrypt"]);
-          const data = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64buf(meta.data.iv) }, master, b64buf(meta.data.ct));
-          PRICES = JSON.parse(new TextDecoder().decode(data));
-          return;
-        } catch (e) { /* enveloppe suivante */ }
-      }
-    } catch (e) { /* prix indisponibles : devis sans montants */ }
+    if (!code) return;
+    const res = await callGate({ action: "unlock", code: code.trim().toUpperCase() });
+    if (res && res.ok && res.prices) PRICES = res.prices;
   }
 
   // ---------- Lignes du devis ----------
