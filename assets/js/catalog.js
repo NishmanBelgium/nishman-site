@@ -10,7 +10,12 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "48"; // incrémenté à chaque mise à jour pour contourner les caches
+  // Safari (surtout sur iOS) restaure la position de défilement au
+  // rechargement : on arrivait alors directement au milieu du catalogue,
+  // écran d'accueil sauté. On reprend la main.
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
+  const ASSET_V = "49"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -924,6 +929,8 @@
   // ---------- Initialisation ----------
 
   async function init() {
+    if (!window.location.hash) window.scrollTo(0, 0);
+
     loadSelection();
     applyStaticI18n();
 

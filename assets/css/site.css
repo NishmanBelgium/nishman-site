@@ -50,7 +50,7 @@ body {
   justify-content: center;
   padding: 32px 18px 48px;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;   /* « clip » n'ouvre pas de conteneur de défilement */
 }
 
 /* Halo de couleur en fond de page, animé très doucement */
@@ -288,6 +288,10 @@ body.catalog-body {
   display: block;
   padding: 0;
   align-items: initial;
+  /* Pas de hauteur en unités d'écran ici : sur iOS, elles se recalculent
+     quand la barre d'adresse se replie et provoquent des reflows en plein
+     défilement. La page est longue, une hauteur minimale est inutile. */
+  min-height: 0;
 }
 
 body.catalog-body::before { display: none; }
@@ -1035,8 +1039,8 @@ body.catalog-body::before { display: none; }
 body.catalog-body { background: #0a0a0a; }
 html {
   background: #0a0a0a;
-  overflow-x: hidden;
-  max-width: 100%;
+  /* Surtout PAS d'overflow-x ici : combiné à celui du body, cela crée deux
+     conteneurs de défilement imbriqués et fige le scroll sur Safari iOS. */
 }
 
 /* La piste fait 2 écrans : le 1er pour l'accueil, le 2e pour la transition. */
@@ -1988,7 +1992,7 @@ body.card-dark .label-row.primary .swatch {
 
 /* ---------- Anti-débordement, valable partout ---------- */
 
-html, body { max-width: 100%; overflow-x: hidden; }
+body { max-width: 100%; }
 img { max-width: 100%; height: auto; }
 
 .product-name, .drawer-item-name, .foot-line, .foot-tag,

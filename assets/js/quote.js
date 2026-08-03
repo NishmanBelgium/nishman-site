@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "48";
+  const ASSET_V = "49";
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
   const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
