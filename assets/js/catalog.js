@@ -15,7 +15,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "56"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "57"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -364,7 +364,10 @@
 
   async function loadProducts() {
     const res = await fetch("/assets/data/products.json?v=" + ASSET_V);
-    PRODUCTS = await res.json();
+    const all = await res.json();
+    // Les produits marqués "hidden" sont temporairement retirés de la vente
+    // (rupture de stock) : leur fiche reste dans le fichier, prête à revenir.
+    PRODUCTS = all.filter((p) => !p.hidden);
   }
 
   // ---------- Rendu : filtres catégories ----------

@@ -73,7 +73,8 @@
   "tagline_de": "Transparent & präzise",
   "description_de": "Transparentes Rasiergel, wirtschaftliche Salongröße: volle Sicht auf die Rasurlinie für gestochen scharfe Konturen. Optimales Gleiten, geschützte Haut, trocknet nicht aus.",
   "tagline_tr": "Şeffaf & hassas",
-  "description_tr": "Şeffaf tıraş jeli, ekonomik salon boyu: keskin konturlar için tıraş çizgisinde tam görüş. Optimum kayganlık, korunan cilt, kurutmaz."
+  "description_tr": "Şeffaf tıraş jeli, ekonomik salon boyu: keskin konturlar için tıraş çizgisinde tam görüş. Optimum kayganlık, korunan cilt, kurutmaz.",
+  "hidden": true
  },
  {
   "ean": "8684736673572",
@@ -130,7 +131,8 @@
   "tagline_de": "Schwarzes Farbshampoo",
   "description_de": "Schwarzes Farbshampoo für Haar und Bart: lässt weiße Haare nach und nach verschwinden, für ein natürliches Ergebnis ohne Ansatz. Je nach gewünschter Intensität dosieren.",
   "tagline_tr": "Siyah renklendirici şampuan",
-  "description_tr": "Saç ve sakal için siyah renklendirici şampuan: beyaz kılları kademeli olarak kapatır, dip izi olmayan doğal bir sonuç verir. İstenen yoğunluğa göre dozlayın."
+  "description_tr": "Saç ve sakal için siyah renklendirici şampuan: beyaz kılları kademeli olarak kapatır, dip izi olmayan doğal bir sonuç verir. İstenen yoğunluğa göre dozlayın.",
+  "hidden": true
  },
  {
   "ean": "8684736673954",
@@ -339,7 +341,8 @@
   "tagline_de": "Mattes Finish — starker Halt",
   "description_de": "Stylingwachs mit 100 % mattem Finish, für definierte Looks ohne Fett-Effekt oder Glanz. Starker, formbarer Halt, für jeden Haartyp geeignet.",
   "tagline_tr": "Mat bitiş — güçlü tutuş",
-  "description_tr": "%100 mat bitişli şekillendirici wax, yağlı görünüm ve parlaklık olmadan belirgin şekiller için. Güçlü ve yeniden şekillendirilebilir tutuş, her saç tipine uygun."
+  "description_tr": "%100 mat bitişli şekillendirici wax, yağlı görünüm ve parlaklık olmadan belirgin şekiller için. Güçlü ve yeniden şekillendirilebilir tutuş, her saç tipine uygun.",
+  "hidden": true
  },
  {
   "ean": "8684736672636",
@@ -396,7 +399,8 @@
   "tagline_de": "Auf Wasserbasis — glänzendes Finish",
   "description_de": "Stylingwachs auf Wasserbasis: leicht aufzutragen, glänzendes Finish und starker Halt den ganzen Tag. Hinterlässt keine Rückstände und lässt sich mit einer Haarwäsche auswaschen.",
   "tagline_tr": "Su bazlı — parlak bitiş",
-  "description_tr": "Su bazlı şekillendirici wax: kolay uygulama, parlak bitiş ve gün boyu güçlü tutuş. Kalıntı bırakmaz ve tek şampuanla durulanır."
+  "description_tr": "Su bazlı şekillendirici wax: kolay uygulama, parlak bitiş ve gün boyu güçlü tutuş. Kalıntı bırakmaz ve tek şampuanla durulanır.",
+  "hidden": true
  },
  {
   "ean": "8682035088547",
@@ -453,7 +457,8 @@
   "tagline_de": "Web-Effekt — Blue Web",
   "description_de": "Das Kult-Spinnennetz-Wachs von Nishman: eine einzigartige faserige Textur, die Dichte und Fülle verleiht, mit starkem, aber flexiblem Halt den ganzen Tag. Auf Wasserbasis, gepflegtes glänzendes Finish, lässt sich leicht mit Shampoo auswaschen.",
   "tagline_tr": "Örümcek ağı efekti — Blue Web",
-  "description_tr": "Nishman'ın kült örümcek ağı efektli wax'ı: hacim ve dolgunluk veren eşsiz lifli doku, gün boyu güçlü ama esnek tutuş. Su bazlı, bakımlı parlak bitiş, şampuanla kolayca durulanır."
+  "description_tr": "Nishman'ın kült örümcek ağı efektli wax'ı: hacim ve dolgunluk veren eşsiz lifli doku, gün boyu güçlü ama esnek tutuş. Su bazlı, bakımlı parlak bitiş, şampuanla kolayca durulanır.",
+  "hidden": true
  },
  {
   "ean": "8682035083658",
@@ -510,7 +515,8 @@
   "tagline_de": "Web-Effekt — Keratin",
   "description_de": "Das Kult-Spinnennetz-Wachs von Nishman: eine einzigartige faserige Textur, die Dichte und Fülle verleiht, mit starkem, aber flexiblem Halt den ganzen Tag. Auf Wasserbasis, mit Keratin angereichert, maximale Kontrolle, lässt sich leicht mit Shampoo auswaschen.",
   "tagline_tr": "Örümcek ağı efekti — Keratin",
-  "description_tr": "Nishman'ın kült örümcek ağı efektli wax'ı: hacim ve dolgunluk veren eşsiz lifli doku, gün boyu güçlü ama esnek tutuş. Su bazlı, keratin ile zenginleştirilmiş, maksimum kontrol, şampuanla kolayca durulanır."
+  "description_tr": "Nishman'ın kült örümcek ağı efektli wax'ı: hacim ve dolgunluk veren eşsiz lifli doku, gün boyu güçlü ama esnek tutuş. Su bazlı, keratin ile zenginleştirilmiş, maksimum kontrol, şampuanla kolayca durulanır.",
+  "hidden": true
  },
  {
   "ean": "8681665066826",
@@ -567,7 +573,8 @@
   "tagline_de": "Kennenlerngröße 30 ml",
   "description_de": "Tester / Reisegröße des M2-Wachses: ideal an der Theke, als Aufmerksamkeit für Neukunden oder im Kennenlernset. Kleines Format, echte Formel.",
   "tagline_tr": "30 ml deneme boyu",
-  "description_tr": "M2 wax'ın tester / seyahat boyu: tezgâhta sunmak, yeni müşterilere hediye etmek veya tanıtım setine koymak için ideal. Küçük boy, gerçek formül."
+  "description_tr": "M2 wax'ın tester / seyahat boyu: tezgâhta sunmak, yeni müşterilere hediye etmek veya tanıtım setine koymak için ideal. Küçük boy, gerçek formül.",
+  "hidden": true
  },
  {
   "ean": "8682035084709",
@@ -605,7 +612,8 @@
   "tagline_de": "Kennenlerngröße 30 ml",
   "description_de": "Tester / Reisegröße des M4-Wachses: ideal an der Theke, als Aufmerksamkeit für Neukunden oder im Kennenlernset. Kleines Format, echte Formel.",
   "tagline_tr": "30 ml deneme boyu",
-  "description_tr": "M4 wax'ın tester / seyahat boyu: tezgâhta sunmak, yeni müşterilere hediye etmek veya tanıtım setine koymak için ideal. Küçük boy, gerçek formül."
+  "description_tr": "M4 wax'ın tester / seyahat boyu: tezgâhta sunmak, yeni müşterilere hediye etmek veya tanıtım setine koymak için ideal. Küçük boy, gerçek formül.",
+  "hidden": true
  },
  {
   "ean": "8682035081098",
@@ -852,7 +860,8 @@
   "tagline_de": "Gel mit ultrastarkem Halt",
   "description_de": "Stylinggel mit ultrastarkem Halt und langanhaltendem Gum-Effekt. Der Look bleibt von morgens bis abends makellos, ohne Karton-Effekt oder weiße Rückstände.",
   "tagline_tr": "Ultra güçlü tutuşlu jöle",
-  "description_tr": "Uzun süreli sakız etkili ultra güçlü tutuşlu şekillendirici jöle. Görünüm sabahtan akşama kusursuz kalır, karton etkisi veya beyaz kalıntı olmadan."
+  "description_tr": "Uzun süreli sakız etkili ultra güçlü tutuşlu şekillendirici jöle. Görünüm sabahtan akşama kusursuz kalır, karton etkisi veya beyaz kalıntı olmadan.",
+  "hidden": true
  },
  {
   "ean": "8682035080589",
@@ -1080,7 +1089,8 @@
   "tagline_de": "Verdichtungsfasern Mittelbraun",
   "description_de": "Keratinfasern Mittelbraun: kaschieren lichter werdende Stellen sofort und verdichten das Haar sichtbar. Natürliches Ergebnis, hält den ganzen Tag, windbeständig.",
   "tagline_tr": "Dolgunlaştırıcı lif — orta kahve",
-  "description_tr": "Orta kahve keratin lifleri: seyrelen bölgeleri anında gizler ve saçı gözle görülür şekilde dolgunlaştırır. Doğal sonuç, gün boyu kalıcılık, rüzgâra dayanıklı."
+  "description_tr": "Orta kahve keratin lifleri: seyrelen bölgeleri anında gizler ve saçı gözle görülür şekilde dolgunlaştırır. Doğal sonuç, gün boyu kalıcılık, rüzgâra dayanıklı.",
+  "hidden": true
  },
  {
   "ean": "8682035081760",
@@ -1156,7 +1166,8 @@
   "tagline_de": "Kontur-Puder Schwarz",
   "description_de": "Kontur-Puder Schwarz: zeichnet die Haarlinie nach, verdichtet die Schläfen und perfektioniert Fades. Die Geheimwaffe für makellose Finishes, mit Schwammapplikator.",
   "tagline_tr": "Kontur pudrası — siyah",
-  "description_tr": "Siyah kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı."
+  "description_tr": "Siyah kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı.",
+  "hidden": true
  },
  {
   "ean": "8684736672865",
@@ -1175,7 +1186,8 @@
   "tagline_de": "Kontur-Puder Mittelbraun",
   "description_de": "Kontur-Puder Mittelbraun: zeichnet die Haarlinie nach, verdichtet die Schläfen und perfektioniert Fades. Die Geheimwaffe für makellose Finishes, mit Schwammapplikator.",
   "tagline_tr": "Kontur pudrası — orta kahve",
-  "description_tr": "Orta kahve kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı."
+  "description_tr": "Orta kahve kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı.",
+  "hidden": true
  },
  {
   "ean": "8684736672858",
@@ -1194,7 +1206,8 @@
   "tagline_de": "Kontur-Puder Dunkelbraun",
   "description_de": "Kontur-Puder Dunkelbraun: zeichnet die Haarlinie nach, verdichtet die Schläfen und perfektioniert Fades. Die Geheimwaffe für makellose Finishes, mit Schwammapplikator.",
   "tagline_tr": "Kontur pudrası — koyu kahve",
-  "description_tr": "Koyu kahve kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı."
+  "description_tr": "Koyu kahve kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı.",
+  "hidden": true
  },
  {
   "ean": "8684736673305",
@@ -1251,7 +1264,8 @@
   "tagline_de": "Beach-Effekt",
   "description_de": "Meersalzspray, angereichert mit Keratin und Aloe Vera: Textur, Volumen und natürliche Wellen, wie frisch vom Strand.",
   "tagline_tr": "Plaj efekti",
-  "description_tr": "Keratin ve aloe vera ile zenginleştirilmiş deniz tuzu spreyi: doku, hacim ve doğal dalgalar, sanki plajdan yeni gelmiş gibi."
+  "description_tr": "Keratin ve aloe vera ile zenginleştirilmiş deniz tuzu spreyi: doku, hacim ve doğal dalgalar, sanki plajdan yeni gelmiş gibi.",
+  "hidden": true
  },
  {
   "ean": "8684736672278",
@@ -1269,7 +1283,8 @@
   "tagline_de": "Farbsachets (10er-Box)",
   "description_de": "Schwarzes Farbshampoo — frischt dunkles Haar auf, in einzelnen 25-ml-Sachets. Lässt weiße Haare in wenigen Minuten verschwinden, natürliches und graduelles Ergebnis. Box mit 10 Sachets.",
   "tagline_tr": "Renk saşeleri (10'lu kutu)",
-  "description_tr": "Siyah renklendirici şampuan — koyu saçları canlandırır, tekli 25 ml saşelerde. Beyaz kılları dakikalar içinde kapatır, doğal ve kademeli sonuç. 10 saşelik kutu."
+  "description_tr": "Siyah renklendirici şampuan — koyu saçları canlandırır, tekli 25 ml saşelerde. Beyaz kılları dakikalar içinde kapatır, doğal ve kademeli sonuç. 10 saşelik kutu.",
+  "hidden": true
  },
  {
   "ean": "8684736672285",
@@ -1648,7 +1663,8 @@
   "tagline_de": "Tonerde-Maske",
   "description_de": "Tonerde-Maske für das Gesicht: absorbiert überschüssigen Talg, reinigt tiefenwirksam und verfeinert die Poren. Großzügiges Format für den professionellen Einsatz.",
   "tagline_tr": "Kil maskesi",
-  "description_tr": "yüz için kil maskesi: fazla sebumu emer, derinlemesine arındırır ve gözenekleri sıkılaştırır. Profesyonel kullanım için geniş boy."
+  "description_tr": "yüz için kil maskesi: fazla sebumu emer, derinlemesine arındırır ve gözenekleri sıkılaştırır. Profesyonel kullanım için geniş boy.",
+  "hidden": true
  },
  {
   "ean": "8682035088561",
@@ -1895,7 +1911,8 @@
   "tagline_de": "Eisige Zitrusnoten",
   "description_de": "Pure Frische: Grapefruit, Mandarine und Meerwasser für einen sofortigen Eiswürfel-Effekt nach der Rasur. Dieses Aftershave-Cologne erfrischt sofort, verfeinert die Poren und beruhigt das Rasurbrennen — der unverwechselbare letzte Schliff des Barbershops.",
   "tagline_tr": "Buzlu narenciye",
-  "description_tr": "Saf tazelik: tıraş sonrası anında buz küpü etkisi için greyfurt, mandalina ve deniz suyu. Bu tıraş sonrası kolonyası anında ferahlatır, gözenekleri sıkılaştırır ve tıraş yanmasını yatıştırır — berber salonunun imzası olan son dokunuş."
+  "description_tr": "Saf tazelik: tıraş sonrası anında buz küpü etkisi için greyfurt, mandalina ve deniz suyu. Bu tıraş sonrası kolonyası anında ferahlatır, gözenekleri sıkılaştırır ve tıraş yanmasını yatıştırır — berber salonunun imzası olan son dokunuş.",
+  "hidden": true
  },
  {
   "ean": "8682035088141",
@@ -1990,7 +2007,8 @@
   "tagline_de": "Salzig-aquatisch",
   "description_de": "Eine salzige, aquatische Frische aus Zitrone und Limette, die in eine moschusartige Zedernbasis übergeht. Dieses Aftershave-Cologne erfrischt sofort, verfeinert die Poren und beruhigt das Rasurbrennen — der unverwechselbare letzte Schliff des Barbershops.",
   "tagline_tr": "Tuzlu su notaları",
-  "description_tr": "Limon ve misket limonundan tuzlu, denizsi bir tazelik; misk kokulu sedir tabanında yumuşar. Bu tıraş sonrası kolonyası anında ferahlatır, gözenekleri sıkılaştırır ve tıraş yanmasını yatıştırır — berber salonunun imzası olan son dokunuş."
+  "description_tr": "Limon ve misket limonundan tuzlu, denizsi bir tazelik; misk kokulu sedir tabanında yumuşar. Bu tıraş sonrası kolonyası anında ferahlatır, gözenekleri sıkılaştırır ve tıraş yanmasını yatıştırır — berber salonunun imzası olan son dokunuş.",
+  "hidden": true
  },
  {
   "ean": "8682035083702",
@@ -2218,7 +2236,8 @@
   "tagline_de": "Bartshampoo",
   "description_de": "Spezielles Bart- und Schnurrbartshampoo: reinigt, ohne das Haar auszutrocknen oder die Gesichtshaut zu reizen. Die Grundlage eines gesunden, weichen Bartes.",
   "tagline_tr": "Sakal şampuanı",
-  "description_tr": "Sakal ve bıyığa özel şampuan: kılı kurutmadan, yüz cildini tahriş etmeden temizler. Sağlıklı ve yumuşak bir sakalın temeli."
+  "description_tr": "Sakal ve bıyığa özel şampuan: kılı kurutmadan, yüz cildini tahriş etmeden temizler. Sağlıklı ve yumuşak bir sakalın temeli.",
+  "hidden": true
  },
  {
   "ean": "8682035083160",
@@ -2275,7 +2294,8 @@
   "tagline_de": "Bartbalsam für unterwegs",
   "description_de": "Bartbalsam im Reiseformat: diszipliniert, nährt und verleiht einen leichten Glanz. Das perfekte Format für den Kulturbeutel oder den Thekenverkauf.",
   "tagline_tr": "Seyahat boy sakal balsamı",
-  "description_tr": "Seyahat boy sakal balsamı: disipline eder, besler ve hafif bir parlaklık verir. Çanta veya tezgâh satışı için mükemmel boy."
+  "description_tr": "Seyahat boy sakal balsamı: disipline eder, besler ve hafif bir parlaklık verir. Çanta veya tezgâh satışı için mükemmel boy.",
+  "hidden": true
  },
  {
   "ean": "8682035088875",
@@ -2370,7 +2390,8 @@
   "tagline_de": "5-in-1-Reiniger",
   "description_de": "5-in-1-Pflegespray für Haarschneider und Rasierer: reinigt, desinfiziert, schmiert, kühlt und schützt vor Korrosion. Zitronenduft. Professionelle Hygiene in einer Geste.",
   "tagline_tr": "5'i 1 arada temizleyici",
-  "description_tr": "Makineler ve tıraş aletleri için 5'i 1 arada bakım spreyi: temizler, dezenfekte eder, yağlar, soğutur ve korozyona karşı korur. Limon kokulu. Tek harekette profesyonel hijyen."
+  "description_tr": "Makineler ve tıraş aletleri için 5'i 1 arada bakım spreyi: temizler, dezenfekte eder, yağlar, soğutur ve korozyona karşı korur. Limon kokulu. Tek harekette profesyonel hijyen.",
+  "hidden": true
  },
  {
   "ean": "8682035089100",
@@ -2503,7 +2524,8 @@
   "tagline_de": "Servicehygiene",
   "description_de": "Einweg-Nackenpapier schwarz, passend zu dunklen Umhängen: schützt den Kragen des Kunden vor Schnitthaar und garantiert bei jedem Service einwandfreie Hygiene.",
   "tagline_tr": "Servis hijyeni",
-  "description_tr": "Tek kullanımlık siyah ense kâğıdı, koyu renk pelerinlerle uyumlu: müşterinin yakasını kesilen kıllardan korur ve her serviste kusursuz hijyen sağlar."
+  "description_tr": "Tek kullanımlık siyah ense kâğıdı, koyu renk pelerinlerle uyumlu: müşterinin yakasını kesilen kıllardan korur ve her serviste kusursuz hijyen sağlar.",
+  "hidden": true
  },
  {
   "ean": "8682035083641",
@@ -3092,7 +3114,8 @@
   "tagline_de": "Transparent & präzise",
   "description_de": "Transparentes Rasiergel, praktisches Format: volle Sicht auf die Rasurlinie für gestochen scharfe Konturen. Optimales Gleiten, geschützte Haut, trocknet nicht aus.",
   "tagline_tr": "Şeffaf & hassas",
-  "description_tr": "Şeffaf tıraş jeli, pratik boy: keskin konturlar için tıraş çizgisinde tam görüş. Optimum kayganlık, korunan cilt, kurutmaz."
+  "description_tr": "Şeffaf tıraş jeli, pratik boy: keskin konturlar için tıraş çizgisinde tam görüş. Optimum kayganlık, korunan cilt, kurutmaz.",
+  "hidden": true
  },
  {
   "ean": "8682035084655",
@@ -3358,7 +3381,8 @@
   "tagline_de": "Genius Bartparfüm — alkoholfrei",
   "description_de": "Bart- und Schnurrbartparfüm Genius, alkoholfrei: parfümiert, ohne das Haar auszutrocknen oder die Haut zu reizen. Der letzte Schliff des Bartservice.",
   "tagline_tr": "Genius sakal parfümü — alkolsüz",
-  "description_tr": "Genius sakal ve bıyık parfümü, alkolsüz: kılı kurutmadan, cildi tahriş etmeden koku verir. Sakal servisinin son dokunuşu."
+  "description_tr": "Genius sakal ve bıyık parfümü, alkolsüz: kılı kurutmadan, cildi tahriş etmeden koku verir. Sakal servisinin son dokunuşu.",
+  "hidden": true
  },
  {
   "ean": "8682035088691",

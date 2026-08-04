@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "56";
+  const ASSET_V = "57";
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
   const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
@@ -189,7 +189,9 @@
 
   async function loadProducts() {
     const res = await fetch("/assets/data/products.json?v=" + ASSET_V);
-    PRODUCTS = await res.json();
+    PRODUCTS = await res.json();   // pas de filtre ici : un devis en cours
+                                   // doit rester lisible même si un produit
+                                   // vient d'être masqué.
   }
 
   // Déverrouillage des prix : même mécanique que le catalogue, avec le code déjà saisi
