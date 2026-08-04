@@ -15,7 +15,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "58"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "59"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -81,6 +81,10 @@
       totalHT: "Total HT", salesTeam: "Service commercial Nishman",
       contactTitle: "Une question ? Écrivez-nous", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Bonjour, j'ai une question concernant les produits Nishman.",
+      outOfStock: "Momentanément indisponible",
+      stockLeft: (n) => "Stock disponible : " + n + " pièces",
+      lowStock: (n) => "Stock limité : " + n + " pièces — vente à l'unité uniquement",
+      cartLimited: "Quantité ajustée au stock disponible",
       footTag: "Distributeur officiel Nishman pour la Belgique, la France et le Luxembourg. Produits professionnels pour barbers et coiffeurs.",
       footContact: "Contact", footCompany: "Société",
       footSocial: "Retrouvez-nous sur",
@@ -128,6 +132,10 @@
       totalHT: "Total excl. VAT", salesTeam: "Nishman sales team",
       contactTitle: "A question? Write to us", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hello, I have a question about Nishman products.",
+      outOfStock: "Temporarily unavailable",
+      stockLeft: (n) => "Available stock: " + n + " pcs",
+      lowStock: (n) => "Limited stock: " + n + " pcs — sold by unit only",
+      cartLimited: "Quantity adjusted to available stock",
       footTag: "Official Nishman distributor for Belgium, France and Luxembourg. Professional products for barbers and hairdressers.",
       footContact: "Contact", footCompany: "Company",
       footSocial: "Follow us on",
@@ -175,6 +183,10 @@
       totalHT: "Totaal excl. btw", salesTeam: "Nishman verkoopdienst",
       contactTitle: "Een vraag? Schrijf ons", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hallo, ik heb een vraag over de Nishman-producten.",
+      outOfStock: "Tijdelijk niet beschikbaar",
+      stockLeft: (n) => "Beschikbare voorraad: " + n + " stuks",
+      lowStock: (n) => "Beperkte voorraad: " + n + " stuks — enkel per stuk",
+      cartLimited: "Hoeveelheid aangepast aan de voorraad",
       footTag: "Officiële Nishman-verdeler voor België, Frankrijk en Luxemburg. Professionele producten voor barbiers en kappers.",
       footContact: "Contact", footCompany: "Onderneming",
       footSocial: "Volg ons op",
@@ -225,6 +237,10 @@
       totalHT: "Gesamt zzgl. MwSt.", salesTeam: "Nishman Vertriebsteam",
       contactTitle: "Eine Frage? Schreiben Sie uns", contactWa: "WhatsApp", contactMail: "E-Mail",
       contactMsg: "Guten Tag, ich habe eine Frage zu den Nishman-Produkten.",
+      outOfStock: "Vorübergehend nicht verfügbar",
+      stockLeft: (n) => "Verfügbarer Bestand: " + n + " Stück",
+      lowStock: (n) => "Begrenzter Bestand: " + n + " Stück — nur stückweise",
+      cartLimited: "Menge an den Bestand angepasst",
       footTag: "Offizieller Nishman-Distributor für Belgien, Frankreich und Luxemburg. Professionelle Produkte für Barbiere und Friseure.",
       footContact: "Kontakt", footCompany: "Unternehmen",
       footSocial: "Folgen Sie uns",
@@ -272,6 +288,10 @@
       totalHT: "Toplam (KDV hariç)", salesTeam: "Nishman Satış Ekibi",
       contactTitle: "Sorunuz mu var? Bize yazın", contactWa: "WhatsApp", contactMail: "E-posta",
       contactMsg: "Merhaba, Nishman ürünleri hakkında bir sorum var.",
+      outOfStock: "Geçici olarak mevcut değil",
+      stockLeft: (n) => "Mevcut stok: " + n + " adet",
+      lowStock: (n) => "Sınırlı stok: " + n + " adet — yalnızca adet olarak",
+      cartLimited: "Miktar mevcut stoğa göre ayarlandı",
       footTag: "Belçika, Fransa ve Lüksemburg için resmi Nishman distribütörü. Barber ve kuaförler için profesyonel ürünler.",
       footContact: "İletişim", footCompany: "Firma",
       footSocial: "Bizi takip edin",
@@ -439,6 +459,42 @@
     return String(str).replace(/"/g, "&quot;");
   }
 
+  // ---------- Limites de commande (stock Odoo) ----------
+
+  function limitOf(ean) {
+    return LIMITS && LIMITS[ean] ? LIMITS[ean] : null;
+  }
+
+  function maxUnits(p) {
+    const l = limitOf(p.ean);
+    return l ? l.u : Infinity;
+  }
+
+  function maxBoxes(p) {
+    const l = limitOf(p.ean);
+    if (!l) return Infinity;
+    return l.b;
+  }
+
+  // Le produit peut-il encore être commandé ?
+  function isOut(p) {
+    const l = limitOf(p.ean);
+    return !!l && l.state === "out";
+  }
+
+  // Vente au carton désactivée (stock faible) ?
+  function boxDisabled(p) {
+    const l = limitOf(p.ean);
+    return !!l && l.b <= 0;
+  }
+
+  // Pièces déjà engagées dans le panier pour ce produit
+  function piecesInCart(p) {
+    const q = selection[p.ean];
+    if (!q) return 0;
+    return (q.u || 0) + (q.b || 0) * (p.box_qty || 0);
+  }
+
   // ---------- Rendu : grille produits ----------
 
   function getFiltered() {
@@ -511,6 +567,8 @@
               ${
                 !unlocked()
                   ? ""
+                  : isOut(p)
+                  ? `<span class="card-out">${T.outOfStock}</span>`
                   : inSel
                   ? `<button class="sel-chip" data-action="add" data-ean="${p.ean}">${summary}</button>`
                   : `<button class="add-btn" data-action="add" data-ean="${p.ean}">+</button>`
@@ -648,26 +706,49 @@
       return;
     }
     const p = PRODUCTS.find((x) => x.ean === ean);
+
+    // Rupture de stock : produit visible mais non commandable.
+    if (isOut(p)) {
+      zone.innerHTML = `<p class="sheet-out">${T.outOfStock}</p>`;
+      return;
+    }
+
     const existing = selection[ean] || { u: 0, b: 0 };
     // Quantités en cours de composition : rien n'entre au panier avant "Ajouter"
     const pending = { u: existing.u || 0, b: existing.b || 0 };
     const wasInCart = pending.u > 0 || pending.b > 0;
+    const maxU = maxUnits(p);
+    const maxB = maxBoxes(p);
+    const box = p.box_qty || 0;
+    // Le carton disparaît si le stock est trop faible pour en vendre un.
+    const carton = box && maxB > 0;
+
+    // Pièces encore disponibles compte tenu de ce qui est déjà composé
+    function resteU() { return maxU - pending.u - pending.b * box; }
 
     function draw() {
-      const row = (kind, label) => `
+      const atMaxU = resteU() <= 0;
+      const atMaxB = !carton || pending.b >= maxB || resteU() < box;
+
+      const row = (kind, label, bloque) => `
         <div class="buy-row">
           <span class="buy-row-label">${label}</span>
           <div class="qty-stepper" data-kind="${kind}">
             <button data-action="dec">−</button>
             <span>${pending[kind]}</span>
-            <button data-action="inc">+</button>
+            <button data-action="inc" ${bloque ? "disabled" : ""}>+</button>
           </div>
         </div>`;
 
       const empty = pending.u === 0 && pending.b === 0;
+      const info = (carton || maxU === Infinity)
+        ? (maxU === Infinity ? "" : `<p class="sheet-stock">${T.stockLeft(maxU)}</p>`)
+        : `<p class="sheet-stock sheet-stock-low">${T.lowStock(maxU)}</p>`;
+
       zone.innerHTML =
-        row("u", T.perUnit) +
-        (p && p.box_qty ? row("b", T.boxOf(p.box_qty)) : "") +
+        info +
+        row("u", T.perUnit, atMaxU) +
+        (carton ? row("b", T.boxOf(box), atMaxB) : "") +
         `<button class="sheet-confirm" id="sheet-confirm" ${empty && !wasInCart ? "disabled" : ""}>
            ${wasInCart ? T.updateCart : T.addCart}
          </button>`;
@@ -675,6 +756,9 @@
       zone.querySelectorAll(".qty-stepper").forEach((st) => {
         const kind = st.dataset.kind;
         st.querySelector("[data-action='inc']").addEventListener("click", () => {
+          // Plafond : on ne peut jamais engager plus que le stock autorisé
+          if (kind === "u" && resteU() < 1) return;
+          if (kind === "b" && (pending.b >= maxB || resteU() < box)) return;
           pending[kind] += 1; draw();
         });
         st.querySelector("[data-action='dec']").addEventListener("click", () => {
@@ -811,6 +895,12 @@
       const ean = st.dataset.ean;
       const kind = st.dataset.kind;
       st.querySelector("[data-action='inc']").addEventListener("click", () => {
+        const p = PRODUCTS.find((x) => x.ean === ean);
+        const box = (p && p.box_qty) || 0;
+        const reste = maxUnits(p) - piecesInCart(p);
+        // Même plafond que sur la fiche : jamais plus que le stock autorisé
+        if (kind === "u" && reste < 1) return;
+        if (kind === "b" && (reste < box || (selection[ean].b || 0) >= maxBoxes(p))) return;
         changeQty(ean, 1, kind);
         renderDrawer();
       });
@@ -963,8 +1053,11 @@
 
     initPriceLock().then(() => {
       if (unlocked()) {
+        const ajuste = clampSelection();
         renderGrid();
+        renderFloatBar();
         renderProAccessBtn();
+        if (ajuste) showToast(T.cartLimited);
       }
     });
     initLangControls();
@@ -1192,6 +1285,7 @@
 
   let PRICES = null;        // { ean: prix } une fois l'accès validé
   let ACCESS_LABEL = null;  // entreprise associée au code (traçabilité)
+  let LIMITS = null;        // { ean: {u, b, state} } limites de commande
 
   function gateUrl() {
     return (typeof SHARED !== "undefined" && SHARED.orderLog) ? SHARED.orderLog : "";
@@ -1234,6 +1328,7 @@
     const res = await callGate({ action: "unlock", code: clean });
     if (res && res.ok && res.prices) {
       PRICES = res.prices;
+      LIMITS = res.limits || null;
       ACCESS_LABEL = res.company || clean;
       return true;
     }
@@ -1242,6 +1337,28 @@
 
   function priceOf(p) {
     return PRICES ? (PRICES[p.ean] !== undefined ? PRICES[p.ean] : null) : null;
+  }
+
+  // Un panier composé avant réception des limites (ou après une vente
+  // entre-temps) peut dépasser le stock : on le ramène dans les clous.
+  function clampSelection() {
+    if (!LIMITS) return false;
+    let modifie = false;
+    Object.keys(selection).forEach((ean) => {
+      const p = PRODUCTS.find((x) => x.ean === ean);
+      if (!p) return;
+      const l = LIMITS[ean];
+      if (!l) return;
+      const q = selection[ean];
+      const box = p.box_qty || 0;
+      if (l.state === "out") { delete selection[ean]; modifie = true; return; }
+      if (q.b > l.b) { q.b = Math.max(0, l.b); modifie = true; }
+      const restant = l.u - q.b * box;
+      if (q.u > restant) { q.u = Math.max(0, restant); modifie = true; }
+      if (!q.u && !q.b) { delete selection[ean]; modifie = true; }
+    });
+    if (modifie) saveSelection();
+    return modifie;
   }
 
   function unlocked() { return PRICES !== null; }
