@@ -708,7 +708,8 @@
   "tagline_de": "Mattes Finish — starker Halt",
   "description_de": "Stylingwachs mit 100 % mattem Finish, für definierte Looks ohne Fett-Effekt oder Glanz. Starker, formbarer Halt, für jeden Haartyp geeignet.",
   "tagline_tr": "Mat bitiş — güçlü tutuş",
-  "description_tr": "%100 mat bitişli şekillendirici wax, yağlı görünüm ve parlaklık olmadan belirgin şekiller için. Güçlü ve yeniden şekillendirilebilir tutuş, her saç tipine uygun."
+  "description_tr": "%100 mat bitişli şekillendirici wax, yağlı görünüm ve parlaklık olmadan belirgin şekiller için. Güçlü ve yeniden şekillendirilebilir tutuş, her saç tipine uygun.",
+  "hidden": true
  },
  {
   "ean": "8682035087991",
@@ -2905,7 +2906,8 @@
   "tagline_de": "Profi-Kamm",
   "description_de": "Professioneller Schneidekamm: präzise Zahnung, hitze- und produktbeständiges Material, perfekte Balance in der Hand. Für den intensiven Salonalltag gemacht.",
   "tagline_tr": "Profesyonel tarak",
-  "description_tr": "Profesyonel kesim tarağı: hassas dişler, ısıya ve ürünlere dayanıklı malzeme, elde kusursuz denge. Yoğun salon kullanımı için üretildi."
+  "description_tr": "Profesyonel kesim tarağı: hassas dişler, ısıya ve ürünlere dayanıklı malzeme, elde kusursuz denge. Yoğun salon kullanımı için üretildi.",
+  "hidden": true
  },
  {
   "ean": "8682035081661",
@@ -2981,7 +2983,8 @@
   "tagline_de": "Rasiermesser / Shavette",
   "description_de": "Professionelle Shavette mit Wechselklingen: sicherer Griff, schneller Klingenwechsel, einwandfreie Hygiene zwischen zwei Kunden. Das Präzisionswerkzeug für Finishes und Konturen.",
   "tagline_tr": "Ustura / shavette",
-  "description_tr": "Değiştirilebilir jiletli profesyonel shavette: güvenli kavrama, hızlı jilet değişimi, müşteriler arasında kusursuz hijyen. Bitişler ve konturlar için hassasiyet aracı."
+  "description_tr": "Değiştirilebilir jiletli profesyonel shavette: güvenli kavrama, hızlı jilet değişimi, müşteriler arasında kusursuz hijyen. Bitişler ve konturlar için hassasiyet aracı.",
+  "hidden": true
  },
  {
   "ean": "8682035082967",
@@ -3076,7 +3079,8 @@
   "tagline_de": "Rasiermesser / Shavette",
   "description_de": "Professionelle Shavette mit Wechselklingen: sicherer Griff, schneller Klingenwechsel, einwandfreie Hygiene zwischen zwei Kunden. Das Präzisionswerkzeug für Finishes und Konturen.",
   "tagline_tr": "Ustura / shavette",
-  "description_tr": "Değiştirilebilir jiletli profesyonel shavette: güvenli kavrama, hızlı jilet değişimi, müşteriler arasında kusursuz hijyen. Bitişler ve konturlar için hassasiyet aracı."
+  "description_tr": "Değiştirilebilir jiletli profesyonel shavette: güvenli kavrama, hızlı jilet değişimi, müşteriler arasında kusursuz hijyen. Bitişler ve konturlar için hassasiyet aracı.",
+  "hidden": true
  },
  {
   "ean": "8684736673350",
@@ -3133,7 +3137,8 @@
   "tagline_de": "Auf Wasserbasis — glänzendes Finish",
   "description_de": "Stylingwachs auf Wasserbasis: leicht aufzutragen, glänzendes Finish und starker Halt den ganzen Tag. Hinterlässt keine Rückstände und lässt sich mit einer Haarwäsche auswaschen.",
   "tagline_tr": "Su bazlı — parlak bitiş",
-  "description_tr": "Su bazlı şekillendirici wax: kolay uygulama, parlak bitiş ve gün boyu güçlü tutuş. Kalıntı bırakmaz ve tek şampuanla durulanır."
+  "description_tr": "Su bazlı şekillendirici wax: kolay uygulama, parlak bitiş ve gün boyu güçlü tutuş. Kalıntı bırakmaz ve tek şampuanla durulanır.",
+  "hidden": true
  },
  {
   "ean": "8682035088158",
@@ -3228,7 +3233,8 @@
   "tagline_de": "Gel mit ultrastarkem Halt",
   "description_de": "Stylinggel mit ultrastarkem Halt und langanhaltendem Gum-Effekt. Der Look bleibt von morgens bis abends makellos, ohne Karton-Effekt oder weiße Rückstände.",
   "tagline_tr": "Ultra güçlü tutuşlu jöle",
-  "description_tr": "Uzun süreli sakız etkili ultra güçlü tutuşlu şekillendirici jöle. Görünüm sabahtan akşama kusursuz kalır, karton etkisi veya beyaz kalıntı olmadan."
+  "description_tr": "Uzun süreli sakız etkili ultra güçlü tutuşlu şekillendirici jöle. Görünüm sabahtan akşama kusursuz kalır, karton etkisi veya beyaz kalıntı olmadan.",
+  "hidden": true
  },
  {
   "ean": "8682035088851",
