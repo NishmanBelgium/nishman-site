@@ -15,7 +15,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "63"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "64"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -333,9 +333,12 @@
   const IMAGE_BASE = window.NISHMAN_IMAGE_BASE || "/assets/img/products/";
 
   function productImageSrc(p) {
-    return window.NISHMAN_INLINE_IMAGES
-      ? window.NISHMAN_INLINE_IMAGES[p.image] || IMAGE_BASE + p.image
-      : IMAGE_BASE + p.image;
+    if (window.NISHMAN_INLINE_IMAGES) {
+      return window.NISHMAN_INLINE_IMAGES[p.image] || IMAGE_BASE + p.image;
+    }
+    // Version ajoutée à l'URL : quand une photo est remplacée, les
+    // navigateurs la rechargent au lieu de servir leur copie en cache.
+    return IMAGE_BASE + p.image + "?v=" + ASSET_V;
   }
 
   // ---------- Persistance locale de la sélection ----------
