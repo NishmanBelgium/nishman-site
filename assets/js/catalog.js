@@ -10,12 +10,21 @@
 (function () {
   "use strict";
 
+  // Capté immédiatement : Chrome déclenche cet événement très tôt, bien
+  // avant la fin du chargement du catalogue. L'écouter plus tard le manque.
+  let INSTALL_EVENT = null;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    INSTALL_EVENT = e;
+    window.dispatchEvent(new Event("nishman-installable"));
+  });
+
   // Safari (surtout sur iOS) restaure la position de défilement au
   // rechargement : on arrivait alors directement au milieu du catalogue,
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "70"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "72"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -1174,6 +1183,7 @@
 
     initIntro();
     initTopControls();
+    initInstall();
     // Filet : si la page revient d'un arrière-plan avec un état incohérent,
     // on rétablit un défilement correct.
     document.addEventListener("visibilitychange", () => {
@@ -1755,6 +1765,10 @@
   const INSTALL_KEY = "nishman-install-refuse";
 
   function initInstall() {
+    // Astuce de test : ajouter ?install à l'adresse réaffiche le bandeau
+    // même s'il a déjà été écarté sur cet appareil.
+    const forcer = window.location.search.indexOf("install") >= 0;
+    if (forcer) localStorage.removeItem(INSTALL_KEY);
     // Le service worker est la condition qui manque à Chrome Android pour
     // proposer l'installation. Il rend aussi le catalogue consultable hors ligne.
     if ("serviceWorker" in navigator) {
@@ -1766,21 +1780,18 @@
         window.navigator.standalone === true) return;
     if (localStorage.getItem(INSTALL_KEY)) return;
 
-    let promptEvent = null;
-
-    // Android et Chrome : le navigateur signale que l'installation est possible
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      promptEvent = e;
-      setTimeout(() => afficher(false), 2500);
+    // L'événement a peut-être déjà été capté avant l'exécution de ce code
+    if (INSTALL_EVENT) {
+      setTimeout(() => afficher(false), 2000);
+    }
+    window.addEventListener("nishman-installable", () => {
+      setTimeout(() => afficher(false), 2000);
     });
 
     // iOS : pas d'installation automatique, on explique le geste
     const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
                 (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    const safari = /safari/i.test(navigator.userAgent) && !/crios|fxios|edgios/i.test(navigator.userAgent);
-    // Sur iOS, l'ajout à l'écran d'accueil n'existe que dans Safari
-    if (ios && safari) setTimeout(() => afficher(true), 3000);
+    if (ios) setTimeout(() => afficher(true), 2500);
 
     function fermer(definitif) {
       const b = document.getElementById("install-bar");
@@ -1807,10 +1818,10 @@
       const go = document.getElementById("install-go");
       if (go) {
         go.addEventListener("click", async () => {
-          if (!promptEvent) return;
-          promptEvent.prompt();
-          try { await promptEvent.userChoice; } catch (e) {}
-          promptEvent = null;
+          if (!INSTALL_EVENT) return;
+          INSTALL_EVENT.prompt();
+          try { await INSTALL_EVENT.userChoice; } catch (e) {}
+          INSTALL_EVENT = null;
           fermer(true);
         });
       }
