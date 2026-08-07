@@ -2216,3 +2216,13 @@ img { max-width: 100%; height: auto; }
   opacity: 0.3;
   cursor: default;
 }
+
+/* Lien CGV dans le pied de page */
+.foot-cgv {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.18s ease;
+}
+
+.foot-cgv:hover { color: var(--gold); }

@@ -15,7 +15,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "65"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "66"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -89,6 +89,7 @@
       footContact: "Contact", footCompany: "Société",
       footSocial: "Retrouvez-nous sur",
       footRights: "Tous droits réservés.",
+      cgvLink: "Conditions générales de vente",
       footLegal: "Prix hors TVA réservés aux professionnels.",
       askQuote: "Demander un devis",
       logout: "Masquer les prix",
@@ -140,6 +141,7 @@
       footContact: "Contact", footCompany: "Company",
       footSocial: "Follow us on",
       footRights: "All rights reserved.",
+      cgvLink: "Terms and conditions of sale",
       footLegal: "Prices excl. VAT, reserved for professionals.",
       askQuote: "Request a quotation",
       logout: "Hide prices",
@@ -191,6 +193,7 @@
       footContact: "Contact", footCompany: "Onderneming",
       footSocial: "Volg ons op",
       footRights: "Alle rechten voorbehouden.",
+      cgvLink: "Algemene verkoopvoorwaarden",
       footLegal: "Prijzen excl. btw, voorbehouden aan professionals.",
       askQuote: "Offerte aanvragen",
       logout: "Prijzen verbergen",
@@ -245,6 +248,7 @@
       footContact: "Kontakt", footCompany: "Unternehmen",
       footSocial: "Folgen Sie uns",
       footRights: "Alle Rechte vorbehalten.",
+      cgvLink: "Allgemeine Verkaufsbedingungen",
       footLegal: "Preise zzgl. MwSt., Fachkunden vorbehalten.",
       askQuote: "Angebot anfordern",
     },
@@ -296,6 +300,7 @@
       footContact: "İletişim", footCompany: "Firma",
       footSocial: "Bizi takip edin",
       footRights: "Tüm hakları saklıdır.",
+      cgvLink: "Genel satış koşulları",
       footLegal: "Fiyatlar KDV hariçtir, profesyonellere özeldir.",
       askQuote: "Fiyat teklifi iste",
     },
@@ -1634,13 +1639,18 @@
         .map((c) => `<span class="foot-flag">${c}</span>`).join("");
     }
 
+    const legal = document.getElementById("t-foot-legal");
+    if (legal && legal.parentElement) {
+      // Le lien CGV rejoint la mention légale du bas de page
+      legal.innerHTML = `${T.footLegal} · <a class="foot-cgv" href="/cgv/">${T.cgvLink}</a>`;
+    }
+
     const map = {
       "t-foot-tag": T.footTag,
       "t-foot-contact": T.footContact,
       "t-foot-company": T.footCompany,
       "t-foot-social": T.footSocial,
       "t-foot-rights": T.footRights,
-      "t-foot-legal": T.footLegal,
     };
     Object.keys(map).forEach((id) => {
       const el = document.getElementById(id);
