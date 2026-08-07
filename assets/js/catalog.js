@@ -15,7 +15,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "66"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "67"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -637,6 +637,16 @@
     });
   }
 
+  // Fixe une quantité absolue (saisie directe), par opposition à changeQty
+  function setQty(ean, valeur, kind) {
+    const e = entry(ean);
+    e[kind] = Math.max(0, valeur | 0);
+    if (!e.u && !e.b) delete selection[ean];
+    saveSelection();
+    renderFloatBar();
+    renderGrid();
+  }
+
   // kind : "u" (unités) ou "b" (cartons)
   function changeQty(ean, delta, kind) {
     const e = entry(ean);
@@ -743,7 +753,8 @@
           <span class="buy-row-label">${label}</span>
           <div class="qty-stepper" data-kind="${kind}">
             <button data-action="dec">−</button>
-            <span>${pending[kind]}</span>
+            <input class="qty-input" type="text" inputmode="numeric" pattern="[0-9]*"
+                   value="${pending[kind]}" aria-label="${label}" />
             <button data-action="inc" ${bloque ? "disabled" : ""}>+</button>
           </div>
         </div>`;
@@ -772,6 +783,33 @@
         st.querySelector("[data-action='dec']").addEventListener("click", () => {
           pending[kind] = Math.max(0, pending[kind] - 1); draw();
         });
+
+        // Saisie directe de la quantité : plus pratique que 20 clics sur "+"
+        const champ = st.querySelector(".qty-input");
+        if (champ) {
+          champ.addEventListener("focus", () => champ.select());
+          champ.addEventListener("input", () => {
+            champ.value = champ.value.replace(/[^0-9]/g, "");
+          });
+          const valider = () => {
+            let n = parseInt(champ.value, 10);
+            if (isNaN(n) || n < 0) n = 0;
+            // On ne peut jamais dépasser le stock autorisé
+            const autre = kind === "u" ? pending.b * box : pending.u;
+            if (kind === "u") {
+              n = Math.min(n, Math.max(0, maxU - pending.b * box));
+            } else {
+              const parBoite = box || 1;
+              n = Math.min(n, maxB, Math.floor(Math.max(0, maxU - pending.u) / parBoite));
+            }
+            pending[kind] = n;
+            draw();
+          };
+          champ.addEventListener("blur", valider);
+          champ.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); champ.blur(); }
+          });
+        }
       });
 
       const confirm = document.getElementById("sheet-confirm");
@@ -874,7 +912,7 @@
             ${lineTotal !== null ? `<span class="drawer-item-price" style="font-weight:700;font-size:13px;white-space:nowrap;margin-left:auto;padding:0 10px;">${formatPrice(lineTotal)}</span>` : ""}
             <div class="qty-stepper drawer-stepper" data-ean="${ean}" data-kind="${r.kind}">
               <button data-action="dec">−</button>
-              <span>${r.qty}</span>
+              <input class="qty-input" type="text" inputmode="numeric" pattern="[0-9]*" value="${r.qty}" />
               <button data-action="inc">+</button>
             </div>
           </div>`;
@@ -902,6 +940,35 @@
     list.querySelectorAll(".drawer-stepper").forEach((st) => {
       const ean = st.dataset.ean;
       const kind = st.dataset.kind;
+      // Saisie directe dans le panier
+      const champ = st.querySelector(".qty-input");
+      if (champ) {
+        champ.addEventListener("focus", () => champ.select());
+        champ.addEventListener("input", () => {
+          champ.value = champ.value.replace(/[^0-9]/g, "");
+        });
+        const valider = () => {
+          const p = PRODUCTS.find((x) => x.ean === ean);
+          const box = (p && p.box_qty) || 0;
+          let n = parseInt(champ.value, 10);
+          if (isNaN(n) || n < 0) n = 0;
+          const q = selection[ean] || { u: 0, b: 0 };
+          if (kind === "u") {
+            n = Math.min(n, Math.max(0, maxUnits(p) - (q.b || 0) * box));
+          } else {
+            const parBoite = box || 1;
+            n = Math.min(n, maxBoxes(p),
+                         Math.floor(Math.max(0, maxUnits(p) - (q.u || 0)) / parBoite));
+          }
+          setQty(ean, n, kind);
+          renderDrawer();
+        };
+        champ.addEventListener("blur", valider);
+        champ.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") { e.preventDefault(); champ.blur(); }
+        });
+      }
+
       st.querySelector("[data-action='inc']").addEventListener("click", () => {
         const p = PRODUCTS.find((x) => x.ean === ean);
         const box = (p && p.box_qty) || 0;
