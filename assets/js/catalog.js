@@ -15,7 +15,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "69"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "70"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -1755,6 +1755,12 @@
   const INSTALL_KEY = "nishman-install-refuse";
 
   function initInstall() {
+    // Le service worker est la condition qui manque à Chrome Android pour
+    // proposer l'installation. Il rend aussi le catalogue consultable hors ligne.
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+
     // Déjà installé : rien à proposer
     if (window.matchMedia("(display-mode: standalone)").matches ||
         window.navigator.standalone === true) return;
@@ -1770,8 +1776,11 @@
     });
 
     // iOS : pas d'installation automatique, on explique le geste
-    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    if (ios) setTimeout(() => afficher(true), 3500);
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+                (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const safari = /safari/i.test(navigator.userAgent) && !/crios|fxios|edgios/i.test(navigator.userAgent);
+    // Sur iOS, l'ajout à l'écran d'accueil n'existe que dans Safari
+    if (ios && safari) setTimeout(() => afficher(true), 3000);
 
     function fermer(definitif) {
       const b = document.getElementById("install-bar");
