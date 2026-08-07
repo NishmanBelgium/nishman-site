@@ -15,7 +15,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "68"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "69"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -90,6 +90,10 @@
       footSocial: "Retrouvez-nous sur",
       footRights: "Tous droits réservés.",
       cgvLink: "Conditions générales de vente",
+      installTitle: "Installer le catalogue",
+      installSub: "Accès direct depuis votre écran d'accueil",
+      installIos: "Touchez Partager puis « Sur l'écran d'accueil »",
+      installBtn: "Installer",
       footLegal: "Prix hors TVA réservés aux professionnels.",
       askQuote: "Demander un devis",
       logout: "Masquer les prix",
@@ -142,6 +146,10 @@
       footSocial: "Follow us on",
       footRights: "All rights reserved.",
       cgvLink: "Terms and conditions of sale",
+      installTitle: "Install the catalogue",
+      installSub: "Direct access from your home screen",
+      installIos: "Tap Share, then « Add to Home Screen »",
+      installBtn: "Install",
       footLegal: "Prices excl. VAT, reserved for professionals.",
       askQuote: "Request a quotation",
       logout: "Hide prices",
@@ -194,6 +202,10 @@
       footSocial: "Volg ons op",
       footRights: "Alle rechten voorbehouden.",
       cgvLink: "Algemene verkoopvoorwaarden",
+      installTitle: "Catalogus installeren",
+      installSub: "Rechtstreekse toegang vanaf uw beginscherm",
+      installIos: "Tik op Delen en dan « Zet op beginscherm »",
+      installBtn: "Installeren",
       footLegal: "Prijzen excl. btw, voorbehouden aan professionals.",
       askQuote: "Offerte aanvragen",
       logout: "Prijzen verbergen",
@@ -249,6 +261,10 @@
       footSocial: "Folgen Sie uns",
       footRights: "Alle Rechte vorbehalten.",
       cgvLink: "Allgemeine Verkaufsbedingungen",
+      installTitle: "Katalog installieren",
+      installSub: "Direkter Zugriff von Ihrem Startbildschirm",
+      installIos: "Auf Teilen tippen, dann « Zum Home-Bildschirm »",
+      installBtn: "Installieren",
       footLegal: "Preise zzgl. MwSt., Fachkunden vorbehalten.",
       askQuote: "Angebot anfordern",
     },
@@ -301,6 +317,10 @@
       footSocial: "Bizi takip edin",
       footRights: "Tüm hakları saklıdır.",
       cgvLink: "Genel satış koşulları",
+      installTitle: "Kataloğu yükleyin",
+      installSub: "Ana ekranınızdan doğrudan erişim",
+      installIos: "Paylaş'a dokunun, sonra « Ana Ekrana Ekle »",
+      installBtn: "Yükle",
       footLegal: "Fiyatlar KDV hariçtir, profesyonellere özeldir.",
       askQuote: "Fiyat teklifi iste",
     },
@@ -1723,6 +1743,71 @@
       const el = document.getElementById(id);
       if (el) el.textContent = map[id];
     });
+  }
+
+  // ==========================================================================
+  // INSTALLATION SUR L'ÉCRAN D'ACCUEIL
+  // Le site peut s'ajouter comme une application : icône Nishman, ouverture
+  // plein écran, lancement instantané. Le bandeau reste discret et ne
+  // revient pas si le professionnel l'a écarté.
+  // ==========================================================================
+
+  const INSTALL_KEY = "nishman-install-refuse";
+
+  function initInstall() {
+    // Déjà installé : rien à proposer
+    if (window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true) return;
+    if (localStorage.getItem(INSTALL_KEY)) return;
+
+    let promptEvent = null;
+
+    // Android et Chrome : le navigateur signale que l'installation est possible
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      promptEvent = e;
+      setTimeout(() => afficher(false), 2500);
+    });
+
+    // iOS : pas d'installation automatique, on explique le geste
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    if (ios) setTimeout(() => afficher(true), 3500);
+
+    function fermer(definitif) {
+      const b = document.getElementById("install-bar");
+      if (b) b.remove();
+      if (definitif) localStorage.setItem(INSTALL_KEY, "1");
+    }
+
+    function afficher(estIos) {
+      if (document.getElementById("install-bar")) return;
+      const bar = document.createElement("div");
+      bar.className = "install-bar";
+      bar.id = "install-bar";
+      bar.innerHTML = `
+        <img class="install-icon" src="/assets/pwa/icon-192.png?v=${ASSET_V}" alt="" />
+        <div class="install-text">
+          <strong>${T.installTitle}</strong>
+          <span>${estIos ? T.installIos : T.installSub}</span>
+        </div>
+        ${estIos ? "" : `<button class="install-go" id="install-go">${T.installBtn}</button>`}
+        <button class="install-close" id="install-close" aria-label="Fermer">&times;</button>`;
+      document.body.appendChild(bar);
+      requestAnimationFrame(() => bar.classList.add("visible"));
+
+      const go = document.getElementById("install-go");
+      if (go) {
+        go.addEventListener("click", async () => {
+          if (!promptEvent) return;
+          promptEvent.prompt();
+          try { await promptEvent.userChoice; } catch (e) {}
+          promptEvent = null;
+          fermer(true);
+        });
+      }
+      document.getElementById("install-close")
+        .addEventListener("click", () => fermer(true));
+    }
   }
 
   function initTopControls() {
