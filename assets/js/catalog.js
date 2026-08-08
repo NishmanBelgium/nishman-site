@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "75"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "76"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -91,6 +91,7 @@
       footSocial: "Retrouvez-nous sur",
       footRights: "Tous droits réservés.",
       cgvLink: "Conditions générales de vente",
+      proAccessShort: "Accès pro",
       footLegal: "Prix hors TVA réservés aux professionnels.",
       askQuote: "Demander un devis",
       logout: "Masquer les prix",
@@ -143,6 +144,7 @@
       footSocial: "Follow us on",
       footRights: "All rights reserved.",
       cgvLink: "Terms and conditions of sale",
+      proAccessShort: "Pro access",
       footLegal: "Prices excl. VAT, reserved for professionals.",
       askQuote: "Request a quotation",
       logout: "Hide prices",
@@ -195,6 +197,7 @@
       footSocial: "Volg ons op",
       footRights: "Alle rechten voorbehouden.",
       cgvLink: "Algemene verkoopvoorwaarden",
+      proAccessShort: "Pro-toegang",
       footLegal: "Prijzen excl. btw, voorbehouden aan professionals.",
       askQuote: "Offerte aanvragen",
       logout: "Prijzen verbergen",
@@ -250,6 +253,7 @@
       footSocial: "Folgen Sie uns",
       footRights: "Alle Rechte vorbehalten.",
       cgvLink: "Allgemeine Verkaufsbedingungen",
+      proAccessShort: "Fachzugang",
       footLegal: "Preise zzgl. MwSt., Fachkunden vorbehalten.",
       askQuote: "Angebot anfordern",
     },
@@ -302,6 +306,7 @@
       footSocial: "Bizi takip edin",
       footRights: "Tüm hakları saklıdır.",
       cgvLink: "Genel satış koşulları",
+      proAccessShort: "Pro erişim",
       footLegal: "Fiyatlar KDV hariçtir, profesyonellere özeldir.",
       askQuote: "Fiyat teklifi iste",
     },
@@ -1090,23 +1095,6 @@
       <span class="chevron">&#8250;</span>
     `;
     wrap.appendChild(quote);
-
-    // 2) Raccourci WhatsApp conservé pour les habitués
-    if (typeof AGENTS !== "undefined" && AGENTS.dilhan) {
-      const btn = document.createElement("a");
-      btn.className = "label-row";
-      btn.style.marginTop = "9px";
-      btn.target = "_blank";
-      btn.rel = "noopener";
-      btn.href = `https://wa.me/${AGENTS.dilhan.whatsapp}?text=${encodeURIComponent(buildSelectionMessage())}`;
-      btn.addEventListener("click", logOrder);
-      btn.innerHTML = `
-        <span class="swatch swatch-whatsapp"></span>
-        <span class="row-text">${T.salesTeam}</span>
-        <span class="chevron">&#8250;</span>
-      `;
-      wrap.appendChild(btn);
-    }
   }
 
   // ---------- Initialisation ----------
@@ -1568,7 +1556,11 @@
   function renderProAccessBtn() {
     const btn = document.getElementById("pro-access");
     if (!btn) return;
-    btn.textContent = unlocked() ? T.logout : T.proAccess;
+    // Sur petit écran, le libellé complet déborde de la pilule
+    const court = window.matchMedia("(max-width: 620px)").matches;
+    btn.textContent = unlocked()
+      ? T.logout
+      : (court ? T.proAccessShort : T.proAccess);
     btn.classList.toggle("unlocked", unlocked());
   }
 

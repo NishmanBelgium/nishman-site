@@ -2263,3 +2263,14 @@ img { max-width: 100%; height: auto; }
   .drawer-stepper .qty-input { width: 42px; font-size: 16px; }
 }
 
+
+/* Le bouton d'accès ne doit jamais déborder de sa pilule */
+.pro-access {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+  .pro-access { padding: 12px 12px; font-size: 12px; }
+}
