@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "76"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "77"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -1558,7 +1558,8 @@
     if (!btn) return;
     // Sur petit écran, le libellé complet déborde de la pilule
     const court = window.matchMedia("(max-width: 620px)").matches;
-    btn.textContent = unlocked()
+    const lab = document.getElementById("pro-access-label") || btn;
+    lab.textContent = unlocked()
       ? T.logout
       : (court ? T.proAccessShort : T.proAccess);
     btn.classList.toggle("unlocked", unlocked());
@@ -1623,7 +1624,8 @@
     const btn = document.getElementById("lang-btn");
     const panel = document.getElementById("lang-overlay");
     if (!btn || !panel) return;
-    btn.textContent = LANG.toUpperCase();
+    const lab = document.getElementById("lang-btn-label") || btn;
+    lab.textContent = LANG.toUpperCase();
     btn.addEventListener("click", () => { panel.hidden = false; });
     panel.addEventListener("click", (e) => {
       if (e.target.id === "lang-overlay") panel.hidden = true;
