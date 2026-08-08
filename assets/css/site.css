@@ -1732,8 +1732,8 @@ body.card-dark .label-row.primary .swatch {
 }
 
 /* Pastille du bouton « Demander un devis » dans le panier */
-.swatch-quote { background: #0a0a0a; }
-.drawer .label-row.primary .swatch-quote { background: #0a0a0a !important; opacity: 1 !important; }
+.swatch-quote { background: var(--whatsapp); }
+.drawer .label-row.primary .swatch-quote { background: var(--whatsapp) !important; opacity: 1 !important; }
 
 /* ---------- Inscription professionnelle dans la fenêtre d'accès ---------- */
 
