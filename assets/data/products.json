@@ -193,7 +193,7 @@
  },
  {
   "ean": "8684736674012",
-  "name": "SHAVING FOAM SOOTHING MENTOL 200 ML",
+  "name": "SHAVING FOAM SMOOTHING MENTOL 200 ML",
   "volume": "200 ML",
   "category": "Rasage",
   "image": "8684736674012.webp",
@@ -208,7 +208,8 @@
   "tagline_de": "Rasierschaum",
   "description_de": "Cremiger Rasierschaum mit beruhigendem Menthol und sofortigem Frische-Effekt. Bereitet das Haar vor, schützt die Haut und hinterlässt ein angenehmes Gefühl nach der Rasur.",
   "tagline_tr": "Tıraş köpüğü",
-  "description_tr": "Yatıştırıcı mentollü ve anında serinletici etkili kremsi tıraş köpüğü. Kılı hazırlar, cildi korur ve tıraş sonrası konforlu bir his bırakır."
+  "description_tr": "Yatıştırıcı mentollü ve anında serinletici etkili kremsi tıraş köpüğü. Kılı hazırlar, cildi korur ve tıraş sonrası konforlu bir his bırakır.",
+  "hidden": true
  },
  {
   "ean": "8684736674029",
@@ -228,6 +229,25 @@
   "description_de": "Cremiger Rasierschaum mit milder Formel für empfindliche Haut. Bereitet das Haar vor, schützt die Haut und hinterlässt ein angenehmes Gefühl nach der Rasur.",
   "tagline_tr": "Tıraş köpüğü",
   "description_tr": "Hassas ciltler için yumuşak formüllü kremsi tıraş köpüğü. Kılı hazırlar, cildi korur ve tıraş sonrası konforlu bir his bırakır."
+ },
+ {
+  "ean": "8684736674036",
+  "name": "SHAVING GEL SMOOTH 200 ML",
+  "volume": "200 ML",
+  "category": "Rasage",
+  "image": "8684736674036.webp",
+  "tagline": "Transparence & précision",
+  "description": "Gel de rasage transparent, format pratique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
+  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
+  "box_qty": 24,
+  "tagline_en": "Clear & precise",
+  "tagline_nl": "Transparant & precies",
+  "description_en": "Clear shaving gel, practical size: full visibility on the shave line for ultra-sharp outlines. Optimal glide, protected skin, no drying out.",
+  "description_nl": "Transparante scheergel, praktisch formaat: volledig zicht op de scheerlijn voor haarscherpe contouren. Optimale glij, beschermde huid, droogt niet uit.",
+  "tagline_de": "Transparent & präzise",
+  "description_de": "Transparentes Rasiergel, praktisches Format: volle Sicht auf die Rasurlinie für gestochen scharfe Konturen. Optimales Gleiten, geschützte Haut, trocknet nicht aus.",
+  "tagline_tr": "Şeffaf & hassas",
+  "description_tr": "Şeffaf tıraş jeli, pratik boy: keskin konturlar için tıraş çizgisinde tam görüş. Optimum kayganlık, korunan cilt, kurutmaz."
  },
  {
   "ean": "8684736674470",
@@ -3100,25 +3120,6 @@
   "description_de": "Das Stylingpuder der neuen Generation: sofortiges Volumen, mattierender Effekt und unsichtbarer Halt. Der Favorit der Barbiere für schnelle Finishes zwischendurch.",
   "tagline_tr": "Doku pudrası",
   "description_tr": "Yeni nesil şekillendirici pudra: anında hacim, matlaştırıcı etki ve görünmez tutuş. Berberlerin ara dokunuşlar için favorisi."
- },
- {
-  "ean": "8684736674036",
-  "name": "SHAVING GEL SMOOTH 200 ML",
-  "volume": "200 ML",
-  "category": "Rasage",
-  "image": "8684736674036.webp",
-  "tagline": "Transparence & précision",
-  "description": "Gel de rasage transparent, format pratique : visibilité totale sur la ligne de rasage pour des contours ultra-nets. Glisse optimale, peau protégée, sans dessèchement.",
-  "usage": "Appliquer une fine couche sur peau humide, raser, rincer. Compatible rasoir droit et shavette.",
-  "box_qty": 24,
-  "tagline_en": "Clear & precise",
-  "tagline_nl": "Transparant & precies",
-  "description_en": "Clear shaving gel, practical size: full visibility on the shave line for ultra-sharp outlines. Optimal glide, protected skin, no drying out.",
-  "description_nl": "Transparante scheergel, praktisch formaat: volledig zicht op de scheerlijn voor haarscherpe contouren. Optimale glij, beschermde huid, droogt niet uit.",
-  "tagline_de": "Transparent & präzise",
-  "description_de": "Transparentes Rasiergel, praktisches Format: volle Sicht auf die Rasurlinie für gestochen scharfe Konturen. Optimales Gleiten, geschützte Haut, trocknet nicht aus.",
-  "tagline_tr": "Şeffaf & hassas",
-  "description_tr": "Şeffaf tıraş jeli, pratik boy: keskin konturlar için tıraş çizgisinde tam görüş. Optimum kayganlık, korunan cilt, kurutmaz."
  },
  {
   "ean": "8682035084655",
