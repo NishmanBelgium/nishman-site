@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Nishman — NBD Distribution</title>
+<meta name="description" content="Nishman Belgique, France, Luxembourg — catalogue professionnel, réseaux sociaux et contact direct." />
+<meta name="theme-color" content="#0a0a0a" />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=91" />
+<style>
+:root{
+  --noir:#0a0a0a; --noir-2:#141416; --ligne:rgba(255,255,255,.10);
+  --or:#ff8a00; --or-clair:#ffb340; --blanc:#f4f4f5; --gris:#8b8b93;
+  --display:"Space Grotesk",sans-serif; --body:"Manrope",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  background:var(--noir); color:var(--blanc); font-family:var(--body);
+  display:flex; flex-direction:column; align-items:center;
+  padding:44px 20px 32px; min-height:100dvh; position:relative; overflow-x:hidden;
+}
+/* halo doré très discret derrière le logo */
+body::before{
+  content:""; position:fixed; top:-28%; left:50%; width:150vw; height:70vh;
+  transform:translateX(-50%);
+  background:radial-gradient(closest-side,rgba(255,138,0,.16),transparent 70%);
+  pointer-events:none;
+}
+.shell{width:100%; max-width:400px; position:relative; z-index:1}
+
+.logo{display:block; width:186px; max-width:62%; height:auto; margin:0 auto 22px}
+.baseline{
+  font-family:var(--display); font-size:12px; font-weight:700;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--or);
+  text-align:center; margin:0 0 6px;
+}
+.pays{font-size:13px; color:var(--gris); text-align:center; margin:0 0 34px}
+
+.liens{display:flex; flex-direction:column; gap:12px}
+.lien{
+  display:flex; align-items:center; gap:14px;
+  padding:16px 18px; border-radius:16px;
+  background:var(--noir-2); border:1px solid var(--ligne);
+  color:var(--blanc); text-decoration:none;
+  transition:border-color .18s ease, transform .18s cubic-bezier(.16,1,.3,1);
+}
+.lien:hover,.lien:focus-visible{border-color:rgba(255,138,0,.55); transform:translateY(-2px)}
+.lien:focus-visible{outline:2px solid var(--or); outline-offset:3px}
+.pastille{
+  width:9px; height:9px; border-radius:50%; flex:none;
+  background:linear-gradient(135deg,var(--or-clair),var(--or));
+  box-shadow:0 0 12px rgba(255,138,0,.55);
+}
+.lien-txt{flex:1; min-width:0}
+.lien-titre{font-family:var(--display); font-size:15px; font-weight:700; line-height:1.2}
+.lien-sous{font-size:12px; color:var(--gris); margin-top:3px}
+.chevron{color:var(--gris); font-size:17px; flex:none}
+
+.langues{display:flex; justify-content:center; gap:6px; margin:32px 0 0; flex-wrap:wrap}
+.langue{
+  border:1px solid var(--ligne); background:transparent; color:var(--gris);
+  font-family:var(--body); font-size:11.5px; font-weight:700;
+  padding:6px 11px; border-radius:999px; cursor:pointer;
+  transition:color .15s, border-color .15s;
+}
+.langue:hover{color:var(--blanc)}
+.langue.on{color:var(--noir); background:var(--or); border-color:var(--or)}
+
+.pied{
+  margin-top:28px; padding-top:20px; border-top:1px solid var(--ligne);
+  text-align:center; font-size:11.5px; line-height:1.7; color:#5f6068;
+}
+.pied a{color:#5f6068}
+@media (max-width:360px){ .lien{padding:14px 15px} .logo{width:150px} }
+@media (prefers-reduced-motion:reduce){ .lien{transition:none} }
+</style>
+</head>
+<body>
+
+<main class="shell">
+  <img class="logo" src="/assets/img/logo-gold.png" alt="Nishman" />
+  <p class="baseline" id="t-baseline"></p>
+  <p class="pays">Belgique · France · Luxembourg</p>
+
+  <nav class="liens" id="liens"></nav>
+
+  <div class="langues" id="langues"></div>
+
+  <footer class="pied">
+    <p>NBD Distribution SRL — Rue de la Poire d'Or 26, 7033 Cuesmes</p>
+    <p>TVA BE 0817.750.283 — <a href="mailto:contact@nishman.be">contact@nishman.be</a></p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- Liens. Modifier ici suffit : le QR du véhicule ne change jamais. ----
+  var LIENS = {
+    site:      "https://nishman.be/produits/",
+    instagram: "https://www.instagram.com/nishmanfr_be/",
+    facebook:  "",                                  // à renseigner
+    whatsapp:  "https://wa.me/32489970087",
+  };
+
+  var T = {
+    fr: { baseline:"Distributeur officiel",
+          site:"Catalogue", siteS:"Toute la gamme professionnelle",
+          insta:"Instagram", instaS:"Nouveautés et coulisses",
+          fb:"Facebook", fbS:"Actualités",
+          wa:"WhatsApp", waS:"Écrire au service commercial",
+          msg:"Bonjour, je vous contacte au sujet des produits Nishman." },
+    en: { baseline:"Official distributor",
+          site:"Catalogue", siteS:"The full professional range",
+          insta:"Instagram", instaS:"News and behind the scenes",
+          fb:"Facebook", fbS:"Updates",
+          wa:"WhatsApp", waS:"Message our sales team",
+          msg:"Hello, I am contacting you about Nishman products." },
+    nl: { baseline:"Officiële distributeur",
+          site:"Catalogus", siteS:"Het volledige professionele gamma",
+          insta:"Instagram", instaS:"Nieuws en achter de schermen",
+          fb:"Facebook", fbS:"Nieuws",
+          wa:"WhatsApp", waS:"Schrijf naar onze verkoopdienst",
+          msg:"Hallo, ik neem contact op over de Nishman-producten." },
+    de: { baseline:"Offizieller Distributor",
+          site:"Katalog", siteS:"Das gesamte Profisortiment",
+          insta:"Instagram", instaS:"Neuheiten und Einblicke",
+          fb:"Facebook", fbS:"Aktuelles",
+          wa:"WhatsApp", waS:"Schreiben Sie unserem Vertrieb",
+          msg:"Guten Tag, ich melde mich wegen der Nishman-Produkte." },
+    tr: { baseline:"Resmî distribütör",
+          site:"Katalog", siteS:"Tüm profesyonel seri",
+          insta:"Instagram", instaS:"Yenilikler ve kulis",
+          fb:"Facebook", fbS:"Güncellemeler",
+          wa:"WhatsApp", waS:"Satış ekibimize yazın",
+          msg:"Merhaba, Nishman ürünleri hakkında yazıyorum." },
+  };
+
+  var LANGUES = [["fr","FR"],["en","EN"],["nl","NL"],["de","DE"],["tr","TR"]];
+
+  // Langue du téléphone si elle est gérée, français sinon.
+  function langueInitiale() {
+    try {
+      var m = localStorage.getItem("nishman-lang");
+      if (m && T[m]) return m;
+    } catch (e) {}
+    var n = (navigator.language || "fr").slice(0, 2).toLowerCase();
+    return T[n] ? n : "fr";
+  }
+
+  var lang = langueInitiale();
+
+  function dessiner() {
+    var t = T[lang];
+    document.documentElement.lang = lang;
+    document.getElementById("t-baseline").textContent = t.baseline;
+
+    var items = [
+      { url: LIENS.site, titre: t.site, sous: t.siteS },
+      { url: LIENS.instagram, titre: t.insta, sous: t.instaS },
+      { url: LIENS.facebook, titre: t.fb, sous: t.fbS },
+      { url: LIENS.whatsapp ? LIENS.whatsapp + "?text=" + encodeURIComponent(t.msg) : "",
+        titre: t.wa, sous: t.waS },
+    ].filter(function (i) { return i.url; });   // un lien vide ne s'affiche pas
+
+    document.getElementById("liens").innerHTML = items.map(function (i) {
+      return '<a class="lien" href="' + i.url + '" target="_blank" rel="noopener">' +
+               '<span class="pastille" aria-hidden="true"></span>' +
+               '<span class="lien-txt">' +
+                 '<span class="lien-titre">' + i.titre + '</span>' +
+                 '<span class="lien-sous">' + i.sous + '</span>' +
+               '</span>' +
+               '<span class="chevron" aria-hidden="true">&rsaquo;</span>' +
+             '</a>';
+    }).join("");
+
+    document.getElementById("langues").innerHTML = LANGUES.map(function (l) {
+      return '<button class="langue' + (l[0] === lang ? " on" : "") + '" data-l="' + l[0] + '">' +
+             l[1] + '</button>';
+    }).join("");
+  }
+
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest(".langue") : null;
+    if (!b) return;
+    lang = b.getAttribute("data-l");
+    try { localStorage.setItem("nishman-lang", lang); } catch (err) {}
+    dessiner();
+  });
+
+  dessiner();
+})();
+</script>
+</body>
+</html>
