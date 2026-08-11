@@ -562,7 +562,8 @@
     document.getElementById("t-title").textContent = t.title;
     document.getElementById("t-sub").textContent = t.sub;
     document.getElementById("t-download").textContent = t.dl;
-    document.getElementById("lang-btn").textContent = LANG.toUpperCase();
+    var lb = document.getElementById("lang-btn-label") || document.getElementById("lang-btn");
+    lb.textContent = LANG.toUpperCase();
     document.title = t.title + " — Nishman";
 
     const data = CGV[LANG] || CGV.fr;

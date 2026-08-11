@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "92"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "93"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
