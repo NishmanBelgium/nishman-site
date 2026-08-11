@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "87"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "88"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -330,16 +330,18 @@
   const T = I18N[LANG];
 
   const CAT_I18N = {
-    "Coiffage & Style": { en: "Hair Styling", nl: "Haarstyling", de: "Haarstyling", tr: "Saç Şekillendirme" },
-    "Peignes & Brosses": { en: "Combs & Brushes", nl: "Kammen & Borstels", de: "Kämme & Bürsten", tr: "Tarak & Fırça" },
-    "Après-rasage & Cologne": { en: "Aftershave & Cologne", nl: "Aftershave & Cologne", de: "Aftershave & Cologne", tr: "Tıraş Sonrası & Kolonya" },
-    "Rasage": { en: "Shaving", nl: "Scheren", de: "Rasur", tr: "Tıraş" },
+    "Aqua Wax": { en: "Aqua Wax", nl: "Aqua Wax", de: "Aqua Wax", tr: "Aqua Wax" },
+    "Colognes": { en: "Colognes", nl: "Eau de cologne", de: "Kölnisch Wasser", tr: "Kolonyalar" },
+    "Poudres coiffantes": { en: "Styling Powders", nl: "Stylingpoeders", de: "Stylingpuder", tr: "Şekillendirici Pudralar" },
+    "Mat Wax": { en: "Mat Wax", nl: "Mat Wax", de: "Mat Wax", tr: "Mat Wax" },
     "Coloration": { en: "Hair Color", nl: "Haarkleuring", de: "Haarfarbe", tr: "Saç Boyası" },
-    "Shampoings & Après-shampoings": { en: "Shampoo & Conditioner", nl: "Shampoo & Conditioner", de: "Shampoo & Conditioner", tr: "Şampuan & Saç Kremi" },
-    "Soins mains & corps": { en: "Hand & Body Care", nl: "Hand- & Lichaamsverzorging", de: "Hand- & Körperpflege", tr: "El & Vücut Bakımı" },
     "Soins barbe": { en: "Beard Care", nl: "Baardverzorging", de: "Bartpflege", tr: "Sakal Bakımı" },
-    "Masques & Soins visage": { en: "Masks & Face Care", nl: "Maskers & Gezichtsverzorging", de: "Masken & Gesichtspflege", tr: "Maske & Yüz Bakımı" },
-    "Testeurs & Miniatures": { en: "Testers & Minis", nl: "Testers & Mini's", de: "Tester & Minis", tr: "Tester & Mini Boy" },
+    "Peignes & Brosses": { en: "Combs & Brushes", nl: "Kammen & Borstels", de: "Kämme & Bürsten", tr: "Tarak & Fırça" },
+    "Shampoings & Après-shampoings": { en: "Shampoo & Conditioner", nl: "Shampoo & Conditioner", de: "Shampoo & Conditioner", tr: "Şampuan & Saç Kremi" },
+    "Rasage": { en: "Shaving", nl: "Scheren", de: "Rasur", tr: "Tıraş" },
+    "Gels & Mousses": { en: "Gels & Foams", nl: "Gels & Mousses", de: "Gele & Schäume", tr: "Jöleler & Köpükler" },
+    "Crème & Bien-être": { en: "Creams & Wellbeing", nl: "Crèmes & Welzijn", de: "Cremes & Wohlbefinden", tr: "Kremler & Bakım" },
+    "Consommables": { en: "Consumables", nl: "Verbruiksartikelen", de: "Verbrauchsmaterial", tr: "Sarf Malzemeleri" },
   };
 
   function catLabel(cat) {
