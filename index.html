@@ -24,15 +24,15 @@
     rel="stylesheet"
   />
 
-  <link rel="manifest" href="/manifest.json?v=82" />
+  <link rel="manifest" href="/manifest.json?v=83" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Nishman" />
-  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=82" />
+  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=83" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=82" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=83" />
 </head>
 <body class="catalog-body">
 
@@ -184,8 +184,13 @@
         <p class="access-desc" id="signup-intro"></p>
         <div class="signup-fields">
           <label class="signup-field">
+            <span id="t-signup-country"></span>
+            <select id="signup-country"></select>
+          </label>
+          <label class="signup-field">
             <span id="t-signup-vat"></span>
-            <input id="signup-vat" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="BE0123456789" />
+            <input id="signup-vat" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+            <small class="signup-hint" id="signup-hint"></small>
           </label>
           <label class="signup-field">
             <span id="t-signup-email"></span>
@@ -212,8 +217,8 @@
     </div>
   </div>
 
-  <script src="/assets/js/config.js?v=82"></script>
-  <script src="/assets/js/catalog.js?v=82"></script>
+  <script src="/assets/js/config.js?v=83"></script>
+  <script src="/assets/js/catalog.js?v=83"></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 </body>
 </html>

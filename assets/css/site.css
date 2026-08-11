@@ -1784,6 +1784,36 @@ body.card-dark .label-row.primary .swatch {
 .signup-field input:focus { border-color: var(--gold); }
 .signup-field input.invalid { border-color: #c62828; }
 
+/* Sélecteur de pays : même pilule que les champs texte, avec un chevron discret */
+.signup-field select {
+  width: 100%;
+  padding: 13px 40px 13px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e6e73' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.18s ease;
+}
+
+.signup-field select:focus { border-color: var(--gold); }
+
+.signup-hint {
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  padding-left: 15px;
+  line-height: 1.4;
+}
+
 .signup-btn { width: 100%; }
 
 #access-step-sent { text-align: center; padding: 6px 0 2px; }
@@ -2133,7 +2163,7 @@ img { max-width: 100%; height: auto; }
   .access-form input { width: 100%; font-size: 16px; }  /* 16px = pas de zoom auto iOS */
   .access-submit { width: 100%; }
 
-  .signup-field input { font-size: 16px; }
+  .signup-field input, .signup-field select { font-size: 16px; }
 }
 
 /* Le contenu de la fenêtre reste sélectionnable pour le copier-coller */

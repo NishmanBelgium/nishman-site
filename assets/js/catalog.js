@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "82"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "83"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -67,6 +67,9 @@
       signupTitle: "Accès réservé aux professionnels",
       signupIntro: "Indiquez votre numéro d'entreprise et votre e-mail : votre code d'accès vous sera envoyé immédiatement.",
       signupVat: "Numéro d'entreprise / TVA",
+      signupCountry: "Pays",
+      signupFormat: "Ce numéro ne correspond pas au format attendu pour ce pays.",
+      countries: { BE: "Belgique", FR: "France", LU: "Luxembourg", NL: "Pays-Bas", DE: "Allemagne", XX: "Autre pays" },
       signupEmail: "E-mail professionnel",
       signupSubmit: "Recevoir mon code",
       signupInvalid: "Vérifiez le numéro d'entreprise et l'adresse e-mail.",
@@ -120,6 +123,9 @@
       signupTitle: "Access reserved for professionals",
       signupIntro: "Enter your company number and e-mail: your access code will be sent immediately.",
       signupVat: "Company / VAT number",
+      signupCountry: "Country",
+      signupFormat: "This number does not match the expected format for that country.",
+      countries: { BE: "Belgium", FR: "France", LU: "Luxembourg", NL: "Netherlands", DE: "Germany", XX: "Other country" },
       signupEmail: "Business e-mail",
       signupSubmit: "Get my code",
       signupInvalid: "Please check the company number and e-mail address.",
@@ -173,6 +179,9 @@
       signupTitle: "Toegang voorbehouden aan professionals",
       signupIntro: "Geef uw ondernemingsnummer en e-mailadres op: uw toegangscode wordt onmiddellijk verstuurd.",
       signupVat: "Ondernemings- / btw-nummer",
+      signupCountry: "Land",
+      signupFormat: "Dit nummer komt niet overeen met het verwachte formaat voor dat land.",
+      countries: { BE: "België", FR: "Frankrijk", LU: "Luxemburg", NL: "Nederland", DE: "Duitsland", XX: "Ander land" },
       signupEmail: "Professioneel e-mailadres",
       signupSubmit: "Mijn code ontvangen",
       signupInvalid: "Controleer het ondernemingsnummer en het e-mailadres.",
@@ -226,6 +235,9 @@
       signupTitle: "Zugang nur für Fachkunden",
       signupIntro: "Geben Sie Ihre Unternehmensnummer und E-Mail an: Ihr Zugangscode wird sofort versendet.",
       signupVat: "Unternehmens- / USt-Nummer",
+      signupCountry: "Land",
+      signupFormat: "Diese Nummer entspricht nicht dem erwarteten Format für dieses Land.",
+      countries: { BE: "Belgien", FR: "Frankreich", LU: "Luxemburg", NL: "Niederlande", DE: "Deutschland", XX: "Anderes Land" },
       signupEmail: "Geschäftliche E-Mail",
       signupSubmit: "Code erhalten",
       signupInvalid: "Bitte prüfen Sie Unternehmensnummer und E-Mail-Adresse.",
@@ -279,6 +291,9 @@
       signupTitle: "Erişim yalnızca profesyonellere açıktır",
       signupIntro: "Vergi numaranızı ve e-posta adresinizi girin: erişim kodunuz anında gönderilecektir.",
       signupVat: "Firma / vergi numarası",
+      signupCountry: "Ülke",
+      signupFormat: "Bu numara seçilen ülke için beklenen biçime uymuyor.",
+      countries: { BE: "Belçika", FR: "Fransa", LU: "Lüksemburg", NL: "Hollanda", DE: "Almanya", XX: "Diğer ülke" },
       signupEmail: "Kurumsal e-posta",
       signupSubmit: "Kodumu al",
       signupInvalid: "Vergi numarasını ve e-posta adresini kontrol edin.",
@@ -1509,6 +1524,49 @@
 
   // ---------- Inscription : vérification du numéro de TVA ----------
 
+  // Formats de numéro de TVA par pays. Le préfixe n'est plus saisi à la main :
+  // il vient de la liste déroulante, ce qui supprime la cause d'erreur la plus
+  // fréquente (un Français qui tape son numéro sans « FR », traité en belge).
+  const VAT_FORMATS = {
+    BE: { re: /^[01][0-9]{9}$/,           ex: "0817750283",    hint: "10 chiffres (le 0 initial est ajouté si besoin)" },
+    FR: { re: /^[0-9A-HJ-NP-Z]{2}[0-9]{9}$/, ex: "12345678901", hint: "2 caractères de clé + 9 chiffres du SIREN" },
+    LU: { re: /^[0-9]{8}$/,               ex: "12345678",      hint: "8 chiffres" },
+    NL: { re: /^[0-9]{9}B[0-9]{2}$/,      ex: "123456789B01",  hint: "9 chiffres + B + 2 chiffres" },
+    DE: { re: /^[0-9]{9}$/,               ex: "123456789",     hint: "9 chiffres" },
+    XX: { re: /^[A-Z]{2}[0-9A-Z]{4,14}$/, ex: "IT12345678901", hint: "numéro complet avec son préfixe pays" },
+  };
+
+  function signupCountry() {
+    const sel = document.getElementById("signup-country");
+    return (sel && sel.value) || "BE";
+  }
+
+  // Le champ s'adapte au pays : exemple, longueur maximale, aide de saisie.
+  function refreshVatField() {
+    const c = signupCountry();
+    const f = VAT_FORMATS[c] || VAT_FORMATS.BE;
+    const vat = document.getElementById("signup-vat");
+    const hint = document.getElementById("signup-hint");
+    if (vat) {
+      vat.placeholder = f.ex;
+      vat.value = "";
+      vat.classList.remove("invalid");
+    }
+    if (hint) hint.textContent = f.hint;
+  }
+
+  function buildVat() {
+    const c = signupCountry();
+    const raw = (document.getElementById("signup-vat").value || "")
+      .replace(/[\s.\-]/g, "").toUpperCase();
+    if (c === "XX") return { pays: raw.substring(0, 2), num: raw.substring(2), full: raw, raw: raw };
+    // Tolérance : si le visiteur a quand même retapé le préfixe, on l'enlève.
+    var num = raw.indexOf(c) === 0 ? raw.substring(2) : raw;
+    // Beaucoup de Belges tapent encore les 9 chiffres sans le zéro de tête.
+    if (c === "BE" && /^[0-9]{9}$/.test(num)) num = "0" + num;
+    return { pays: c, num: num, full: c + num, raw: num };
+  }
+
   async function submitSignup() {
     const vat = document.getElementById("signup-vat");
     const mail = document.getElementById("signup-email");
@@ -1516,12 +1574,18 @@
     const btn = document.getElementById("signup-submit");
     err.hidden = true;
 
-    const v = (vat.value || "").replace(/[\s.\-]/g, "").toUpperCase();
+    const c = signupCountry();
+    const built = buildVat();
+    const fmt = VAT_FORMATS[c] || VAT_FORMATS.BE;
+    const v = built.full;
     const m = (mail.value || "").trim();
-    vat.classList.toggle("invalid", v.length < 8);
-    mail.classList.toggle("invalid", !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m));
-    if (v.length < 8 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) {
-      err.textContent = T.signupInvalid;
+
+    const vatOk = fmt.re.test(c === "XX" ? built.raw : built.raw);
+    const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m);
+    vat.classList.toggle("invalid", !vatOk);
+    mail.classList.toggle("invalid", !mailOk);
+    if (!vatOk || !mailOk) {
+      err.textContent = !vatOk ? T.signupFormat : T.signupInvalid;
       err.hidden = false;
       return;
     }
@@ -1610,6 +1674,10 @@
     });
     const sSubmit = document.getElementById("signup-submit");
     if (sSubmit) sSubmit.addEventListener("click", submitSignup);
+    const sCountry = document.getElementById("signup-country");
+    if (sCountry) sCountry.addEventListener("change", refreshVatField);
+    const sVat = document.getElementById("signup-vat");
+    if (sVat) sVat.addEventListener("keydown", (e) => { if (e.key === "Enter") submitSignup(); });
     const sMail = document.getElementById("signup-email");
     if (sMail) sMail.addEventListener("keydown", (e) => { if (e.key === "Enter") submitSignup(); });
     const done = document.getElementById("sent-close");
@@ -1664,6 +1732,7 @@
     const map2 = {
       "go-signup": T.signupLink,
       "signup-intro": T.signupIntro,
+      "t-signup-country": T.signupCountry,
       "t-signup-vat": T.signupVat,
       "t-signup-email": T.signupEmail,
       "signup-submit": T.signupSubmit,
@@ -1674,6 +1743,16 @@
       const el = document.getElementById(id);
       if (el) el.textContent = map2[id];
     });
+    // Liste des pays : libellés traduits, sélection conservée
+    const csel = document.getElementById("signup-country");
+    if (csel) {
+      const garde = csel.value || "BE";
+      csel.innerHTML = ["BE", "FR", "LU", "NL", "DE", "XX"]
+        .map((c) => `<option value="${c}">${(T.countries && T.countries[c]) || c}</option>`)
+        .join("");
+      csel.value = garde;
+      refreshVatField();
+    }
     document.documentElement.lang = LANG;
   }
 
