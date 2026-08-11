@@ -3199,6 +3199,25 @@
   "description_tr": "Su bazlı şekillendirici wax: kolay uygulama, parlak bitiş ve gün boyu güçlü tutuş. Kalıntı bırakmaz ve tek şampuanla durulanır."
  },
  {
+  "ean": "8684736673336",
+  "name": "HAIR STYLING AQUA WAX MILKY 150 ML",
+  "volume": "150 ML",
+  "category": "Coiffage & Style",
+  "image": "8684736673336.webp",
+  "tagline": "Base aqueuse — parfum lacté",
+  "description": "Cire coiffante à base aqueuse au parfum lacté : tenue souple et modelable, fini soyeux et non gras. Se recoiffe dans la journée, ne laisse pas de résidus et se rince en un seul shampoing.",
+  "usage": "Prélever une petite quantité, réchauffer entre les paumes, appliquer sur cheveux secs ou humides et modeler.",
+  "box_qty": 48,
+  "tagline_en": "Water-based — milk scented",
+  "tagline_nl": "Op waterbasis — melkgeur",
+  "tagline_de": "Auf Wasserbasis — Milchduft",
+  "tagline_tr": "Su bazlı — süt kokulu",
+  "description_en": "Milk-scented water-based styling wax: flexible, reworkable hold with a silky, non-greasy finish. Restyle through the day, leaves no residue and rinses out in a single shampoo.",
+  "description_nl": "Stylingwax op waterbasis met melkgeur: soepele, herwerkbare hold en een zijdezachte, niet-vette finish. Overdag opnieuw te stylen, laat geen residu achter en spoelt uit met één shampoobeurt.",
+  "description_de": "Stylingwachs auf Wasserbasis mit Milchduft: flexibler, neu formbarer Halt und ein seidiges, nicht fettendes Finish. Lässt sich tagsüber umstylen, hinterlässt keine Rückstände und wäscht sich mit einer Haarwäsche aus.",
+  "description_tr": "Süt kokulu su bazlı şekillendirici wax: esnek ve yeniden şekillendirilebilir tutuş, ipeksi ve yağlı olmayan bitiş. Gün içinde yeniden şekillendirilir, kalıntı bırakmaz ve tek şampuanla durulanır."
+ },
+ {
   "ean": "8682035088516",
   "name": "HAIR STYLING AQUA WAX 09 COLA",
   "volume": "150 ML",
