@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "91"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "92"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -82,6 +82,9 @@
       lockedNote: "Prix réservés aux professionnels",
       addCart: "Ajouter au panier", updateCart: "Mettre à jour le panier",
       toastAdded: "Ajouté au panier", toastUpdated: "Panier mis à jour",
+      clearCart: "Vider",
+      clearConfirm: "Vider tout le panier ?",
+      toastCleared: "Panier vidé",
       totalHT: "Total HT", salesTeam: "Service commercial Nishman",
       contactTitle: "Une question ? Écrivez-nous", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Bonjour, j'ai une question concernant les produits Nishman.",
@@ -138,6 +141,9 @@
       lockedNote: "Prices reserved for professionals",
       addCart: "Add to cart", updateCart: "Update cart",
       toastAdded: "Added to cart", toastUpdated: "Cart updated",
+      clearCart: "Clear",
+      clearConfirm: "Empty the whole cart?",
+      toastCleared: "Cart cleared",
       totalHT: "Total excl. VAT", salesTeam: "Nishman sales team",
       contactTitle: "A question? Write to us", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hello, I have a question about Nishman products.",
@@ -194,6 +200,9 @@
       lockedNote: "Prijzen voorbehouden aan professionals",
       addCart: "In winkelmand", updateCart: "Winkelmand bijwerken",
       toastAdded: "Toegevoegd aan winkelmand", toastUpdated: "Winkelmand bijgewerkt",
+      clearCart: "Wissen",
+      clearConfirm: "De hele mand legen?",
+      toastCleared: "Mand geleegd",
       totalHT: "Totaal excl. btw", salesTeam: "Nishman verkoopdienst",
       contactTitle: "Een vraag? Schrijf ons", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hallo, ik heb een vraag over de Nishman-producten.",
@@ -253,6 +262,9 @@
       boxDetail: (b, n, tot) => b + " Karton" + (b > 1 ? "s" : "") + " mit " + n + " (" + tot + " Stück)",
       addCart: "In den Warenkorb", updateCart: "Warenkorb aktualisieren",
       toastAdded: "Zum Warenkorb hinzugefügt", toastUpdated: "Warenkorb aktualisiert",
+      clearCart: "Leeren",
+      clearConfirm: "Den gesamten Warenkorb leeren?",
+      toastCleared: "Warenkorb geleert",
       totalHT: "Gesamt zzgl. MwSt.", salesTeam: "Nishman Vertriebsteam",
       contactTitle: "Eine Frage? Schreiben Sie uns", contactWa: "WhatsApp", contactMail: "E-Mail",
       contactMsg: "Guten Tag, ich habe eine Frage zu den Nishman-Produkten.",
@@ -309,6 +321,9 @@
       boxDetail: (b, n, tot) => b + " adet " + n + "'lu koli (" + tot + " adet)",
       addCart: "Sepete ekle", updateCart: "Sepeti güncelle",
       toastAdded: "Sepete eklendi", toastUpdated: "Sepet güncellendi",
+      clearCart: "Temizle",
+      clearConfirm: "Sepetin tamamı boşaltılsın mı?",
+      toastCleared: "Sepet boşaltıldı",
       totalHT: "Toplam (KDV hariç)", salesTeam: "Nishman Satış Ekibi",
       contactTitle: "Sorunuz mu var? Bize yazın", contactWa: "WhatsApp", contactMail: "E-posta",
       contactMsg: "Merhaba, Nishman ürünleri hakkında bir sorum var.",
@@ -869,6 +884,19 @@
 
   // ---------- Tiroir de sélection ----------
 
+  // Vide le panier d'un coup. Confirmation demandée : c'est irréversible
+  // et un panier de plusieurs dizaines de lignes est long à recomposer.
+  function clearCart() {
+    if (Object.keys(selection).length === 0) return;
+    if (!window.confirm(T.clearConfirm || "Vider tout le panier ?")) return;
+    Object.keys(selection).forEach((ean) => { delete selection[ean]; });
+    saveSelection();
+    renderDrawer();
+    renderGrid();
+    renderFloatBar();
+    showToast(T.toastCleared || "Panier vidé");
+  }
+
   function openDrawer() {
     renderDrawer();
     document.getElementById("drawer-overlay").hidden = false;
@@ -904,15 +932,19 @@
     const pickList = document.getElementById("agent-pick-list");
     const eans = Object.keys(selection);
 
+    const btnClear = document.getElementById("drawer-clear");
+
     if (eans.length === 0) {
-      list.innerHTML = `<p class="drawer-empty">Votre sélection est vide.</p>`;
+      list.innerHTML = `<p class="drawer-empty">${T.emptySelection || "Votre sélection est vide."}</p>`;
       pickTitle.hidden = true;
       pickList.hidden = true;
+      if (btnClear) btnClear.hidden = true;   // rien à vider
       return;
     }
 
     pickTitle.hidden = false;
     pickList.hidden = false;
+    if (btnClear) btnClear.hidden = false;
 
     list.innerHTML = eans
       .map((ean) => {
@@ -1179,6 +1211,8 @@
     renderFooter();
 
     document.getElementById("float-bar").addEventListener("click", openDrawer);
+    const bClear = document.getElementById("drawer-clear");
+    if (bClear) bClear.addEventListener("click", clearCart);
     document.getElementById("drawer-close").addEventListener("click", closeDrawer);
     document.getElementById("drawer-overlay").addEventListener("click", (e) => {
       if (e.target.id === "drawer-overlay") closeDrawer();
@@ -1732,6 +1766,7 @@
     const map2 = {
       "go-signup": T.signupLink,
       "signup-intro": T.signupIntro,
+      "t-clear": T.clearCart,
       "t-signup-country": T.signupCountry,
       "t-signup-vat": T.signupVat,
       "t-signup-email": T.signupEmail,

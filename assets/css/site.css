@@ -2339,3 +2339,46 @@ img { max-width: 100%; height: auto; }
   top: 50%;
   transform: translateY(-50%);
 }
+
+/* ---------- Bouton « vider le panier » ---------- */
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.drawer-head .drawer-title { margin: 0; flex: 1; }
+
+.drawer-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+/* Rouge seulement au survol : l'action est destructive, mais le bouton
+   ne doit pas hurler en permanence à côté du titre. */
+.drawer-clear:hover {
+  color: #c62828;
+  border-color: rgba(198, 40, 40, 0.5);
+  background: rgba(198, 40, 40, 0.05);
+}
+
+.drawer-clear:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.drawer-clear[hidden] { display: none; }
+
+@media (max-width: 620px) {
+  .drawer-clear { min-height: 40px; padding: 8px 14px; }
+}

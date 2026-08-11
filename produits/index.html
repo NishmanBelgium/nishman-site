@@ -24,15 +24,15 @@
     rel="stylesheet"
   />
 
-  <link rel="manifest" href="/manifest.json?v=91" />
+  <link rel="manifest" href="/manifest.json?v=92" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Nishman" />
-  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=91" />
+  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=92" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=91" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=92" />
 </head>
 <body class="catalog-body">
 
@@ -143,7 +143,16 @@
   <div class="drawer-overlay" id="drawer-overlay" hidden>
     <div class="drawer">
       <button class="drawer-close" id="drawer-close">&times;</button>
-      <p class="drawer-title">Ma sélection</p>
+      <div class="drawer-head">
+        <p class="drawer-title">Ma sélection</p>
+        <button class="drawer-clear" id="drawer-clear" hidden>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+               stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/>
+          </svg>
+          <span id="t-clear">Vider</span>
+        </button>
+      </div>
       <div id="drawer-list"></div>
       <p class="agent-pick-title"></p>
       <div id="agent-pick-list"></div>
@@ -217,8 +226,8 @@
     </div>
   </div>
 
-  <script src="/assets/js/config.js?v=91"></script>
-  <script src="/assets/js/catalog.js?v=91"></script>
+  <script src="/assets/js/config.js?v=92"></script>
+  <script src="/assets/js/catalog.js?v=92"></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 </body>
 </html>
