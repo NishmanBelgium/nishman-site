@@ -2382,3 +2382,15 @@ img { max-width: 100%; height: auto; }
 @media (max-width: 620px) {
   .drawer-clear { min-height: 40px; padding: 8px 14px; }
 }
+
+/* Chevron du bouton de langue.
+   Classe distincte de .cat-btn-chevron, qui est en position absolue :
+   dans .lang-btn (sans repère de positionnement) il s'échappait vers la
+   droite de la barre de filtres. Ici il reste dans le flux, à sa place. */
+.lang-btn-chevron {
+  position: static;
+  font-size: 10px;
+  opacity: 0.6;
+  flex-shrink: 0;
+  line-height: 1;
+}
