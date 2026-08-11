@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "83"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "84"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -69,7 +69,7 @@
       signupVat: "Numéro d'entreprise / TVA",
       signupCountry: "Pays",
       signupFormat: "Ce numéro ne correspond pas au format attendu pour ce pays.",
-      countries: { BE: "Belgique", FR: "France", LU: "Luxembourg", NL: "Pays-Bas", DE: "Allemagne", XX: "Autre pays" },
+      countries: { BE: "Belgique", FR: "France", LU: "Luxembourg" },
       signupEmail: "E-mail professionnel",
       signupSubmit: "Recevoir mon code",
       signupInvalid: "Vérifiez le numéro d'entreprise et l'adresse e-mail.",
@@ -125,7 +125,7 @@
       signupVat: "Company / VAT number",
       signupCountry: "Country",
       signupFormat: "This number does not match the expected format for that country.",
-      countries: { BE: "Belgium", FR: "France", LU: "Luxembourg", NL: "Netherlands", DE: "Germany", XX: "Other country" },
+      countries: { BE: "Belgium", FR: "France", LU: "Luxembourg" },
       signupEmail: "Business e-mail",
       signupSubmit: "Get my code",
       signupInvalid: "Please check the company number and e-mail address.",
@@ -181,7 +181,7 @@
       signupVat: "Ondernemings- / btw-nummer",
       signupCountry: "Land",
       signupFormat: "Dit nummer komt niet overeen met het verwachte formaat voor dat land.",
-      countries: { BE: "België", FR: "Frankrijk", LU: "Luxemburg", NL: "Nederland", DE: "Duitsland", XX: "Ander land" },
+      countries: { BE: "België", FR: "Frankrijk", LU: "Luxemburg" },
       signupEmail: "Professioneel e-mailadres",
       signupSubmit: "Mijn code ontvangen",
       signupInvalid: "Controleer het ondernemingsnummer en het e-mailadres.",
@@ -237,7 +237,7 @@
       signupVat: "Unternehmens- / USt-Nummer",
       signupCountry: "Land",
       signupFormat: "Diese Nummer entspricht nicht dem erwarteten Format für dieses Land.",
-      countries: { BE: "Belgien", FR: "Frankreich", LU: "Luxemburg", NL: "Niederlande", DE: "Deutschland", XX: "Anderes Land" },
+      countries: { BE: "Belgien", FR: "Frankreich", LU: "Luxemburg" },
       signupEmail: "Geschäftliche E-Mail",
       signupSubmit: "Code erhalten",
       signupInvalid: "Bitte prüfen Sie Unternehmensnummer und E-Mail-Adresse.",
@@ -293,7 +293,7 @@
       signupVat: "Firma / vergi numarası",
       signupCountry: "Ülke",
       signupFormat: "Bu numara seçilen ülke için beklenen biçime uymuyor.",
-      countries: { BE: "Belçika", FR: "Fransa", LU: "Lüksemburg", NL: "Hollanda", DE: "Almanya", XX: "Diğer ülke" },
+      countries: { BE: "Belçika", FR: "Fransa", LU: "Lüksemburg" },
       signupEmail: "Kurumsal e-posta",
       signupSubmit: "Kodumu al",
       signupInvalid: "Vergi numarasını ve e-posta adresini kontrol edin.",
@@ -1531,9 +1531,6 @@
     BE: { re: /^[01][0-9]{9}$/,           ex: "0817750283",    hint: "10 chiffres (le 0 initial est ajouté si besoin)" },
     FR: { re: /^[0-9A-HJ-NP-Z]{2}[0-9]{9}$/, ex: "12345678901", hint: "2 caractères de clé + 9 chiffres du SIREN" },
     LU: { re: /^[0-9]{8}$/,               ex: "12345678",      hint: "8 chiffres" },
-    NL: { re: /^[0-9]{9}B[0-9]{2}$/,      ex: "123456789B01",  hint: "9 chiffres + B + 2 chiffres" },
-    DE: { re: /^[0-9]{9}$/,               ex: "123456789",     hint: "9 chiffres" },
-    XX: { re: /^[A-Z]{2}[0-9A-Z]{4,14}$/, ex: "IT12345678901", hint: "numéro complet avec son préfixe pays" },
   };
 
   function signupCountry() {
@@ -1559,7 +1556,6 @@
     const c = signupCountry();
     const raw = (document.getElementById("signup-vat").value || "")
       .replace(/[\s.\-]/g, "").toUpperCase();
-    if (c === "XX") return { pays: raw.substring(0, 2), num: raw.substring(2), full: raw, raw: raw };
     // Tolérance : si le visiteur a quand même retapé le préfixe, on l'enlève.
     var num = raw.indexOf(c) === 0 ? raw.substring(2) : raw;
     // Beaucoup de Belges tapent encore les 9 chiffres sans le zéro de tête.
@@ -1580,7 +1576,7 @@
     const v = built.full;
     const m = (mail.value || "").trim();
 
-    const vatOk = fmt.re.test(c === "XX" ? built.raw : built.raw);
+    const vatOk = fmt.re.test(built.raw);
     const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m);
     vat.classList.toggle("invalid", !vatOk);
     mail.classList.toggle("invalid", !mailOk);
@@ -1747,7 +1743,7 @@
     const csel = document.getElementById("signup-country");
     if (csel) {
       const garde = csel.value || "BE";
-      csel.innerHTML = ["BE", "FR", "LU", "NL", "DE", "XX"]
+      csel.innerHTML = ["BE", "FR", "LU"]
         .map((c) => `<option value="${c}">${(T.countries && T.countries[c]) || c}</option>`)
         .join("");
       csel.value = garde;
