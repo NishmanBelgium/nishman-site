@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "88"; // incrémenté à chaque mise à jour pour contourner les caches
+  const ASSET_V = "89"; // incrémenté à chaque mise à jour pour contourner les caches
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -443,8 +443,10 @@
 
   function renderCatGrid() {
     const counts = categoryCounts();
-    // Catégories triées par nombre de produits : les plus fournies en premier.
-    const cats = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    // Le menu suit l'ordre de la page : categoryCounts parcourt les produits
+    // dans l'ordre du fichier, donc les clés sortent déjà dans l'ordre
+    // d'apparition. Aucun tri à appliquer.
+    const cats = Object.keys(counts);
     const grid = document.getElementById("cat-grid");
 
     const cells = [
