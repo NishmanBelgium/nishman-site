@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "95";
+  const ASSET_V = "96";
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
   const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
@@ -305,6 +305,10 @@
 
   function fillForm() {
     FIELDS.forEach((f) => { if (client[f]) $("f-" + f).value = client[f]; });
+    // Un pays enregistré autrefois mais retiré de la liste (Pays-Bas,
+    // Allemagne) laisserait le sélecteur vide et le devis sans pays.
+    const pays = $("f-country");
+    if (pays && !pays.value) pays.selectedIndex = 0;
   }
 
   function readForm() {
