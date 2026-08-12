@@ -2394,3 +2394,27 @@ img { max-width: 100%; height: auto; }
   flex-shrink: 0;
   line-height: 1;
 }
+
+/* ---------- Seuil de commande et frais de livraison ---------- */
+
+.ship-note {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm, 12px);
+  background: rgba(255, 138, 0, 0.07);
+  border: 1px solid rgba(255, 138, 0, 0.28);
+}
+
+.ship-note-main { font-size: 13px; font-weight: 700; color: var(--ink); }
+.ship-note-sub { font-size: 12px; color: var(--ink-soft); }
+
+.ship-note.ship-ok {
+  background: rgba(46, 125, 50, 0.07);
+  border-color: rgba(46, 125, 50, 0.3);
+  font-size: 13px;
+  font-weight: 700;
+  color: #2e7d32;
+}

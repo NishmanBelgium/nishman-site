@@ -373,3 +373,18 @@
   .quote-card { padding: 18px 14px; }
   .quote-title { font-size: 18px; }
 }
+
+/* ---------- Ligne de frais de livraison ---------- */
+
+.doc-ship {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 18px;
+  padding: 14px 6px 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.doc-ship span:last-child { font-weight: 700; color: var(--ink); }
+.doc-ship[hidden] { display: none; }

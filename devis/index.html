@@ -13,15 +13,15 @@
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="manifest" href="/manifest.json?v=96" />
+  <link rel="manifest" href="/manifest.json?v=97" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Nishman" />
-  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=96" />
+  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=97" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=96" />
-  <link rel="stylesheet" href="/assets/css/quote.css?v=96" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=97" />
+  <link rel="stylesheet" href="/assets/css/quote.css?v=97" />
 </head>
 <body class="quote-body">
 
@@ -85,6 +85,13 @@
             <option value="Luxembourg">Luxembourg</option>
           </select>
         </label>
+        <label class="field field-wide">
+          <span id="t-f-shipmode">Mode de réception</span>
+          <select id="f-shipmode">
+            <option value="livraison">Livraison</option>
+            <option value="retrait">Retrait à Cuesmes</option>
+          </select>
+        </label>
       </div>
 
       <p class="quote-error" id="form-error" hidden></p>
@@ -137,6 +144,11 @@
           </table>
         </div>
 
+        <div class="doc-ship" id="doc-ship-row" hidden>
+          <span id="doc-ship-label">Frais de livraison</span>
+          <span id="doc-ship-value">—</span>
+        </div>
+
         <div class="doc-total" id="doc-total-row">
           <span id="t-totalht">Total HT</span>
           <strong id="doc-total">—</strong>
@@ -173,7 +185,7 @@
 
   </main>
 
-  <script src="/assets/js/config.js?v=96"></script>
-  <script src="/assets/js/quote.js?v=96"></script>
+  <script src="/assets/js/config.js?v=97"></script>
+  <script src="/assets/js/quote.js?v=97"></script>
 </body>
 </html>

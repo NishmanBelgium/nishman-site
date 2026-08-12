@@ -8,7 +8,11 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "96";
+  const ASSET_V = "97";
+
+  // Mêmes conditions commerciales que le catalogue.
+  const MIN_ORDER = 200;
+  const SHIPPING_FEE = 10;
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
   const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
@@ -28,6 +32,8 @@
       first: "Prénom", last: "Nom", company: "Nom du salon / société",
       vat: "Numéro d'entreprise / TVA", phone: "Téléphone", email: "E-mail",
       street: "Adresse (rue et numéro)", zip: "Code postal", city: "Ville", country: "Pays",
+      shipMode: "Mode de réception", shipDelivery: "Livraison", shipPickup: "Retrait à Cuesmes",
+      shipFee: "Frais de livraison", shipFree: "Livraison offerte", subTotal: "Sous-total HT",
       cont: "Continuer", saved: "Vos coordonnées sont conservées sur cet appareil pour vos prochaines demandes.",
       doctitle: "DEMANDE DE DEVIS", ref: "Référence", date: "Date", client: "Client",
       thProd: "Produit", thEan: "EAN", thU: "Unités", thB: "Cartons", thTot: "Total pièces",
@@ -51,6 +57,8 @@
       first: "First name", last: "Last name", company: "Salon / company name",
       vat: "Company / VAT number", phone: "Phone", email: "E-mail",
       street: "Address (street and number)", zip: "Postcode", city: "City", country: "Country",
+      shipMode: "Delivery method", shipDelivery: "Delivery", shipPickup: "Collection in Cuesmes",
+      shipFee: "Delivery charge", shipFree: "Free delivery", subTotal: "Subtotal excl. VAT",
       cont: "Continue", saved: "Your details are kept on this device for your next requests.",
       doctitle: "QUOTATION REQUEST", ref: "Reference", date: "Date", client: "Customer",
       thProd: "Product", thEan: "EAN", thU: "Units", thB: "Boxes", thTot: "Total pcs",
@@ -74,6 +82,8 @@
       first: "Voornaam", last: "Naam", company: "Naam salon / bedrijf",
       vat: "Ondernemings- / btw-nummer", phone: "Telefoon", email: "E-mail",
       street: "Adres (straat en nummer)", zip: "Postcode", city: "Stad", country: "Land",
+      shipMode: "Wijze van ontvangst", shipDelivery: "Levering", shipPickup: "Afhalen in Cuesmes",
+      shipFee: "Leveringskosten", shipFree: "Gratis levering", subTotal: "Subtotaal excl. btw",
       cont: "Doorgaan", saved: "Uw gegevens worden op dit toestel bewaard voor volgende aanvragen.",
       doctitle: "OFFERTEAANVRAAG", ref: "Referentie", date: "Datum", client: "Klant",
       thProd: "Product", thEan: "EAN", thU: "Stuks", thB: "Dozen", thTot: "Totaal stuks",
@@ -97,6 +107,8 @@
       first: "Vorname", last: "Nachname", company: "Name des Salons / der Firma",
       vat: "Unternehmens- / USt-Nummer", phone: "Telefon", email: "E-Mail",
       street: "Adresse (Straße und Nummer)", zip: "PLZ", city: "Stadt", country: "Land",
+      shipMode: "Art des Empfangs", shipDelivery: "Lieferung", shipPickup: "Abholung in Cuesmes",
+      shipFee: "Versandkosten", shipFree: "Kostenlose Lieferung", subTotal: "Zwischensumme netto",
       cont: "Weiter", saved: "Ihre Daten werden auf diesem Gerät für künftige Anfragen gespeichert.",
       doctitle: "ANGEBOTSANFRAGE", ref: "Referenz", date: "Datum", client: "Kunde",
       thProd: "Produkt", thEan: "EAN", thU: "Stück", thB: "Kartons", thTot: "Stück gesamt",
@@ -120,6 +132,8 @@
       first: "Ad", last: "Soyad", company: "Salon / firma adı",
       vat: "Firma / vergi numarası", phone: "Telefon", email: "E-posta",
       street: "Adres (cadde ve numara)", zip: "Posta kodu", city: "Şehir", country: "Ülke",
+      shipMode: "Teslim şekli", shipDelivery: "Teslimat", shipPickup: "Cuesmes'ten teslim alma",
+      shipFee: "Teslimat ücreti", shipFree: "Teslimat ücretsiz", subTotal: "Ara toplam (KDV hariç)",
       cont: "Devam", saved: "Bilgileriniz sonraki talepleriniz için bu cihazda saklanır.",
       doctitle: "FİYAT TEKLİFİ TALEBİ", ref: "Referans", date: "Tarih", client: "Müşteri",
       thProd: "Ürün", thEan: "EAN", thU: "Adet", thB: "Koli", thTot: "Toplam adet",
@@ -289,19 +303,36 @@
         ${showPrices ? `<td class="num price-col"><strong>${l.subtotal !== null ? money(l.subtotal) : "—"}</strong></td>` : ""}
       </tr>`).join("");
 
-    const total = lines.reduce((s, l) => s + (l.subtotal || 0), 0);
+    const sousTotal = lines.reduce((s, l) => s + (l.subtotal || 0), 0);
+
+    // Frais de livraison : uniquement en livraison, et seulement sous le
+    // seuil de franco. Le retrait à Cuesmes n'en génère jamais.
+    const retrait = (client.shipmode || "livraison") === "retrait";
+    const frais = (!retrait && sousTotal > 0 && sousTotal < MIN_ORDER) ? SHIPPING_FEE : 0;
+    const total = sousTotal + frais;
+
+    const rowShip = $("doc-ship-row");
+    if (showPrices && sousTotal > 0 && !retrait) {
+      rowShip.hidden = false;
+      txt("doc-ship-label", T.shipFee);
+      txt("doc-ship-value", frais > 0 ? money(frais) : T.shipFree);
+    } else {
+      rowShip.hidden = true;
+    }
+
     if (showPrices && total > 0) {
       $("doc-total-row").hidden = false;
       txt("doc-total", money(total));
     } else {
       $("doc-total-row").hidden = true;
     }
-    return { lines: lines, total: total, showPrices: showPrices };
+    return { lines: lines, total: total, subTotal: sousTotal, shipping: frais,
+             pickup: retrait, showPrices: showPrices };
   }
 
   // ---------- Formulaire ----------
 
-  const FIELDS = ["first", "last", "company", "vat", "phone", "email", "street", "zip", "city", "country"];
+  const FIELDS = ["first", "last", "company", "vat", "phone", "email", "street", "zip", "city", "country", "shipmode"];
 
   function fillForm() {
     FIELDS.forEach((f) => { if (client[f]) $("f-" + f).value = client[f]; });
@@ -357,6 +388,9 @@
       lang: LANG,
       client: client,
       total: data.showPrices ? data.total.toFixed(2) : "",
+      subTotal: data.showPrices ? data.subTotal.toFixed(2) : "",
+      shipping: data.showPrices ? data.shipping.toFixed(2) : "",
+      pickup: data.pickup ? "1" : "",
       currency: "EUR",
       lines: data.lines.map((l) => ({
         ean: l.ean, name: l.name, units: l.units, boxes: l.boxes,
@@ -411,6 +445,7 @@
       "t-f-first": T.first, "t-f-last": T.last, "t-f-company": T.company,
       "t-f-vat": T.vat, "t-f-phone": T.phone, "t-f-email": T.email,
       "t-f-street": T.street, "t-f-zip": T.zip, "t-f-city": T.city, "t-f-country": T.country,
+      "t-f-shipmode": T.shipMode,
       "t-continue": T.cont, "t-saved": T.saved,
       "t-doctitle": T.doctitle, "t-ref": T.ref, "t-date": T.date, "t-client": T.client,
       "t-th-prod": T.thProd, "t-th-ean": T.thEan, "t-th-u": T.thU, "t-th-b": T.thB,
