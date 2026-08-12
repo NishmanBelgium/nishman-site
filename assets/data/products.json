@@ -1744,7 +1744,8 @@
   "tagline_de": "Salongröße — intensive Nutzung",
   "description_de": "Profi-Shampoo im Großformat, für die intensive Nutzung: für den intensiven Einsatz am Waschbecken entwickelt, reinigt sanft, ohne behandeltes Haar anzugreifen.",
   "tagline_tr": "Salon boyu — yoğun kullanım",
-  "description_tr": "Büyük boy profesyonel şampuan, yoğun kullanım için: yıkama ünitesinde yoğun kullanım için tasarlandı, işlem görmüş saçı yıpratmadan nazikçe temizler."
+  "description_tr": "Büyük boy profesyonel şampuan, yoğun kullanım için: yıkama ünitesinde yoğun kullanım için tasarlandı, işlem görmüş saçı yıpratmadan nazikçe temizler.",
+  "hidden": true
  },
  {
   "ean": "8682035080701",
