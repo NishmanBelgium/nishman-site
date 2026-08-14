@@ -1967,6 +1967,20 @@ body.card-dark .label-row.primary .swatch {
 .foot-tel:hover  { border-color: var(--whatsapp); background: rgba(37, 211, 102, 0.08); }
 .foot-ig:hover   { border-color: #ffffff; background: rgba(255, 255, 255, 0.08); }
 
+/* Bouton Facebook : même gabarit qu'Instagram, icône en SVG donc aucune
+   image à charger, et la couleur suit celle du texte. */
+.foot-fb-icon {
+  width: 17px;
+  height: 17px;
+  display: block;
+  flex-shrink: 0;
+  opacity: 0.9;
+  transition: opacity 0.18s ease;
+}
+
+.foot-fb:hover .foot-fb-icon { opacity: 1; }
+.foot-fb:hover { border-color: #1877f2; background: rgba(24, 119, 242, 0.10); }
+
 .foot-bottom {
   max-width: 1140px;
   margin: 0 auto;

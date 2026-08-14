@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "99";
+  const ASSET_V = "101";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -1843,10 +1843,21 @@
       const social = document.getElementById("footer-social");
       if (social) {
         const ig = (typeof SHARED !== "undefined" && SHARED.instagram) ? SHARED.instagram : "";
-        social.innerHTML = ig
-          ? `<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">
-               <img class="foot-ig-icon" src="/assets/img/instagram.png" alt="" />Instagram</a>`
-          : "";
+        // Facebook : lu dans config.js s'il y est, sinon l'adresse de la page.
+        const fb = (typeof SHARED !== "undefined" && SHARED.facebook)
+          ? SHARED.facebook
+          : "https://www.facebook.com/share/19Kw4PGMRF/";
+        const liens = [];
+        if (ig) {
+          liens.push(`<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">
+               <img class="foot-ig-icon" src="/assets/img/instagram.png" alt="" />Instagram</a>`);
+        }
+        if (fb) {
+          liens.push(`<a class="foot-btn foot-fb" target="_blank" rel="noopener" href="${fb}">
+               <svg class="foot-fb-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor"
+                 d="M14.5 8.5V6.9c0-.7.2-1.1 1.2-1.1h1.6V3.1A21 21 0 0 0 15 3c-2.3 0-3.9 1.4-3.9 4v1.5H8.6V11h2.5v8h3.4v-8h2.4l.4-2.5h-2.8Z"/></svg>Facebook</a>`);
+        }
+        social.innerHTML = liens.join("");
       }
     }
 
