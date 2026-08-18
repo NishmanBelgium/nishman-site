@@ -2432,3 +2432,56 @@ img { max-width: 100%; height: auto; }
   font-weight: 700;
   color: #2e7d32;
 }
+
+/* ---------- Code d'accès affiché après l'inscription ---------- */
+
+.code-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 16px;
+  padding: 20px 16px;
+  border-radius: var(--radius-sm, 14px);
+  background: rgba(255, 138, 0, 0.07);
+  border: 1px solid rgba(255, 138, 0, 0.32);
+}
+
+.code-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-deep, #b36b00);
+}
+
+/* Chiffres à chasse fixe : un code se relève caractère par caractère,
+   l'alignement évite de confondre les groupes. */
+.code-value {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: clamp(22px, 7vw, 30px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  user-select: all;
+  -webkit-user-select: all;
+}
+
+.code-copy {
+  margin-top: 4px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.18s ease;
+}
+
+.code-copy:hover { border-color: var(--gold); }
+
+#code-use { margin-bottom: 10px; }
+.code-box[hidden], #code-use[hidden] { display: none; }

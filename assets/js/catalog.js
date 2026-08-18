@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "104";
+  const ASSET_V = "105";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -80,6 +80,11 @@
       signupInvalid: "Vérifiez le numéro d'entreprise et l'adresse e-mail.",
       signupFailed: "La vérification a échoué. Réessayez dans un instant.",
       signupSent: (m) => "Votre code d'accès vient d'être envoyé à " + m + ". Pensez à vérifier vos courriers indésirables.",
+      yourCode: "Votre code d'accès",
+      copyCode: "Copier le code",
+      codeCopied: "Code copié",
+      useCode: "Déverrouiller les prix maintenant",
+      alsoByMail: "Nous vous l'avons aussi envoyé par e-mail. Notez-le : il reste valable pour toutes vos prochaines visites.",
       signupPending: "Votre demande a bien été reçue. Notre équipe la validera manuellement et vous recevrez votre code par e-mail.",
       haveCode: "J'ai déjà un code",
       sentOk: "Continuer",
@@ -142,6 +147,11 @@
       signupInvalid: "Please check the company number and e-mail address.",
       signupFailed: "Verification failed. Please try again shortly.",
       signupSent: (m) => "Your access code has just been sent to " + m + ". Please also check your spam folder.",
+      yourCode: "Your access code",
+      copyCode: "Copy the code",
+      codeCopied: "Code copied",
+      useCode: "Unlock prices now",
+      alsoByMail: "We have also emailed it to you. Keep it: it stays valid for all your future visits.",
       signupPending: "Your request has been received. Our team will review it and you will get your code by e-mail.",
       haveCode: "I already have a code",
       sentOk: "Continue",
@@ -204,6 +214,11 @@
       signupInvalid: "Controleer het ondernemingsnummer en het e-mailadres.",
       signupFailed: "De controle is mislukt. Probeer het zo dadelijk opnieuw.",
       signupSent: (m) => "Uw toegangscode is zonet verstuurd naar " + m + ". Controleer ook uw ongewenste e-mail.",
+      yourCode: "Uw toegangscode",
+      copyCode: "Code kopiëren",
+      codeCopied: "Code gekopieerd",
+      useCode: "Prijzen nu ontgrendelen",
+      alsoByMail: "We hebben hem ook per e-mail verstuurd. Bewaar hem: hij blijft geldig voor al uw volgende bezoeken.",
       signupPending: "Uw aanvraag is goed ontvangen. Ons team bekijkt ze en u ontvangt uw code per e-mail.",
       haveCode: "Ik heb al een code",
       sentOk: "Doorgaan",
@@ -266,6 +281,11 @@
       signupInvalid: "Bitte prüfen Sie Unternehmensnummer und E-Mail-Adresse.",
       signupFailed: "Die Prüfung ist fehlgeschlagen. Bitte versuchen Sie es gleich erneut.",
       signupSent: (m) => "Ihr Zugangscode wurde soeben an " + m + " gesendet. Prüfen Sie auch den Spam-Ordner.",
+      yourCode: "Ihr Zugangscode",
+      copyCode: "Code kopieren",
+      codeCopied: "Code kopiert",
+      useCode: "Preise jetzt freischalten",
+      alsoByMail: "Wir haben ihn Ihnen auch per E-Mail geschickt. Bewahren Sie ihn auf: er bleibt fur alle weiteren Besuche gultig.",
       signupPending: "Ihre Anfrage ist eingegangen. Unser Team prüft sie und Sie erhalten Ihren Code per E-Mail.",
       haveCode: "Ich habe bereits einen Code",
       sentOk: "Weiter",
@@ -328,6 +348,11 @@
       signupInvalid: "Vergi numarasını ve e-posta adresini kontrol edin.",
       signupFailed: "Doğrulama başarısız oldu. Lütfen birazdan tekrar deneyin.",
       signupSent: (m) => "Erişim kodunuz " + m + " adresine gönderildi. Lütfen istenmeyen posta klasörünü de kontrol edin.",
+      yourCode: "Erisim kodunuz",
+      copyCode: "Kodu kopyala",
+      codeCopied: "Kod kopyalandi",
+      useCode: "Fiyatlari simdi ac",
+      alsoByMail: "Kodu ayrica e-posta ile de gonderdik. Saklayin: sonraki tum ziyaretlerinizde gecerlidir.",
       signupPending: "Talebiniz alındı. Ekibimiz inceleyecek ve kodunuz e-posta ile gönderilecektir.",
       haveCode: "Zaten bir kodum var",
       sentOk: "Devam",
@@ -1672,8 +1697,53 @@
     btn.textContent = T.signupSubmit;
 
     if (res && res.ok) {
-      document.getElementById("sent-text").textContent =
-        (res.pending ? T.signupPending : T.signupSent(m));
+      const boite = document.getElementById("code-box");
+      const useBtn = document.getElementById("code-use");
+
+      if (res.code && !res.pending) {
+        // Le code est affiché à l'écran : l'accès ne dépend plus de la bonne
+        // réception du mail (certaines messageries le rejettent en silence).
+        document.getElementById("sent-text").textContent = T.alsoByMail;
+        document.getElementById("t-yourcode").textContent = T.yourCode;
+        document.getElementById("code-value").textContent = res.code;
+        const copie = document.getElementById("code-copy");
+        copie.textContent = T.copyCode;
+        copie.onclick = () => {
+          const done = () => { copie.textContent = T.codeCopied;
+                               setTimeout(() => (copie.textContent = T.copyCode), 2000); };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(res.code).then(done).catch(() => {});
+          } else {
+            // Safari ancien : on sélectionne le texte, l'utilisateur copie
+            const r = document.createRange();
+            r.selectNodeContents(document.getElementById("code-value"));
+            const sel = window.getSelection();
+            sel.removeAllRanges(); sel.addRange(r); done();
+          }
+        };
+        boite.hidden = false;
+
+        useBtn.hidden = false;
+        useBtn.textContent = T.useCode;
+        useBtn.onclick = async () => {
+          useBtn.disabled = true;
+          useBtn.textContent = T.checking;
+          const ok = await tryUnlock(res.code);
+          useBtn.disabled = false;
+          useBtn.textContent = T.useCode;
+          if (ok) {
+            localStorage.setItem("nishman-access-code", res.code);
+            closeAccessModal();
+            renderGrid();
+            renderProAccessBtn();
+          }
+        };
+      } else {
+        document.getElementById("sent-text").textContent =
+          (res.pending ? T.signupPending : T.signupSent(m));
+        boite.hidden = true;
+        useBtn.hidden = true;
+      }
       showAccessStep("access-step-sent");
     } else {
       err.textContent = (res && res.message) ? res.message : T.signupFailed;
