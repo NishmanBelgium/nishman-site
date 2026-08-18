@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "103";
+  const ASSET_V = "104";
 
   // Mêmes conditions commerciales que le catalogue.
   const MIN_ORDER = 200;

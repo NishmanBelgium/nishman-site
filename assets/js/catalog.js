@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "103";
+  const ASSET_V = "104";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -73,7 +73,7 @@
       signupIntro: "Indiquez votre numéro d'entreprise et votre e-mail : votre code d'accès vous sera envoyé immédiatement.",
       signupVat: "Numéro d'entreprise / TVA",
       signupCountry: "Pays",
-      signupFormat: "Ce numéro ne correspond pas au format attendu pour ce pays.",
+      signupFormat: "Merci d'indiquer votre numéro d'entreprise complet.",
       countries: { BE: "Belgique", FR: "France", LU: "Luxembourg" },
       signupEmail: "E-mail professionnel",
       signupSubmit: "Recevoir mon code",
@@ -135,7 +135,7 @@
       signupIntro: "Enter your company number and e-mail: your access code will be sent immediately.",
       signupVat: "Company / VAT number",
       signupCountry: "Country",
-      signupFormat: "This number does not match the expected format for that country.",
+      signupFormat: "Please enter your full company number.",
       countries: { BE: "Belgium", FR: "France", LU: "Luxembourg" },
       signupEmail: "Business e-mail",
       signupSubmit: "Get my code",
@@ -197,7 +197,7 @@
       signupIntro: "Geef uw ondernemingsnummer en e-mailadres op: uw toegangscode wordt onmiddellijk verstuurd.",
       signupVat: "Ondernemings- / btw-nummer",
       signupCountry: "Land",
-      signupFormat: "Dit nummer komt niet overeen met het verwachte formaat voor dat land.",
+      signupFormat: "Gelieve uw volledige ondernemingsnummer in te vullen.",
       countries: { BE: "België", FR: "Frankrijk", LU: "Luxemburg" },
       signupEmail: "Professioneel e-mailadres",
       signupSubmit: "Mijn code ontvangen",
@@ -259,7 +259,7 @@
       signupIntro: "Geben Sie Ihre Unternehmensnummer und E-Mail an: Ihr Zugangscode wird sofort versendet.",
       signupVat: "Unternehmens- / USt-Nummer",
       signupCountry: "Land",
-      signupFormat: "Diese Nummer entspricht nicht dem erwarteten Format für dieses Land.",
+      signupFormat: "Bitte geben Sie Ihre vollständige Unternehmensnummer an.",
       countries: { BE: "Belgien", FR: "Frankreich", LU: "Luxemburg" },
       signupEmail: "Geschäftliche E-Mail",
       signupSubmit: "Code erhalten",
@@ -321,7 +321,7 @@
       signupIntro: "Vergi numaranızı ve e-posta adresinizi girin: erişim kodunuz anında gönderilecektir.",
       signupVat: "Firma / vergi numarası",
       signupCountry: "Ülke",
-      signupFormat: "Bu numara seçilen ülke için beklenen biçime uymuyor.",
+      signupFormat: "Lütfen tam şirket numaranızı girin.",
       countries: { BE: "Belçika", FR: "Fransa", LU: "Lüksemburg" },
       signupEmail: "Kurumsal e-posta",
       signupSubmit: "Kodumu al",
@@ -1598,10 +1598,13 @@
   // Formats de numéro de TVA par pays. Le préfixe n'est plus saisi à la main :
   // il vient de la liste déroulante, ce qui supprime la cause d'erreur la plus
   // fréquente (un Français qui tape son numéro sans « FR », traité en belge).
+  // Formats indicatifs seulement : ils servent à afficher un exemple et une
+  // aide de saisie. Le site ne refuse plus un numéro qui ne colle pas — trop
+  // de coiffeurs restaient bloqués. Seul un minimum de 8 caractères est exigé.
   const VAT_FORMATS = {
-    BE: { re: /^[01][0-9]{9}$/,           ex: "0817750283",    hint: "10 chiffres (le 0 initial est ajouté si besoin)" },
-    FR: { re: /^[0-9A-HJ-NP-Z]{2}[0-9]{9}$/, ex: "12345678901", hint: "2 caractères de clé + 9 chiffres du SIREN" },
-    LU: { re: /^[0-9]{8}$/,               ex: "12345678",      hint: "8 chiffres" },
+    BE: { ex: "0817750283",   hint: "numéro d'entreprise, avec ou sans BE devant" },
+    FR: { ex: "12345678901",  hint: "numéro de TVA, avec ou sans FR devant" },
+    LU: { ex: "12345678",     hint: "numéro de TVA, avec ou sans LU devant" },
   };
 
   function signupCountry() {
@@ -1628,7 +1631,10 @@
     const raw = (document.getElementById("signup-vat").value || "")
       .replace(/[\s.\-]/g, "").toUpperCase();
     // Tolérance : si le visiteur a quand même retapé le préfixe, on l'enlève.
-    var num = raw.indexOf(c) === 0 ? raw.substring(2) : raw;
+    // On retire le préfixe s'il est là, quel qu'il soit : le pays qui compte
+    // est celui de la liste déroulante. « BE0817750283 », « 0817750283 » et
+    // « be 0817.750.283 » donnent donc le même résultat.
+    var num = /^[A-Z]{2}/.test(raw) ? raw.substring(2) : raw;
     // Beaucoup de Belges tapent encore les 9 chiffres sans le zéro de tête.
     if (c === "BE" && /^[0-9]{9}$/.test(num)) num = "0" + num;
     return { pays: c, num: num, full: c + num, raw: num };
@@ -1647,7 +1653,9 @@
     const v = built.full;
     const m = (mail.value || "").trim();
 
-    const vatOk = fmt.re.test(built.raw);
+    // Seul contrôle conservé : au moins 8 caractères. Le reste est laissé
+    // passer, quitte à ce que le numéro soit vérifié plus tard à la main.
+    const vatOk = built.raw.replace(/[^0-9A-Z]/g, "").length >= 8;
     const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m);
     vat.classList.toggle("invalid", !vatOk);
     mail.classList.toggle("invalid", !mailOk);
