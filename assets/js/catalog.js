@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "106";
+  const ASSET_V = "107";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -102,6 +102,7 @@
       contactTitle: "Une question ? Écrivez-nous", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Bonjour, j'ai une question concernant les produits Nishman.",
       outOfStock: "Momentanément indisponible",
+      soon: "Bientôt disponible",
       stockLeft: (n) => "Stock disponible : " + n + " pièces",
       lowStock: (n) => "Stock limité : " + n + " pièces — vente à l'unité uniquement",
       cartLimited: "Quantité ajustée au stock disponible",
@@ -169,6 +170,7 @@
       contactTitle: "A question? Write to us", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hello, I have a question about Nishman products.",
       outOfStock: "Temporarily unavailable",
+      soon: "Coming soon",
       stockLeft: (n) => "Available stock: " + n + " pcs",
       lowStock: (n) => "Limited stock: " + n + " pcs — sold by unit only",
       cartLimited: "Quantity adjusted to available stock",
@@ -236,6 +238,7 @@
       contactTitle: "Een vraag? Schrijf ons", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hallo, ik heb een vraag over de Nishman-producten.",
       outOfStock: "Tijdelijk niet beschikbaar",
+      soon: "Binnenkort beschikbaar",
       stockLeft: (n) => "Beschikbare voorraad: " + n + " stuks",
       lowStock: (n) => "Beperkte voorraad: " + n + " stuks — enkel per stuk",
       cartLimited: "Hoeveelheid aangepast aan de voorraad",
@@ -306,6 +309,7 @@
       contactTitle: "Eine Frage? Schreiben Sie uns", contactWa: "WhatsApp", contactMail: "E-Mail",
       contactMsg: "Guten Tag, ich habe eine Frage zu den Nishman-Produkten.",
       outOfStock: "Vorübergehend nicht verfügbar",
+      soon: "Demnächst verfügbar",
       stockLeft: (n) => "Verfügbarer Bestand: " + n + " Stück",
       lowStock: (n) => "Begrenzter Bestand: " + n + " Stück — nur stückweise",
       cartLimited: "Menge an den Bestand angepasst",
@@ -373,6 +377,7 @@
       contactTitle: "Sorunuz mu var? Bize yazın", contactWa: "WhatsApp", contactMail: "E-posta",
       contactMsg: "Merhaba, Nishman ürünleri hakkında bir sorum var.",
       outOfStock: "Geçici olarak mevcut değil",
+      soon: "Çok yakında",
       stockLeft: (n) => "Mevcut stok: " + n + " adet",
       lowStock: (n) => "Sınırlı stok: " + n + " adet — yalnızca adet olarak",
       cartLimited: "Miktar mevcut stoğa göre ayarlandı",
@@ -658,7 +663,9 @@
             <div class="product-footer">
               ${priceZone(p, "")}
               ${
-                !unlocked()
+                p.soon
+                  ? `<span class="card-soon">${T.soon}</span>`
+                  : !unlocked()
                   ? ""
                   : isOut(p)
                   ? `<span class="card-out">${T.outOfStock}</span>`
@@ -799,6 +806,13 @@
   function renderSheetQty(ean) {
     const zone = document.getElementById("sheet-qty-zone");
     if (!zone) return;
+
+    // Produit annoncé mais pas encore en stock : consultable, non commandable.
+    const prod = PRODUCTS.find((x) => x.ean === ean);
+    if (prod && prod.soon) {
+      zone.innerHTML = `<p class="sheet-soon">${T.soon}</p>`;
+      return;
+    }
 
     // Sans accès professionnel : aucune possibilité d'ajouter au panier.
     if (!unlocked()) {

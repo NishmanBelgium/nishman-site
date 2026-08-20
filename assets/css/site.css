@@ -2485,3 +2485,31 @@ img { max-width: 100%; height: auto; }
 
 #code-use { margin-bottom: 10px; }
 .code-box[hidden], #code-use[hidden] { display: none; }
+
+/* ---------- Produits annoncés, pas encore en stock ---------- */
+
+.card-soon {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(255, 138, 0, 0.10);
+  border: 1px solid rgba(255, 138, 0, 0.34);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--gold-deep, #b36b00);
+  white-space: nowrap;
+}
+
+.sheet-soon {
+  margin: 14px 0 0;
+  padding: 13px 16px;
+  border-radius: var(--radius-sm, 12px);
+  background: rgba(255, 138, 0, 0.08);
+  border: 1px solid rgba(255, 138, 0, 0.30);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--gold-deep, #b36b00);
+  text-align: center;
+}
