@@ -323,7 +323,7 @@
   "description_de": "Stylingwachs auf Wasserbasis: leicht aufzutragen, glänzendes Finish und starker Halt den ganzen Tag. Hinterlässt keine Rückstände und lässt sich mit einer Haarwäsche auswaschen.",
   "tagline_tr": "Su bazlı — parlak bitiş",
   "description_tr": "Su bazlı şekillendirici wax: kolay uygulama, parlak bitiş ve gün boyu güçlü tutuş. Kalıntı bırakmaz ve tek şampuanla durulanır.",
-  "soon": true
+  "hidden": true
  },
  {
   "ean": "8682035088004",
@@ -1085,7 +1085,8 @@
   "tagline_de": "Kennenlerngröße 30 ml",
   "description_de": "Tester / Reisegröße des M1-Wachses: ideal an der Theke, als Aufmerksamkeit für Neukunden oder im Kennenlernset. Kleines Format, echte Formel.",
   "tagline_tr": "30 ml deneme boyu",
-  "description_tr": "M1 wax'ın tester / seyahat boyu: tezgâhta sunmak, yeni müşterilere hediye etmek veya tanıtım setine koymak için ideal. Küçük boy, gerçek formül."
+  "description_tr": "M1 wax'ın tester / seyahat boyu: tezgâhta sunmak, yeni müşterilere hediye etmek veya tanıtım setine koymak için ideal. Küçük boy, gerçek formül.",
+  "hidden": true
  },
  {
   "ean": "8682035084709",
@@ -1104,7 +1105,8 @@
   "tagline_de": "Kennenlerngröße 30 ml",
   "description_de": "Tester / Reisegröße des M3-Wachses: ideal an der Theke, als Aufmerksamkeit für Neukunden oder im Kennenlernset. Kleines Format, echte Formel.",
   "tagline_tr": "30 ml deneme boyu",
-  "description_tr": "M3 wax'ın tester / seyahat boyu: tezgâhta sunmak, yeni müşterilere hediye etmek veya tanıtım setine koymak için ideal. Küçük boy, gerçek formül."
+  "description_tr": "M3 wax'ın tester / seyahat boyu: tezgâhta sunmak, yeni müşterilere hediye etmek veya tanıtım setine koymak için ideal. Küçük boy, gerçek formül.",
+  "hidden": true
  },
  {
   "ean": "8682035087502",
@@ -1757,7 +1759,7 @@
   "description_de": "Bartbalsam im Reiseformat: diszipliniert, nährt und verleiht einen leichten Glanz. Das perfekte Format für den Kulturbeutel oder den Thekenverkauf.",
   "tagline_tr": "Seyahat boy sakal balsamı",
   "description_tr": "Seyahat boy sakal balsamı: disipline eder, besler ve hafif bir parlaklık verir. Çanta veya tezgâh satışı için mükemmel boy.",
-  "soon": true
+  "hidden": true
  },
  {
   "ean": "8682035080169",
