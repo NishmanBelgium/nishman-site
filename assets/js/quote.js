@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "115";
+  const ASSET_V = "116";
 
   // Mêmes conditions commerciales que le catalogue.
   const MIN_ORDER = 200;
@@ -334,6 +334,20 @@
 
   const FIELDS = ["first", "last", "company", "vat", "phone", "email", "street", "zip", "city", "country", "shipmode"];
 
+  // Changement de pays : on réapplique le préfixe sur ce qui est déjà saisi.
+  function brancherPays() {
+    const pays = $("f-country"), tva = $("f-vat");
+    if (!pays || !tva) return;
+    const maj = () => {
+      const v = normaliserTva(tva.value, pays.value);
+      if (v) tva.value = v;
+      tva.placeholder = (PREFIXE[pays.value] || "BE") + "0123456789";
+    };
+    pays.addEventListener("change", maj);
+    tva.addEventListener("blur", maj);
+    maj();
+  }
+
   function fillForm() {
     FIELDS.forEach((f) => { if (client[f]) $("f-" + f).value = client[f]; });
     // Un pays enregistré autrefois mais retiré de la liste (Pays-Bas,
@@ -342,14 +356,32 @@
     if (pays && !pays.value) pays.selectedIndex = 0;
   }
 
+  // Préfixe pays imposé sur le numéro de TVA : le client peut le taper ou
+  // non, le devis porte toujours BE, FR ou LU selon le pays sélectionné.
+  const PREFIXE = { "Belgique": "BE", "France": "FR", "Luxembourg": "LU" };
+
+  function normaliserTva(valeur, pays) {
+    const p = PREFIXE[pays];
+    let v = (valeur || "").replace(/[\s.\-]/g, "").toUpperCase();
+    if (!v) return "";
+    if (!p) return v;
+    // on retire un éventuel préfixe déjà saisi, correct ou non
+    v = v.replace(/^[A-Z]{2}/, (m) => (m in {BE:1, FR:1, LU:1, NL:1, DE:1} ? "" : m));
+    // Belgique : le zéro de tête manque souvent quand on tape 9 chiffres
+    if (p === "BE" && /^[0-9]{9}$/.test(v)) v = "0" + v;
+    return p + v;
+  }
+
   function readForm() {
     const data = {};
     FIELDS.forEach((f) => { data[f] = ($("f-" + f).value || "").trim(); });
+    data.vat = normaliserTva(data.vat, data.country);
     return data;
   }
 
   function validateForm() {
     const data = readForm();
+    if (data.vat) $("f-vat").value = data.vat;
     let ok = true;
     FIELDS.forEach((f) => {
       const el = $("f-" + f);
@@ -464,6 +496,7 @@
     loadSelection();
     loadClient();
     fillForm();
+    brancherPays();
 
     if (Object.keys(selection).length === 0) {
       $("step-form").innerHTML =
