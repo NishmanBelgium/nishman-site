@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "116";
+  const ASSET_V = "117";
 
   // Mêmes conditions commerciales que le catalogue.
   const MIN_ORDER = 200;
@@ -334,22 +334,35 @@
 
   const FIELDS = ["first", "last", "company", "vat", "phone", "email", "street", "zip", "city", "country", "shipmode"];
 
-  // Changement de pays : on réapplique le préfixe sur ce qui est déjà saisi.
+  // Le préfixe pays est affiché à gauche du champ et suit la liste déroulante.
+  // Le client ne saisit que les chiffres : impossible de l'effacer ou de le
+  // remplacer, ce qui garantit un numéro toujours au bon format.
   function brancherPays() {
-    const pays = $("f-country"), tva = $("f-vat");
+    const pays = $("f-country"), tva = $("f-vat"), badge = $("vat-prefix");
     if (!pays || !tva) return;
     const maj = () => {
-      const v = normaliserTva(tva.value, pays.value);
-      if (v) tva.value = v;
-      tva.placeholder = (PREFIXE[pays.value] || "BE") + "0123456789";
+      const p = PREFIXE[pays.value] || "BE";
+      if (badge) badge.textContent = p;
+      tva.value = corpsTva(tva.value, pays.value);
+      tva.placeholder = p === "BE" ? "0123456789"
+                      : p === "FR" ? "12345678901" : "12345678";
     };
     pays.addEventListener("change", maj);
     tva.addEventListener("blur", maj);
+    // nettoyage à la volée : le préfixe collé disparaît dès la saisie
+    tva.addEventListener("input", () => {
+      const v = tva.value.toUpperCase();
+      if (/^(BE|FR|LU|NL|DE)/.test(v.replace(/[\s.\-]/g, ""))) {
+        tva.value = corpsTva(v, pays.value);
+      }
+    });
     maj();
   }
 
   function fillForm() {
     FIELDS.forEach((f) => { if (client[f]) $("f-" + f).value = client[f]; });
+    // le numéro est stocké avec son préfixe : on ne remet que les chiffres
+    if (client.vat) $("f-vat").value = corpsTva(client.vat, client.country);
     // Un pays enregistré autrefois mais retiré de la liste (Pays-Bas,
     // Allemagne) laisserait le sélecteur vide et le devis sans pays.
     const pays = $("f-country");
@@ -360,16 +373,21 @@
   // non, le devis porte toujours BE, FR ou LU selon le pays sélectionné.
   const PREFIXE = { "Belgique": "BE", "France": "FR", "Luxembourg": "LU" };
 
-  function normaliserTva(valeur, pays) {
-    const p = PREFIXE[pays];
+  /** Ne garde que la partie numérique du numéro : le préfixe pays est figé
+      à côté du champ et n'est plus saisissable. */
+  function corpsTva(valeur, pays) {
     let v = (valeur || "").replace(/[\s.\-]/g, "").toUpperCase();
     if (!v) return "";
-    if (!p) return v;
-    // on retire un éventuel préfixe déjà saisi, correct ou non
-    v = v.replace(/^[A-Z]{2}/, (m) => (m in {BE:1, FR:1, LU:1, NL:1, DE:1} ? "" : m));
-    // Belgique : le zéro de tête manque souvent quand on tape 9 chiffres
-    if (p === "BE" && /^[0-9]{9}$/.test(v)) v = "0" + v;
-    return p + v;
+    // si le client colle un numéro complet, on retire le préfixe collé
+    v = v.replace(/^(BE|FR|LU|NL|DE)/, "");
+    if (PREFIXE[pays] === "BE" && /^[0-9]{9}$/.test(v)) v = "0" + v;  // zéro de tête
+    return v;
+  }
+
+  function normaliserTva(valeur, pays) {
+    const corps = corpsTva(valeur, pays);
+    if (!corps) return "";
+    return (PREFIXE[pays] || "") + corps;
   }
 
   function readForm() {
@@ -381,7 +399,6 @@
 
   function validateForm() {
     const data = readForm();
-    if (data.vat) $("f-vat").value = data.vat;
     let ok = true;
     FIELDS.forEach((f) => {
       const el = $("f-" + f);
