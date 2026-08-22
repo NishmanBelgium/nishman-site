@@ -422,3 +422,17 @@
 }
 
 .vat-group input:focus { position: relative; z-index: 1; }
+
+/* Compteur de saisie du numéro de TVA : il rend visible ce qui manque
+   avant même de valider — c'est ce qui fait comprendre au client français
+   que le SIREN seul ne suffit pas. */
+.vat-aide {
+  display: block;
+  margin-top: 6px;
+  padding-left: 2px;
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+
+.vat-aide-ok { color: #2e7d32; font-weight: 700; }

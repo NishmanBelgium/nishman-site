@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "117";
+  const ASSET_V = "118";
 
   // Mêmes conditions commerciales que le catalogue.
   const MIN_ORDER = 200;
@@ -31,6 +31,9 @@
       formlead: "Nous vendons exclusivement aux professionnels. Ces informations figureront sur votre devis.",
       first: "Prénom", last: "Nom", company: "Nom du salon / société",
       vat: "Numéro d'entreprise / TVA", phone: "Téléphone", email: "E-mail",
+      vatLen: (n, r) => `Le numéro de TVA doit comporter ${n} caractères après le préfixe (${r} saisis).`,
+      vatSiren: "Il manque les 2 caractères de clé à placer DEVANT votre SIREN. Votre numéro de TVA s'écrit FR + 2 caractères + les 9 chiffres du SIREN.",
+      vatHint: (n) => `${n} caractères attendus`,
       street: "Adresse (rue et numéro)", zip: "Code postal", city: "Ville", country: "Pays",
       shipMode: "Mode de réception", shipDelivery: "Livraison", shipPickup: "Retrait à Cuesmes",
       shipFee: "Frais de livraison", shipFree: "Livraison offerte", subTotal: "Sous-total HT",
@@ -56,6 +59,9 @@
       formlead: "We sell to professionals only. These details will appear on your quotation.",
       first: "First name", last: "Last name", company: "Salon / company name",
       vat: "Company / VAT number", phone: "Phone", email: "E-mail",
+      vatLen: (n, r) => `The VAT number must contain ${n} characters after the prefix (${r} entered).`,
+      vatSiren: "The 2 key characters are missing BEFORE your SIREN. A French VAT number reads FR + 2 characters + the 9 SIREN digits.",
+      vatHint: (n) => `${n} characters expected`,
       street: "Address (street and number)", zip: "Postcode", city: "City", country: "Country",
       shipMode: "Delivery method", shipDelivery: "Delivery", shipPickup: "Collection in Cuesmes",
       shipFee: "Delivery charge", shipFree: "Free delivery", subTotal: "Subtotal excl. VAT",
@@ -81,6 +87,9 @@
       formlead: "Wij verkopen uitsluitend aan professionals. Deze gegevens verschijnen op uw offerte.",
       first: "Voornaam", last: "Naam", company: "Naam salon / bedrijf",
       vat: "Ondernemings- / btw-nummer", phone: "Telefoon", email: "E-mail",
+      vatLen: (n, r) => `Het btw-nummer moet ${n} tekens bevatten na het voorvoegsel (${r} ingevoerd).`,
+      vatSiren: "De 2 sleuteltekens ontbreken VÓÓR uw SIREN. Een Frans btw-nummer is FR + 2 tekens + de 9 cijfers van het SIREN.",
+      vatHint: (n) => `${n} tekens verwacht`,
       street: "Adres (straat en nummer)", zip: "Postcode", city: "Stad", country: "Land",
       shipMode: "Wijze van ontvangst", shipDelivery: "Levering", shipPickup: "Afhalen in Cuesmes",
       shipFee: "Leveringskosten", shipFree: "Gratis levering", subTotal: "Subtotaal excl. btw",
@@ -106,6 +115,9 @@
       formlead: "Wir verkaufen ausschließlich an Fachkunden. Diese Angaben erscheinen auf Ihrem Angebot.",
       first: "Vorname", last: "Nachname", company: "Name des Salons / der Firma",
       vat: "Unternehmens- / USt-Nummer", phone: "Telefon", email: "E-Mail",
+      vatLen: (n, r) => `Die USt-Nummer muss ${n} Zeichen nach dem Präfix enthalten (${r} eingegeben).`,
+      vatSiren: "Die 2 Prüfzeichen fehlen VOR Ihrer SIREN. Eine französische USt-Nummer lautet FR + 2 Zeichen + die 9 Ziffern der SIREN.",
+      vatHint: (n) => `${n} Zeichen erwartet`,
       street: "Adresse (Straße und Nummer)", zip: "PLZ", city: "Stadt", country: "Land",
       shipMode: "Art des Empfangs", shipDelivery: "Lieferung", shipPickup: "Abholung in Cuesmes",
       shipFee: "Versandkosten", shipFree: "Kostenlose Lieferung", subTotal: "Zwischensumme netto",
@@ -131,6 +143,9 @@
       formlead: "Yalnızca profesyonellere satış yapıyoruz. Bu bilgiler teklifinizde yer alacaktır.",
       first: "Ad", last: "Soyad", company: "Salon / firma adı",
       vat: "Firma / vergi numarası", phone: "Telefon", email: "E-posta",
+      vatLen: (n, r) => `Vergi numarası ön ekten sonra ${n} karakter içermelidir (${r} girildi).`,
+      vatSiren: "SIREN numaranızın ÖNÜNDE bulunması gereken 2 anahtar karakter eksik. Fransız vergi numarası FR + 2 karakter + 9 haneli SIREN şeklindedir.",
+      vatHint: (n) => `${n} karakter bekleniyor`,
       street: "Adres (cadde ve numara)", zip: "Posta kodu", city: "Şehir", country: "Ülke",
       shipMode: "Teslim şekli", shipDelivery: "Teslimat", shipPickup: "Cuesmes'ten teslim alma",
       shipFee: "Teslimat ücreti", shipFree: "Teslimat ücretsiz", subTotal: "Ara toplam (KDV hariç)",
@@ -340,13 +355,27 @@
   function brancherPays() {
     const pays = $("f-country"), tva = $("f-vat"), badge = $("vat-prefix");
     if (!pays || !tva) return;
+    const aide = $("vat-aide");
     const maj = () => {
       const p = PREFIXE[pays.value] || "BE";
       if (badge) badge.textContent = p;
       tva.value = corpsTva(tva.value, pays.value);
       tva.placeholder = p === "BE" ? "0123456789"
                       : p === "FR" ? "12345678901" : "12345678";
+      tva.maxLength = LONGUEUR[p] || 15;
+      compter();
     };
+    // Compteur visible : le client voit tout de suite qu'il manque des
+    // caractères, sans avoir à valider pour s'en rendre compte.
+    const compter = () => {
+      if (!aide) return;
+      const p = PREFIXE[pays.value] || "BE";
+      const n = LONGUEUR[p] || 0;
+      const r = corpsTva(tva.value, pays.value).length;
+      aide.textContent = n ? r + " / " + n + " — " + T.vatHint(n) : "";
+      aide.classList.toggle("vat-aide-ok", n > 0 && r === n);
+    };
+    tva.addEventListener("input", compter);
     pays.addEventListener("change", maj);
     tva.addEventListener("blur", maj);
     // nettoyage à la volée : le préfixe collé disparaît dès la saisie
@@ -372,6 +401,9 @@
   // Préfixe pays imposé sur le numéro de TVA : le client peut le taper ou
   // non, le devis porte toujours BE, FR ou LU selon le pays sélectionné.
   const PREFIXE = { "Belgique": "BE", "France": "FR", "Luxembourg": "LU" };
+  // Longueur du numéro APRÈS le préfixe. En France : 2 caractères de clé
+  // suivis des 9 chiffres du SIREN — d'où 11, et non 9.
+  const LONGUEUR = { BE: 10, FR: 11, LU: 8 };
 
   /** Ne garde que la partie numérique du numéro : le préfixe pays est figé
       à côté du champ et n'est plus saisissable. */
@@ -411,6 +443,20 @@
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email)) {
       $("f-email").classList.add("invalid");
       err.textContent = T.bademail; err.hidden = false; return null;
+    }
+
+    // Numéro de TVA : la longueur doit correspondre au pays choisi.
+    const pfx = PREFIXE[data.country] || "BE";
+    const corps = corpsTva($("f-vat").value, data.country);
+    const attendu = LONGUEUR[pfx];
+    if (attendu && corps.length !== attendu) {
+      $("f-vat").classList.add("invalid");
+      // Cas le plus fréquent en France : le SIREN seul, sans la clé.
+      err.textContent = (pfx === "FR" && /^[0-9]{9}$/.test(corps))
+        ? T.vatSiren
+        : T.vatLen(attendu, corps.length);
+      err.hidden = false;
+      return null;
     }
     err.hidden = true;
     return data;
