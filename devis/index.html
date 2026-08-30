@@ -13,15 +13,15 @@
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="manifest" href="/manifest.json?v=119" />
+  <link rel="manifest" href="/manifest.json?v=120" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Nishman" />
-  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=119" />
+  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=120" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=119" />
-  <link rel="stylesheet" href="/assets/css/quote.css?v=119" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=120" />
+  <link rel="stylesheet" href="/assets/css/quote.css?v=120" />
 </head>
 <body class="quote-body">
 
@@ -161,10 +161,12 @@
 
         <p class="doc-legal" id="t-legal">
           Document non contractuel — sous réserve de confirmation, de disponibilité
-          et de validation des conditions par NBD Distribution SRL. Prix hors TVA,
-          hors frais de livraison éventuels. Validité indicative : 30 jours.
+          et de validation des conditions par NBD Distribution SRL. Prix hors TVA.
+          Minimum de commande en livraison : 300 € HT. Validité indicative : 30 jours.
         </p>
       </div>
+
+      <p class="min-warn" id="min-warn" hidden></p>
 
       <div class="quote-actions">
         <button class="quote-cta" id="btn-send"><span id="t-send">Envoyer ma demande de devis</span></button>
@@ -190,7 +192,24 @@
 
   </main>
 
-  <script src="/assets/js/config.js?v=119"></script>
-  <script src="/assets/js/quote.js?v=119"></script>
+  <style>
+    /* Avertissement de minimum de commande, au-dessus du bouton d'envoi */
+    .min-warn {
+      margin: 18px 0 0;
+      padding: 13px 16px;
+      border-radius: var(--radius-sm, 12px);
+      background: rgba(255, 138, 0, 0.08);
+      border: 1px solid rgba(255, 138, 0, 0.35);
+      font-size: 13.5px;
+      line-height: 1.55;
+      font-weight: 600;
+      color: var(--gold-deep, #b36b00);
+    }
+    .min-warn[hidden] { display: none; }
+    .quote-cta.cta-bloque { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+  </style>
+
+  <script src="/assets/js/config.js?v=120"></script>
+  <script src="/assets/js/quote.js?v=120"></script>
 </body>
 </html>

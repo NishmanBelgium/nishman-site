@@ -8,11 +8,12 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "119";
+  const ASSET_V = "120";
 
   // Mêmes conditions commerciales que le catalogue.
-  const MIN_ORDER = 200;
-  const SHIPPING_FEE = 10;
+  // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
+  // n'est soumis a aucun minimum : c'est le transport qu'il protege.
+  const MIN_ORDER = 300;
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
   const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
@@ -37,6 +38,7 @@
       street: "Adresse (rue et numéro)", zip: "Code postal", city: "Ville", country: "Pays",
       shipMode: "Mode de réception", shipDelivery: "Livraison", shipPickup: "Retrait à Cuesmes",
       shipFee: "Frais de livraison", shipFree: "Livraison offerte", subTotal: "Sous-total HT",
+      minBlock: (min, m) => `Minimum de commande en livraison : ${min} HT. Il vous manque ${m}. Ajoutez des produits, ou choisissez le retrait a Cuesmes — sans minimum.`,
       cont: "Continuer", saved: "Vos coordonnées sont conservées sur cet appareil pour vos prochaines demandes.",
       doctitle: "DEMANDE DE DEVIS", ref: "Référence", date: "Date", client: "Client",
       thProd: "Produit", thEan: "EAN", thU: "Unités", thB: "Cartons", thTot: "Total pièces",
@@ -65,6 +67,7 @@
       street: "Address (street and number)", zip: "Postcode", city: "City", country: "Country",
       shipMode: "Delivery method", shipDelivery: "Delivery", shipPickup: "Collection in Cuesmes",
       shipFee: "Delivery charge", shipFree: "Free delivery", subTotal: "Subtotal excl. VAT",
+      minBlock: (min, m) => `Minimum order for delivery: ${min} excl. VAT. You are ${m} short. Add products, or choose collection in Cuesmes — no minimum.`,
       cont: "Continue", saved: "Your details are kept on this device for your next requests.",
       doctitle: "QUOTATION REQUEST", ref: "Reference", date: "Date", client: "Customer",
       thProd: "Product", thEan: "EAN", thU: "Units", thB: "Boxes", thTot: "Total pcs",
@@ -93,6 +96,7 @@
       street: "Adres (straat en nummer)", zip: "Postcode", city: "Stad", country: "Land",
       shipMode: "Wijze van ontvangst", shipDelivery: "Levering", shipPickup: "Afhalen in Cuesmes",
       shipFee: "Leveringskosten", shipFree: "Gratis levering", subTotal: "Subtotaal excl. btw",
+      minBlock: (min, m) => `Minimumbestelling bij levering: ${min} excl. btw. Er ontbreekt nog ${m}. Voeg producten toe of kies afhalen in Cuesmes — zonder minimum.`,
       cont: "Doorgaan", saved: "Uw gegevens worden op dit toestel bewaard voor volgende aanvragen.",
       doctitle: "OFFERTEAANVRAAG", ref: "Referentie", date: "Datum", client: "Klant",
       thProd: "Product", thEan: "EAN", thU: "Stuks", thB: "Dozen", thTot: "Totaal stuks",
@@ -121,6 +125,7 @@
       street: "Adresse (Straße und Nummer)", zip: "PLZ", city: "Stadt", country: "Land",
       shipMode: "Art des Empfangs", shipDelivery: "Lieferung", shipPickup: "Abholung in Cuesmes",
       shipFee: "Versandkosten", shipFree: "Kostenlose Lieferung", subTotal: "Zwischensumme netto",
+      minBlock: (min, m) => `Mindestbestellwert bei Lieferung: ${min} netto. Es fehlen ${m}. Fugen Sie Produkte hinzu oder wahlen Sie Abholung in Cuesmes — ohne Mindestwert.`,
       cont: "Weiter", saved: "Ihre Daten werden auf diesem Gerät für künftige Anfragen gespeichert.",
       doctitle: "ANGEBOTSANFRAGE", ref: "Referenz", date: "Datum", client: "Kunde",
       thProd: "Produkt", thEan: "EAN", thU: "Stück", thB: "Kartons", thTot: "Stück gesamt",
@@ -149,6 +154,7 @@
       street: "Adres (cadde ve numara)", zip: "Posta kodu", city: "Şehir", country: "Ülke",
       shipMode: "Teslim şekli", shipDelivery: "Teslimat", shipPickup: "Cuesmes'ten teslim alma",
       shipFee: "Teslimat ücreti", shipFree: "Teslimat ücretsiz", subTotal: "Ara toplam (KDV hariç)",
+      minBlock: (min, m) => `Teslimat icin minimum siparis: ${min} (KDV haric). ${m} eksik. Urun ekleyin veya Cuesmes teslim almayi secin — minimum yok.`,
       cont: "Devam", saved: "Bilgileriniz sonraki talepleriniz için bu cihazda saklanır.",
       doctitle: "FİYAT TEKLİFİ TALEBİ", ref: "Referans", date: "Tarih", client: "Müşteri",
       thProd: "Ürün", thEan: "EAN", thU: "Adet", thB: "Koli", thTot: "Toplam adet",
@@ -318,22 +324,13 @@
         ${showPrices ? `<td class="num price-col"><strong>${l.subtotal !== null ? money(l.subtotal) : "—"}</strong></td>` : ""}
       </tr>`).join("");
 
-    const sousTotal = lines.reduce((s, l) => s + (l.subtotal || 0), 0);
-
-    // Frais de livraison : uniquement en livraison, et seulement sous le
-    // seuil de franco. Le retrait à Cuesmes n'en génère jamais.
+    const total = lines.reduce((s, l) => s + (l.subtotal || 0), 0);
     const retrait = (client.shipmode || "livraison") === "retrait";
-    const frais = (!retrait && sousTotal > 0 && sousTotal < MIN_ORDER) ? SHIPPING_FEE : 0;
-    const total = sousTotal + frais;
 
+    // Plus de frais de livraison : la ligne reste dans la page mais ne
+    // s'affiche jamais, pour ne pas casser la mise en page du document.
     const rowShip = $("doc-ship-row");
-    if (showPrices && sousTotal > 0 && !retrait) {
-      rowShip.hidden = false;
-      txt("doc-ship-label", T.shipFee);
-      txt("doc-ship-value", frais > 0 ? money(frais) : T.shipFree);
-    } else {
-      rowShip.hidden = true;
-    }
+    if (rowShip) rowShip.hidden = true;
 
     if (showPrices && total > 0) {
       $("doc-total-row").hidden = false;
@@ -341,8 +338,22 @@
     } else {
       $("doc-total-row").hidden = true;
     }
-    return { lines: lines, total: total, subTotal: sousTotal, shipping: frais,
-             pickup: retrait, showPrices: showPrices };
+
+    // Minimum de commande : bloquant en livraison, jamais en retrait.
+    const manque = (!retrait && showPrices && total > 0 && total < MIN_ORDER)
+      ? MIN_ORDER - total : 0;
+    const btn = $("btn-send"), avert = $("min-warn");
+    if (btn) {
+      btn.disabled = manque > 0;
+      btn.classList.toggle("cta-bloque", manque > 0);
+    }
+    if (avert) {
+      avert.hidden = manque <= 0;
+      if (manque > 0) avert.textContent = T.minBlock(money(MIN_ORDER), money(manque));
+    }
+
+    return { lines: lines, total: total, subTotal: total, shipping: 0,
+             pickup: retrait, showPrices: showPrices, manque: manque };
   }
 
   // ---------- Formulaire ----------

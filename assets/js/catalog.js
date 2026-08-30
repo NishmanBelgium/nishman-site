@@ -16,12 +16,13 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "119";
+  const ASSET_V = "120";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
-  const MIN_ORDER = 200;      // seuil de franco, en euros HT
-  const SHIPPING_FEE = 10;    // frais de livraison en dessous du seuil // incrémenté à chaque mise à jour pour contourner les caches
+  // Minimum de commande pour une LIVRAISON, en euros HT. Le retrait sur
+  // place n'est soumis à aucun minimum.
+  const MIN_ORDER = 300;
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -96,9 +97,9 @@
       clearConfirm: "Vider tout le panier ?",
       toastCleared: "Panier vidé",
       totalHT: "Total HT", salesTeam: "Service commercial Nishman",
-      freeShipFrom: (m) => `Plus que ${m} pour la livraison offerte`,
-      shipAdded: (f) => `Frais de livraison : ${f}`,
-      freeShipOk: "Livraison offerte",
+      minLeft: (m) => `Encore ${m} pour atteindre le minimum de commande`,
+      minPickup: "Minimum 300 € HT en livraison — aucun minimum en retrait sur place.",
+      minOk: "Minimum de commande atteint",
       contactTitle: "Une question ? Écrivez-nous", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Bonjour, j'ai une question concernant les produits Nishman.",
       outOfStock: "Momentanément indisponible",
@@ -164,9 +165,9 @@
       clearConfirm: "Empty the whole cart?",
       toastCleared: "Cart cleared",
       totalHT: "Total excl. VAT", salesTeam: "Nishman sales team",
-      freeShipFrom: (m) => `${m} more for free delivery`,
-      shipAdded: (f) => `Delivery charge: ${f}`,
-      freeShipOk: "Free delivery",
+      minLeft: (m) => `${m} more to reach the minimum order`,
+      minPickup: "Minimum €300 excl. VAT for delivery — no minimum for collection.",
+      minOk: "Minimum order reached",
       contactTitle: "A question? Write to us", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hello, I have a question about Nishman products.",
       outOfStock: "Temporarily unavailable",
@@ -232,9 +233,9 @@
       clearConfirm: "De hele mand legen?",
       toastCleared: "Mand geleegd",
       totalHT: "Totaal excl. btw", salesTeam: "Nishman verkoopdienst",
-      freeShipFrom: (m) => `Nog ${m} voor gratis levering`,
-      shipAdded: (f) => `Leveringskosten: ${f}`,
-      freeShipOk: "Gratis levering",
+      minLeft: (m) => `Nog ${m} tot het minimumbedrag`,
+      minPickup: "Minimum € 300 excl. btw bij levering — geen minimum bij afhalen.",
+      minOk: "Minimumbedrag bereikt",
       contactTitle: "Een vraag? Schrijf ons", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hallo, ik heb een vraag over de Nishman-producten.",
       outOfStock: "Tijdelijk niet beschikbaar",
@@ -303,9 +304,9 @@
       clearConfirm: "Den gesamten Warenkorb leeren?",
       toastCleared: "Warenkorb geleert",
       totalHT: "Gesamt zzgl. MwSt.", salesTeam: "Nishman Vertriebsteam",
-      freeShipFrom: (m) => `Noch ${m} bis zur kostenlosen Lieferung`,
-      shipAdded: (f) => `Versandkosten: ${f}`,
-      freeShipOk: "Kostenlose Lieferung",
+      minLeft: (m) => `Noch ${m} bis zum Mindestbestellwert`,
+      minPickup: "Mindestbestellwert 300 € netto bei Lieferung — kein Mindestwert bei Abholung.",
+      minOk: "Mindestbestellwert erreicht",
       contactTitle: "Eine Frage? Schreiben Sie uns", contactWa: "WhatsApp", contactMail: "E-Mail",
       contactMsg: "Guten Tag, ich habe eine Frage zu den Nishman-Produkten.",
       outOfStock: "Vorübergehend nicht verfügbar",
@@ -371,9 +372,9 @@
       clearConfirm: "Sepetin tamamı boşaltılsın mı?",
       toastCleared: "Sepet boşaltıldı",
       totalHT: "Toplam (KDV hariç)", salesTeam: "Nishman Satış Ekibi",
-      freeShipFrom: (m) => `Ücretsiz teslimat için ${m} daha`,
-      shipAdded: (f) => `Teslimat ücreti: ${f}`,
-      freeShipOk: "Teslimat ücretsiz",
+      minLeft: (m) => `Minimum sipariş tutarına ${m} kaldı`,
+      minPickup: "Teslimatta minimum 300 € (KDV hariç) — yerinden teslim almada minimum yok.",
+      minOk: "Minimum sipariş tutarına ulaşıldı",
       contactTitle: "Sorunuz mu var? Bize yazın", contactWa: "WhatsApp", contactMail: "E-posta",
       contactMsg: "Merhaba, Nishman ürünleri hakkında bir sorum var.",
       outOfStock: "Geçici olarak mevcut değil",
@@ -1051,17 +1052,17 @@
       if (known && total > 0) {
         list.innerHTML += `<div class="drawer-total"><span>${T.totalHT}</span><strong>${formatPrice(total)}</strong></div>`;
 
-        // Sous le seuil : on annonce le complément à atteindre plutôt que
-        // de laisser le client découvrir les frais au moment du devis.
+        // Sous le minimum : on annonce le complément à atteindre, et on
+        // rappelle que le retrait sur place n'a pas de minimum.
         if (total < MIN_ORDER) {
           const manque = MIN_ORDER - total;
           list.innerHTML +=
             `<div class="ship-note">` +
-              `<span class="ship-note-main">${T.freeShipFrom(formatPrice(manque))}</span>` +
-              `<span class="ship-note-sub">${T.shipAdded(formatPrice(SHIPPING_FEE))}</span>` +
+              `<span class="ship-note-main">${T.minLeft(formatPrice(manque))}</span>` +
+              `<span class="ship-note-sub">${T.minPickup}</span>` +
             `</div>`;
         } else {
-          list.innerHTML += `<div class="ship-note ship-ok">${T.freeShipOk}</div>`;
+          list.innerHTML += `<div class="ship-note ship-ok">${T.minOk}</div>`;
         }
       }
     }
