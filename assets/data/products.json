@@ -341,8 +341,7 @@
   "tagline_de": "Eisige Zitrusnoten",
   "description_de": "Pure Frische: Grapefruit, Mandarine und Meerwasser für einen sofortigen Eiswürfel-Effekt nach der Rasur. Dieses Aftershave-Cologne erfrischt sofort, verfeinert die Poren und beruhigt das Rasurbrennen — der unverwechselbare letzte Schliff des Barbershops.",
   "tagline_tr": "Buzlu narenciye",
-  "description_tr": "Saf tazelik: tıraş sonrası anında buz küpü etkisi için greyfurt, mandalina ve deniz suyu. Bu tıraş sonrası kolonyası anında ferahlatır, gözenekleri sıkılaştırır ve tıraş yanmasını yatıştırır — berber salonunun imzası olan son dokunuş.",
-  "soon": true
+  "description_tr": "Saf tazelik: tıraş sonrası anında buz küpü etkisi için greyfurt, mandalina ve deniz suyu. Bu tıraş sonrası kolonyası anında ferahlatır, gözenekleri sıkılaştırır ve tıraş yanmasını yatıştırır — berber salonunun imzası olan son dokunuş."
  },
  {
   "ean": "8682035088141",
@@ -437,8 +436,7 @@
   "tagline_de": "Salzig-aquatisch",
   "description_de": "Eine salzige, aquatische Frische aus Zitrone und Limette, die in eine moschusartige Zedernbasis übergeht. Dieses Aftershave-Cologne erfrischt sofort, verfeinert die Poren und beruhigt das Rasurbrennen — der unverwechselbare letzte Schliff des Barbershops.",
   "tagline_tr": "Tuzlu su notaları",
-  "description_tr": "Limon ve misket limonundan tuzlu, denizsi bir tazelik; misk kokulu sedir tabanında yumuşar. Bu tıraş sonrası kolonyası anında ferahlatır, gözenekleri sıkılaştırır ve tıraş yanmasını yatıştırır — berber salonunun imzası olan son dokunuş.",
-  "soon": true
+  "description_tr": "Limon ve misket limonundan tuzlu, denizsi bir tazelik; misk kokulu sedir tabanında yumuşar. Bu tıraş sonrası kolonyası anında ferahlatır, gözenekleri sıkılaştırır ve tıraş yanmasını yatıştırır — berber salonunun imzası olan son dokunuş."
  },
  {
   "ean": "8682035083702",
@@ -621,7 +619,6 @@
   "description": "Eau de cologne professionnelle en spray, à utiliser après le rasage ou en fin de coupe. Elle rafraîchit, assainit la peau et laisse un sillage discret.",
   "usage": "Vaporiser dans le creux des mains puis appliquer sur le visage et la nuque après le rasage.",
   "box_qty": 24,
-  "soon": true,
   "tagline_en": "Eau de cologne — aftershave",
   "tagline_nl": "Eau de cologne — aftershave",
   "tagline_de": "Eau de Cologne — After Shave",
@@ -641,7 +638,6 @@
   "description": "Eau de cologne professionnelle en spray, à utiliser après le rasage ou en fin de coupe. Elle rafraîchit, assainit la peau et laisse un sillage discret.",
   "usage": "Vaporiser dans le creux des mains puis appliquer sur le visage et la nuque après le rasage.",
   "box_qty": 24,
-  "soon": true,
   "tagline_en": "Eau de cologne — aftershave",
   "tagline_nl": "Eau de cologne — aftershave",
   "tagline_de": "Eau de Cologne — After Shave",
@@ -661,7 +657,6 @@
   "description": "Eau de cologne professionnelle en spray, à utiliser après le rasage ou en fin de coupe. Elle rafraîchit, assainit la peau et laisse un sillage discret.",
   "usage": "Vaporiser dans le creux des mains puis appliquer sur le visage et la nuque après le rasage.",
   "box_qty": 24,
-  "soon": true,
   "tagline_en": "Eau de cologne — aftershave",
   "tagline_nl": "Eau de cologne — aftershave",
   "tagline_de": "Eau de Cologne — After Shave",
@@ -681,7 +676,6 @@
   "description": "Eau de cologne professionnelle en spray, à utiliser après le rasage ou en fin de coupe. Elle rafraîchit, assainit la peau et laisse un sillage discret.",
   "usage": "Vaporiser dans le creux des mains puis appliquer sur le visage et la nuque après le rasage.",
   "box_qty": 24,
-  "soon": true,
   "tagline_en": "Eau de cologne — aftershave",
   "tagline_nl": "Eau de cologne — aftershave",
   "tagline_de": "Eau de Cologne — After Shave",
@@ -1064,7 +1058,6 @@
   "description": "Pâte coiffante à fini mat enrichie en huile d'argan. Elle définit la coiffure sans effet gras ni brillance, pour un rendu naturel et une tenue moyenne qui se retravaille dans la journée.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes et modeler sur cheveux secs ou légèrement humides.",
   "box_qty": 36,
-  "soon": true,
   "tagline_en": "Matte finish — with argan",
   "tagline_nl": "Matte finish — met argan",
   "tagline_de": "Mattes Finish — mit Argan",
@@ -1104,7 +1097,6 @@
   "description": "Pâte texturisante à fini mat, pensée pour les coiffures travaillées et volontairement décoiffées. Elle sépare les mèches et apporte du relief avec une tenue moyenne à forte.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes et modeler sur cheveux secs ou légèrement humides.",
   "box_qty": 36,
-  "soon": true,
   "tagline_en": "Matte finish — messy look",
   "tagline_nl": "Matte finish — messy look",
   "tagline_de": "Mattes Finish — Messy Look",
@@ -1124,7 +1116,6 @@
   "description": "Cire coiffante à fini mat offrant la tenue la plus ferme de la gamme. Elle fixe durablement les coiffures structurées sans brillance ni effet carton.",
   "usage": "Prélever une petite quantité, réchauffer entre les paumes et modeler sur cheveux secs ou légèrement humides.",
   "box_qty": 36,
-  "soon": true,
   "tagline_en": "Matte finish — super high hold",
   "tagline_nl": "Matte finish — super sterke hold",
   "tagline_de": "Mattes Finish — extra starker Halt",
@@ -1227,8 +1218,7 @@
   "tagline_de": "Mattes Finish — starker Halt",
   "description_de": "Stylingwachs mit 100 % mattem Finish, für definierte Looks ohne Fett-Effekt oder Glanz. Starker, formbarer Halt, für jeden Haartyp geeignet.",
   "tagline_tr": "Mat bitiş — güçlü tutuş",
-  "description_tr": "%100 mat bitişli şekillendirici wax, yağlı görünüm ve parlaklık olmadan belirgin şekiller için. Güçlü ve yeniden şekillendirilebilir tutuş, her saç tipine uygun.",
-  "soon": true
+  "description_tr": "%100 mat bitişli şekillendirici wax, yağlı görünüm ve parlaklık olmadan belirgin şekiller için. Güçlü ve yeniden şekillendirilebilir tutuş, her saç tipine uygun."
  },
  {
   "ean": "8682035087991",
@@ -1418,8 +1408,7 @@
   "tagline_de": "Mattes Finish — starker Halt",
   "description_de": "Stylingwachs mit 100 % mattem Finish, für definierte Looks ohne Fett-Effekt oder Glanz. Starker, formbarer Halt, für jeden Haartyp geeignet.",
   "tagline_tr": "Mat bitiş — güçlü tutuş",
-  "description_tr": "%100 mat bitişli şekillendirici wax, yağlı görünüm ve parlaklık olmadan belirgin şekiller için. Güçlü ve yeniden şekillendirilebilir tutuş, her saç tipine uygun.",
-  "soon": true
+  "description_tr": "%100 mat bitişli şekillendirici wax, yağlı görünüm ve parlaklık olmadan belirgin şekiller için. Güçlü ve yeniden şekillendirilebilir tutuş, her saç tipine uygun."
  },
  {
   "ean": "8682035088523",
@@ -1743,8 +1732,7 @@
   "tagline_de": "Kontur-Puder Schwarz",
   "description_de": "Kontur-Puder Schwarz: zeichnet die Haarlinie nach, verdichtet die Schläfen und perfektioniert Fades. Die Geheimwaffe für makellose Finishes, mit Schwammapplikator.",
   "tagline_tr": "Kontur pudrası — siyah",
-  "description_tr": "Siyah kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı.",
-  "soon": true
+  "description_tr": "Siyah kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı."
  },
  {
   "ean": "8684736672865",
@@ -1796,7 +1784,6 @@
   "description": "Gel coiffant noir à tenue ultra forte qui couvre instantanément les cheveux blancs. La couleur se dépose le temps du coiffage et s'élimine au shampoing suivant.",
   "usage": "Appliquer sur cheveux secs, répartir sur les zones à couvrir et coiffer. Se rince au shampoing.",
   "box_qty": 36,
-  "soon": true,
   "tagline_en": "Black gel — covers grey hair",
   "tagline_nl": "Zwarte gel — dekt grijs haar",
   "tagline_de": "Schwarzes Gel — deckt graues Haar",
@@ -1816,7 +1803,6 @@
   "description": "Spray correcteur qui masque instantanément les racines et les cheveux blancs. Le rendu est naturel, il ne colle pas et disparaît au premier shampoing.",
   "usage": "Bien agiter. Vaporiser à une quinzaine de centimètres sur cheveux secs, en ciblant les racines. Laisser sécher sans toucher.",
   "box_qty": 24,
-  "soon": true,
   "tagline_en": "Root retouch — black",
   "tagline_nl": "Uitgroei retoucheren — zwart",
   "tagline_de": "Ansatz-Retusche — Schwarz",
@@ -1958,8 +1944,7 @@
   "tagline_de": "Genius Bartparfüm — alkoholfrei",
   "description_de": "Bart- und Schnurrbartparfüm Genius, alkoholfrei: parfümiert, ohne das Haar auszutrocknen oder die Haut zu reizen. Der letzte Schliff des Bartservice.",
   "tagline_tr": "Genius sakal parfümü — alkolsüz",
-  "description_tr": "Genius sakal ve bıyık parfümü, alkolsüz: kılı kurutmadan, cildi tahriş etmeden koku verir. Sakal servisinin son dokunuşu.",
-  "soon": true
+  "description_tr": "Genius sakal ve bıyık parfümü, alkolsüz: kılı kurutmadan, cildi tahriş etmeden koku verir. Sakal servisinin son dokunuşu."
  },
  {
   "ean": "8682035088912",
@@ -2379,8 +2364,7 @@
   "tagline_de": "Transparent & präzise",
   "description_de": "Transparentes Rasiergel, wirtschaftliche Salongröße: volle Sicht auf die Rasurlinie für gestochen scharfe Konturen. Optimales Gleiten, geschützte Haut, trocknet nicht aus.",
   "tagline_tr": "Şeffaf & hassas",
-  "description_tr": "Şeffaf tıraş jeli, ekonomik salon boyu: keskin konturlar için tıraş çizgisinde tam görüş. Optimum kayganlık, korunan cilt, kurutmaz.",
-  "soon": true
+  "description_tr": "Şeffaf tıraş jeli, ekonomik salon boyu: keskin konturlar için tıraş çizgisinde tam görüş. Optimum kayganlık, korunan cilt, kurutmaz."
  },
  {
   "ean": "8684736674029",
@@ -2648,8 +2632,7 @@
   "tagline_de": "Rasierschaum",
   "description_de": "Cremiger Rasierschaum mit beruhigendem Menthol und sofortigem Frische-Effekt. Bereitet das Haar vor, schützt die Haut und hinterlässt ein angenehmes Gefühl nach der Rasur.",
   "tagline_tr": "Tıraş köpüğü",
-  "description_tr": "Yatıştırıcı mentollü ve anında serinletici etkili kremsi tıraş köpüğü. Kılı hazırlar, cildi korur ve tıraş sonrası konforlu bir his bırakır.",
-  "soon": true
+  "description_tr": "Yatıştırıcı mentollü ve anında serinletici etkili kremsi tıraş köpüğü. Kılı hazırlar, cildi korur ve tıraş sonrası konforlu bir his bırakır."
  },
  {
   "ean": "8682035087984",
@@ -2668,8 +2651,7 @@
   "tagline_de": "Auf Wasserbasis — glänzendes Finish",
   "description_de": "Stylingwachs auf Wasserbasis: leicht aufzutragen, glänzendes Finish und starker Halt den ganzen Tag. Hinterlässt keine Rückstände und lässt sich mit einer Haarwäsche auswaschen.",
   "tagline_tr": "Su bazlı — parlak bitiş",
-  "description_tr": "Su bazlı şekillendirici wax: kolay uygulama, parlak bitiş ve gün boyu güçlü tutuş. Kalıntı bırakmaz ve tek şampuanla durulanır.",
-  "soon": true
+  "description_tr": "Su bazlı şekillendirici wax: kolay uygulama, parlak bitiş ve gün boyu güçlü tutuş. Kalıntı bırakmaz ve tek şampuanla durulanır."
  },
  {
   "ean": "8682035085850",
@@ -2688,8 +2670,7 @@
   "tagline_de": "Gel mit ultrastarkem Halt",
   "description_de": "Stylinggel mit ultrastarkem Halt und langanhaltendem Gum-Effekt. Der Look bleibt von morgens bis abends makellos, ohne Karton-Effekt oder weiße Rückstände.",
   "tagline_tr": "Ultra güçlü tutuşlu jöle",
-  "description_tr": "Uzun süreli sakız etkili ultra güçlü tutuşlu şekillendirici jöle. Görünüm sabahtan akşama kusursuz kalır, karton etkisi veya beyaz kalıntı olmadan.",
-  "soon": true
+  "description_tr": "Uzun süreli sakız etkili ultra güçlü tutuşlu şekillendirici jöle. Görünüm sabahtan akşama kusursuz kalır, karton etkisi veya beyaz kalıntı olmadan."
  },
  {
   "ean": "8682035084815",
@@ -2708,8 +2689,7 @@
   "tagline_de": "Beach-Effekt",
   "description_de": "Meersalzspray, angereichert mit Keratin und Aloe Vera: Textur, Volumen und natürliche Wellen, wie frisch vom Strand.",
   "tagline_tr": "Plaj efekti",
-  "description_tr": "Keratin ve aloe vera ile zenginleştirilmiş deniz tuzu spreyi: doku, hacim ve doğal dalgalar, sanki plajdan yeni gelmiş gibi.",
-  "soon": true
+  "description_tr": "Keratin ve aloe vera ile zenginleştirilmiş deniz tuzu spreyi: doku, hacim ve doğal dalgalar, sanki plajdan yeni gelmiş gibi."
  },
  {
   "ean": "8682035081616",
@@ -2728,8 +2708,7 @@
   "tagline_de": "Gel mit ultrastarkem Halt",
   "description_de": "Stylinggel mit ultrastarkem Halt und langanhaltendem Gum-Effekt. Der Look bleibt von morgens bis abends makellos, ohne Karton-Effekt oder weiße Rückstände.",
   "tagline_tr": "Ultra güçlü tutuşlu jöle",
-  "description_tr": "Uzun süreli sakız etkili ultra güçlü tutuşlu şekillendirici jöle. Görünüm sabahtan akşama kusursuz kalır, karton etkisi veya beyaz kalıntı olmadan.",
-  "soon": true
+  "description_tr": "Uzun süreli sakız etkili ultra güçlü tutuşlu şekillendirici jöle. Görünüm sabahtan akşama kusursuz kalır, karton etkisi veya beyaz kalıntı olmadan."
  },
  {
   "ean": "8684736671523",
@@ -2989,7 +2968,6 @@
   "description": "Tonique visage en spray qui nettoie en profondeur, resserre les pores et rafraîchit la peau. Idéal après le rasage ou en fin de soin, pour une peau nette et apaisée.",
   "usage": "Vaporiser sur peau propre, à distance du visage, puis laisser sécher ou tamponner avec une serviette.",
   "box_qty": 35,
-  "soon": true,
   "tagline_en": "Face tonic — deep clean",
   "tagline_nl": "Gezichtstonic — diepe reiniging",
   "tagline_de": "Gesichtstonic — Tiefenreinigung",
@@ -3092,8 +3070,7 @@
   "tagline_de": "Profi-Kamm",
   "description_de": "Professioneller Schneidekamm: präzise Zahnung, hitze- und produktbeständiges Material, perfekte Balance in der Hand. Für den intensiven Salonalltag gemacht.",
   "tagline_tr": "Profesyonel tarak",
-  "description_tr": "Profesyonel kesim tarağı: hassas dişler, ısıya ve ürünlere dayanıklı malzeme, elde kusursuz denge. Yoğun salon kullanımı için üretildi.",
-  "soon": true
+  "description_tr": "Profesyonel kesim tarağı: hassas dişler, ısıya ve ürünlere dayanıklı malzeme, elde kusursuz denge. Yoğun salon kullanımı için üretildi."
  },
  {
   "ean": "8682035081630",
@@ -3701,8 +3678,7 @@
   "tagline_de": "5-in-1-Reiniger",
   "description_de": "5-in-1-Pflegespray für Haarschneider und Rasierer: reinigt, desinfiziert, schmiert, kühlt und schützt vor Korrosion. Zitronenduft. Professionelle Hygiene in einer Geste.",
   "tagline_tr": "5'i 1 arada temizleyici",
-  "description_tr": "Makineler ve tıraş aletleri için 5'i 1 arada bakım spreyi: temizler, dezenfekte eder, yağlar, soğutur ve korozyona karşı korur. Limon kokulu. Tek harekette profesyonel hijyen.",
-  "soon": true
+  "description_tr": "Makineler ve tıraş aletleri için 5'i 1 arada bakım spreyi: temizler, dezenfekte eder, yağlar, soğutur ve korozyona karşı korur. Limon kokulu. Tek harekette profesyonel hijyen."
  },
  {
   "ean": "8682035086314",
@@ -3754,7 +3730,6 @@
   "description": "Bâtonnets applicateurs jetables à cire, conçus pour l'épilation du nez et des oreilles. Chaque bâtonnet est emballé individuellement, prêt à l'emploi et hygiénique.",
   "usage": "Réchauffer légèrement l'embout, appliquer, laisser prendre quelques secondes puis retirer d'un geste net.",
   "box_qty": 24,
-  "soon": true,
   "tagline_en": "Nose & ear waxing — 24 pieces",
   "tagline_nl": "Neus- en oorontharing — 24 stuks",
   "tagline_de": "Nasen- und Ohrenhaarentfernung — 24 Stück",
@@ -3774,7 +3749,6 @@
   "description": "Spatules en bois à usage unique pour l'application de la cire. Bord lisse, prise en main confortable, boîte de 100 pièces pour l'usage quotidien en salon.",
   "usage": "Utiliser une spatule par application, puis la jeter.",
   "box_qty": 100,
-  "soon": true,
   "tagline_en": "Waxing spatulas — 100 pieces",
   "tagline_nl": "Ontharingsspatels — 100 stuks",
   "tagline_de": "Wachsspatel — 100 Stück",

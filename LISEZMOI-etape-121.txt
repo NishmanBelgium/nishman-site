@@ -1,0 +1,28 @@
+NISHMAN — ÉTAPE 121 (16 septembre 2026)
+=======================================
+
+OBJET
+26 produits du 2e arrivage ASIL (facture ASI2026000000307) quittent
+« Bientôt disponible » et repassent en vente sur le site.
+
+FICHIERS À DÉPOSER SUR GITHUB (dépôt NishmanBelgium/nishman-site)
+Remplacer les fichiers existants, en respectant les dossiers du ZIP :
+- index.html, sw.js                         -> racine
+- produits/, devis/, contact/, france/, cgv/ -> index.html de chaque dossier
+- assets/js/catalog.js, assets/js/quote.js
+- assets/data/products.json
+Ne rien supprimer d'autre dans le dépôt (images, 404.html, manifest.json…
+restent en place).
+
+Versions passées de 120 à 121 : ASSET_V (catalog.js, quote.js), ?v= dans
+toutes les pages, VERSION du sw.js.
+
+AVANT DE DÉPLOYER
+Valider la réception WH/IN du 2e arrivage dans Odoo : le site lit le stock
+disponible d'Odoo. Sans stock, ces produits s'afficheront
+« Momentanément indisponible ».
+
+VÉRIFIER
+Ctrl+Shift+R sur nishman.be/produits/ : l'Eau de Cologne NO:16 ne doit
+plus porter la pastille « Bientôt disponible ».
+Catalogue : 197 fiches visibles sur 203, dont 18 encore à venir.
