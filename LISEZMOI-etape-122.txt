@@ -1,0 +1,25 @@
+NISHMAN — ÉTAPE 122 (16 septembre 2026)
+=======================================
+
+OBJET
+MATTE CLAY HAIR STYLING WAX KERATIN M2 (8682035086437) quitte
+« Bientôt disponible » et passe en vente : Odoo indique 720 pièces
+disponibles.
+
+Cette étape INCLUT l'étape 121 (les 26 produits du 2e arrivage).
+Si la 121 n'a pas encore été déployée, déployer directement la 122.
+
+FICHIERS À DÉPOSER SUR GITHUB (dépôt NishmanBelgium/nishman-site)
+- index.html, sw.js                         -> racine
+- produits/, devis/, contact/, france/, cgv/ -> index.html de chaque dossier
+- assets/js/catalog.js, assets/js/quote.js
+- assets/data/products.json
+Ne rien supprimer d'autre dans le dépôt.
+
+Versions passées à 122 : ASSET_V (catalog.js, quote.js), ?v= dans
+toutes les pages, VERSION du sw.js.
+
+VÉRIFIER
+Ctrl+Shift+R sur nishman.be/produits/ : la M2 Keratin ne porte plus la
+pastille « Bientôt disponible ».
+Catalogue : 197 fiches visibles sur 203, dont 17 encore à venir.
