@@ -1,0 +1,22 @@
+NISHMAN — ÉTAPE 126 (17 septembre 2026)
+=======================================
+
+OBJET
+BEARD & MUSTACHE LEAVE-IN FOAM CONDITIONER 150 ML (8682035089971) passe
+en vente : 3,50 € HT, carton de 24.
+
+Cette étape INCLUT les étapes 121 à 125 (dont les 4 nouvelles images).
+
+FICHIERS À DÉPOSER SUR GITHUB (dépôt NishmanBelgium/nishman-site)
+- index.html, sw.js                         -> racine
+- produits/, devis/, contact/, france/, cgv/ -> index.html de chaque dossier
+- assets/js/catalog.js, assets/js/quote.js
+- assets/data/products.json
+- assets/img/products/ : 4 images (à AJOUTER, ne rien supprimer)
+
+SCRIPT GOOGLE
+Table PRIX :  "8682035084563":3.5,"8697536471224":13,"8697536471231":13,"8682035089971":3.5,
+Table BOX  :  "8682035089971":24,
+Puis Déployer > Gérer les déploiements > crayon > Nouvelle version.
+
+Catalogue : 207 fiches, 201 visibles dont 16 à venir.
