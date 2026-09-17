@@ -1372,6 +1372,25 @@
   "description_tr": "Yeniden yorumlanmış klasik briyantin: retro ve şık görünümler için yoğun parlaklık ve esnek kontrol. Saçı sertleştirmeden disipline eder."
  },
  {
+  "ean": "8682035088523",
+  "name": "HAIR STYLING CREAM NO 5 MEDIUM HOLD 150 ML",
+  "volume": "150 ML",
+  "category": "Mat Wax",
+  "image": "8682035088523.webp",
+  "tagline": "Crème coiffante — tenue moyenne",
+  "description": "Crème coiffante à tenue moyenne, pour un rendu naturel. Elle discipline sans rigidifier : les cheveux restent mobiles et le toucher reste doux toute la journée.",
+  "usage": "Répartir une noisette dans les paumes et appliquer sur cheveux secs ou humides, en modelant à la main.",
+  "box_qty": 48,
+  "tagline_en": "Styling cream — medium hold",
+  "tagline_nl": "Stylingcrème — medium hold",
+  "tagline_de": "Stylingcreme — mittlerer Halt",
+  "tagline_tr": "Şekillendirici krem — orta tutuş",
+  "description_en": "Medium-hold styling cream for a natural result. It tames the hair without stiffness: movement stays free and the feel stays soft all day.",
+  "description_nl": "Stylingcrème met medium hold voor een natuurlijk resultaat. Bedwingt het haar zonder het stijf te maken: beweging blijft vrij en het haar voelt de hele dag zacht.",
+  "description_de": "Stylingcreme mit mittlerem Halt für ein natürliches Ergebnis. Bändigt das Haar ohne Steifheit: Bewegung bleibt frei, der Griff bleibt den ganzen Tag weich.",
+  "description_tr": "Doğal sonuç için orta tutuşlu şekillendirici krem. Saçı sertleştirmeden düzenler; hareket serbest kalır, dokunuş gün boyu yumuşak kalır."
+ },
+ {
   "ean": "8681665066826",
   "name": "HAIR STYLING CREAM NO 6 EXTRA HOLD",
   "volume": "150 ML",
@@ -1408,26 +1427,6 @@
   "description_de": "Stylingwachs mit 100 % mattem Finish, für definierte Looks ohne Fett-Effekt oder Glanz. Starker, formbarer Halt, für jeden Haartyp geeignet.",
   "tagline_tr": "Mat bitiş — güçlü tutuş",
   "description_tr": "%100 mat bitişli şekillendirici wax, yağlı görünüm ve parlaklık olmadan belirgin şekiller için. Güçlü ve yeniden şekillendirilebilir tutuş, her saç tipine uygun."
- },
- {
-  "ean": "8682035088523",
-  "name": "STYLING CREAM NATURAL LOOK",
-  "volume": "",
-  "category": "Mat Wax",
-  "image": "8682035088523.webp",
-  "tagline": "Crème coiffante — effet naturel",
-  "description": "Crème de coiffage à tenue souple, pour un rendu naturel. Elle discipline sans rigidifier : les cheveux restent mobiles et le toucher reste doux toute la journée.",
-  "usage": "Répartir une noisette dans les paumes et appliquer sur cheveux secs ou humides, en modelant à la main.",
-  "box_qty": 48,
-  "soon": true,
-  "tagline_en": "Styling cream — natural look",
-  "tagline_nl": "Stylingcrème — natuurlijke look",
-  "tagline_de": "Stylingcreme — natürlicher Look",
-  "tagline_tr": "Şekillendirici krem — doğal görünüm",
-  "description_en": "Flexible-hold styling cream for a natural result. It tames the hair without stiffness: movement stays free and the feel stays soft all day.",
-  "description_nl": "Stylingcrème met soepele hold voor een natuurlijk resultaat. Bedwingt het haar zonder het stijf te maken: beweging blijft vrij en het haar voelt de hele dag zacht.",
-  "description_de": "Stylingcreme mit flexiblem Halt für ein natürliches Ergebnis. Bändigt das Haar ohne Steifheit: Bewegung bleibt frei, der Griff bleibt den ganzen Tag weich.",
-  "description_tr": "Doğal sonuç için esnek tutuşlu şekillendirici krem. Saçı sertleştirmeden düzenler; hareket serbest kalır, dokunuş gün boyu yumuşak kalır."
  },
  {
   "ean": "8684736673954",

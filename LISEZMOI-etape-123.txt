@@ -1,0 +1,23 @@
+NISHMAN — ÉTAPE 123 (17 septembre 2026)
+=======================================
+
+OBJET
+Fiche 8682035088523 : « STYLING CREAM NATURAL LOOK » devient
+« HAIR STYLING CREAM NO 5 MEDIUM HOLD 150 ML » (nom identique à Odoo),
+volume 150 ML, accroche et description « tenue moyenne » dans les 5 langues,
+passée en vente et placée juste avant la NO 6 Extra Hold.
+Prix inchangé : 2,50 € HT, carton de 48.
+
+Cette étape INCLUT les étapes 121 et 122.
+
+FICHIERS À DÉPOSER SUR GITHUB (dépôt NishmanBelgium/nishman-site)
+- index.html, sw.js                         -> racine
+- produits/, devis/, contact/, france/, cgv/ -> index.html de chaque dossier
+- assets/js/catalog.js, assets/js/quote.js
+- assets/data/products.json
+Ne rien supprimer d'autre dans le dépôt.
+
+ODOO : la fiche « HAIR STYLING CREAM NO 5 MEDIUM HOLD 150 ML » doit porter
+le code-barres 8682035088523, sinon le site ne voit pas son stock.
+
+Catalogue : 203 fiches, 197 visibles dont 16 encore à venir.
