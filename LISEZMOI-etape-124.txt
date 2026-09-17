@@ -1,0 +1,20 @@
+NISHMAN — ÉTAPE 124 (17 septembre 2026)
+=======================================
+
+OBJET
+Volumes de la gamme Matte M1 à M12 affichés sur les cartes et les fiches :
+- 150 ML : M2 Keratin, M10
+- 100 ML : M1, M3, M4, M5, M6, M7, M8, M9, M12
+(Il n'existe pas de M11 au catalogue. Les M1 à M4 TESTER & TRAVEL SIZE,
+masqués, restent en 30 ML.)
+Volumes ajoutés : M1, M2, M3, M4 (ils étaient vides). Les autres étaient
+déjà corrects.
+
+Cette étape INCLUT les étapes 121, 122 et 123.
+
+FICHIERS À DÉPOSER SUR GITHUB (dépôt NishmanBelgium/nishman-site)
+- index.html, sw.js                         -> racine
+- produits/, devis/, contact/, france/, cgv/ -> index.html de chaque dossier
+- assets/js/catalog.js, assets/js/quote.js
+- assets/data/products.json
+Ne rien supprimer d'autre dans le dépôt.
