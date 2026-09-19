@@ -3781,7 +3781,6 @@
     "description": "Spray technique pour tondeuses, rasoirs et ciseaux : il nettoie, refroidit, désinfecte, lubrifie et protège de la rouille en une seule application.",
     "usage": "Vaporiser directement sur la lame, appareil éteint, après chaque utilisation.",
     "box_qty": 24,
-    "soon": true,
     "tagline_en": "5-in-1 spray — cutting tools",
     "tagline_nl": "5-in-1 spray — knipgereedschap",
     "tagline_de": "5-in-1-Spray — Schneidwerkzeuge",
@@ -3789,7 +3788,8 @@
     "description_en": "Technical spray for clippers, razors and scissors: it cleans, cools, disinfects, lubricates and protects against rust in a single application.",
     "description_nl": "Technische spray voor tondeuses, scheerapparaten en scharen: reinigt, koelt, desinfecteert, smeert en beschermt tegen roest in één handeling.",
     "description_de": "Technisches Spray für Haarschneider, Rasierer und Scheren: reinigt, kühlt, desinfiziert, schmiert und schützt vor Rost in einem Arbeitsgang.",
-    "description_tr": "Makine, jilet ve makaslar için teknik sprey: tek uygulamada temizler, soğutur, dezenfekte eder, yağlar ve pastan korur."
+    "description_tr": "Makine, jilet ve makaslar için teknik sprey: tek uygulamada temizler, soğutur, dezenfekte eder, yağlar ve pastan korur.",
+    "hidden": true
   },
   {
     "ean": "8684736675255",
