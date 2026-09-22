@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "128";
+  const ASSET_V = "134";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
@@ -36,9 +36,9 @@
       vatSiren: "Il manque les 2 caractères de clé à placer DEVANT votre SIREN. Votre numéro de TVA s'écrit FR + 2 caractères + les 9 chiffres du SIREN.",
       vatHint: (n) => `${n} caractères attendus`,
       street: "Adresse (rue et numéro)", zip: "Code postal", city: "Ville", country: "Pays",
-      shipMode: "Mode de réception", shipDelivery: "Livraison", shipPickup: "Retrait à Cuesmes",
+      shipMode: "Mode de réception", shipDelivery: "Livraison", shipPickup: "Retrait à Binche",
       shipFee: "Frais de livraison", shipFree: "Livraison offerte", subTotal: "Sous-total HT",
-      minBlock: (min, m) => `Minimum de commande en livraison : ${min} HT. Il vous manque ${m}. Ajoutez des produits, ou choisissez le retrait a Cuesmes — sans minimum.`,
+      minBlock: (min, m) => `Minimum de commande en livraison : ${min} HT. Il vous manque ${m}. Ajoutez des produits, ou choisissez le retrait a Binche — sans minimum.`,
       cont: "Continuer", saved: "Vos coordonnées sont conservées sur cet appareil pour vos prochaines demandes.",
       doctitle: "DEMANDE DE DEVIS", ref: "Référence", date: "Date", client: "Client",
       thProd: "Produit", thEan: "EAN", thU: "Unités", thB: "Cartons", thTot: "Total pièces",
@@ -65,9 +65,9 @@
       vatSiren: "The 2 key characters are missing BEFORE your SIREN. A French VAT number reads FR + 2 characters + the 9 SIREN digits.",
       vatHint: (n) => `${n} characters expected`,
       street: "Address (street and number)", zip: "Postcode", city: "City", country: "Country",
-      shipMode: "Delivery method", shipDelivery: "Delivery", shipPickup: "Collection in Cuesmes",
+      shipMode: "Delivery method", shipDelivery: "Delivery", shipPickup: "Collection in Binche",
       shipFee: "Delivery charge", shipFree: "Free delivery", subTotal: "Subtotal excl. VAT",
-      minBlock: (min, m) => `Minimum order for delivery: ${min} excl. VAT. You are ${m} short. Add products, or choose collection in Cuesmes — no minimum.`,
+      minBlock: (min, m) => `Minimum order for delivery: ${min} excl. VAT. You are ${m} short. Add products, or choose collection in Binche — no minimum.`,
       cont: "Continue", saved: "Your details are kept on this device for your next requests.",
       doctitle: "QUOTATION REQUEST", ref: "Reference", date: "Date", client: "Customer",
       thProd: "Product", thEan: "EAN", thU: "Units", thB: "Boxes", thTot: "Total pcs",
@@ -94,9 +94,9 @@
       vatSiren: "De 2 sleuteltekens ontbreken VÓÓR uw SIREN. Een Frans btw-nummer is FR + 2 tekens + de 9 cijfers van het SIREN.",
       vatHint: (n) => `${n} tekens verwacht`,
       street: "Adres (straat en nummer)", zip: "Postcode", city: "Stad", country: "Land",
-      shipMode: "Wijze van ontvangst", shipDelivery: "Levering", shipPickup: "Afhalen in Cuesmes",
+      shipMode: "Wijze van ontvangst", shipDelivery: "Levering", shipPickup: "Afhalen in Binche",
       shipFee: "Leveringskosten", shipFree: "Gratis levering", subTotal: "Subtotaal excl. btw",
-      minBlock: (min, m) => `Minimumbestelling bij levering: ${min} excl. btw. Er ontbreekt nog ${m}. Voeg producten toe of kies afhalen in Cuesmes — zonder minimum.`,
+      minBlock: (min, m) => `Minimumbestelling bij levering: ${min} excl. btw. Er ontbreekt nog ${m}. Voeg producten toe of kies afhalen in Binche — zonder minimum.`,
       cont: "Doorgaan", saved: "Uw gegevens worden op dit toestel bewaard voor volgende aanvragen.",
       doctitle: "OFFERTEAANVRAAG", ref: "Referentie", date: "Datum", client: "Klant",
       thProd: "Product", thEan: "EAN", thU: "Stuks", thB: "Dozen", thTot: "Totaal stuks",
@@ -123,9 +123,9 @@
       vatSiren: "Die 2 Prüfzeichen fehlen VOR Ihrer SIREN. Eine französische USt-Nummer lautet FR + 2 Zeichen + die 9 Ziffern der SIREN.",
       vatHint: (n) => `${n} Zeichen erwartet`,
       street: "Adresse (Straße und Nummer)", zip: "PLZ", city: "Stadt", country: "Land",
-      shipMode: "Art des Empfangs", shipDelivery: "Lieferung", shipPickup: "Abholung in Cuesmes",
+      shipMode: "Art des Empfangs", shipDelivery: "Lieferung", shipPickup: "Abholung in Binche",
       shipFee: "Versandkosten", shipFree: "Kostenlose Lieferung", subTotal: "Zwischensumme netto",
-      minBlock: (min, m) => `Mindestbestellwert bei Lieferung: ${min} netto. Es fehlen ${m}. Fugen Sie Produkte hinzu oder wahlen Sie Abholung in Cuesmes — ohne Mindestwert.`,
+      minBlock: (min, m) => `Mindestbestellwert bei Lieferung: ${min} netto. Es fehlen ${m}. Fugen Sie Produkte hinzu oder wahlen Sie Abholung in Binche — ohne Mindestwert.`,
       cont: "Weiter", saved: "Ihre Daten werden auf diesem Gerät für künftige Anfragen gespeichert.",
       doctitle: "ANGEBOTSANFRAGE", ref: "Referenz", date: "Datum", client: "Kunde",
       thProd: "Produkt", thEan: "EAN", thU: "Stück", thB: "Kartons", thTot: "Stück gesamt",
@@ -152,9 +152,9 @@
       vatSiren: "SIREN numaranızın ÖNÜNDE bulunması gereken 2 anahtar karakter eksik. Fransız vergi numarası FR + 2 karakter + 9 haneli SIREN şeklindedir.",
       vatHint: (n) => `${n} karakter bekleniyor`,
       street: "Adres (cadde ve numara)", zip: "Posta kodu", city: "Şehir", country: "Ülke",
-      shipMode: "Teslim şekli", shipDelivery: "Teslimat", shipPickup: "Cuesmes'ten teslim alma",
+      shipMode: "Teslim şekli", shipDelivery: "Teslimat", shipPickup: "Binche'ten teslim alma",
       shipFee: "Teslimat ücreti", shipFree: "Teslimat ücretsiz", subTotal: "Ara toplam (KDV hariç)",
-      minBlock: (min, m) => `Teslimat icin minimum siparis: ${min} (KDV haric). ${m} eksik. Urun ekleyin veya Cuesmes teslim almayi secin — minimum yok.`,
+      minBlock: (min, m) => `Teslimat icin minimum siparis: ${min} (KDV haric). ${m} eksik. Urun ekleyin veya Binche teslim almayi secin — minimum yok.`,
       cont: "Devam", saved: "Bilgileriniz sonraki talepleriniz için bu cihazda saklanır.",
       doctitle: "FİYAT TEKLİFİ TALEBİ", ref: "Referans", date: "Tarih", client: "Müşteri",
       thProd: "Ürün", thEan: "EAN", thU: "Adet", thB: "Koli", thTot: "Toplam adet",

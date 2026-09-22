@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "128";
+  const ASSET_V = "134";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -408,6 +408,7 @@
     "Gels & Mousses": { en: "Gels & Foams", nl: "Gels & Mousses", de: "Gele & Schäume", tr: "Jöleler & Köpükler" },
     "Crème & Bien-être": { en: "Creams & Wellbeing", nl: "Crèmes & Welzijn", de: "Cremes & Wohlbefinden", tr: "Kremler & Bakım" },
     "Consommables": { en: "Consumables", nl: "Verbruiksartikelen", de: "Verbrauchsmaterial", tr: "Sarf Malzemeleri" },
+    "Coffrets": { en: "Gift Sets", nl: "Geschenksets", de: "Geschenksets", tr: "Hediye Setleri" },
   };
 
   function catLabel(cat) {
