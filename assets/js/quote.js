@@ -8,12 +8,34 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "142";
+  const ASSET_V = "143";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
   // n'est soumis a aucun minimum : c'est le transport qu'il protege.
   const MIN_ORDER = 300;
+
+  // ---------- Code promo ----------
+  // Un seul code actif, sans date de fin ni minimum de commande, accepte
+  // aussi pour un client deja existant (decision du 23/09/2026).
+  const PROMO_CODE = "FIRST10";
+  const PROMO_RATE = 0.10;
+  const PROMO_T = {
+    fr: { label: "Code promo (facultatif)", ok: "Code FIRST10 appliqué : −10 % sur votre commande",
+          bad: "Ce code promo n'est pas reconnu", line: "Remise FIRST10 (−10 %)" },
+    en: { label: "Promo code (optional)", ok: "FIRST10 applied: −10% on your order",
+          bad: "This promo code is not recognised", line: "FIRST10 discount (−10%)" },
+    nl: { label: "Kortingscode (optioneel)", ok: "FIRST10 toegepast: −10% op uw bestelling",
+          bad: "Deze kortingscode is niet geldig", line: "Korting FIRST10 (−10%)" },
+    de: { label: "Aktionscode (optional)", ok: "FIRST10 angewendet: −10 % auf Ihre Bestellung",
+          bad: "Dieser Aktionscode ist ungültig", line: "Rabatt FIRST10 (−10 %)" },
+    tr: { label: "Promosyon kodu (isteğe bağlı)", ok: "FIRST10 uygulandı: siparişinizde −%10",
+          bad: "Bu promosyon kodu geçerli değil", line: "FIRST10 indirimi (−%10)" },
+  };
+  function promoT() { return PROMO_T[LANG] || PROMO_T.fr; }
+  function promoValide(v) {
+    return String(v || "").trim().toUpperCase().replace(/[\s-]/g, "") === PROMO_CODE;
+  }
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
   const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
@@ -324,8 +346,31 @@
         ${showPrices ? `<td class="num price-col"><strong>${l.subtotal !== null ? money(l.subtotal) : "—"}</strong></td>` : ""}
       </tr>`).join("");
 
-    const total = lines.reduce((s, l) => s + (l.subtotal || 0), 0);
+    const brut = lines.reduce((s, l) => s + (l.subtotal || 0), 0);
     const retrait = (client.shipmode || "livraison") === "retrait";
+
+    // Remise : appliquee seulement si le code est reconnu et les prix visibles.
+    const promoOk = showPrices && brut > 0 && promoValide(client.promo);
+    const remise = promoOk ? Math.round(brut * PROMO_RATE * 100) / 100 : 0;
+    const total = Math.round((brut - remise) * 100) / 100;
+
+    const rowPromo = $("doc-promo-row");
+    if (rowPromo) {
+      rowPromo.hidden = !promoOk;
+      if (promoOk) {
+        txt("doc-promo-label", promoT().line);
+        txt("doc-promo-value", "− " + money(remise));
+      }
+    }
+    const avisPromo = $("promo-msg");
+    if (avisPromo) {
+      const saisi = String(client.promo || "").trim();
+      avisPromo.hidden = !saisi;
+      if (saisi) {
+        avisPromo.textContent = promoValide(saisi) ? promoT().ok : promoT().bad;
+        avisPromo.classList.toggle("promo-ko", !promoValide(saisi));
+      }
+    }
 
     // Plus de frais de livraison : la ligne reste dans la page mais ne
     // s'affiche jamais, pour ne pas casser la mise en page du document.
@@ -352,7 +397,8 @@
       if (manque > 0) avert.textContent = T.minBlock(money(MIN_ORDER), money(manque));
     }
 
-    return { lines: lines, total: total, subTotal: total, shipping: 0,
+    return { lines: lines, total: total, subTotal: brut, shipping: 0,
+             promo: promoOk ? PROMO_CODE : "", discount: remise,
              pickup: retrait, showPrices: showPrices, manque: manque };
   }
 
@@ -437,6 +483,8 @@
     const data = {};
     FIELDS.forEach((f) => { data[f] = ($("f-" + f).value || "").trim(); });
     data.vat = normaliserTva(data.vat, data.country);
+    const chp = $("f-promo");
+    data.promo = chp ? (chp.value || "").trim() : "";
     return data;
   }
 
@@ -497,6 +545,9 @@
       subTotal: data.showPrices ? data.subTotal.toFixed(2) : "",
       shipping: data.showPrices ? data.shipping.toFixed(2) : "",
       pickup: data.pickup ? "1" : "",
+      promo: data.showPrices ? (data.promo || "") : "",
+      discountRate: data.promo ? String(Math.round(PROMO_RATE * 100)) : "",
+      discount: data.showPrices ? data.discount.toFixed(2) : "",
       currency: "EUR",
       lines: data.lines.map((l) => ({
         ean: l.ean, name: l.name, units: l.units, boxes: l.boxes,
@@ -551,7 +602,7 @@
       "t-f-first": T.first, "t-f-last": T.last, "t-f-company": T.company,
       "t-f-vat": T.vat, "t-f-phone": T.phone, "t-f-email": T.email,
       "t-f-street": T.street, "t-f-zip": T.zip, "t-f-city": T.city, "t-f-country": T.country,
-      "t-f-shipmode": T.shipMode,
+      "t-f-shipmode": T.shipMode, "t-f-promo": promoT().label,
       "t-continue": T.cont, "t-saved": T.saved,
       "t-doctitle": T.doctitle, "t-ref": T.ref, "t-date": T.date, "t-client": T.client,
       "t-th-prod": T.thProd, "t-th-ean": T.thEan, "t-th-u": T.thU, "t-th-b": T.thB,

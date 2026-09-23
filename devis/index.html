@@ -13,15 +13,15 @@
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="manifest" href="/manifest.json?v=142" />
+  <link rel="manifest" href="/manifest.json?v=143" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Nishman" />
-  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=142" />
+  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=143" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=142" />
-  <link rel="stylesheet" href="/assets/css/quote.css?v=142" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=143" />
+  <link rel="stylesheet" href="/assets/css/quote.css?v=143" />
 </head>
 <body class="quote-body">
 
@@ -97,7 +97,13 @@
             <option value="retrait">Retrait à Binche</option>
           </select>
         </label>
+        <label class="field field-wide">
+          <span id="t-f-promo">Code promo (facultatif)</span>
+          <input type="text" id="f-promo" autocomplete="off" autocapitalize="characters"
+                 spellcheck="false" placeholder="FIRST10" />
+        </label>
       </div>
+      <p class="quote-note" id="promo-msg" hidden></p>
 
       <p class="quote-error" id="form-error" hidden></p>
 
@@ -152,6 +158,11 @@
         <div class="doc-ship" id="doc-ship-row" hidden>
           <span id="doc-ship-label">Frais de livraison</span>
           <span id="doc-ship-value">—</span>
+        </div>
+
+        <div class="doc-ship" id="doc-promo-row" hidden>
+          <span id="doc-promo-label">Remise</span>
+          <span id="doc-promo-value">—</span>
         </div>
 
         <div class="doc-total" id="doc-total-row">
@@ -209,7 +220,7 @@
     .quote-cta.cta-bloque { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
   </style>
 
-  <script src="/assets/js/config.js?v=142"></script>
-  <script src="/assets/js/quote.js?v=142"></script>
+  <script src="/assets/js/config.js?v=143"></script>
+  <script src="/assets/js/quote.js?v=143"></script>
 </body>
 </html>
