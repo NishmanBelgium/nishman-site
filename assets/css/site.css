@@ -2623,15 +2623,15 @@ img { max-width: 100%; height: auto; }
   .offre-cta { font-size: 17px; }
 }
 
-/* Barre de progression flottante, au-dessus de la barre de sélection */
+/* Barre de progression de l'offre — collée en haut, visible en continu */
 #offre-flottante {
-  position: fixed; left: 12px; right: 12px; bottom: 76px; z-index: 1200;
-  background: var(--ink); border-radius: 12px; padding: 9px 13px 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1500;
+  background: var(--ink); padding: 8px 14px 9px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
 }
 .offre-fbarre {
   height: 5px; background: #2a2a2d; border-radius: 99px;
-  overflow: hidden; margin-bottom: 6px;
+  overflow: hidden; margin-bottom: 5px;
 }
 .offre-fbarre span {
   display: block; height: 100%; width: 0; background: var(--gold);
@@ -2643,4 +2643,11 @@ img { max-width: 100%; height: auto; }
   font-size: 13px; font-weight: 700; color: var(--gold); text-align: center;
 }
 .offre-ftxt.offre-ok { color: #7bd88f; }
-@media (max-width: 480px) { .offre-ftxt { font-size: 12px; } }
+
+/* La barre de recherche se décale pour ne pas passer dessous */
+body.has-offre-barre .search-sticky { top: 52px; }
+
+@media (max-width: 480px) {
+  .offre-ftxt { font-size: 12px; }
+  body.has-offre-barre .search-sticky { top: 50px; }
+}
