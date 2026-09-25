@@ -19,27 +19,37 @@
           reste: "Plus que ", fini: "Offre terminée",
           manque: "Encore {x} pour obtenir ", debloque: " débloqué",
           debloques: " débloqués", suivant: "Encore {x} pour un carton de plus",
-          j: "j", cartons: "{n} cartons d'Aqua Wax offerts" },
+          j: "j", cartons: "{n} cartons d'Aqua Wax offerts",
+          sur: "OFFRE FLASH", parTranche: "par tranche de 500 € de commande",
+          cta: "J\u2019en profite", uJours: "jours", uHeures: "heures" },
     en: { titre: "Flash offer — 1 free carton of Aqua Wax from €500",
           reste: "Only ", fini: "Offer ended",
           manque: "{x} more to unlock ", debloque: " unlocked",
           debloques: " unlocked", suivant: "{x} more for another carton",
-          j: "d", cartons: "{n} free cartons of Aqua Wax" },
+          j: "d", cartons: "{n} free cartons of Aqua Wax",
+          sur: "FLASH OFFER", parTranche: "for every €500 ordered",
+          cta: "Shop now", uJours: "days", uHeures: "hours" },
     nl: { titre: "Flash-actie — 1 gratis doos Aqua Wax vanaf € 500",
           reste: "Nog ", fini: "Actie afgelopen",
           manque: "Nog {x} voor ", debloque: " vrijgespeeld",
           debloques: " vrijgespeeld", suivant: "Nog {x} voor een extra doos",
-          j: "d", cartons: "{n} gratis dozen Aqua Wax" },
+          j: "d", cartons: "{n} gratis dozen Aqua Wax",
+          sur: "FLASH-ACTIE", parTranche: "per schijf van € 500 bestelling",
+          cta: "Ik profiteer ervan", uJours: "dagen", uHeures: "uur" },
     de: { titre: "Flash-Aktion — 1 Karton Aqua Wax gratis ab 500 €",
           reste: "Nur noch ", fini: "Aktion beendet",
           manque: "Noch {x} für ", debloque: " freigeschaltet",
           debloques: " freigeschaltet", suivant: "Noch {x} für einen weiteren Karton",
-          j: "T", cartons: "{n} Kartons Aqua Wax gratis" },
+          j: "T", cartons: "{n} Kartons Aqua Wax gratis",
+          sur: "FLASH-AKTION", parTranche: "je 500 € Bestellwert",
+          cta: "Jetzt nutzen", uJours: "Tage", uHeures: "Std" },
     tr: { titre: "Flaş kampanya — 500 €'dan itibaren 1 koli Aqua Wax hediye",
           reste: "Sadece ", fini: "Kampanya sona erdi",
           manque: "Hediye için {x} daha", debloque: " kazanıldı",
           debloques: " kazanıldı", suivant: "Bir koli daha için {x}",
-          j: "g", cartons: "{n} koli Aqua Wax hediye" },
+          j: "g", cartons: "{n} koli Aqua Wax hediye",
+          sur: "FLAŞ KAMPANYA", parTranche: "her 500 € sipariş için",
+          cta: "Hemen yararlan", uJours: "gün", uHeures: "saat" },
   };
 
   function langue() {
@@ -63,24 +73,10 @@
     Array.prototype.forEach.call(hotes, function (hote) {
       hote.innerHTML =
         '<div class="offre-bandeau">' +
-          '<span class="offre-ico" aria-hidden="true">&#9201;</span>' +
-          '<div class="offre-txt">' +
-            '<span class="offre-titre">' + t.titre + '</span>' +
-            '<span class="offre-timer"></span>' +
-          '</div>' +
-          '<button class="offre-fermer" type="button" aria-label="Fermer">&times;</button>' +
+          '<span class="offre-titre">' + t.titre + '</span>' +
+          '<span class="offre-timer"></span>' +
         '</div>';
-      hote.querySelector(".offre-fermer").addEventListener("click", function () {
-        hote.innerHTML = "";
-        try { sessionStorage.setItem("offre-fermee", "1"); } catch (e) {}
-      });
     });
-    try {
-      if (sessionStorage.getItem("offre-fermee") === "1") {
-        Array.prototype.forEach.call(hotes, function (h) { h.innerHTML = ""; });
-        return;
-      }
-    } catch (e) {}
     battre();
     setInterval(battre, 1000);
   }
@@ -140,7 +136,56 @@
     }
   };
 
+  /* ---------- pop-up d'arrivee (catalogue uniquement) ---------- */
+  function popup() {
+    if (!encore()) return;
+    if (!document.querySelector("[data-offre-popup]")) return;
+    try { if (sessionStorage.getItem("offre-popup-vue") === "1") return; } catch (e) {}
+
+    var fond = document.createElement("div");
+    fond.className = "offre-modal";
+    fond.innerHTML =
+      '<div class="offre-carte" role="dialog" aria-modal="true" aria-label="' + t.titre + '">' +
+        '<button class="offre-x" type="button" aria-label="Fermer">&times;</button>' +
+        '<div class="offre-sur">' + (t.sur || "OFFRE FLASH") + '</div>' +
+        '<div class="offre-h1">' + OFFRE.cadeau + '</div>' +
+        '<div class="offre-h2">' + (t.parTranche || "par tranche de 500 € de commande") + '</div>' +
+        '<div class="offre-blocs"></div>' +
+        '<button class="offre-cta" type="button">' + (t.cta || "J\u2019en profite") + '</button>' +
+      '</div>';
+    document.body.appendChild(fond);
+
+    function fermer() {
+      fond.remove();
+      try { sessionStorage.setItem("offre-popup-vue", "1"); } catch (e) {}
+    }
+    fond.querySelector(".offre-x").addEventListener("click", fermer);
+    fond.querySelector(".offre-cta").addEventListener("click", fermer);
+    fond.addEventListener("click", function (e) { if (e.target === fond) fermer(); });
+
+    blocs();
+    setInterval(blocs, 1000);
+  }
+
+  function blocs() {
+    var hote = document.querySelector(".offre-blocs");
+    if (!hote) return;
+    var r = OFFRE.fin - Date.now();
+    if (r <= 0) { hote.innerHTML = ""; return; }
+    var v = [
+      [Math.floor(r / 86400000), t.uJours || "jours"],
+      [deux(Math.floor(r / 3600000) % 24), t.uHeures || "heures"],
+      [deux(Math.floor(r / 60000) % 60), "min"],
+      [deux(Math.floor(r / 1000) % 60), "sec"],
+    ];
+    hote.innerHTML = v.map(function (x) {
+      return '<div class="offre-bloc"><b>' + x[0] + '</b><i>' + x[1] + '</i></div>';
+    }).join("");
+  }
+
+  function demarrer() { bandeau(); setTimeout(popup, 1100); }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bandeau);
-  } else { bandeau(); }
+    document.addEventListener("DOMContentLoaded", demarrer);
+  } else { demarrer(); }
 })();

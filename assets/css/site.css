@@ -2515,29 +2515,21 @@ img { max-width: 100%; height: auto; }
 }
 
 /* ==========================================================================
-   OFFRE FLASH — bandeau et compteur de progression
+   OFFRE FLASH — bandeau permanent, compteur de progression, pop-up
    ========================================================================== */
 .offre-bandeau {
-  display: flex; align-items: center; gap: 10px;
   background: var(--ink); border-radius: 12px;
-  padding: 10px 12px; margin: 10px 0;
+  padding: 11px 14px; margin: 10px 0; text-align: center;
 }
-.offre-ico { font-size: 18px; color: var(--gold); line-height: 1; }
-.offre-txt { flex: 1; min-width: 0; }
 .offre-titre {
-  display: block; font-size: 13px; font-weight: 600; color: #fff;
+  display: block; font-size: 13.5px; font-weight: 600; color: #fff;
   line-height: 1.35;
 }
 .offre-timer {
-  display: block; font-size: 12px; color: var(--gold); margin-top: 1px;
+  display: block; font-size: 12px; color: var(--gold); margin-top: 2px;
   font-variant-numeric: tabular-nums;
 }
 .offre-timer.offre-urgent { color: #ff5a3c; }
-.offre-fermer {
-  background: none; border: 0; color: #8a8a90; font-size: 18px;
-  line-height: 1; padding: 2px 4px; cursor: pointer;
-}
-.offre-fermer:hover { color: #fff; }
 
 .offre-progres {
   border: 1px solid var(--line); border-radius: 12px;
@@ -2556,6 +2548,77 @@ img { max-width: 100%; height: auto; }
 .offre-ligne.offre-ok { color: #2e7d32; }
 .offre-sous { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
 
+.offre-modal {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; animation: offre-fond 0.25s ease;
+}
+@keyframes offre-fond { from { opacity: 0; } to { opacity: 1; } }
+.offre-carte {
+  position: relative; width: 100%; max-width: 360px;
+  background: var(--ink); border-radius: 26px;
+  padding: 30px 24px 24px; text-align: center;
+  animation: offre-monte 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+@keyframes offre-monte {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.offre-x {
+  position: absolute; top: 8px; right: 10px;
+  background: none; border: 0; color: #8a8a90;
+  font-size: 22px; line-height: 1; padding: 4px 8px; cursor: pointer;
+}
+.offre-x:hover { color: #fff; }
+.offre-sur {
+  font-family: "Baloo 2", var(--font-body);
+  font-size: 14px; font-weight: 800; letter-spacing: 2px;
+  color: var(--gold); margin-bottom: 12px;
+}
+.offre-h1 {
+  font-family: "Baloo 2", var(--font-display);
+  font-size: 32px; font-weight: 800; color: #fff;
+  line-height: 1.12; letter-spacing: -0.3px;
+}
+.offre-h2 {
+  font-family: "Baloo 2", var(--font-body);
+  font-size: 19px; font-weight: 700; color: var(--gold);
+  margin-top: 8px; line-height: 1.25;
+}
+.offre-detail {
+  font-family: "Baloo 2", var(--font-body);
+  font-size: 15px; font-weight: 600; color: #c7c7cc;
+  line-height: 1.5; margin-top: 14px;
+}
+.offre-blocs {
+  display: flex; gap: 6px; justify-content: center; margin: 18px 0;
+}
+.offre-bloc {
+  background: #1e1e20; border-radius: 14px; padding: 9px 10px; min-width: 56px;
+}
+.offre-bloc b {
+  display: block; font-family: "Baloo 2", var(--font-body);
+  font-size: 24px; font-weight: 800; color: var(--gold);
+  line-height: 1.1; font-variant-numeric: tabular-nums;
+}
+.offre-bloc i {
+  display: block; font-family: "Baloo 2", var(--font-body);
+  font-size: 11.5px; font-weight: 600; font-style: normal;
+  color: #9a9aa0; margin-top: 1px;
+}
+.offre-cta {
+  width: 100%; border: 0; border-radius: 99px; cursor: pointer;
+  background: var(--gradient); color: #fff;
+  font-family: "Baloo 2", var(--font-body);
+  font-size: 19px; font-weight: 800; letter-spacing: 0.2px;
+  padding: 15px 18px;
+}
+.offre-cta:active { transform: scale(0.98); }
+
 @media (max-width: 480px) {
   .offre-titre { font-size: 12.5px; }
+  .offre-h1 { font-size: 27px; }
+  .offre-h2 { font-size: 17px; }
+  .offre-cta { font-size: 17px; }
 }
