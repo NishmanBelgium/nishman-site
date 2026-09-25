@@ -13,15 +13,15 @@
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="manifest" href="/manifest.json?v=146" />
+  <link rel="manifest" href="/manifest.json?v=148" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Nishman" />
-  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=146" />
+  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=148" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=146" />
-  <link rel="stylesheet" href="/assets/css/quote.css?v=146" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=148" />
+  <link rel="stylesheet" href="/assets/css/quote.css?v=148" />
 </head>
 <body class="quote-body">
 
@@ -100,7 +100,7 @@
         <label class="field field-wide">
           <span id="t-f-promo">Code promo (facultatif)</span>
           <input type="text" id="f-promo" autocomplete="off" autocapitalize="characters"
-                 spellcheck="false" placeholder="FIRST10" />
+                 spellcheck="false" />
         </label>
       </div>
       <p class="quote-note" id="promo-msg" hidden></p>
@@ -170,6 +170,12 @@
           <strong id="doc-total">—</strong>
         </div>
 
+        <div class="offre-progres" id="offre-progres" hidden>
+          <div class="offre-barre"><span></span></div>
+          <div class="offre-ligne"></div>
+          <div class="offre-sous"></div>
+        </div>
+
         <p class="doc-legal" id="t-legal">
           Document non contractuel — sous réserve de confirmation, de disponibilité
           et de validation des conditions par NBD Distribution SRL. Prix hors TVA.
@@ -220,7 +226,8 @@
     .quote-cta.cta-bloque { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
   </style>
 
-  <script src="/assets/js/config.js?v=146"></script>
-  <script src="/assets/js/quote.js?v=146"></script>
+  <script src="/assets/js/config.js?v=148"></script>
+  <script src="/assets/js/quote.js?v=148"></script>
+  <script src="/assets/js/offre.js?v=148"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "146";
+  const ASSET_V = "148";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
@@ -382,6 +382,11 @@
       txt("doc-total", money(total));
     } else {
       $("doc-total-row").hidden = true;
+    }
+
+    // Offre flash : compteur de progression vers le carton offert.
+    if (typeof window.offreMaj === "function") {
+      window.offreMaj(showPrices ? brut : 0);
     }
 
     // Minimum de commande : bloquant en livraison, jamais en retrait.

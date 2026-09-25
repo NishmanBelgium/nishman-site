@@ -2513,3 +2513,49 @@ img { max-width: 100%; height: auto; }
   color: var(--gold-deep, #b36b00);
   text-align: center;
 }
+
+/* ==========================================================================
+   OFFRE FLASH — bandeau et compteur de progression
+   ========================================================================== */
+.offre-bandeau {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--ink); border-radius: 12px;
+  padding: 10px 12px; margin: 10px 0;
+}
+.offre-ico { font-size: 18px; color: var(--gold); line-height: 1; }
+.offre-txt { flex: 1; min-width: 0; }
+.offre-titre {
+  display: block; font-size: 13px; font-weight: 600; color: #fff;
+  line-height: 1.35;
+}
+.offre-timer {
+  display: block; font-size: 12px; color: var(--gold); margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.offre-timer.offre-urgent { color: #ff5a3c; }
+.offre-fermer {
+  background: none; border: 0; color: #8a8a90; font-size: 18px;
+  line-height: 1; padding: 2px 4px; cursor: pointer;
+}
+.offre-fermer:hover { color: #fff; }
+
+.offre-progres {
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 12px 14px; margin: 10px 0;
+}
+.offre-barre {
+  height: 6px; background: var(--bg-soft-2); border-radius: 99px;
+  overflow: hidden; margin-bottom: 8px;
+}
+.offre-barre span {
+  display: block; height: 100%; width: 0; background: var(--gold);
+  transition: width 0.35s ease;
+}
+.offre-barre span.offre-plein { background: #4caf50; }
+.offre-ligne { font-size: 13px; color: var(--gold-deep); font-weight: 600; }
+.offre-ligne.offre-ok { color: #2e7d32; }
+.offre-sous { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
+
+@media (max-width: 480px) {
+  .offre-titre { font-size: 12.5px; }
+}
