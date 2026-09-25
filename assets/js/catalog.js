@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "152";
+  const ASSET_V = "153";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -766,6 +766,7 @@
     document.body.classList.toggle("has-float", u + b > 0);
     if (u + b === 0) {
       bar.hidden = true;
+      majOffreBarre(0);
       return;
     }
     const parts = [];
@@ -773,6 +774,27 @@
     if (b) parts.push(T.box(b));
     bar.hidden = false;
     bar.innerHTML = `<span class="fb-count">${u + b}</span> ${parts.join(" + ")} — ${T.seeSelection}`;
+    majOffreBarre(totalSelection());
+  }
+
+  // Total HT de la sélection, une fois les prix débloqués.
+  function totalSelection() {
+    if (!unlocked()) return 0;
+    let t = 0;
+    Object.keys(selection).forEach((ean) => {
+      const p = PRODUCTS.find((x) => x.ean === ean);
+      if (!p) return;
+      const unit = priceOf(p);
+      if (unit === null) return;
+      const q = selection[ean];
+      t += (q.u || 0) * unit + (q.b || 0) * (p.box_qty || 0) * unit;
+    });
+    return t;
+  }
+
+  // Barre de progression de l'offre flash, au-dessus de la barre flottante.
+  function majOffreBarre(total) {
+    if (typeof window.offreBarre === "function") window.offreBarre(total);
   }
 
   // ---------- Tiroir de sélection ----------

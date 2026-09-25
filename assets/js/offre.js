@@ -183,6 +183,44 @@
     }).join("");
   }
 
+  /* ---------- barre de progression flottante (catalogue) ---------- */
+  window.offreBarre = function (total) {
+    var b = document.getElementById("offre-flottante");
+    if (!encore() || !total || total <= 0) {
+      if (b) b.remove();
+      document.body.classList.remove("has-offre-barre");
+      return;
+    }
+    if (!b) {
+      b = document.createElement("div");
+      b.id = "offre-flottante";
+      b.innerHTML = '<div class="offre-fbarre"><span></span></div>' +
+                    '<div class="offre-ftxt"></div>';
+      document.body.appendChild(b);
+    }
+    document.body.classList.add("has-offre-barre");
+
+    var paliers = Math.floor(total / OFFRE.seuil);
+    var reste = OFFRE.seuil - (total % OFFRE.seuil);
+    var pct = ((total % OFFRE.seuil) / OFFRE.seuil) * 100;
+
+    var jauge = b.querySelector(".offre-fbarre span");
+    var txt = b.querySelector(".offre-ftxt");
+    jauge.style.width = (paliers > 0 ? 100 : pct).toFixed(0) + "%";
+    jauge.className = paliers > 0 ? "offre-plein" : "";
+
+    if (paliers === 0) {
+      txt.className = "offre-ftxt";
+      txt.textContent = t.manque.replace("{x}", euros(reste)) + OFFRE.cadeau;
+    } else {
+      txt.className = "offre-ftxt offre-ok";
+      txt.textContent = (paliers === 1
+        ? OFFRE.cadeau + t.debloque
+        : t.cartons.replace("{n}", paliers) + t.debloques)
+        + " • " + t.suivant.replace("{x}", euros(reste));
+    }
+  };
+
   function demarrer() { bandeau(); setTimeout(popup, 1100); }
 
   if (document.readyState === "loading") {

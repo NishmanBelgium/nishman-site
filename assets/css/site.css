@@ -2622,3 +2622,25 @@ img { max-width: 100%; height: auto; }
   .offre-h2 { font-size: 17px; }
   .offre-cta { font-size: 17px; }
 }
+
+/* Barre de progression flottante, au-dessus de la barre de sélection */
+#offre-flottante {
+  position: fixed; left: 12px; right: 12px; bottom: 76px; z-index: 1200;
+  background: var(--ink); border-radius: 12px; padding: 9px 13px 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+.offre-fbarre {
+  height: 5px; background: #2a2a2d; border-radius: 99px;
+  overflow: hidden; margin-bottom: 6px;
+}
+.offre-fbarre span {
+  display: block; height: 100%; width: 0; background: var(--gold);
+  transition: width 0.35s ease;
+}
+.offre-fbarre span.offre-plein { background: #4caf50; }
+.offre-ftxt {
+  font-family: "Baloo 2", var(--font-body);
+  font-size: 13px; font-weight: 700; color: var(--gold); text-align: center;
+}
+.offre-ftxt.offre-ok { color: #7bd88f; }
+@media (max-width: 480px) { .offre-ftxt { font-size: 12px; } }
