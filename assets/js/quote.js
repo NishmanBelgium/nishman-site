@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "154";
+  const ASSET_V = "155";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
@@ -335,8 +335,25 @@
     const showPrices = unlocked();
     document.querySelectorAll(".price-col").forEach((el) => { el.hidden = !showPrices; });
 
-    $("doc-lines").innerHTML = lines.map((l) => `
-      <tr>
+    const brut = lines.reduce((s, l) => s + (l.subtotal || 0), 0);
+
+    // Offre flash : un carton offert par tranche atteinte, ajoute en fin de
+    // tableau a 0 EUR. Ne compte pas dans le total.
+    let cadeaux = 0;
+    if (showPrices && typeof window.offreCartons === "function") {
+      cadeaux = window.offreCartons(brut);
+    }
+    const toutes = lines.slice();
+    if (cadeaux > 0) {
+      const c = window.offreCadeau();
+      toutes.push({
+        name: c.nom, ean: c.ean, units: 0, boxes: cadeaux, boxQty: c.pieces,
+        pieces: cadeaux * c.pieces, unitPrice: 0, subtotal: 0, offert: true,
+      });
+    }
+
+    $("doc-lines").innerHTML = toutes.map((l) => `
+      <tr${l.offert ? ' class="ligne-offerte"' : ""}>
         <td class="prod-name">${esc(l.name)}</td>
         <td class="ean">${esc(l.ean)}</td>
         <td class="num">${l.units || "—"}</td>
@@ -345,8 +362,6 @@
         ${showPrices ? `<td class="num price-col">${l.unitPrice !== null ? money(l.unitPrice) : T.askPrice}</td>` : ""}
         ${showPrices ? `<td class="num price-col"><strong>${l.subtotal !== null ? money(l.subtotal) : "—"}</strong></td>` : ""}
       </tr>`).join("");
-
-    const brut = lines.reduce((s, l) => s + (l.subtotal || 0), 0);
     const retrait = (client.shipmode || "livraison") === "retrait";
 
     // Remise : appliquee seulement si le code est reconnu et les prix visibles.
@@ -402,7 +417,7 @@
       if (manque > 0) avert.textContent = T.minBlock(money(MIN_ORDER), money(manque));
     }
 
-    return { lines: lines, total: total, subTotal: brut, shipping: 0,
+    return { lines: toutes, total: total, subTotal: brut, shipping: 0,
              promo: promoOk ? PROMO_CODE : "", discount: remise,
              pickup: retrait, showPrices: showPrices, manque: manque };
   }

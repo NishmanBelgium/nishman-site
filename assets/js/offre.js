@@ -12,6 +12,20 @@
     fin: new Date(2026, 9, 3, 0, 0, 0),   // 3 octobre 00h00 = fin du 2 au soir
     seuil: 500,                            // euros HT par palier
     cadeau: "1 carton d'Aqua Wax offert",
+    // Fiche Odoo du cadeau : c'est cette reference que le script ajoute
+    // au devis, a 0 EUR, une ligne par palier atteint.
+    ean: "NISH-OFFERT-AW",
+    nom: "AQUA WAX ASSORTI — OFFERT",
+    pieces: 48,
+  };
+
+  // Nombre de cartons offerts pour un total donne (utilise par la page devis).
+  window.offreCartons = function (total) {
+    if (!encore() || !total || total <= 0) return 0;
+    return Math.floor(total / OFFRE.seuil);
+  };
+  window.offreCadeau = function () {
+    return { ean: OFFRE.ean, nom: OFFRE.nom, pieces: OFFRE.pieces };
   };
 
   var T = {

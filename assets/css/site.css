@@ -2651,3 +2651,7 @@ body.has-offre-barre .search-sticky { top: 52px; }
   .offre-ftxt { font-size: 12px; }
   body.has-offre-barre .search-sticky { top: 50px; }
 }
+
+/* Ligne du carton offert sur le devis */
+.ligne-offerte td { background: #F2FAF3; }
+.ligne-offerte .prod-name { color: #2e7d32; font-weight: 700; }
