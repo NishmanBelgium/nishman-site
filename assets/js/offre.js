@@ -154,8 +154,6 @@
   function popup() {
     if (!encore()) return;
     if (!document.querySelector("[data-offre-popup]")) return;
-    try { if (sessionStorage.getItem("offre-popup-vue") === "1") return; } catch (e) {}
-
     var fond = document.createElement("div");
     fond.className = "offre-modal";
     fond.innerHTML =
@@ -169,10 +167,7 @@
       '</div>';
     document.body.appendChild(fond);
 
-    function fermer() {
-      fond.remove();
-      try { sessionStorage.setItem("offre-popup-vue", "1"); } catch (e) {}
-    }
+    function fermer() { fond.remove(); }
     fond.querySelector(".offre-x").addEventListener("click", fermer);
     fond.querySelector(".offre-cta").addEventListener("click", fermer);
     fond.addEventListener("click", function (e) { if (e.target === fond) fermer(); });
