@@ -2630,12 +2630,13 @@ img { max-width: 100%; height: auto; }
 /* Barre de progression de l'offre — collée en haut, visible en continu */
 #offre-flottante {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1500;
-  background: var(--ink); padding: 8px 14px 9px;
+  background: var(--ink); padding: 12px 16px 14px;
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
 }
 .offre-fbarre {
-  height: 5px; background: #2a2a2d; border-radius: 99px;
-  overflow: hidden; margin-bottom: 5px;
+  height: 9px; background: #2a2a2d; border-radius: 99px;
+  overflow: hidden; margin-bottom: 9px;
 }
 .offre-fbarre span {
   display: block; height: 100%; width: 0; background: var(--gold);
@@ -2644,16 +2645,21 @@ img { max-width: 100%; height: auto; }
 .offre-fbarre span.offre-plein { background: #4caf50; }
 .offre-ftxt {
   font-family: "Baloo 2", var(--font-body);
-  font-size: 13px; font-weight: 700; color: var(--gold); text-align: center;
+  font-size: 19px; font-weight: 800; color: var(--gold);
+  text-align: center; line-height: 1.25;
 }
 .offre-ftxt.offre-ok { color: #7bd88f; }
 
 /* La barre de recherche se décale pour ne pas passer dessous */
-body.has-offre-barre .search-sticky { top: 52px; }
+body.has-offre-barre .search-sticky {
+  top: calc(74px + env(safe-area-inset-top, 0px));
+}
 
 @media (max-width: 480px) {
-  .offre-ftxt { font-size: 12px; }
-  body.has-offre-barre .search-sticky { top: 50px; }
+  .offre-ftxt { font-size: 17px; }
+  body.has-offre-barre .search-sticky {
+    top: calc(70px + env(safe-area-inset-top, 0px));
+  }
 }
 
 /* Ligne du carton offert sur le devis */
