@@ -1849,6 +1849,25 @@
     "description_tr": "Adonis sakal ve bıyık parfümü, alkolsüz: kılı kurutmadan, cildi tahriş etmeden koku verir. Sakal servisinin son dokunuşu."
   },
   {
+    "ean": "8682035080169",
+    "name": "BEARD&MUSTACHE PARFUM GENIUS (ALCOHOL FREE)",
+    "volume": "75 ML",
+    "category": "Soins barbe",
+    "image": "8682035080169.webp",
+    "tagline": "Parfum barbe Genius — sans alcool",
+    "description": "Parfum pour barbe et moustache Genius, sans alcool : parfume sans dessécher le poil ni irriter la peau. La touche finale du service barbe.",
+    "usage": "Une à deux vaporisations directement dans la barbe.",
+    "box_qty": 12,
+    "tagline_en": "Genius beard fragrance — alcohol-free",
+    "tagline_nl": "Genius baardparfum — alcoholvrij",
+    "description_en": "Genius beard and mustache fragrance, alcohol-free: scents without drying out the hair or irritating the skin. The finishing touch of the beard service.",
+    "description_nl": "Baard- en snorparfum Genius, alcoholvrij: parfumeert zonder het haar uit te drogen of de huid te irriteren. De finishing touch van de baardservice.",
+    "tagline_de": "Genius Bartparfüm — alkoholfrei",
+    "description_de": "Bart- und Schnurrbartparfüm Genius, alkoholfrei: parfümiert, ohne das Haar auszutrocknen oder die Haut zu reizen. Der letzte Schliff des Bartservice.",
+    "tagline_tr": "Genius sakal parfümü — alkolsüz",
+    "description_tr": "Genius sakal ve bıyık parfümü, alkolsüz: kılı kurutmadan, cildi tahriş etmeden koku verir. Sakal servisinin son dokunuşu."
+  },
+  {
     "ean": "8684736675231",
     "name": "BEARD & MUSTACHE CARE OIL 75 ML",
     "volume": "75 ML",
@@ -1980,25 +1999,6 @@
     "tagline_tr": "Sakal şampuanı",
     "description_tr": "Sakal ve bıyığa özel şampuan: kılı kurutmadan, yüz cildini tahriş etmeden temizler. Sağlıklı ve yumuşak bir sakalın temeli.",
     "soon": true
-  },
-  {
-    "ean": "8682035080169",
-    "name": "BEARD&MUSTACHE PARFUM GENIUS (ALCOHOL FREE)",
-    "volume": "75 ML",
-    "category": "Soins barbe",
-    "image": "8682035080169.webp",
-    "tagline": "Parfum barbe Genius — sans alcool",
-    "description": "Parfum pour barbe et moustache Genius, sans alcool : parfume sans dessécher le poil ni irriter la peau. La touche finale du service barbe.",
-    "usage": "Une à deux vaporisations directement dans la barbe.",
-    "box_qty": 12,
-    "tagline_en": "Genius beard fragrance — alcohol-free",
-    "tagline_nl": "Genius baardparfum — alcoholvrij",
-    "description_en": "Genius beard and mustache fragrance, alcohol-free: scents without drying out the hair or irritating the skin. The finishing touch of the beard service.",
-    "description_nl": "Baard- en snorparfum Genius, alcoholvrij: parfumeert zonder het haar uit te drogen of de huid te irriteren. De finishing touch van de baardservice.",
-    "tagline_de": "Genius Bartparfüm — alkoholfrei",
-    "description_de": "Bart- und Schnurrbartparfüm Genius, alkoholfrei: parfümiert, ohne das Haar auszutrocknen oder die Haut zu reizen. Der letzte Schliff des Bartservice.",
-    "tagline_tr": "Genius sakal parfümü — alkolsüz",
-    "description_tr": "Genius sakal ve bıyık parfümü, alkolsüz: kılı kurutmadan, cildi tahriş etmeden koku verir. Sakal servisinin son dokunuşu."
   },
   {
     "ean": "8682035088912",
