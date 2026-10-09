@@ -17,7 +17,7 @@
     active: true,
     debut: new Date(2026, 9, 9, 0, 0, 0),   // 9 octobre 2026 — avance d'un jour pour les tests avant salon
     fin: new Date(2026, 9, 13, 0, 0, 0),    // 13 octobre 2026, 00h00 — le 12 est donc inclus en entier
-    partout: false,                          // true pour l'ouvrir a tout le site
+    partout: true,                           // visible par TOUS les visiteurs du site
     // Le cadeau se declenche a l'ACHAT DU PACK, pas sur un montant.
     // Collez ici le code-barres de la fiche "PACK MCB PARIS" des qu'elle existe.
     packEan: "NISH-PACK-MCB",
