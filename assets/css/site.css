@@ -840,6 +840,10 @@ body.catalog-body::before { display: none; }
   line-height: 1.65;
   color: var(--ink-soft);
   margin: 0 0 14px;
+  /* Les sauts de ligne du texte sont rendus tels quels, ce qui permet
+     d'écrire une composition sur plusieurs lignes (pack MCB). Les
+     descriptions d'un seul paragraphe ne changent pas d'aspect. */
+  white-space: pre-line;
 }
 
 .sheet-footer {
