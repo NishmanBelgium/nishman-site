@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "169";
+  const ASSET_V = "170";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place

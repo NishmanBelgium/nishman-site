@@ -15,7 +15,7 @@
 
   var OFFRE = {
     active: true,
-    debut: new Date(2026, 9, 10, 0, 0, 0),  // 10 octobre 2026, 00h00 — 1er jour du salon
+    debut: new Date(2026, 9, 9, 0, 0, 0),   // 9 octobre 2026 — avance d'un jour pour les tests avant salon
     fin: new Date(2026, 9, 13, 0, 0, 0),    // 13 octobre 2026, 00h00 — le 12 est donc inclus en entier
     partout: false,                          // true pour l'ouvrir a tout le site
     // Le cadeau se declenche a l'ACHAT DU PACK, pas sur un montant.
