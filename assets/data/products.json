@@ -1,5 +1,24 @@
 [
   {
+    "ean": "NISH-PACK-MCB",
+    "name": "PACK MCB PARIS",
+    "volume": "OFFRE SALON",
+    "category": "Coffrets",
+    "image": "NISH-PACK-MCB.webp",
+    "mcb": true,
+    "tagline": "Pack salon MCB Paris — 48 Aqua Wax offerts",
+    "description": "Pack préparé pour le salon MCB Paris. Il comprend une sélection de références NISHMAN et donne droit à un carton de 48 Aqua Wax assortis, offert et ajouté automatiquement au devis. Réservé aux professionnels, dans la limite de la durée du salon.",
+    "usage": "Réservation au stand, retrait au dépôt de Binche ou livraison depuis la Belgique.",
+    "tagline_en": "MCB Paris trade-show pack — 48 free Aqua Wax",
+    "description_en": "Pack prepared for the MCB Paris trade show. It includes a selection of NISHMAN references and entitles you to a carton of 48 assorted Aqua Wax, free of charge and added automatically to the quote. For professionals only, for the duration of the show.",
+    "tagline_nl": "MCB Paris beurspack — 48 gratis Aqua Wax",
+    "description_nl": "Pack samengesteld voor de MCB Paris-beurs. Het bevat een selectie NISHMAN-referenties en geeft recht op een doos van 48 geassorteerde Aqua Wax, gratis en automatisch toegevoegd aan de offerte. Alleen voor professionals, zolang de beurs duurt.",
+    "tagline_de": "MCB Paris Messe-Pack — 48 Aqua Wax gratis",
+    "description_de": "Für die Messe MCB Paris zusammengestelltes Pack. Es enthält eine Auswahl an NISHMAN-Referenzen und berechtigt zu einem Karton mit 48 sortierten Aqua Wax, gratis und automatisch im Angebot ergänzt. Nur für Fachkunden, für die Dauer der Messe.",
+    "tagline_tr": "MCB Paris fuar paketi — 48 Aqua Wax hediye",
+    "description_tr": "MCB Paris fuarı için hazırlanmış paket. Seçilmiş NISHMAN ürünlerini içerir ve 48 adetlik karışık Aqua Wax kolisini hediye olarak kazandırır; teklife otomatik eklenir. Yalnızca profesyoneller için, fuar süresince geçerlidir."
+  },
+  {
     "ean": "8682035088455",
     "name": "HAIR STYLING AQUA WAX 01 GUMGUM 150 ML",
     "volume": "150 ML",

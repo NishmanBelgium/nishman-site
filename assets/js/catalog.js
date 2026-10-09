@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "166";
+  const ASSET_V = "169";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -485,7 +485,11 @@
     const all = await res.json();
     // Les produits marqués "hidden" sont temporairement retirés de la vente
     // (rupture de stock) : leur fiche reste dans le fichier, prête à revenir.
-    PRODUCTS = all.filter((p) => !p.hidden);
+    // Ceux marqués "mcb" n'existent que pendant l'offre de salon : invisibles
+    // au grand public, visibles sur la tablette du stand (adresse avec ?mcb).
+    const offreOuverte =
+      typeof window.offreDispo === "function" && window.offreDispo();
+    PRODUCTS = all.filter((p) => !p.hidden && (!p.mcb || offreOuverte));
   }
 
   // ---------- Rendu : filtres catégories ----------
@@ -766,7 +770,7 @@
     document.body.classList.toggle("has-float", u + b > 0);
     if (u + b === 0) {
       bar.hidden = true;
-      majOffreBarre(0);
+      majOffreBarre();
       return;
     }
     const parts = [];
@@ -774,27 +778,23 @@
     if (b) parts.push(T.box(b));
     bar.hidden = false;
     bar.innerHTML = `<span class="fb-count">${u + b}</span> ${parts.join(" + ")} — ${T.seeSelection}`;
-    majOffreBarre(totalSelection());
+    majOffreBarre();
   }
 
-  // Total HT de la sélection, une fois les prix débloqués.
-  function totalSelection() {
-    if (!unlocked()) return 0;
-    let t = 0;
-    Object.keys(selection).forEach((ean) => {
-      const p = PRODUCTS.find((x) => x.ean === ean);
-      if (!p) return;
-      const unit = priceOf(p);
-      if (unit === null) return;
-      const q = selection[ean];
-      t += (q.u || 0) * unit + (q.b || 0) * (p.box_qty || 0) * unit;
-    });
-    return t;
+  // Nombre de Packs MCB au panier : c'est lui qui déclenche le cadeau.
+  function packsOffre() {
+    if (typeof window.offrePackEan !== "function") return 0;
+    const ean = String(window.offrePackEan() || "");
+    if (!ean) return 0;
+    const q = selection[ean];
+    if (!q) return 0;
+    const p = PRODUCTS.find((x) => x.ean === ean);
+    return (q.u || 0) + (q.b || 0) * ((p && p.box_qty) || 1);
   }
 
-  // Barre de progression de l'offre flash, au-dessus de la barre flottante.
-  function majOffreBarre(total) {
-    if (typeof window.offreBarre === "function") window.offreBarre(total);
+  // Bandeau de confirmation de l'offre, au-dessus de la barre flottante.
+  function majOffreBarre() {
+    if (typeof window.offreBarre === "function") window.offreBarre(packsOffre());
   }
 
   // ---------- Tiroir de sélection ----------

@@ -1,16 +1,27 @@
 /* ==========================================================================
-   NISHMAN — offre flash
-   Un carton d'Aqua Wax offert par tranche de 500 EUR HT, jusqu'au 2 octobre.
-   Tout est pilote ici : la date de fin, le seuil, les textes. Passez
-   OFFRE.active a false pour tout retirer sans toucher au reste du site.
+   NISHMAN — offre de salon
+   Un carton d'Aqua Wax offert par tranche de 500 EUR HT.
+   Tout est pilote ici : dates, pack declencheur, textes, et ou l'offre s'affiche.
+     active  : false retire tout, sans toucher au reste du site.
+     debut   : avant cette date, rien ne s'affiche.
+     fin     : apres cette date, tout s'eteint tout seul.
+     partout : true  = visible par tous les visiteurs du site.
+               false = visible uniquement si l'adresse porte ?mcb
+                       (ex. nishman.be/devis/?mcb) — le stand voit l'offre,
+                       le grand public ne la voit pas.
    ========================================================================== */
 (function () {
   "use strict";
 
   var OFFRE = {
     active: true,
-    fin: new Date(2026, 9, 3, 0, 0, 0),   // 3 octobre 00h00 = fin du 2 au soir
-    seuil: 500,                            // euros HT par palier
+    debut: new Date(2026, 9, 10, 0, 0, 0),  // 10 octobre 2026, 00h00 — 1er jour du salon
+    fin: new Date(2026, 9, 13, 0, 0, 0),    // 13 octobre 2026, 00h00 — le 12 est donc inclus en entier
+    partout: false,                          // true pour l'ouvrir a tout le site
+    // Le cadeau se declenche a l'ACHAT DU PACK, pas sur un montant.
+    // Collez ici le code-barres de la fiche "PACK MCB PARIS" des qu'elle existe.
+    packEan: "NISH-PACK-MCB",
+    packNom: "Pack MCB Paris",
     cadeau: "1 carton d'Aqua Wax 48 pcs offert",
     // Fiche Odoo du cadeau : c'est cette reference que le script ajoute
     // au devis, a 0 EUR, une ligne par palier atteint.
@@ -19,50 +30,77 @@
     pieces: 48,
   };
 
-  // Nombre de cartons offerts pour un total donne (utilise par la page devis).
-  window.offreCartons = function (total) {
-    if (!encore() || !total || total <= 0) return 0;
-    return Math.floor(total / OFFRE.seuil);
+  // L'offre est-elle ouverte sur cette page ?
+  // Hors "partout", il faut ?mcb dans l'adresse. Une fois vu, on le retient
+  // pour la session : la tablette du stand garde l'offre en naviguant.
+  function ouverte() {
+    if (OFFRE.partout) return true;
+    try {
+      if (location.search.indexOf("mcb") !== -1) {
+        sessionStorage.setItem("offre-mcb", "1");
+        return true;
+      }
+      return sessionStorage.getItem("offre-mcb") === "1";
+    } catch (e) {
+      return location.search.indexOf("mcb") !== -1;
+    }
+  }
+
+  // Nombre de cartons offerts : un par Pack MCB Paris achete.
+  // Recoit les lignes du devis (page devis) ou un nombre de packs (catalogue).
+  window.offreCartons = function (lignes) {
+    if (!encore()) return 0;
+    if (typeof lignes === "number") return lignes > 0 ? lignes : 0;
+    if (!lignes || !lignes.length) return 0;
+    var n = 0;
+    lignes.forEach(function (l) {
+      if (String(l.ean) === String(OFFRE.packEan)) n += Number(l.pieces) || 0;
+    });
+    return n;
   };
+  window.offrePackEan = function () { return OFFRE.packEan; };
+  // Vrai quand l'offre est ouverte sur cette page : le catalogue s'en sert
+  // pour n'afficher le Pack MCB qu'au stand.
+  window.offreDispo = function () { return encore(); };
   window.offreCadeau = function () {
     return { ean: OFFRE.ean, nom: OFFRE.nom, pieces: OFFRE.pieces };
   };
 
   var T = {
-    fr: { titre: "Offre flash — 1 carton d'Aqua Wax 48 pcs offert dès 500 €",
+    fr: { titre: "Offre MCB Paris — 1 carton d'Aqua Wax 48 pcs offert avec le Pack",
           reste: "Plus que ", fini: "Offre terminée",
-          manque: "Encore {x} pour obtenir ", debloque: " débloqué",
-          debloques: " débloqués", suivant: "Encore {x} pour un carton de plus",
+          debloque: " débloqué",
+          debloques: " débloqués",
           j: "j", cartons: "{n} cartons d'Aqua Wax offerts",
-          sur: "OFFRE FLASH", parTranche: "par tranche de 500 € de commande",
+          sur: "OFFRE MCB PARIS", parTranche: "\u00e0 l\u2019achat du Pack MCB Paris", avecPack: "Ajout\u00e9 automatiquement \u00e0 votre devis",
           cta: "J\u2019en profite", uJours: "jours", uHeures: "heures" },
-    en: { titre: "Flash offer — 1 free carton of Aqua Wax, 48 pcs, from €500",
+    en: { titre: "MCB Paris offer — 1 free carton of Aqua Wax, 48 pcs, with the Pack",
           reste: "Only ", fini: "Offer ended",
-          manque: "{x} more to unlock ", debloque: " unlocked",
-          debloques: " unlocked", suivant: "{x} more for another carton",
+          debloque: " unlocked",
+          debloques: " unlocked",
           j: "d", cartons: "{n} free cartons of Aqua Wax",
-          sur: "FLASH OFFER", parTranche: "for every €500 ordered",
+          sur: "MCB PARIS OFFER", parTranche: "with the MCB Paris Pack", avecPack: "Added to your quote automatically",
           cta: "Shop now", uJours: "days", uHeures: "hours" },
-    nl: { titre: "Flash-actie — 1 gratis doos Aqua Wax 48 st. vanaf € 500",
+    nl: { titre: "MCB Paris-actie — 1 gratis doos Aqua Wax 48 st. bij het Pack",
           reste: "Nog ", fini: "Actie afgelopen",
-          manque: "Nog {x} voor ", debloque: " vrijgespeeld",
-          debloques: " vrijgespeeld", suivant: "Nog {x} voor een extra doos",
+          debloque: " vrijgespeeld",
+          debloques: " vrijgespeeld",
           j: "d", cartons: "{n} gratis dozen Aqua Wax",
-          sur: "FLASH-ACTIE", parTranche: "per schijf van € 500 bestelling",
+          sur: "MCB PARIS", parTranche: "bij aankoop van het MCB Paris Pack", avecPack: "Automatisch aan uw offerte toegevoegd",
           cta: "Ik profiteer ervan", uJours: "dagen", uHeures: "uur" },
-    de: { titre: "Flash-Aktion — 1 Karton Aqua Wax 48 Stk. gratis ab 500 €",
+    de: { titre: "MCB Paris — 1 Karton Aqua Wax 48 Stk. gratis zum Pack",
           reste: "Nur noch ", fini: "Aktion beendet",
-          manque: "Noch {x} für ", debloque: " freigeschaltet",
-          debloques: " freigeschaltet", suivant: "Noch {x} für einen weiteren Karton",
+          debloque: " freigeschaltet",
+          debloques: " freigeschaltet",
           j: "T", cartons: "{n} Kartons Aqua Wax gratis",
-          sur: "FLASH-AKTION", parTranche: "je 500 € Bestellwert",
+          sur: "MCB PARIS", parTranche: "beim Kauf des MCB Paris Pack", avecPack: "Automatisch im Angebot erg\u00e4nzt",
           cta: "Jetzt nutzen", uJours: "Tage", uHeures: "Std" },
-    tr: { titre: "Flaş kampanya — 500 €'dan itibaren 48 adetlik 1 koli Aqua Wax hediye",
+    tr: { titre: "MCB Paris — Pack ile 48 adetlik 1 koli Aqua Wax hediye",
           reste: "Sadece ", fini: "Kampanya sona erdi",
-          manque: "Hediye için {x} daha", debloque: " kazanıldı",
-          debloques: " kazanıldı", suivant: "Bir koli daha için {x}",
+          debloque: " kazanıldı",
+          debloques: " kazanıldı",
           j: "g", cartons: "{n} koli Aqua Wax hediye",
-          sur: "FLAŞ KAMPANYA", parTranche: "her 500 € sipariş için",
+          sur: "MCB PARIS", parTranche: "MCB Paris Pack al\u0131m\u0131nda", avecPack: "Teklifinize otomatik eklendi",
           cta: "Hemen yararlan", uJours: "gün", uHeures: "saat" },
   };
 
@@ -77,7 +115,10 @@
       maximumFractionDigits: 0 }) + " €";
   }
   function deux(n) { return n < 10 ? "0" + n : "" + n; }
-  function encore() { return OFFRE.active && (OFFRE.fin - Date.now()) > 0; }
+  function encore() {
+    var t = Date.now();
+    return OFFRE.active && t >= OFFRE.debut && (OFFRE.fin - t) > 0 && ouverte();
+  }
 
   /* ---------- bandeau ---------- */
   function bandeau() {
@@ -118,36 +159,26 @@
     });
   }
 
-  /* ---------- compteur sur la page devis ---------- */
-  window.offreMaj = function (total) {
+  /* ---------- confirmation sur la page devis ---------- */
+  // Recoit le nombre de packs au panier. Zero = on n'affiche rien.
+  window.offreMaj = function (packs) {
     var bloc = document.getElementById("offre-progres");
     if (!bloc) return;
-    if (!encore() || !total || total <= 0) { bloc.hidden = true; return; }
+    packs = Number(packs) || 0;
+    if (!encore() || packs <= 0) { bloc.hidden = true; return; }
     bloc.hidden = false;
-
-    var paliers = Math.floor(total / OFFRE.seuil);
-    var reste = OFFRE.seuil - (total % OFFRE.seuil);
-    var pct = ((total % OFFRE.seuil) / OFFRE.seuil) * 100;
-    if (paliers > 0 && pct === 0) pct = 100;
 
     var barre = bloc.querySelector(".offre-barre span");
     var ligne = bloc.querySelector(".offre-ligne");
     var sous = bloc.querySelector(".offre-sous");
 
-    barre.style.width = (paliers > 0 ? 100 : pct).toFixed(0) + "%";
-    barre.className = paliers > 0 ? "offre-plein" : "";
-
-    if (paliers === 0) {
-      ligne.className = "offre-ligne";
-      ligne.textContent = t.manque.replace("{x}", euros(reste)) + OFFRE.cadeau;
-      sous.textContent = "";
-    } else {
-      ligne.className = "offre-ligne offre-ok";
-      ligne.textContent = paliers === 1
-        ? OFFRE.cadeau + t.debloque
-        : t.cartons.replace("{n}", paliers) + t.debloques;
-      sous.textContent = t.suivant.replace("{x}", euros(reste));
-    }
+    barre.style.width = "100%";
+    barre.className = "offre-plein";
+    ligne.className = "offre-ligne offre-ok";
+    ligne.textContent = packs === 1
+      ? OFFRE.cadeau + t.debloque
+      : t.cartons.replace("{n}", packs) + t.debloques;
+    sous.textContent = t.avecPack || "";
   };
 
   /* ---------- pop-up d'arrivee (catalogue uniquement) ---------- */
@@ -159,6 +190,7 @@
     fond.innerHTML =
       '<div class="offre-carte" role="dialog" aria-modal="true" aria-label="' + t.titre + '">' +
         '<button class="offre-x" type="button" aria-label="Fermer">&times;</button>' +
+        '<img class="offre-logo" src="/assets/img/mcb-blanc.png" alt="MCB by Beauté Sélection" />' +
         '<div class="offre-sur">' + (t.sur || "OFFRE FLASH") + '</div>' +
         '<div class="offre-h1">' + OFFRE.cadeau + '</div>' +
         '<div class="offre-h2">' + (t.parTranche || "par tranche de 500 € de commande") + '</div>' +
@@ -192,10 +224,12 @@
     }).join("");
   }
 
-  /* ---------- barre de progression flottante (catalogue) ---------- */
-  window.offreBarre = function (total) {
+  /* ---------- bandeau de confirmation flottant (catalogue) ---------- */
+  // Recoit le nombre de Packs MCB au panier.
+  window.offreBarre = function (packs) {
     var b = document.getElementById("offre-flottante");
-    if (!encore() || !total || total <= 0) {
+    packs = Number(packs) || 0;
+    if (!encore() || packs <= 0) {
       if (b) b.remove();
       document.body.classList.remove("has-offre-barre");
       return;
@@ -208,26 +242,14 @@
       document.body.appendChild(b);
     }
     document.body.classList.add("has-offre-barre");
-
-    var paliers = Math.floor(total / OFFRE.seuil);
-    var reste = OFFRE.seuil - (total % OFFRE.seuil);
-    var pct = ((total % OFFRE.seuil) / OFFRE.seuil) * 100;
-
     var jauge = b.querySelector(".offre-fbarre span");
     var txt = b.querySelector(".offre-ftxt");
-    jauge.style.width = (paliers > 0 ? 100 : pct).toFixed(0) + "%";
-    jauge.className = paliers > 0 ? "offre-plein" : "";
-
-    if (paliers === 0) {
-      txt.className = "offre-ftxt";
-      txt.textContent = t.manque.replace("{x}", euros(reste)) + OFFRE.cadeau;
-    } else {
-      txt.className = "offre-ftxt offre-ok";
-      txt.textContent = (paliers === 1
-        ? OFFRE.cadeau + t.debloque
-        : t.cartons.replace("{n}", paliers) + t.debloques)
-        + " • " + t.suivant.replace("{x}", euros(reste));
-    }
+    jauge.style.width = "100%";
+    jauge.className = "offre-plein";
+    txt.className = "offre-ftxt offre-ok";
+    txt.textContent = packs === 1
+      ? OFFRE.cadeau + t.debloque
+      : t.cartons.replace("{n}", packs) + t.debloques;
   };
 
   function demarrer() { bandeau(); setTimeout(popup, 1100); }

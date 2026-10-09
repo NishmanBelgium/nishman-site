@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "166";
+  const ASSET_V = "169";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
@@ -340,8 +340,8 @@
     // Offre flash : un carton offert par tranche atteinte, ajoute en fin de
     // tableau a 0 EUR. Ne compte pas dans le total.
     let cadeaux = 0;
-    if (showPrices && typeof window.offreCartons === "function") {
-      cadeaux = window.offreCartons(brut);
+    if (typeof window.offreCartons === "function") {
+      cadeaux = window.offreCartons(lines);
     }
     const toutes = lines.slice();
     if (cadeaux > 0) {
@@ -401,7 +401,7 @@
 
     // Offre flash : compteur de progression vers le carton offert.
     if (typeof window.offreMaj === "function") {
-      window.offreMaj(showPrices ? brut : 0);
+      window.offreMaj(cadeaux);
     }
 
     // Minimum de commande : bloquant en livraison, jamais en retrait.

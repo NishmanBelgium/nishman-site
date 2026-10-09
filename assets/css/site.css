@@ -2573,6 +2573,10 @@ img { max-width: 100%; height: auto; }
   font-size: 22px; line-height: 1; padding: 4px 8px; cursor: pointer;
 }
 .offre-x:hover { color: #fff; }
+.offre-logo {
+  display: block; width: 140px; max-width: 48%; height: auto;
+  margin: 2px auto 16px;
+}
 .offre-sur {
   font-family: "Baloo 2", var(--font-body);
   font-size: 14px; font-weight: 800; letter-spacing: 2px;
