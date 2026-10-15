@@ -5,6 +5,7 @@
 import {
   json, erreur, verifier, ouvrirSession, cookieSession,
   cleEmail, tropDeTentatives, noterTentative, effacerTentatives,
+  EMPREINTE_FACTICE,
 } from "../_commun.js";
 
 export async function onRequestPost({ request, env }) {
@@ -33,7 +34,9 @@ export async function onRequestPost({ request, env }) {
 
   // Même message, même durée, que le compte existe ou non : sinon la page
   // devient un outil pour deviner qui est client.
-  const bon = compte ? await verifier(mdp, compte.mot_de_passe) : await verifier(mdp, "pbkdf2$210000$AAAA$AAAA");
+  const bon = compte
+    ? await verifier(mdp, compte.mot_de_passe)
+    : await verifier(mdp, EMPREINTE_FACTICE);
 
   if (!compte || !bon) {
     await noterTentative(db, cle);

@@ -22,11 +22,17 @@ export function erreur(message, statut = 400) {
 
 /* --- Mots de passe ------------------------------------------------------ */
 
-// 210 000 tours, la recommandation OWASP pour PBKDF2-SHA256. C'est
+// 100 000 tours : c'est le maximum que le moteur de Cloudflare accepte
+// pour PBKDF2 (au-delà, il refuse avec NotSupportedError). C'est
 // volontairement lent : cela coûte quelques dizaines de millisecondes à
 // la connexion, et des années à qui voudrait tester des millions de
 // mots de passe sur une base volée.
-const TOURS = 210000;
+//
+// Le nombre de tours est inscrit dans chaque empreinte stockée
+// (pbkdf2$<tours>$<sel>$<empreinte>), et verifier() le relit depuis
+// l'empreinte : si ce plafond évolue un jour, les comptes déjà créés
+// continueront de fonctionner sans aucune reprise de données.
+const TOURS = 100000;
 
 const enc = new TextEncoder();
 
@@ -58,6 +64,12 @@ export async function hacher(motdepasse) {
   const empreinte = await derive(motdepasse, sel, TOURS);
   return `pbkdf2$${TOURS}$${b64(sel)}$${b64(empreinte)}`;
 }
+
+// Empreinte factice, utilisée par la page de connexion quand l'adresse
+// saisie n'existe pas : on vérifie quand même un mot de passe contre elle,
+// pour qu'une adresse inconnue mette le même temps à répondre qu'une adresse
+// connue. Elle suit TOURS : si le nombre de tours change, elle reste valide.
+export const EMPREINTE_FACTICE = `pbkdf2$${TOURS}$AAAAAAAAAAAAAAAAAAAAAA==$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=`;
 
 export async function verifier(motdepasse, stocke) {
   try {
