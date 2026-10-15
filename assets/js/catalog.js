@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "182";
+  const ASSET_V = "183";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -1965,8 +1965,9 @@
           : "https://www.facebook.com/share/19Kw4PGMRF/";
         const liens = [];
         if (ig) {
-          liens.push(`<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">
-               <img class="foot-ig-icon" src="/assets/img/instagram.png" alt="" />Instagram</a>`);
+          // Le logo d'Instagram est une marque déposée : on ne le redessine pas.
+          // Un lien texte fait le même travail et ne dépend d'aucun fichier.
+          liens.push(`<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">Instagram</a>`);
         }
         if (fb) {
           liens.push(`<a class="foot-btn foot-fb" target="_blank" rel="noopener" href="${fb}">

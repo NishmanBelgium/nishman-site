@@ -8,14 +8,14 @@
    doivent toujours être frais.
    ========================================================================== */
 
-const VERSION = "nishman-v182";
+const VERSION = "nishman-183";
 const SOCLE = [
   "/produits/",
-  "/assets/css/site.css?v=182",
-  "/assets/js/catalog.js?v=182",
-  "/assets/js/offre.js?v=182",
-  "/assets/js/config.js?v=182",
-  "/assets/data/products.json?v=182",
+  "/assets/css/site.css?v=183",
+  "/assets/js/catalog.js?v=183",
+  "/assets/js/offre.js?v=183",
+  "/assets/js/config.js?v=183",
+  "/assets/data/products.json?v=183",
   "/assets/pwa/icon-192.png",
 ];
 

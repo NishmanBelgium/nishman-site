@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Nishman — NBD Distribution Belgium</title>
+  <meta name="description" content="Catalogue professionnel Nishman pour barbers et coiffeurs. Distribution officielle Belgique, France, Luxembourg." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Nishman — NBD Distribution Belgium" />
+  <meta property="og:image" content="https://nishman.be/assets/img/share.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:title" content="Nishman — Catalogue professionnel" />
+  <meta property="og:description" content="La gamme professionnelle Nishman pour barbers et coiffeurs. Composez votre sélection et recevez votre devis." />
+  <meta property="og:locale" content="fr_BE" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&family=Baloo+2:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="manifest" href="/manifest.json?v=183" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Nishman" />
+  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=183" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=183" />
+</head>
+<body class="catalog-body">
+
+  <!-- ======================================================================
+       ÉCRAN D'ACCUEIL — noir, logo orange, cinématique de chargement.
+       Au scroll, le catalogue monte en feuille blanche 3D par-dessus.
+       ====================================================================== -->
+  <div class="intro-track" id="intro-track">
+    <section class="intro" id="intro">
+      <canvas class="intro-particles" id="intro-particles" aria-hidden="true"></canvas>
+      <div class="intro-scene" id="intro-scene">
+        <img class="intro-logo" src="/assets/img/logo-gold.png" alt="Nishman" />
+        <div class="intro-line" aria-hidden="true"><span></span></div>
+      </div>
+      <button class="intro-cue" id="intro-cue" aria-label="Découvrir la gamme">
+        <span class="cue-track"><span class="cue-dot"></span></span>
+        <span class="cue-text">Découvrir</span>
+      </button>
+    </section>
+  </div>
+
+  <div class="catalog-sheet" id="catalog-sheet">
+  <div class="catalog-shell">
+
+    <div class="search-sticky" id="search-sticky">
+      <div class="filter-row">
+        <a class="sticky-brand" href="#" id="sticky-brand" aria-label="Haut de page">
+          <img src="/assets/img/logo-black.png" alt="Nishman" />
+        </a>
+        <input
+          id="search-input"
+          class="search-input"
+          type="search"
+          placeholder="Rechercher un produit ou un code EAN..."
+          autocomplete="off"
+        />
+        <button class="lang-btn" id="lang-btn" aria-haspopup="dialog" aria-label="Langue">
+          <span class="cat-btn-dot" aria-hidden="true"></span>
+          <span id="lang-btn-label">FR</span>
+          <span class="lang-btn-chevron" aria-hidden="true">&#9662;</span>
+        </button>
+        <button class="cat-btn" id="cat-btn" aria-haspopup="dialog">
+          <span class="cat-btn-dot" aria-hidden="true"></span>
+          <span class="cat-btn-label" id="cat-btn-label">Toutes</span>
+          <span class="cat-btn-chevron" aria-hidden="true">&#9662;</span>
+        </button>
+        <button class="pro-access" id="pro-access">
+          <span class="cat-btn-dot" aria-hidden="true"></span>
+          <span id="pro-access-label"></span>
+        </button>
+      </div>
+    </div>
+
+    <div data-offre-flash data-offre-popup></div>
+
+    <p class="result-count" id="result-count"></p>
+
+    <div class="product-grid" id="grid"></div>
+
+  </div>
+
+    <footer class="site-footer">
+      <div class="foot-inner">
+
+        <div class="foot-col foot-col-brand">
+          <img class="foot-logo" src="/assets/img/logo-gold.png" alt="Nishman" />
+          <p class="foot-tag" id="t-foot-tag"></p>
+          <div class="foot-flags" id="foot-flags"></div>
+        </div>
+
+        <div class="foot-col">
+          <p class="foot-head" id="t-foot-contact"></p>
+          <div class="foot-links" id="footer-contact"></div>
+        </div>
+
+        <div class="foot-col">
+          <p class="foot-head" id="t-foot-company"></p>
+          <p class="foot-line">NBD Distribution SRL</p>
+          <p class="foot-line">Avenue Léopold III n°21<br />7133 Binche — Belgique</p>
+          <p class="foot-line">TVA : BE 0817.750.283</p>
+        </div>
+
+        <div class="foot-col">
+          <p class="foot-head" id="t-foot-social"></p>
+          <div class="foot-links" id="footer-social"></div>
+        </div>
+
+        <div class="foot-col">
+          <p class="foot-head">Particuliers</p>
+          <div class="foot-links">
+            <a href="/">Boutique en ligne</a>
+          </div>
+          <p class="foot-line foot-line-soft">Vous n'êtes pas professionnel ?<br />Commandez au prix public.</p>
+        </div>
+
+
+      </div>
+
+      <div class="foot-bottom">
+        <p>&copy; <span id="footer-year"></span> NBD Distribution SRL. <span id="t-foot-rights"></span></p>
+        <p id="t-foot-legal"></p>
+      </div>
+    </footer>
+  </div>
+
+  <button class="float-bar" id="float-bar" hidden></button>
+  <button class="to-top" id="to-top" aria-label="Retour en haut">&uarr;</button>
+
+  <!-- Sélecteur de catégories : panneau, tout visible d'un coup -->
+  <div class="drawer-overlay cat-overlay" id="cat-overlay" hidden>
+    <div class="cat-panel">
+      <div class="cat-panel-head">
+        <p class="drawer-title">Catégories</p>
+        <button class="drawer-close" id="cat-close">&times;</button>
+      </div>
+      <div class="cat-grid" id="cat-grid"></div>
+    </div>
+  </div>
+
+  <div class="drawer-overlay" id="drawer-overlay" hidden>
+    <div class="drawer">
+      <button class="drawer-close" id="drawer-close">&times;</button>
+      <div class="drawer-head">
+        <p class="drawer-title">Ma sélection</p>
+        <button class="drawer-clear" id="drawer-clear" hidden>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+               stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/>
+          </svg>
+          <span id="t-clear">Vider</span>
+        </button>
+      </div>
+      <div id="drawer-list"></div>
+      <p class="agent-pick-title"></p>
+      <div id="agent-pick-list"></div>
+    </div>
+  </div>
+
+  <!-- Choix de langue -->
+  <div class="drawer-overlay cat-overlay" id="lang-overlay" hidden>
+    <div class="cat-panel lang-panel">
+      <button class="lang-choice" data-lang="fr">Français</button>
+      <button class="lang-choice" data-lang="en">English</button>
+      <button class="lang-choice" data-lang="nl">Nederlands</button>
+      <button class="lang-choice" data-lang="de">Deutsch</button>
+      <button class="lang-choice" data-lang="tr">Türkçe</button>
+    </div>
+  </div>
+
+  <!-- Accès professionnel : saisie du code ou inscription -->
+  <div class="drawer-overlay cat-overlay" id="access-overlay" hidden>
+    <div class="cat-panel access-panel">
+      <div class="cat-panel-head">
+        <p class="drawer-title" id="access-title"></p>
+        <button class="drawer-close" id="access-close">&times;</button>
+      </div>
+
+      <div id="access-step-code">
+        <p class="access-desc" id="access-desc"></p>
+        <div class="access-form">
+          <input id="access-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+          <button class="access-submit" id="access-submit"></button>
+        </div>
+        <p class="access-error" id="access-error" hidden></p>
+        <p class="access-nocode" id="access-nocode"></p>
+        <button class="access-link" id="go-signup"></button>
+      </div>
+
+      <div id="access-step-signup" hidden>
+        <p class="access-desc" id="signup-intro"></p>
+        <div class="signup-fields">
+          <label class="signup-field">
+            <span id="t-signup-country"></span>
+            <select id="signup-country"></select>
+          </label>
+          <label class="signup-field">
+            <span id="t-signup-vat"></span>
+            <input id="signup-vat" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+            <small class="signup-hint" id="signup-hint"></small>
+          </label>
+          <label class="signup-field">
+            <span id="t-signup-email"></span>
+            <input id="signup-email" type="email" autocomplete="email" />
+          </label>
+        </div>
+        <button class="access-submit signup-btn" id="signup-submit"></button>
+        <p class="access-error" id="signup-error" hidden></p>
+        <button class="access-link" id="go-code"></button>
+      </div>
+
+      <div id="access-step-sent" hidden>
+        <div class="sent-check">&#10003;</div>
+        <p class="access-desc" id="sent-text"></p>
+
+        <div class="code-box" id="code-box" hidden>
+          <span class="code-label" id="t-yourcode"></span>
+          <span class="code-value" id="code-value"></span>
+          <button class="code-copy" id="code-copy"></button>
+        </div>
+
+        <button class="access-submit" id="code-use" hidden></button>
+        <button class="access-submit" id="sent-close"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-overlay" id="sheet-overlay" hidden>
+    <div class="drawer product-sheet" id="product-sheet">
+      <button class="drawer-close" id="sheet-close">&times;</button>
+      <div class="sheet-body"></div>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js?v=183"></script>
+  <script src="/assets/js/catalog.js?v=183"></script>
+  <script src="/assets/js/offre.js?v=183"></script>
+  <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

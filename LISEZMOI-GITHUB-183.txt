@@ -1,0 +1,36 @@
+NISHMAN — ÉTAPE 183, FICHIERS À DÉPOSER SUR GITHUB
+==================================================
+
+Ce ZIP ne contient QUE les fichiers nouveaux ou modifiés : 18 fichiers
+au lieu de 267. Les 212 photos produits et les logos sont déjà dans le
+dépôt et n'ont pas à être renvoyés.
+
+DÉPÔT
+1. Dézipper ce fichier.
+2. github.com → NishmanBelgium/nishman-site
+3. Add file → Upload files
+4. Glisser le CONTENU du dossier dézippé (pas le dossier lui-même) :
+   index.html, sw.js, les dossiers pro/, conditions-de-vente/,
+   retractation/, produits/, devis/, contact/, france/, cgv/ et assets/
+5. Commit changes.
+
+GitHub conserve les dossiers : les fichiers arriveront au bon endroit.
+Rien d'autre ne sera supprimé.
+
+TROIS FICHIERS À SUPPRIMER À LA MAIN
+Ce sont des restes de l'ancien mini-site cartes de visite. Ils ne sont
+chargés par aucune page et n'ont plus aucune utilité :
+
+   assets/js/app.js
+   assets/js/card.js
+   assets/js/home.js
+
+Sur GitHub : ouvrir le fichier, bouton poubelle en haut à droite,
+Commit. À faire une fois pour les trois.
+
+VÉRIFIER APRÈS DÉPLOIEMENT
+Attendre une à deux minutes, puis Ctrl+Shift+R sur nishman.be :
+- la racine doit afficher la boutique et la fenêtre « Vous êtes
+  professionnel ? »
+- nishman.be/produits/ doit afficher le catalogue pro comme avant
+- nishman.be/?pro doit basculer directement sur l'espace pro
