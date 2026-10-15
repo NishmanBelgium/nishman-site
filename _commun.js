@@ -65,6 +65,12 @@ export async function hacher(motdepasse) {
   return `pbkdf2$${TOURS}$${b64(sel)}$${b64(empreinte)}`;
 }
 
+// Empreinte factice, utilisée par la page de connexion quand l'adresse
+// saisie n'existe pas : on vérifie quand même un mot de passe contre elle,
+// pour qu'une adresse inconnue mette le même temps à répondre qu'une adresse
+// connue. Elle suit TOURS : si le nombre de tours change, elle reste valide.
+export const EMPREINTE_FACTICE = `pbkdf2$${TOURS}$AAAAAAAAAAAAAAAAAAAAAA==$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=`;
+
 export async function verifier(motdepasse, stocke) {
   try {
     const [algo, tours, sel, empreinte] = String(stocke).split("$");
