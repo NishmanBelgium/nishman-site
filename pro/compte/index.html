@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Mon compte — NISHMAN</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=184" />
+<link rel="stylesheet" href="/assets/css/compte.css?v=184" />
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="logo" href="/pro/" aria-label="Nishman, espace professionnel"><img src="/assets/img/nishman.svg" alt="Nishman" /></a>
+    <div class="bar-sp"></div>
+    <a class="pill" href="/produits/"><span class="long">Catalogue</span><span class="court">Produits</span></a>
+    <button class="pill" id="b-deconnexion">Déconnexion</button>
+  </div>
+</header>
+
+<main class="espace" id="espace" hidden>
+
+  <div class="espace-tete">
+    <div>
+      <h1 id="nom-salon">—</h1>
+      <div class="mail" id="mail-compte"></div>
+    </div>
+    <a class="pill pill-gold" href="/devis/">Composer une commande</a>
+  </div>
+
+  <section class="bloc">
+    <h2>Mes informations</h2>
+    <dl id="infos"></dl>
+  </section>
+
+  <section class="bloc">
+    <h2>Mes commandes</h2>
+    <div id="commandes"><p class="vide">Chargement…</p></div>
+  </section>
+
+</main>
+
+<script src="/assets/js/compte.js?v=184"></script>
+</body>
+</html>

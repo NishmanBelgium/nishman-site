@@ -1,0 +1,75 @@
+NISHMAN — COMPTES PROFESSIONNELS, ÉTAPE 184
+===========================================
+
+CE QUI EST NOUVEAU
+
+  /pro/connexion/   Connexion et création de compte
+  /pro/compte/      Espace du professionnel : informations et commandes
+
+  functions/        Le « cerveau » du site, qui tourne chez Cloudflare
+  base/schema.sql   La structure de la base de données
+
+Un professionnel crée son compte avec trois informations : nom du salon,
+e-mail, mot de passe. Il est connecté immédiatement. Le numéro de TVA
+sera demandé plus tard, au moment de la commande.
+
+AVANT QUE ÇA FONCTIONNE — DEUX RÉGLAGES DANS CLOUDFLARE
+
+1. CRÉER LA BASE DE DONNÉES
+   Cloudflare → Stockage et base de données → D1
+   → Créer une base, nommez-la : nishman-comptes
+
+   Ouvrez-la, onglet Console, collez le contenu du fichier
+   base/schema.sql et exécutez. Cela crée les tables.
+
+2. BRANCHER LA BASE AU SITE
+   Workers et Pages → nishman-site → Paramètres → Variables et liaisons
+   → Ajouter une liaison → D1
+   Nom de la variable : DB          (exactement ces deux lettres)
+   Base de données    : nishman-comptes
+   Faites-le pour la production ET pour l'aperçu.
+
+   Puis redéployez : Déploiements → le dernier → Réessayer le déploiement.
+
+Sans ces deux réglages, les pages s'affichent mais la connexion répond
+« La base de données n'est pas branchée ».
+
+L'OFFRE WORKERS PAYANTE EST NÉCESSAIRE
+
+Les mots de passe sont protégés par 210 000 tours de calcul, la
+recommandation en vigueur. Ce calcul dépasse la limite de temps
+processeur de l'offre gratuite. Comptez 5 $ par mois.
+C'est le seul coût du système.
+
+PLUS TARD — LA LIAISON AVEC ODOO
+
+L'historique des commandes est déjà écrit et attend quatre variables
+d'environnement, à ajouter au même endroit que la liaison D1 :
+
+  ODOO_URL   https://srl-nbd-distribution.odoo.com
+  ODOO_DB    srl-nbd-distribution
+  ODOO_USER  l'adresse du compte Odoo dédié au site
+  ODOO_KEY   sa clé API  → à cocher « chiffrer »
+
+Tant qu'elles sont absentes, l'espace affiche proprement
+« L'historique sera disponible dès que la liaison sera activée ».
+Dès qu'elles sont là, les commandes apparaissent sans rien changer au code.
+
+N'envoyez jamais cette clé par message : elle se saisit directement
+dans Cloudflare.
+
+CE QUI N'EST PAS ENCORE FAIT
+
+- Les tarifs ne sont pas encore liés au compte. Votre site garde pour
+  l'instant son système d'accès par code, qui fonctionne très bien.
+  Les relier demande la liaison Odoo ci-dessus.
+- Mot de passe oublié : à construire, demande un envoi d'e-mails.
+- Factures et encours : même principe que les commandes, à ajouter.
+
+CE QUI A ÉTÉ TESTÉ
+
+Création de compte, connexion, session qui survit au rechargement,
+déconnexion, refus des doublons, refus des mots de passe trop courts,
+message identique et délai identique que l'e-mail existe ou non,
+blocage après huit tentatives, accès refusé à l'espace sans session,
+affichage correct sur ordinateur et sur mobile.

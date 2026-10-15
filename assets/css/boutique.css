@@ -415,3 +415,6 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .porte, .porte-carte { transition: none; }
 }
+
+/* Les pilules de navigation sont des boutons : pas de soulignement. */
+.pill, .logo { text-decoration: none; }

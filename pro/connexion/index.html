@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Espace professionnel — NISHMAN</title>
+<meta name="description" content="Connexion à l'espace professionnel NISHMAN : tarifs, historique de commandes et devis." />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=184" />
+<link rel="stylesheet" href="/assets/css/compte.css?v=184" />
+</head>
+<body>
+
+<main class="cadre">
+  <div class="carte-compte">
+    <a href="/pro/"><img class="marque" src="/assets/img/nishman.svg" alt="Nishman" /></a>
+
+    <div class="onglets" role="tablist">
+      <button role="tab" id="t-connexion" aria-selected="true">Connexion</button>
+      <button role="tab" id="t-inscription" aria-selected="false">Créer un compte</button>
+    </div>
+
+    <div class="message" id="message" role="status"></div>
+
+    <!-- ── connexion ── -->
+    <form id="form-connexion" novalidate>
+      <div class="champ">
+        <label for="c-email">Adresse e-mail</label>
+        <input type="email" id="c-email" name="email" autocomplete="email" required />
+      </div>
+      <div class="champ">
+        <label for="c-mdp">Mot de passe</label>
+        <input type="password" id="c-mdp" name="motdepasse" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="bouton-plein" id="b-connexion">Se connecter</button>
+    </form>
+
+    <!-- ── inscription ── -->
+    <form id="form-inscription" novalidate hidden>
+      <div class="champ">
+        <label for="i-salon">Nom du salon</label>
+        <input type="text" id="i-salon" name="salon" autocomplete="organization" required />
+        <p class="aide">Plusieurs salons ? Ajoutez la ville, par exemple « Barbershop Mons ».</p>
+      </div>
+      <div class="champ">
+        <label for="i-email">Adresse e-mail</label>
+        <input type="email" id="i-email" name="email" autocomplete="email" required />
+      </div>
+      <div class="champ">
+        <label for="i-mdp">Mot de passe</label>
+        <input type="password" id="i-mdp" name="motdepasse" autocomplete="new-password" required />
+        <p class="aide">Huit caractères minimum.</p>
+      </div>
+      <button type="submit" class="bouton-plein" id="b-inscription">Créer mon compte</button>
+    </form>
+
+    <p class="sous-carte" id="pied-carte">
+      Vous n'êtes pas professionnel ? <a href="/">Voir la boutique</a>
+    </p>
+  </div>
+</main>
+
+<script src="/assets/js/compte.js?v=184"></script>
+</body>
+</html>
