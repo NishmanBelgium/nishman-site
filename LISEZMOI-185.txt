@@ -1,0 +1,36 @@
+NISHMAN — étape 185
+===================
+
+Ce qui change : le bouton « Mon compte » est maintenant visible dans la barre
+du haut du catalogue professionnel (avant, le lien n'existait que dans le pied
+de page — c'est pour ça que vous ne le trouviez pas).
+
+  • écran large  : icône + le mot « Mon compte », à droite d'« Accès professionnel »
+  • téléphone    : l'icône seule, pour que la barre tienne sans déborder
+
+Fichiers à déposer sur la branche NishmanCloudflare
+---------------------------------------------------
+Déposez tout le contenu de ce dossier en conservant les sous-dossiers.
+GitHub écrase les fichiers du même nom, c'est normal et voulu.
+
+  assets/css/site.css        <- nouveau dans ce lot (styles du bouton)
+  assets/css/boutique.css
+  assets/css/compte.css
+  assets/js/compte.js
+  base/schema.sql
+  functions/...              <- le backend des comptes
+  les pages index.html
+
+RAPPEL — tant que ceci n'est pas fait, les comptes ne fonctionneront pas
+------------------------------------------------------------------------
+1. Cloudflare -> Stockage et bases de donnees -> D1 -> creer « nishman-comptes »
+2. Dans sa Console, coller tout le contenu de base/schema.sql et executer
+3. Projet nishman-site -> Parametres -> Variables et liaisons -> Liaison D1
+   Nom de la variable : DB          (exactement ces deux lettres)
+   Base de donnees    : nishman-comptes
+   A faire pour Production ET Previsualisation
+4. Redeployer
+
+Pour verifier : ouvrez nishman-site.pages.dev/api/moi
+   {"connecte":false}                  -> tout est bon
+   {"connecte":false,"souci":"base"}   -> la liaison DB manque encore
