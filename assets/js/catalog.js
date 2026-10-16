@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "190";
+  const ASSET_V = "192";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -93,7 +93,6 @@
       proAccessShort: "Accès pro",
       footLegal: "Prix hors TVA réservés aux professionnels.",
       askQuote: "Demander un devis",
-      logout: "Masquer les prix",
       waMsg: "Bonjour, je souhaite une offre de prix pour les produits suivants :",
       boxDetail: (b, n, tot) => b + " carton" + (b > 1 ? "s" : "") + " de " + n + " (" + tot + " unités)",
     },
@@ -139,7 +138,6 @@
       proAccessShort: "Pro access",
       footLegal: "Prices excl. VAT, reserved for professionals.",
       askQuote: "Request a quotation",
-      logout: "Hide prices",
       waMsg: "Hello, I would like a price offer for the following products:",
       boxDetail: (b, n, tot) => b + " box" + (b > 1 ? "es" : "") + " of " + n + " (" + tot + " units)",
     },
@@ -185,7 +183,6 @@
       proAccessShort: "Pro-toegang",
       footLegal: "Prijzen excl. btw, voorbehouden aan professionals.",
       askQuote: "Offerte aanvragen",
-      logout: "Prijzen verbergen",
       waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
       boxDetail: (b, n, tot) => b + " do" + (b > 1 ? "zen" : "os") + " van " + n + " (" + tot + " stuks)",
     },
@@ -207,7 +204,6 @@
       accountCreate: "Händlerkonto erstellen",
       signupTitle: "Zugang nur für Fachkunden",
       lockedNote: "Preise Fachkunden vorbehalten",
-      logout: "Preise ausblenden",
       waMsg: "Hallo, ich bitte um ein Preisangebot für folgende Produkte:",
       boxDetail: (b, n, tot) => b + " Karton" + (b > 1 ? "s" : "") + " mit " + n + " (" + tot + " Stück)",
       addCart: "In den Warenkorb", updateCart: "Warenkorb aktualisieren",
@@ -253,7 +249,6 @@
       accountCreate: "Profesyonel hesap oluştur",
       signupTitle: "Erişim yalnızca profesyonellere açıktır",
       lockedNote: "Fiyatlar profesyonellere özeldir",
-      logout: "Fiyatları gizle",
       waMsg: "Merhaba, aşağıdaki ürünler için fiyat teklifi rica ediyorum:",
       boxDetail: (b, n, tot) => b + " adet " + n + "'lu koli (" + tot + " adet)",
       addCart: "Sepete ekle", updateCart: "Sepeti güncelle",
@@ -1490,36 +1485,27 @@
     syncScrollLock();
   }
 
-  // Masquer les prix, c'est désormais fermer la session : sinon les prix
-  // reviendraient au premier rechargement de la page.
-  async function lockPrices() {
-    PRICES = null;
-    ACCESS_LABEL = null;
-    LIMITS = null;
-    selection = {};
-    saveSelection();
-    try {
-      await fetch("/api/deconnexion", { method: "POST", credentials: "same-origin" });
-    } catch (e) { /* la session expirera d'elle-même */ }
-    renderGrid();
-    renderProAccessBtn();
-  }
-
   function renderProAccessBtn() {
     const btn = document.getElementById("pro-access");
     if (!btn) return;
+
+    // Une fois les prix affichés, ce bouton n'a plus lieu d'être : il ne
+    // proposait que de les masquer, ce qui revenait à se déconnecter. La
+    // déconnexion est à sa place sur la page du compte, pas dans la barre
+    // du catalogue. On retire donc le bouton au lieu d'en changer le texte.
+    btn.style.display = unlocked() ? "none" : "";
+    if (unlocked()) return;
+
     // Sur petit écran, le libellé complet déborde de la pilule
     const court = window.matchMedia("(max-width: 620px)").matches;
     const lab = document.getElementById("pro-access-label") || btn;
-    lab.textContent = unlocked()
-      ? T.logout
-      : (court ? T.proAccessShort : T.proAccess);
-    btn.classList.toggle("unlocked", unlocked());
+    lab.textContent = court ? T.proAccessShort : T.proAccess;
+    btn.classList.remove("unlocked");
   }
 
   function initAccessControls() {
     const btn = document.getElementById("pro-access");
-    if (btn) btn.addEventListener("click", () => (unlocked() ? lockPrices() : openAccessModal()));
+    if (btn) btn.addEventListener("click", openAccessModal);
     const close = document.getElementById("access-close");
     if (close) close.addEventListener("click", closeAccessModal);
     const ov = document.getElementById("access-overlay");
