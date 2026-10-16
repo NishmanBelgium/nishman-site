@@ -138,8 +138,8 @@ export async function compteConnecte(requete, db) {
 
   const ligne = await db.prepare(`
     SELECT c.id, c.email, c.salon, c.prenom, c.nom, c.pays,
-           c.tva, c.siret, c.tva_valide, c.etat,
-           c.adresse, c.code_postal, c.ville,
+           c.tva, c.siret, c.tva_valide, c.tva_verifiee_le, c.etat,
+           c.telephone, c.adresse, c.code_postal, c.ville,
            c.odoo_partner_id, c.cree_le, s.jeton, s.expire_le
       FROM sessions s
       JOIN comptes  c ON c.id = s.compte_id

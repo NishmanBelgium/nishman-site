@@ -26,6 +26,7 @@ export async function onRequestGet({ request, env }) {
       tva: c.tva,
       siret: c.siret,
       tva_valide: !!c.tva_valide,
+      telephone: c.telephone,
       adresse: c.adresse,
       code_postal: c.code_postal,
       ville: c.ville,

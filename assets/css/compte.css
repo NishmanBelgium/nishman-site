@@ -185,3 +185,77 @@
   font-size: .92rem;
   line-height: 1.45;
 }
+
+/* ── espace client modifiable (étape 193) ────────────────────────────── */
+
+/* Onglets de l'espace : même famille que ceux de la carte de connexion,
+   mais alignés à gauche et sans fond, pour ne pas peser sur la page. */
+.onglets-espace {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.onglets-espace button {
+  border: 0; background: none; cursor: pointer;
+  padding: 11px 16px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-body); font-size: 14.5px; font-weight: 600;
+  color: var(--ink-soft);
+  transition: color .15s var(--ease), border-color .15s var(--ease);
+  white-space: nowrap;
+}
+.onglets-espace button:hover { color: var(--ink); }
+.onglets-espace button[aria-selected="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--gold);
+}
+
+.bloc-aide {
+  margin: -8px 0 20px;
+  font-size: 13.5px; line-height: 1.55; color: var(--ink-soft);
+}
+
+/* Les blocs de l'espace accueillent maintenant des formulaires : on y
+   réutilise .champ, .section et .duo de la carte d'inscription. */
+.bloc select {
+  width: 100%; box-sizing: border-box;
+  padding: 13px 15px; padding-right: 38px;
+  font-family: var(--font-body); font-size: 15px; color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23666' stroke-width='1.6' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 12px 8px;
+}
+.bloc select:focus {
+  outline: none; border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.14);
+}
+
+.bloc .section {
+  margin: 24px 0 12px;
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.bloc .section:first-of-type { margin-top: 20px; }
+
+/* Les actions restent groupées à droite, à hauteur d'œil après le dernier
+   champ, pour qu'on sache toujours où est « Enregistrer ». */
+.barre-action {
+  display: flex; align-items: center; justify-content: flex-end; gap: 14px;
+  margin-top: 22px; padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.bouton-court { width: auto; min-width: 180px; margin-top: 0; }
+
+@media (max-width: 520px) {
+  .barre-action { flex-direction: column-reverse; align-items: stretch; }
+  .bouton-court { width: 100%; }
+  .onglets-espace { gap: 0; }
+  .onglets-espace button { padding: 11px 11px; font-size: 13.5px; }
+}

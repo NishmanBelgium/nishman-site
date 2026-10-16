@@ -10,8 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
-<link rel="stylesheet" href="/assets/css/boutique.css?v=192" />
-<link rel="stylesheet" href="/assets/css/compte.css?v=192" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=193" />
+<link rel="stylesheet" href="/assets/css/compte.css?v=193" />
 </head>
 <body>
 
@@ -34,18 +34,156 @@
     <a class="pill pill-gold" href="/devis/">Composer une commande</a>
   </div>
 
-  <section class="bloc">
-    <h2>Mes informations</h2>
-    <dl id="infos"></dl>
+  <!-- Les onglets gardent la page courte : on ne fait voir que la section
+       sur laquelle on travaille, au lieu d'un mur de champs. -->
+  <nav class="onglets-espace" id="onglets-espace" role="tablist">
+    <button role="tab" data-vue="apercu" aria-selected="true">Aperçu</button>
+    <button role="tab" data-vue="coordonnees" aria-selected="false">Mes coordonnées</button>
+    <button role="tab" data-vue="securite" aria-selected="false">Connexion et sécurité</button>
+    <button role="tab" data-vue="commandes" aria-selected="false">Mes commandes</button>
+  </nav>
+
+  <!-- ─────────────────────────── aperçu ─────────────────────────── -->
+  <section class="vue" data-vue="apercu">
+    <div class="bloc">
+      <h2>Récapitulatif</h2>
+      <dl id="infos"></dl>
+    </div>
   </section>
 
-  <section class="bloc">
-    <h2>Mes commandes</h2>
-    <div id="commandes"><p class="vide">Chargement…</p></div>
+  <!-- ──────────────────────── coordonnées ───────────────────────── -->
+  <section class="vue" data-vue="coordonnees" hidden>
+    <form class="bloc" id="form-profil" novalidate>
+      <h2>Mes coordonnées</h2>
+      <p class="bloc-aide">Ces informations figurent sur vos devis et vos factures. Modifiez-les librement.</p>
+
+      <div class="message" id="msg-profil" role="status"></div>
+
+      <div class="champ">
+        <label for="p-pays">Pays</label>
+        <select id="p-pays">
+          <option value="BE">Belgique</option>
+          <option value="FR">France</option>
+          <option value="LU">Luxembourg</option>
+        </select>
+      </div>
+
+      <p class="section">Votre entreprise</p>
+
+      <div class="champ">
+        <label for="p-societe">Nom de la société</label>
+        <input type="text" id="p-societe" autocomplete="organization" />
+      </div>
+
+      <div class="champ">
+        <label for="p-identifiant" id="p-l-identifiant">Numéro de TVA</label>
+        <input type="text" id="p-identifiant" inputmode="numeric" autocomplete="off" spellcheck="false" />
+        <p class="aide" id="p-aide-identifiant"></p>
+      </div>
+
+      <p class="section">Vous</p>
+
+      <div class="duo">
+        <div class="champ">
+          <label for="p-prenom">Prénom</label>
+          <input type="text" id="p-prenom" autocomplete="given-name" />
+        </div>
+        <div class="champ">
+          <label for="p-nom">Nom</label>
+          <input type="text" id="p-nom" autocomplete="family-name" />
+        </div>
+      </div>
+
+      <div class="champ">
+        <label for="p-tel">Téléphone</label>
+        <input type="tel" id="p-tel" autocomplete="tel" />
+      </div>
+
+      <p class="section">Adresse de livraison</p>
+
+      <div class="champ">
+        <label for="p-adresse">Rue et numéro</label>
+        <input type="text" id="p-adresse" autocomplete="street-address" />
+      </div>
+
+      <div class="duo duo-cp">
+        <div class="champ">
+          <label for="p-cp">Code postal</label>
+          <input type="text" id="p-cp" autocomplete="postal-code" />
+        </div>
+        <div class="champ">
+          <label for="p-ville">Ville</label>
+          <input type="text" id="p-ville" autocomplete="address-level2" />
+        </div>
+      </div>
+
+      <div class="barre-action">
+        <button type="button" class="lien-sobre" id="b-profil-annuler">Annuler</button>
+        <button type="submit" class="bouton-plein bouton-court" id="b-profil">Enregistrer</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ───────────────────── connexion et sécurité ────────────────── -->
+  <section class="vue" data-vue="securite" hidden>
+
+    <form class="bloc" id="form-email" novalidate>
+      <h2>Adresse de connexion</h2>
+      <p class="bloc-aide">C'est l'adresse avec laquelle vous vous connectez. La changer demande votre mot de passe.</p>
+
+      <div class="message" id="msg-email" role="status"></div>
+
+      <div class="champ">
+        <label for="e-email">Nouvelle adresse e-mail</label>
+        <input type="email" id="e-email" autocomplete="email" />
+      </div>
+      <div class="champ">
+        <label for="e-mdp">Votre mot de passe</label>
+        <input type="password" id="e-mdp" autocomplete="current-password" />
+      </div>
+
+      <div class="barre-action">
+        <button type="submit" class="bouton-plein bouton-court" id="b-email">Changer l'adresse</button>
+      </div>
+    </form>
+
+    <form class="bloc" id="form-mdp" novalidate>
+      <h2>Mot de passe</h2>
+      <p class="bloc-aide">Par précaution, le changer ferme toutes les autres sessions ouvertes sur d'autres appareils.</p>
+
+      <div class="message" id="msg-mdp" role="status"></div>
+
+      <div class="champ">
+        <label for="m-actuel">Mot de passe actuel</label>
+        <input type="password" id="m-actuel" autocomplete="current-password" />
+      </div>
+      <div class="champ">
+        <label for="m-nouveau">Nouveau mot de passe</label>
+        <input type="password" id="m-nouveau" autocomplete="new-password" />
+        <p class="aide">Huit caractères minimum.</p>
+      </div>
+      <div class="champ">
+        <label for="m-confirme">Confirmer le nouveau mot de passe</label>
+        <input type="password" id="m-confirme" autocomplete="new-password" />
+      </div>
+
+      <div class="barre-action">
+        <button type="submit" class="bouton-plein bouton-court" id="b-mdp">Changer le mot de passe</button>
+      </div>
+    </form>
+
+  </section>
+
+  <!-- ───────────────────────── commandes ────────────────────────── -->
+  <section class="vue" data-vue="commandes" hidden>
+    <div class="bloc">
+      <h2>Mes commandes</h2>
+      <div id="commandes"><p class="vide">Chargement…</p></div>
+    </div>
   </section>
 
 </main>
 
-<script src="/assets/js/compte.js?v=192"></script>
+<script src="/assets/js/compte.js?v=193"></script>
 </body>
 </html>

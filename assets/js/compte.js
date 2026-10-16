@@ -157,6 +157,7 @@
         identifiant: $("#i-identifiant").value.trim(),
         prenom: $("#i-prenom").value.trim(),
         nom: $("#i-nom").value.trim(),
+        telephone: $("#i-tel").value.trim(),
         adresse: $("#i-adresse").value.trim(),
         code_postal: $("#i-cp").value.trim(),
         ville: $("#i-ville").value.trim(),
@@ -188,53 +189,100 @@
   var espace = $("#espace");
 
   if (espace) {
+    var MOI = null;
+
+    var PAYS = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
+
+    // Ce que l'on demande dépend du pays, exactement comme à l'inscription.
+    var IDENTIFIANT = {
+      BE: { label: "Numéro d'entreprise (TVA)",
+            aide: "Dix chiffres, avec ou sans BE devant. Exemple : 0817.750.283." },
+      FR: { label: "Numéro de SIRET",
+            aide: "Quatorze chiffres, tels qu'ils figurent sur votre avis de situation." },
+      LU: { label: "Numéro de TVA",
+            aide: "Huit chiffres, avec ou sans LU devant." },
+    };
+
     fetch("/api/moi", { headers: { accept: "application/json" }, credentials: "same-origin" })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (!d.connecte) { location.href = "/pro/connexion/"; return; }
-        remplirProfil(d.compte);
+        MOI = d.compte;
+        remplirEntete();
+        remplirApercu();
+        remplirProfil();
         espace.hidden = false;
         chargerCommandes();
       })
       .catch(function () { location.href = "/pro/connexion/"; });
 
-    var PAYS = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
+    /* ---- navigation entre les vues ---- */
 
-    function remplirProfil(c) {
-      $("#nom-salon").textContent = c.salon;
-      $("#mail-compte").textContent = c.email;
+    var onglets = $("#onglets-espace");
+    onglets.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-vue]");
+      if (!b) return;
+      montrerVue(b.dataset.vue);
+    });
 
-      // Un avertissement déposé à l'inscription (numéro incohérent) est
-      // affiché une fois, ici, puis oublié.
+    function montrerVue(quelle) {
+      var bs = onglets.querySelectorAll("[data-vue]");
+      for (var i = 0; i < bs.length; i++) {
+        bs[i].setAttribute("aria-selected", String(bs[i].dataset.vue === quelle));
+      }
+      var vues = espace.querySelectorAll("section.vue");
+      for (var j = 0; j < vues.length; j++) {
+        vues[j].hidden = vues[j].dataset.vue !== quelle;
+      }
+      // L'ancre dans l'adresse permet de revenir sur la même vue après
+      // un rechargement, et de donner un lien direct à quelqu'un.
+      try { history.replaceState(null, "", "#" + quelle); } catch (x) {}
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    var depart = (location.hash || "").replace("#", "");
+    if (depart && espace.querySelector('section.vue[data-vue="' + depart + '"]')) {
+      montrerVue(depart);
+    }
+
+    /* ---- en-tête et aperçu ---- */
+
+    function remplirEntete() {
+      $("#nom-salon").textContent = MOI.salon;
+      $("#mail-compte").textContent = MOI.email;
+
+      // Un avertissement déposé à l'inscription est montré une fois, ici.
       try {
         var avis = sessionStorage.getItem("nishman-avis");
         if (avis) {
           sessionStorage.removeItem("nishman-avis");
-          var bandeau = document.createElement("p");
-          bandeau.className = "avis";
-          bandeau.textContent = avis;
-          espace.insertBefore(bandeau, espace.firstChild);
+          dire($("#msg-profil"), avis, "erreur");
+          montrerVue("coordonnees");
         }
       } catch (x) {}
+    }
 
+    function remplirApercu() {
+      var c = MOI;
       var etiquette = c.tva_valide
-        ? ' <span class="etiquette vert">v\u00e9rifi\u00e9</span>'
-        : ' <span class="etiquette gris">\u00e0 v\u00e9rifier</span>';
+        ? ' <span class="etiquette vert">vérifié</span>'
+        : ' <span class="etiquette gris">à vérifier</span>';
 
       var html =
-        paire("Soci\u00e9t\u00e9", echappe(c.salon)) +
-        paire("Responsable", echappe([c.prenom, c.nom].filter(Boolean).join(" ")) || "\u2014") +
-        paire("Pays", echappe(PAYS[c.pays] || c.pays || "\u2014"));
+        paire("Société", echappe(c.salon)) +
+        paire("Responsable", echappe([c.prenom, c.nom].filter(Boolean).join(" ")) || "—") +
+        paire("Pays", echappe(PAYS[c.pays] || c.pays || "—"));
 
       if (c.siret) html += paire("SIRET", echappe(c.siret));
-      html += paire("Num\u00e9ro de TVA", c.tva ? echappe(c.tva) + etiquette
-                                       : '<span class="etiquette gris">\u00e0 renseigner</span>');
+      html += paire("Numéro de TVA", c.tva ? echappe(c.tva) + etiquette
+                                     : '<span class="etiquette gris">à renseigner</span>');
 
       var adresse = [c.adresse, [c.code_postal, c.ville].filter(Boolean).join(" ")]
         .filter(Boolean).join(", ");
-      html += paire("Adresse", echappe(adresse) || "\u2014") +
+      html += paire("Adresse", echappe(adresse) || "—") +
+              paire("Téléphone", echappe(c.telephone) || "—") +
               paire("Adresse e-mail", echappe(c.email)) +
-              paire("Compte cr\u00e9\u00e9 le", dateCourte(c.depuis));
+              paire("Compte créé le", dateCourte(c.depuis));
 
       $("#infos").innerHTML = html;
     }
@@ -242,6 +290,153 @@
     function paire(terme, valeur) {
       return '<div class="paire"><dt>' + terme + "</dt><dd>" + valeur + "</dd></div>";
     }
+
+    /* ---- messages ---- */
+
+    function dire(zone, texte, genre) {
+      zone.textContent = texte;
+      zone.className = "message on " + (genre || "erreur");
+    }
+    function taire(zone) { zone.className = "message"; }
+
+    /* ---- coordonnées ---- */
+
+    var formProfil = $("#form-profil");
+    var selPays = $("#p-pays");
+
+    function remplirProfil() {
+      selPays.value = MOI.pays || "BE";
+      $("#p-societe").value = MOI.salon || "";
+      $("#p-identifiant").value = MOI.pays === "FR" ? (MOI.siret || "")
+                                                    : (MOI.tva || "").replace(/^[A-Z]{2}/, "");
+      $("#p-prenom").value = MOI.prenom || "";
+      $("#p-nom").value = MOI.nom || "";
+      $("#p-tel").value = MOI.telephone || "";
+      $("#p-adresse").value = MOI.adresse || "";
+      $("#p-cp").value = MOI.code_postal || "";
+      $("#p-ville").value = MOI.ville || "";
+      majPays();
+    }
+
+    function majPays() {
+      var modele = IDENTIFIANT[selPays.value] || IDENTIFIANT.BE;
+      $("#p-l-identifiant").textContent = modele.label;
+      $("#p-aide-identifiant").textContent = modele.aide;
+    }
+    selPays.addEventListener("change", majPays);
+
+    $("#b-profil-annuler").addEventListener("click", function () {
+      remplirProfil();
+      taire($("#msg-profil"));
+    });
+
+    formProfil.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var zone = $("#msg-profil");
+      taire(zone);
+      var b = $("#b-profil");
+      b.disabled = true;
+      b.textContent = "Enregistrement…";
+
+      envoyer("/api/profil", {
+        pays: selPays.value,
+        societe: $("#p-societe").value.trim(),
+        identifiant: $("#p-identifiant").value.trim(),
+        prenom: $("#p-prenom").value.trim(),
+        nom: $("#p-nom").value.trim(),
+        telephone: $("#p-tel").value.trim(),
+        adresse: $("#p-adresse").value.trim(),
+        code_postal: $("#p-cp").value.trim(),
+        ville: $("#p-ville").value.trim(),
+      }).then(function (r) {
+        b.disabled = false;
+        b.textContent = "Enregistrer";
+        if (!r.ok) { dire(zone, r.donnees.erreur || "L'enregistrement a échoué."); return; }
+
+        dire(zone, r.donnees.avertissement || "Vos coordonnées sont à jour.",
+             r.donnees.avertissement ? "erreur" : "succes");
+
+        // On relit le compte plutôt que de recopier ce qu'on vient d'envoyer :
+        // c'est le serveur qui a le dernier mot, notamment sur le numéro de
+        // TVA reconstitué pour la France.
+        return fetch("/api/moi", { headers: { accept: "application/json" }, credentials: "same-origin" })
+          .then(function (x) { return x.json(); })
+          .then(function (d) {
+            if (d.connecte) { MOI = d.compte; remplirEntete(); remplirApercu(); remplirProfil(); }
+          });
+      }).catch(function () {
+        b.disabled = false;
+        b.textContent = "Enregistrer";
+        dire(zone, "Connexion au serveur impossible. Réessayez.");
+      });
+    });
+
+    /* ---- adresse de connexion ---- */
+
+    $("#form-email").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var zone = $("#msg-email");
+      taire(zone);
+      var b = $("#b-email");
+      b.disabled = true;
+      b.textContent = "Changement…";
+
+      envoyer("/api/email", {
+        email: $("#e-email").value.trim(),
+        motdepasse: $("#e-mdp").value,
+      }).then(function (r) {
+        b.disabled = false;
+        b.textContent = "Changer l'adresse";
+        if (!r.ok) { dire(zone, r.donnees.erreur || "Le changement a échoué."); return; }
+        MOI.email = r.donnees.email;
+        remplirEntete();
+        remplirApercu();
+        $("#e-email").value = "";
+        $("#e-mdp").value = "";
+        dire(zone, "Votre adresse de connexion est désormais " + r.donnees.email + ".", "succes");
+      }).catch(function () {
+        b.disabled = false;
+        b.textContent = "Changer l'adresse";
+        dire(zone, "Connexion au serveur impossible. Réessayez.");
+      });
+    });
+
+    /* ---- mot de passe ---- */
+
+    $("#form-mdp").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var zone = $("#msg-mdp");
+      taire(zone);
+
+      var nouveau = $("#m-nouveau").value;
+      if (nouveau !== $("#m-confirme").value) {
+        dire(zone, "Les deux nouveaux mots de passe ne correspondent pas.");
+        return;
+      }
+
+      var b = $("#b-mdp");
+      b.disabled = true;
+      b.textContent = "Changement…";
+
+      envoyer("/api/motdepasse", {
+        actuel: $("#m-actuel").value,
+        nouveau: nouveau,
+      }).then(function (r) {
+        b.disabled = false;
+        b.textContent = "Changer le mot de passe";
+        if (!r.ok) { dire(zone, r.donnees.erreur || "Le changement a échoué."); return; }
+        $("#m-actuel").value = "";
+        $("#m-nouveau").value = "";
+        $("#m-confirme").value = "";
+        dire(zone, "Mot de passe changé. Les autres appareils ont été déconnectés.", "succes");
+      }).catch(function () {
+        b.disabled = false;
+        b.textContent = "Changer le mot de passe";
+        dire(zone, "Connexion au serveur impossible. Réessayez.");
+      });
+    });
+
+    /* ---- commandes ---- */
 
     function chargerCommandes() {
       var zone = $("#commandes");

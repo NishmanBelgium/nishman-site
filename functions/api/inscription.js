@@ -40,6 +40,9 @@ export async function onRequestPost({ request, env }) {
   if (!cp)      return erreur("Indiquez le code postal.");
   if (!ville)   return erreur("Indiquez la ville.");
 
+  // Facultatif : utile pour vous joindre, pas assez pour bloquer l'inscription.
+  const tel = texteValide(corps.telephone, 6, 30);
+
   const email = String(corps.email || "").trim();
   const mdp   = String(corps.motdepasse || "");
   if (!emailValide(email)) return erreur("Cette adresse e-mail n'est pas valide.");
@@ -63,11 +66,11 @@ export async function onRequestPost({ request, env }) {
   const res = await db.prepare(`
     INSERT INTO comptes
       (email, email_cle, salon, prenom, nom, pays, tva, siret,
-       adresse, code_postal, ville, mot_de_passe, cree_le, vu_le)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       telephone, adresse, code_postal, ville, mot_de_passe, cree_le, vu_le)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     email, cle, societe, prenom, nom, pays, fiscal.tva, fiscal.siret,
-    adresse, cp, ville, empreinte, maintenant, maintenant
+    tel, adresse, cp, ville, empreinte, maintenant, maintenant
   ).run();
 
   const compteId = res.meta.last_row_id;
