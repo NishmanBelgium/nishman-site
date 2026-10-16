@@ -3,13 +3,17 @@
    Répond toujours 200 : « personne » est une réponse valable, pas une erreur.
    ========================================================================== */
 
-import { json, compteConnecte } from "../_commun.js";
+import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
 
 export async function onRequestGet({ request, env }) {
   if (!env.DB) return json({ connecte: false, souci: "base" });
 
   const c = await compteConnecte(request, env.DB);
   if (!c) return json({ connecte: false });
+
+  // Chaque passage sur le site repousse l'échéance : quelqu'un qui vient
+  // régulièrement ne ressaisit jamais son mot de passe.
+  const cookie = await prolongerSiBesoin(env.DB, c);
 
   return json({
     connecte: true,
@@ -28,5 +32,5 @@ export async function onRequestGet({ request, env }) {
       client_odoo: !!c.odoo_partner_id,
       depuis: c.cree_le,
     },
-  });
+  }, 200, cookie ? { "set-cookie": cookie } : {});
 }

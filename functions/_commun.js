@@ -140,7 +140,7 @@ export async function compteConnecte(requete, db) {
     SELECT c.id, c.email, c.salon, c.prenom, c.nom, c.pays,
            c.tva, c.siret, c.tva_valide, c.etat,
            c.adresse, c.code_postal, c.ville,
-           c.odoo_partner_id, c.cree_le, s.expire_le
+           c.odoo_partner_id, c.cree_le, s.jeton, s.expire_le
       FROM sessions s
       JOIN comptes  c ON c.id = s.compte_id
      WHERE s.jeton = ?
@@ -154,6 +154,28 @@ export async function compteConnecte(requete, db) {
   if (ligne.etat !== "actif") return null;
 
   return ligne;
+}
+
+// Session glissante. Sans cela, un compte ouvert le 1er janvier se fermait
+// le 31, même pour quelqu'un venu tous les jours — et le coiffeur devait
+// ressaisir son mot de passe sans comprendre pourquoi. On repousse donc
+// l'échéance dès qu'il reste moins d'une semaine, pas à chaque appel :
+// inutile d'écrire dans la base à chaque page affichée.
+const SEUIL_PROLONGATION_JOURS = 7;
+
+export async function prolongerSiBesoin(db, ligne) {
+  const reste = new Date(ligne.expire_le).getTime() - Date.now();
+  if (reste > (DUREE_JOURS - SEUIL_PROLONGATION_JOURS) * 864e5) return null;
+
+  const fin = new Date(Date.now() + DUREE_JOURS * 864e5).toISOString();
+  await db.prepare("UPDATE sessions SET expire_le = ? WHERE jeton = ?")
+    .bind(fin, ligne.jeton).run();
+  await db.prepare("UPDATE comptes SET vu_le = ? WHERE id = ?")
+    .bind(new Date().toISOString(), ligne.id).run();
+
+  // Le navigateur garde sa propre échéance : il faut lui renvoyer le cookie,
+  // sinon il oublierait la session alors que le serveur la tient encore.
+  return cookieSession(ligne.jeton);
 }
 
 export async function fermerSession(db, jeton) {

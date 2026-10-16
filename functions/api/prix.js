@@ -8,7 +8,7 @@
    si le cookie de session correspond à un compte actif.
    ========================================================================== */
 
-import { json, compteConnecte } from "../_commun.js";
+import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
 
 const PORTIER_DEFAUT =
   "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec";
@@ -28,6 +28,10 @@ export async function onRequestGet({ request, env }) {
 
   const compte = await compteConnecte(request, env.DB);
   if (!compte) return json({ ok: false, raison: "anonyme" });
+
+  // Le catalogue appelle cette page à chaque visite : c'est le meilleur
+  // endroit pour repousser l'échéance de la session.
+  const cookie = await prolongerSiBesoin(env.DB, compte);
 
   const code = env.PORTIER_CODE;
   if (!code) return json({ ok: false, raison: "portier" });
@@ -54,7 +58,7 @@ export async function onRequestGet({ request, env }) {
     limits: data.limits || null,
     societe: compte.salon,
     email: compte.email,
-  });
+  }, 200, cookie ? { "set-cookie": cookie } : {});
 }
 
 export async function onRequest() {

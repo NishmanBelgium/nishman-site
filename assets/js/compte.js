@@ -30,6 +30,7 @@
     return fetch(url, {
       method: "POST",
       headers: { "content-type": "application/json" },
+      credentials: "same-origin",
       body: JSON.stringify(corps),
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
@@ -43,6 +44,27 @@
   var formConnexion = $("#form-connexion");
 
   if (formConnexion) {
+    // Une session encore valable rend ce formulaire inutile : on emmène
+    // directement la personne sur son compte. Sans ce contrôle, quelqu'un
+    // de déjà connecté voyait un écran de connexion et en concluait,
+    // à juste titre, que le site l'avait oublié.
+    // La carte reste masquée le temps de la réponse, sinon le formulaire
+    // apparaît une fraction de seconde avant de disparaître.
+    var carte = document.querySelector(".carte-compte");
+    if (carte && location.search.indexOf("creer") === -1) {
+      carte.style.visibility = "hidden";
+      fetch("/api/moi", {
+        headers: { accept: "application/json" },
+        credentials: "same-origin",
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d && d.connecte) { location.replace("/pro/compte/"); return; }
+          carte.style.visibility = "";
+        })
+        .catch(function () { carte.style.visibility = ""; });
+    }
+
     var formInscription = $("#form-inscription");
     var onglConnexion = $("#t-connexion");
     var onglInscription = $("#t-inscription");
@@ -166,7 +188,7 @@
   var espace = $("#espace");
 
   if (espace) {
-    fetch("/api/moi", { headers: { accept: "application/json" } })
+    fetch("/api/moi", { headers: { accept: "application/json" }, credentials: "same-origin" })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         if (!d.connecte) { location.href = "/pro/connexion/"; return; }
@@ -223,7 +245,7 @@
 
     function chargerCommandes() {
       var zone = $("#commandes");
-      fetch("/api/commandes", { headers: { accept: "application/json" } })
+      fetch("/api/commandes", { headers: { accept: "application/json" }, credentials: "same-origin" })
         .then(function (r) { return r.json(); })
         .then(function (d) {
           if (!d.pret) {
@@ -260,7 +282,7 @@
     }
 
     $("#b-deconnexion").addEventListener("click", function () {
-      fetch("/api/deconnexion", { method: "POST" })
+      fetch("/api/deconnexion", { method: "POST", credentials: "same-origin" })
         .then(function () { location.href = "/"; })
         .catch(function () { location.href = "/"; });
     });

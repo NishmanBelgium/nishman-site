@@ -1,0 +1,44 @@
+NISHMAN — étape 190
+===================
+
+Correction : la session ne se perdait pas, mais le site vous présentait
+quand même l'écran de connexion.
+
+CE QUI N'ALLAIT PAS
+-------------------
+1. Le bouton « Mon compte » de la barre du catalogue menait au formulaire
+   de connexion, et non à la page du compte.
+2. Cette page de connexion ne vérifiait jamais si une session était déjà
+   ouverte : elle affichait le formulaire dans tous les cas.
+
+Résultat : en naviguant avec les prix affichés — donc bel et bien connectée
+— un clic sur « Mon compte » donnait l'impression d'avoir été déconnectée.
+
+CE QUI CHANGE
+-------------
+· « Mon compte » mène désormais à /pro/compte/.
+· La page de connexion regarde d'abord si une session est ouverte, et
+  emmène directement sur le compte si c'est le cas.
+· La session devient GLISSANTE : chaque visite repousse son échéance de
+  30 jours. Avant, elle expirait 30 jours après la connexion, même pour
+  quelqu'un venu tous les jours. La base n'est mise à jour que lorsqu'il
+  reste moins d'une semaine, pour ne pas écrire à chaque page affichée.
+· Au passage, la colonne vu_le se met à jour, ce qui vous donne la date de
+  dernière visite de chaque salon.
+
+À FAIRE
+-------
+Rien d'autre que déposer ces fichiers. Pas de base à modifier, pas de
+variable à ajouter.
+
+GitHub -> branche NishmanCloudflare -> Add file -> Upload files ->
+tout sélectionner (Cmd+A) -> glisser -> Commit changes EN BAS DE PAGE.
+
+POUR VÉRIFIER
+-------------
+Connectez-vous, puis naviguez dans le catalogue et cliquez sur
+« Mon compte » : vous devez arriver directement sur votre compte, sans
+qu'on vous redemande quoi que ce soit.
+
+Fermez le navigateur, rouvrez le site le lendemain : les prix doivent
+s'afficher tout de suite.
