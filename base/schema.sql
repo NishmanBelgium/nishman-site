@@ -59,3 +59,14 @@ CREATE TABLE IF NOT EXISTS tentatives (
 );
 
 CREATE INDEX IF NOT EXISTS idx_tentatives ON tentatives(email_cle, quand);
+
+-- Liens de réinitialisation de mot de passe (étape 194).
+CREATE TABLE IF NOT EXISTS reinitialisations (
+  empreinte TEXT    PRIMARY KEY,
+  compte_id INTEGER NOT NULL,
+  cree_le   TEXT    NOT NULL,
+  expire_le TEXT    NOT NULL,
+  utilise   INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_reinit_compte ON reinitialisations(compte_id);

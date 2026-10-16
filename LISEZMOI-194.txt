@@ -1,0 +1,66 @@
+NISHMAN — étape 194
+===================
+
+Ce lot contient aussi les 191, 192 et 193. Ne déposez que celui-ci.
+
+« MOT DE PASSE OUBLIÉ » EST EN PLACE.
+
+Un lien apparaît sous le formulaire de connexion. Le coiffeur saisit son
+adresse, reçoit un courriel, clique, choisit un nouveau mot de passe.
+Le lien vaut UNE HEURE et ne fonctionne QU'UNE SEULE FOIS.
+
+TROIS CHOSES À FAIRE, DANS CET ORDRE
+====================================
+
+1. DÉPOSER CES FICHIERS SUR GITHUB
+----------------------------------
+Branche NishmanCloudflare -> Add file -> Upload files -> tout sélectionner
+(Cmd+A) -> glisser -> Commit changes EN BAS DE PAGE.
+
+Ne déposez PAS le fichier SCRIPT-GOOGLE-ajout-reinit.gs : il ne va pas sur
+GitHub, il va dans votre script Google (point 3).
+
+2. CRÉER LA TABLE DES LIENS
+---------------------------
+Cloudflare -> Base de données SQLite D1 -> nishman-comptes -> Console.
+Collez ces deux commandes, une par une :
+
+CREATE TABLE IF NOT EXISTS reinitialisations (empreinte TEXT PRIMARY KEY, compte_id INTEGER NOT NULL, cree_le TEXT NOT NULL, expire_le TEXT NOT NULL, utilise INTEGER NOT NULL DEFAULT 0);
+
+CREATE INDEX IF NOT EXISTS idx_reinit_compte ON reinitialisations(compte_id);
+
+3. AJOUTER L'ENVOI DANS VOTRE SCRIPT GOOGLE
+-------------------------------------------
+Ouvrez SCRIPT-GOOGLE-ajout-reinit.gs : tout y est expliqué pas à pas.
+En résumé : une ligne à ajouter dans doGet, une fonction à coller en bas,
+puis « Déployer -> Gérer les déploiements -> Nouvelle version ».
+
+Tant que ce point n'est pas fait, la page affichera son message habituel
+mais aucun courriel ne partira.
+
+CE QUI A ÉTÉ PRÉVU POUR LA SÉCURITÉ
+===================================
+· Le message affiché est le même, que l'adresse existe ou non. Sinon ce
+  formulaire deviendrait un moyen de savoir qui est client chez vous.
+· Le lien envoyé n'est jamais stocké tel quel dans la base, seulement son
+  empreinte. Quelqu'un qui lirait la base ne pourrait pas s'en servir.
+· Une nouvelle demande annule la précédente : un vieux courriel oublié
+  dans une boîte ne reste pas une porte ouverte.
+· Un mot de passe réinitialisé ferme TOUTES les sessions du compte.
+· Un compte suspendu ne reçoit rien.
+· Le script Google refuse d'envoyer si le code interne ne lui est pas
+  présenté : personne ne peut faire partir des courriels en votre nom.
+
+LIMITE À CONNAÎTRE
+==================
+Google autorise environ 100 courriels par jour depuis un compte Gmail
+ordinaire, 1500 avec un compte Workspace. Pour des réinitialisations de
+mot de passe, c'est très large. Si un jour la boutique grand public doit
+envoyer des confirmations de commande en nombre, il faudra passer à un
+service dédié — on en reparlera à ce moment-là.
+
+POUR TESTER
+===========
+Sur https://nishman-site.pages.dev/pro/connexion/ -> « Mot de passe
+oublié ? » -> votre adresse -> vous devez recevoir le courriel en moins
+d'une minute. Regardez aussi vos courriers indésirables la première fois.

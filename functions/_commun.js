@@ -313,3 +313,34 @@ export function texteValide(v, min, max) {
   const t = String(v || "").trim();
   return t.length >= min && t.length <= max ? t : null;
 }
+
+/* --- Réinitialisation du mot de passe ----------------------------------- */
+
+// Le jeton envoyé par e-mail n'est jamais stocké tel quel : on garde son
+// empreinte. Quelqu'un qui lirait la base ne pourrait pas s'en servir pour
+// réinitialiser un mot de passe — il lui manquerait le jeton d'origine.
+export async function empreinteJeton(jeton) {
+  const bits = await crypto.subtle.digest("SHA-256", enc.encode(jeton));
+  return [...new Uint8Array(bits)].map((o) => o.toString(16).padStart(2, "0")).join("");
+}
+
+export const DUREE_LIEN_MINUTES = 60;
+
+export async function creerLienReinit(db, compteId) {
+  const jeton = nouveauJeton();
+  const maintenant = new Date();
+  const fin = new Date(maintenant.getTime() + DUREE_LIEN_MINUTES * 60000);
+
+  // Un nouveau lien annule les précédents : sinon un ancien courriel
+  // oublié dans une boîte resterait une porte ouverte.
+  await db.prepare("DELETE FROM reinitialisations WHERE compte_id = ?")
+    .bind(compteId).run();
+
+  await db.prepare(`
+    INSERT INTO reinitialisations (empreinte, compte_id, cree_le, expire_le)
+    VALUES (?, ?, ?, ?)
+  `).bind(await empreinteJeton(jeton), compteId,
+          maintenant.toISOString(), fin.toISOString()).run();
+
+  return jeton;
+}

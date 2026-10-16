@@ -184,6 +184,96 @@
     });
   }
 
+  /* ── mot de passe oublié : demande du lien ────────────────────────── */
+
+  var formOubli = $("#form-oubli");
+
+  if (formOubli) {
+    var msgOubli = $("#message");
+
+    formOubli.addEventListener("submit", function (e) {
+      e.preventDefault();
+      msgOubli.className = "message";
+      var b = $("#b-oubli");
+      b.disabled = true;
+      b.textContent = "Envoi…";
+
+      envoyer("/api/oubli", { email: $("#o-email").value.trim() })
+        .then(function (r) {
+          b.disabled = false;
+          b.textContent = "Recevoir le lien";
+          if (!r.ok) {
+            msgOubli.textContent = r.donnees.erreur || "L'envoi a échoué.";
+            msgOubli.className = "message on erreur";
+            return;
+          }
+          // Le message est le même que l'adresse existe ou non : le serveur
+          // ne dit pas qui est client, et la page ne le trahit pas non plus.
+          msgOubli.textContent = r.donnees.message;
+          msgOubli.className = "message on succes";
+          formOubli.hidden = true;
+        })
+        .catch(function () {
+          b.disabled = false;
+          b.textContent = "Recevoir le lien";
+          msgOubli.textContent = "Connexion au serveur impossible. Réessayez.";
+          msgOubli.className = "message on erreur";
+        });
+    });
+  }
+
+  /* ── mot de passe oublié : nouveau mot de passe ───────────────────── */
+
+  var formReinit = $("#form-reinit");
+
+  if (formReinit) {
+    var msgReinit = $("#message");
+    var jeton = new URLSearchParams(location.search).get("j") || "";
+
+    if (!jeton) {
+      msgReinit.textContent = "Ce lien est incomplet. Redemandez-en un depuis la page « Mot de passe oublié ».";
+      msgReinit.className = "message on erreur";
+      formReinit.hidden = true;
+    }
+
+    formReinit.addEventListener("submit", function (e) {
+      e.preventDefault();
+      msgReinit.className = "message";
+
+      var mdp = $("#r-mdp").value;
+      if (mdp !== $("#r-confirme").value) {
+        msgReinit.textContent = "Les deux mots de passe ne correspondent pas.";
+        msgReinit.className = "message on erreur";
+        return;
+      }
+
+      var b = $("#b-reinit");
+      b.disabled = true;
+      b.textContent = "Enregistrement…";
+
+      envoyer("/api/reinitialiser", { jeton: jeton, motdepasse: mdp })
+        .then(function (r) {
+          if (r.ok) {
+            msgReinit.textContent = "Mot de passe enregistré. Vous pouvez vous connecter.";
+            msgReinit.className = "message on succes";
+            formReinit.hidden = true;
+            setTimeout(function () { location.href = "/pro/connexion/"; }, 2500);
+            return;
+          }
+          b.disabled = false;
+          b.textContent = "Enregistrer";
+          msgReinit.textContent = r.donnees.erreur || "L'enregistrement a échoué.";
+          msgReinit.className = "message on erreur";
+        })
+        .catch(function () {
+          b.disabled = false;
+          b.textContent = "Enregistrer";
+          msgReinit.textContent = "Connexion au serveur impossible. Réessayez.";
+          msgReinit.className = "message on erreur";
+        });
+    });
+  }
+
   /* ── espace du compte ─────────────────────────────────────────────── */
 
   var espace = $("#espace");

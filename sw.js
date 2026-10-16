@@ -8,14 +8,14 @@
    répond qu'à une session ouverte, et doivent toujours être frais.
    ========================================================================== */
 
-const VERSION = "nishman-193";
+const VERSION = "nishman-194";
 const SOCLE = [
   "/produits/",
-  "/assets/css/site.css?v=193",
-  "/assets/js/catalog.js?v=193",
-  "/assets/js/offre.js?v=193",
-  "/assets/js/config.js?v=193",
-  "/assets/data/products.json?v=193",
+  "/assets/css/site.css?v=194",
+  "/assets/js/catalog.js?v=194",
+  "/assets/js/offre.js?v=194",
+  "/assets/js/config.js?v=194",
+  "/assets/data/products.json?v=194",
   "/assets/pwa/icon-192.png",
 ];
 
