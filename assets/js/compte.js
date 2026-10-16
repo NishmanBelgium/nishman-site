@@ -92,19 +92,64 @@
       });
     });
 
+    // Ce que l'on demande dépend du pays : un coiffeur français connaît son
+    // SIRET et presque jamais son numéro intracommunautaire, qui sera
+    // reconstitué à partir du SIREN côté serveur.
+    var IDENTIFIANT = {
+      BE: { label: "Numéro d'entreprise (TVA)",
+            aide: "Dix chiffres, avec ou sans BE devant. Exemple : 0817.750.283." },
+      FR: { label: "Numéro de SIRET",
+            aide: "Quatorze chiffres, tels qu'ils figurent sur votre avis de situation." },
+      LU: { label: "Numéro de TVA",
+            aide: "Huit chiffres, avec ou sans LU devant." },
+    };
+
+    var selPays = $("#i-pays");
+    var blocInscription = $("#bloc-inscription");
+
+    function majPays() {
+      var p = selPays.value;
+      var modele = IDENTIFIANT[p];
+      blocInscription.hidden = !modele;
+      if (!modele) return;
+      $("#l-identifiant").textContent = modele.label;
+      $("#aide-identifiant").textContent = modele.aide;
+    }
+
+    selPays.addEventListener("change", majPays);
+    majPays();
+
     formInscription.addEventListener("submit", function (e) {
       e.preventDefault();
       taire();
+
+      if (!selPays.value) { dire("Choisissez d'abord votre pays."); return; }
+
       var bouton = $("#b-inscription");
       bouton.disabled = true;
       bouton.textContent = "Création…";
 
       envoyer("/api/inscription", {
-        salon: $("#i-salon").value.trim(),
+        pays: selPays.value,
+        societe: $("#i-societe").value.trim(),
+        identifiant: $("#i-identifiant").value.trim(),
+        prenom: $("#i-prenom").value.trim(),
+        nom: $("#i-nom").value.trim(),
+        adresse: $("#i-adresse").value.trim(),
+        code_postal: $("#i-cp").value.trim(),
+        ville: $("#i-ville").value.trim(),
         email: $("#i-email").value.trim(),
         motdepasse: $("#i-mdp").value,
       }).then(function (r) {
-        if (r.ok) { location.href = "/pro/compte/"; return; }
+        if (r.ok) {
+          // Un numéro douteux ne bloque pas l'inscription, mais on ne le passe
+          // pas sous silence : il repart avec l'inscrit sur sa page de compte.
+          if (r.donnees.avertissement) {
+            try { sessionStorage.setItem("nishman-avis", r.donnees.avertissement); } catch (x) {}
+          }
+          location.href = "/pro/compte/";
+          return;
+        }
         dire(r.donnees.erreur || "La création du compte a échoué.");
         bouton.disabled = false;
         bouton.textContent = "Créer mon compte";
@@ -131,21 +176,45 @@
       })
       .catch(function () { location.href = "/pro/connexion/"; });
 
+    var PAYS = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
+
     function remplirProfil(c) {
       $("#nom-salon").textContent = c.salon;
       $("#mail-compte").textContent = c.email;
 
-      var tva = c.tva
-        ? echappe(c.tva) + (c.tva_valide
-            ? ' <span class="etiquette vert">vérifié</span>'
-            : ' <span class="etiquette gris">à vérifier</span>')
-        : '<span class="etiquette gris">à renseigner</span>';
+      // Un avertissement déposé à l'inscription (numéro incohérent) est
+      // affiché une fois, ici, puis oublié.
+      try {
+        var avis = sessionStorage.getItem("nishman-avis");
+        if (avis) {
+          sessionStorage.removeItem("nishman-avis");
+          var bandeau = document.createElement("p");
+          bandeau.className = "avis";
+          bandeau.textContent = avis;
+          espace.insertBefore(bandeau, espace.firstChild);
+        }
+      } catch (x) {}
 
-      $("#infos").innerHTML =
-        paire("Salon", echappe(c.salon)) +
-        paire("Adresse e-mail", echappe(c.email)) +
-        paire("Numéro de TVA", tva) +
-        paire("Compte créé le", dateCourte(c.depuis));
+      var etiquette = c.tva_valide
+        ? ' <span class="etiquette vert">v\u00e9rifi\u00e9</span>'
+        : ' <span class="etiquette gris">\u00e0 v\u00e9rifier</span>';
+
+      var html =
+        paire("Soci\u00e9t\u00e9", echappe(c.salon)) +
+        paire("Responsable", echappe([c.prenom, c.nom].filter(Boolean).join(" ")) || "\u2014") +
+        paire("Pays", echappe(PAYS[c.pays] || c.pays || "\u2014"));
+
+      if (c.siret) html += paire("SIRET", echappe(c.siret));
+      html += paire("Num\u00e9ro de TVA", c.tva ? echappe(c.tva) + etiquette
+                                       : '<span class="etiquette gris">\u00e0 renseigner</span>');
+
+      var adresse = [c.adresse, [c.code_postal, c.ville].filter(Boolean).join(" ")]
+        .filter(Boolean).join(", ");
+      html += paire("Adresse", echappe(adresse) || "\u2014") +
+              paire("Adresse e-mail", echappe(c.email)) +
+              paire("Compte cr\u00e9\u00e9 le", dateCourte(c.depuis));
+
+      $("#infos").innerHTML = html;
     }
 
     function paire(terme, valeur) {

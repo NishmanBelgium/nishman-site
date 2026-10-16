@@ -2697,3 +2697,18 @@ body.has-offre-barre .search-sticky {
   .mon-compte { padding: 12px 13px; }
   .mon-compte-mot { display: none; }
 }
+
+/* ── Fenêtre d'accès, étape 189 ──────────────────────────────────────────
+   Le code d'accès n'existe plus : la fenêtre ne contient que deux liens,
+   l'un vers la connexion, l'autre vers la création de compte. Comme ce sont
+   des liens et non des boutons, il faut leur retirer le soulignement et les
+   étaler sur toute la largeur du panneau. */
+#access-step-code a.access-submit,
+#access-step-code a.access-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+#access-step-code a.access-submit { margin-bottom: 10px; }
+#access-step-code a.access-link { margin: 0; }

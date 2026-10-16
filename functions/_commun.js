@@ -137,7 +137,9 @@ export async function compteConnecte(requete, db) {
   if (!jeton) return null;
 
   const ligne = await db.prepare(`
-    SELECT c.id, c.email, c.salon, c.tva, c.tva_valide, c.etat,
+    SELECT c.id, c.email, c.salon, c.prenom, c.nom, c.pays,
+           c.tva, c.siret, c.tva_valide, c.etat,
+           c.adresse, c.code_postal, c.ville,
            c.odoo_partner_id, c.cree_le, s.expire_le
       FROM sessions s
       JOIN comptes  c ON c.id = s.compte_id
@@ -199,4 +201,93 @@ export async function noterTentative(db, emailCle) {
 
 export async function effacerTentatives(db, emailCle) {
   await db.prepare("DELETE FROM tentatives WHERE email_cle = ?").bind(emailCle).run();
+}
+
+/* --- Identité de l'entreprise ------------------------------------------- */
+
+export const PAYS_SERVIS = ["BE", "FR", "LU"];
+
+export function paysValide(p) {
+  return PAYS_SERVIS.indexOf(String(p || "").toUpperCase()) !== -1;
+}
+
+// On retire espaces, points et tirets, et le préfixe pays s'il a été retapé :
+// « BE 0817.750.283 », « be0817750283 » et « 0817750283 » donnent la même chose.
+export function chiffresSeuls(valeur) {
+  const brut = String(valeur || "").replace(/[\s.\-/]/g, "").toUpperCase();
+  const sansPrefixe = /^[A-Z]{2}/.test(brut) ? brut.slice(2) : brut;
+  return sansPrefixe.replace(/[^0-9]/g, "");
+}
+
+// Clé de contrôle belge : les deux derniers chiffres valent
+// 97 moins le reste des huit premiers divisés par 97.
+export function tvaBelgeCoherente(num) {
+  if (!/^[01][0-9]{9}$/.test(num)) return false;
+  const base = Number(num.slice(0, 8));
+  const cle = Number(num.slice(8));
+  return 97 - (base % 97) === cle;
+}
+
+// Clé de contrôle luxembourgeoise : les deux derniers chiffres valent
+// le reste des six premiers divisés par 89.
+export function tvaLuxCoherente(num) {
+  if (!/^[0-9]{8}$/.test(num)) return false;
+  return Number(num.slice(0, 6)) % 89 === Number(num.slice(6));
+}
+
+// Un SIRET est validé par la formule de Luhn, comme un numéro de carte.
+// Exception connue : les établissements de La Poste commencent par 356000000
+// et ne la respectent pas. On les laisse passer.
+export function siretCoherent(num) {
+  if (!/^[0-9]{14}$/.test(num)) return false;
+  if (num.startsWith("356000000")) return true;
+  let somme = 0;
+  for (let i = 0; i < 14; i++) {
+    let c = Number(num[i]);
+    if (i % 2 === 0) { c *= 2; if (c > 9) c -= 9; }
+    somme += c;
+  }
+  return somme % 10 === 0;
+}
+
+// Le numéro de TVA français se reconstitue à partir du SIREN : la clé vaut
+// (12 + 3 × (SIREN modulo 97)) modulo 97. Un coiffeur connaît son SIRET,
+// rarement son numéro intracommunautaire ; on le calcule pour lui, ce qui
+// permettra la vérification VIES sans rien lui redemander.
+export function tvaDepuisSiret(siret) {
+  if (!/^[0-9]{14}$/.test(siret)) return null;
+  const siren = siret.slice(0, 9);
+  const cle = (12 + 3 * (Number(siren) % 97)) % 97;
+  return "FR" + String(cle).padStart(2, "0") + siren;
+}
+
+// Renvoie { tva, siret, coherent } ou { erreur } si la longueur est
+// manifestement fausse. On refuse la longueur, jamais la clé de contrôle :
+// une clé fausse est signalée à l'importateur, mais n'empêche pas de
+// s'inscrire — trop de professionnels resteraient bloqués sur une faute
+// de frappe un dimanche soir.
+export function identifiantFiscal(pays, saisie) {
+  const num = chiffresSeuls(saisie);
+  if (pays === "FR") {
+    if (num.length !== 14) {
+      return { erreur: "Le SIRET compte 14 chiffres. Vous en avez saisi " + num.length + "." };
+    }
+    return { siret: num, tva: tvaDepuisSiret(num), coherent: siretCoherent(num) };
+  }
+  if (pays === "BE") {
+    const n = num.length === 9 ? "0" + num : num;   // beaucoup oublient le zéro de tête
+    if (n.length !== 10) {
+      return { erreur: "Le numéro d'entreprise compte 10 chiffres. Vous en avez saisi " + num.length + "." };
+    }
+    return { siret: null, tva: "BE" + n, coherent: tvaBelgeCoherente(n) };
+  }
+  if (num.length !== 8) {
+    return { erreur: "Le numéro de TVA luxembourgeois compte 8 chiffres. Vous en avez saisi " + num.length + "." };
+  }
+  return { siret: null, tva: "LU" + num, coherent: tvaLuxCoherente(num) };
+}
+
+export function texteValide(v, min, max) {
+  const t = String(v || "").trim();
+  return t.length >= min && t.length <= max ? t : null;
 }

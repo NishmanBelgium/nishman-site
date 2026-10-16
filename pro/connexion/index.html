@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
-<link rel="stylesheet" href="/assets/css/boutique.css?v=185" />
-<link rel="stylesheet" href="/assets/css/compte.css?v=185" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=189" />
+<link rel="stylesheet" href="/assets/css/compte.css?v=189" />
 </head>
 <body>
 
@@ -41,22 +41,87 @@
     </form>
 
     <!-- ── inscription ── -->
+    <!-- Le pays vient en premier : c'est lui qui décide de l'identifiant
+         demandé plus bas (TVA en Belgique et au Luxembourg, SIRET en
+         France, parce qu'un coiffeur français connaît son SIRET et
+         rarement son numéro intracommunautaire). -->
     <form id="form-inscription" novalidate hidden>
+
       <div class="champ">
-        <label for="i-salon">Nom du salon</label>
-        <input type="text" id="i-salon" name="salon" autocomplete="organization" required />
-        <p class="aide">Plusieurs salons ? Ajoutez la ville, par exemple « Barbershop Mons ».</p>
+        <label for="i-pays">Pays</label>
+        <select id="i-pays" name="pays" required>
+          <option value="">Choisissez votre pays</option>
+          <option value="BE">Belgique</option>
+          <option value="FR">France</option>
+          <option value="LU">Luxembourg</option>
+        </select>
       </div>
-      <div class="champ">
-        <label for="i-email">Adresse e-mail</label>
-        <input type="email" id="i-email" name="email" autocomplete="email" required />
+
+      <!-- Tout ce qui suit n'apparaît qu'une fois le pays choisi. -->
+      <div id="bloc-inscription" hidden>
+
+        <p class="section">Votre entreprise</p>
+
+        <div class="champ">
+          <label for="i-societe">Nom de la société</label>
+          <input type="text" id="i-societe" name="societe" autocomplete="organization" />
+          <p class="aide">Plusieurs établissements ? Ajoutez la ville, par exemple « Barbershop Mons ».</p>
+        </div>
+
+        <div class="champ">
+          <label for="i-identifiant" id="l-identifiant">Numéro de TVA</label>
+          <input type="text" id="i-identifiant" name="identifiant"
+                 inputmode="numeric" autocomplete="off" spellcheck="false" />
+          <p class="aide" id="aide-identifiant"></p>
+        </div>
+
+        <p class="section">Vous</p>
+
+        <div class="duo">
+          <div class="champ">
+            <label for="i-prenom">Prénom</label>
+            <input type="text" id="i-prenom" name="prenom" autocomplete="given-name" />
+          </div>
+          <div class="champ">
+            <label for="i-nom">Nom</label>
+            <input type="text" id="i-nom" name="nom" autocomplete="family-name" />
+          </div>
+        </div>
+
+        <p class="section">Adresse de livraison</p>
+
+        <div class="champ">
+          <label for="i-adresse">Rue et numéro</label>
+          <input type="text" id="i-adresse" name="adresse" autocomplete="street-address" />
+        </div>
+
+        <div class="duo duo-cp">
+          <div class="champ">
+            <label for="i-cp">Code postal</label>
+            <input type="text" id="i-cp" name="code_postal" autocomplete="postal-code" />
+          </div>
+          <div class="champ">
+            <label for="i-ville">Ville</label>
+            <input type="text" id="i-ville" name="ville" autocomplete="address-level2" />
+          </div>
+        </div>
+
+        <p class="section">Vos identifiants</p>
+
+        <div class="champ">
+          <label for="i-email">Adresse e-mail</label>
+          <input type="email" id="i-email" name="email" autocomplete="email" />
+        </div>
+
+        <div class="champ">
+          <label for="i-mdp">Mot de passe</label>
+          <input type="password" id="i-mdp" name="motdepasse" autocomplete="new-password" />
+          <p class="aide">Huit caractères minimum.</p>
+        </div>
+
+        <button type="submit" class="bouton-plein" id="b-inscription">Créer mon compte</button>
+        <p class="aide pied-aide">La création du compte ouvre l'accès aux tarifs professionnels.</p>
       </div>
-      <div class="champ">
-        <label for="i-mdp">Mot de passe</label>
-        <input type="password" id="i-mdp" name="motdepasse" autocomplete="new-password" required />
-        <p class="aide">Huit caractères minimum.</p>
-      </div>
-      <button type="submit" class="bouton-plein" id="b-inscription">Créer mon compte</button>
     </form>
 
     <p class="sous-carte" id="pied-carte">
@@ -65,6 +130,6 @@
   </div>
 </main>
 
-<script src="/assets/js/compte.js?v=185"></script>
+<script src="/assets/js/compte.js?v=189"></script>
 </body>
 </html>

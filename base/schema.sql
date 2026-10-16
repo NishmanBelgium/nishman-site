@@ -9,13 +9,19 @@ CREATE TABLE IF NOT EXISTS comptes (
   -- L'email sert d'identifiant : on le range en minuscules pour que
   -- Jean@Salon.be et jean@salon.be soient le même compte.
   email_cle       TEXT    NOT NULL UNIQUE,
+  -- Nom de la société (la colonne s'appelle salon pour des raisons
+  -- historiques ; elle porte la raison sociale saisie à l'inscription).
   salon           TEXT    NOT NULL,
+  prenom          TEXT,
+  nom             TEXT,
   -- Format : pbkdf2$<iterations>$<sel en base64>$<empreinte en base64>.
   -- Le mot de passe lui-même n'est jamais stocké, ni récupérable.
   mot_de_passe    TEXT    NOT NULL,
 
-  -- Renseignés plus tard, au moment de la première commande.
+  -- Belgique et Luxembourg : numéro de TVA. France : SIRET dans siret,
+  -- et tva porte le numéro de TVA reconstitué à partir du SIREN.
   tva             TEXT,
+  siret           TEXT,
   tva_valide      INTEGER NOT NULL DEFAULT 0,
   tva_verifiee_le TEXT,
   telephone       TEXT,

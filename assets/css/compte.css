@@ -127,3 +127,61 @@
   .carte-compte { padding: 32px 22px 26px; }
   .table-cmd th:nth-child(3), .table-cmd td:nth-child(3) { display: none; }
 }
+
+/* ── formulaire d'inscription détaillé (étape 189) ───────────────────── */
+
+/* Le pays commande l'affichage du reste : tant qu'il n'est pas choisi,
+   la carte reste courte et ne décourage personne. */
+.carte-compte select {
+  width: 100%;
+  padding: .78rem .9rem;
+  border: 1px solid var(--trait, #d9d9de);
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23666' stroke-width='1.6' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right .9rem center;
+  background-size: 12px 8px;
+  padding-right: 2.4rem;
+}
+
+.carte-compte .section {
+  margin: 1.5rem 0 .6rem;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #8a8a92;
+}
+.carte-compte .section:first-child { margin-top: .4rem; }
+
+/* Deux champs côte à côte sur grand écran, l'un sous l'autre sur téléphone. */
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .7rem; }
+.duo-cp { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); }
+@media (max-width: 460px) {
+  .duo, .duo-cp { grid-template-columns: 1fr; gap: 0; }
+}
+
+.pied-aide {
+  margin-top: .8rem;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+/* Numéro d'entreprise invraisemblable : signalé, jamais bloquant. */
+.avis {
+  margin: 0 0 1.1rem;
+  padding: .8rem 1rem;
+  border: 1px solid #e8c37a;
+  border-left-width: 4px;
+  border-radius: 10px;
+  background: #fdf6e7;
+  color: #6b5316;
+  font-size: .92rem;
+  line-height: 1.45;
+}

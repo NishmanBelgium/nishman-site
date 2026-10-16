@@ -1,0 +1,82 @@
+NISHMAN — étape 189
+===================
+
+Le code d'accès disparaît. Les prix professionnels ne sont plus visibles que
+par une personne connectée à son compte, et le compte se crée avec l'identité
+complète de l'entreprise.
+
+IL Y A TROIS CHOSES À FAIRE, DANS CET ORDRE
+===========================================
+
+1. DÉPOSER CES FICHIERS SUR GITHUB
+----------------------------------
+Branche NishmanCloudflare -> Add file -> Upload files -> tout sélectionner
+(Cmd+A dans le dossier décompressé) -> glisser -> Commit changes EN BAS DE PAGE.
+
+2. AJOUTER LES TROIS COLONNES À LA BASE
+---------------------------------------
+Cloudflare -> Base de données SQLite D1 -> nishman-comptes -> Console.
+Collez ces trois lignes UNE PAR UNE, Exécuter entre chaque :
+
+ALTER TABLE comptes ADD COLUMN prenom TEXT;
+ALTER TABLE comptes ADD COLUMN nom TEXT;
+ALTER TABLE comptes ADD COLUMN siret TEXT;
+
+(C'est le contenu de base/migration-189.sql, à n'exécuter qu'une seule fois.)
+
+3. DONNER AU SITE LE CODE DU PORTIER
+------------------------------------
+Le serveur du site interroge désormais lui-même le script Google pour obtenir
+les prix. Il lui faut donc le code interne NBD — celui qui figure dans votre
+script Google sous le nom CODE_INTERNE.
+
+Cloudflare -> Workers et Pages -> nishman-site -> Paramètres ->
+Variables et secrets -> Ajouter :
+
+   Nom     : PORTIER_CODE
+   Valeur  : votre code interne NBD
+   Type    : Secret   (surtout pas « Texte », pour qu'il reste masqué)
+
+À faire pour Production ET Prévisualisation, puis redéployer.
+
+NE M'ENVOYEZ JAMAIS CE CODE PAR MESSAGE. Il se saisit directement
+dans Cloudflare et n'a aucune raison de circuler ailleurs.
+
+Tant que ce secret n'est pas posé, les comptes fonctionneront mais les prix
+resteront masqués pour tout le monde.
+
+À SUPPRIMER SUR GITHUB
+======================
+Deux fichiers traînent à la racine du dépôt, déposés par erreur lors d'un
+envoi précédent. Ils exposent publiquement du code serveur : supprimez-les.
+
+   _commun.js          (à la racine, PAS celui de functions/)
+   api/connexion.js    (dossier api à la racine, PAS functions/api/)
+
+Sur GitHub : ouvrez le fichier -> icône corbeille en haut à droite ->
+Commit changes.
+
+CE QUI CHANGE POUR VOS CLIENTS
+==============================
+· Le code d'accès ne fonctionne plus, nulle part : ni au catalogue, ni au devis.
+· Un coiffeur qui arrive sans compte voit « Prix sur demande » et un bouton
+  qui mène à la connexion ou à la création de compte.
+· L'inscription demande : pays, société, numéro de TVA (Belgique, Luxembourg)
+  ou SIRET (France), prénom, nom, adresse complète, e-mail, mot de passe.
+· Pour la France, le numéro de TVA intracommunautaire est calculé tout seul à
+  partir du SIRET. Le coiffeur n'a pas à le connaître.
+· Un numéro dont la clé de contrôle est fausse n'empêche pas l'inscription,
+  mais l'inscrit en est averti et vous le voyez dans la base.
+· Le compte créé ouvre les prix immédiatement, sans vérification VIES.
+
+SURVEILLER LES INSCRIPTIONS
+===========================
+Dans la console D1 :
+
+SELECT id, cree_le, salon, prenom, nom, pays, tva, siret, ville, email FROM comptes ORDER BY id DESC;
+
+Pour couper l'accès à quelqu'un, sans supprimer son historique :
+
+UPDATE comptes SET etat='suspendu', motif_suspension='non professionnel' WHERE email_cle='adresse@exemple.be';
+
+L'effet est immédiat : sa session cesse de fonctionner au prochain clic.
