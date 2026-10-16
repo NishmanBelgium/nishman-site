@@ -1,0 +1,35 @@
+NISHMAN — étape 192
+===================
+
+Ce lot remplace le 191 : il le contient. Ne déposez que celui-ci.
+
+CE QUI CHANGE
+-------------
+1. Le bouton « Masquer les prix » disparaît de la barre du catalogue.
+   Une fois connectée, la barre ne montre plus que la langue, les
+   catégories et « Mon compte ». Pour se déconnecter, on passe par la page
+   du compte, où le bouton Déconnexion est à sa place.
+   Tant qu'on n'est pas connecté, « Accès professionnel » reste affiché et
+   ouvre la fenêtre de connexion : rien ne change de ce côté.
+
+2. Formulaire de devis : le champ « Pays » passe en première position.
+   C'est lui qui détermine le préfixe du numéro de TVA (BE, FR, LU)
+   affiché juste en dessous.
+
+Aucune base à modifier, aucune variable à ajouter.
+
+COMMENT LE DÉPOSER
+------------------
+GitHub -> branche NishmanCloudflare -> Add file -> Upload files ->
+tout sélectionner (Cmd+A) -> glisser -> Commit changes EN BAS DE PAGE.
+
+RAPPEL — L'ADRESSE DE TEST
+--------------------------
+Testez toujours sur :
+
+    https://nishman-site.pages.dev
+
+Une adresse du type 3b96ec.nishman-site.pages.dev est celle d'un
+déploiement particulier : le navigateur la traite comme un autre site et
+n'y envoie pas votre cookie de session. C'est ce qui donnait l'impression
+d'être déconnectée à chaque passage.

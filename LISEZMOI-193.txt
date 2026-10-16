@@ -1,0 +1,57 @@
+NISHMAN — étape 193
+===================
+
+Ce lot contient aussi le 191 et le 192. Ne déposez que celui-ci.
+
+AUCUNE BASE À MODIFIER, AUCUNE VARIABLE À AJOUTER.
+La colonne telephone existait déjà dans la table comptes.
+
+1. LE FORMULAIRE D'INSCRIPTION
+------------------------------
+Il demande désormais la même chose que le formulaire de devis :
+pays, société, numéro de TVA ou SIRET, prénom, nom, TÉLÉPHONE,
+adresse, code postal, ville, e-mail, mot de passe.
+
+Le téléphone est facultatif : il ne bloque pas l'inscription.
+
+2. L'ESPACE CLIENT DEVIENT MODIFIABLE
+-------------------------------------
+/pro/compte/ est maintenant organisé en quatre onglets :
+
+  Aperçu                 toutes les informations du compte en lecture
+  Mes coordonnées        tout est modifiable : société, numéro fiscal,
+                         identité, téléphone, adresse. Bouton Annuler
+                         pour revenir à l'état enregistré.
+  Connexion et sécurité  changer l'adresse e-mail de connexion
+                         (demande le mot de passe) et changer le mot
+                         de passe (demande l'ancien).
+  Mes commandes          inchangé, en attente de la liaison Odoo.
+
+Détails qui comptent :
+
+· Le pays commande le champ fiscal, ici aussi : SIRET pour la France,
+  numéro d'entreprise pour la Belgique, TVA pour le Luxembourg.
+· Si le client change son numéro fiscal, la mention « vérifié » retombe
+  à « à vérifier » : un numéro changé n'est plus celui que vous aviez
+  contrôlé.
+· Changer de mot de passe ferme toutes les autres sessions ouvertes.
+  L'appareil en cours reste connecté.
+· Une adresse e-mail déjà utilisée par un autre compte est refusée.
+
+L'adresse /pro/compte/#coordonnees ouvre directement le bon onglet,
+pratique si vous envoyez le lien à un client.
+
+COMMENT LE DÉPOSER
+------------------
+GitHub -> branche NishmanCloudflare -> Add file -> Upload files ->
+tout sélectionner (Cmd+A) -> glisser -> Commit changes EN BAS DE PAGE.
+
+Testez ensuite sur https://nishman-site.pages.dev (jamais sur une
+adresse à préfixe du type 3b96ec.nishman-site.pages.dev).
+
+RESTE À FAIRE, SI VOUS LE VOULEZ
+--------------------------------
+Le formulaire de devis redemande encore des informations que le compte
+contient déjà, et il réclame un numéro de TVA là où l'inscription
+demande un SIRET pour la France. Je peux le pré-remplir depuis le compte
+et aligner le champ fiscal : dites-le moi.

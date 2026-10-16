@@ -24,15 +24,15 @@
     rel="stylesheet"
   />
 
-  <link rel="manifest" href="/manifest.json?v=182" />
+  <link rel="manifest" href="/manifest.json?v=193" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Nishman" />
-  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=182" />
+  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=193" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=182" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=193" />
 </head>
 <body class="catalog-body">
 
@@ -83,6 +83,14 @@
           <span class="cat-btn-dot" aria-hidden="true"></span>
           <span id="pro-access-label"></span>
         </button>
+        <a class="mon-compte" href="/pro/compte/" title="Mon compte professionnel">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17">
+            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+          <span class="mon-compte-mot">Mon compte</span>
+        </a>
       </div>
     </div>
 
@@ -119,6 +127,16 @@
           <p class="foot-head" id="t-foot-social"></p>
           <div class="foot-links" id="footer-social"></div>
         </div>
+
+        <div class="foot-col">
+          <p class="foot-head">Mon compte</p>
+          <div class="foot-links">
+            <a href="/pro/compte/">Mon compte</a>
+            <a href="/pro/connexion/?creer">Créer un compte</a>
+            <a href="/">Boutique particuliers</a>
+          </div>
+        </div>
+
 
       </div>
 
@@ -173,7 +191,7 @@
     </div>
   </div>
 
-  <!-- Accès professionnel : saisie du code ou inscription -->
+  <!-- Accès professionnel : le compte, et rien d'autre -->
   <div class="drawer-overlay cat-overlay" id="access-overlay" hidden>
     <div class="cat-panel access-panel">
       <div class="cat-panel-head">
@@ -183,49 +201,8 @@
 
       <div id="access-step-code">
         <p class="access-desc" id="access-desc"></p>
-        <div class="access-form">
-          <input id="access-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
-          <button class="access-submit" id="access-submit"></button>
-        </div>
-        <p class="access-error" id="access-error" hidden></p>
-        <p class="access-nocode" id="access-nocode"></p>
-        <button class="access-link" id="go-signup"></button>
-      </div>
-
-      <div id="access-step-signup" hidden>
-        <p class="access-desc" id="signup-intro"></p>
-        <div class="signup-fields">
-          <label class="signup-field">
-            <span id="t-signup-country"></span>
-            <select id="signup-country"></select>
-          </label>
-          <label class="signup-field">
-            <span id="t-signup-vat"></span>
-            <input id="signup-vat" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" />
-            <small class="signup-hint" id="signup-hint"></small>
-          </label>
-          <label class="signup-field">
-            <span id="t-signup-email"></span>
-            <input id="signup-email" type="email" autocomplete="email" />
-          </label>
-        </div>
-        <button class="access-submit signup-btn" id="signup-submit"></button>
-        <p class="access-error" id="signup-error" hidden></p>
-        <button class="access-link" id="go-code"></button>
-      </div>
-
-      <div id="access-step-sent" hidden>
-        <div class="sent-check">&#10003;</div>
-        <p class="access-desc" id="sent-text"></p>
-
-        <div class="code-box" id="code-box" hidden>
-          <span class="code-label" id="t-yourcode"></span>
-          <span class="code-value" id="code-value"></span>
-          <button class="code-copy" id="code-copy"></button>
-        </div>
-
-        <button class="access-submit" id="code-use" hidden></button>
-        <button class="access-submit" id="sent-close"></button>
+        <a class="access-submit" id="access-login" href="/pro/connexion/"></a>
+        <a class="access-link" id="access-create" href="/pro/connexion/?creer"></a>
       </div>
     </div>
   </div>
@@ -237,9 +214,9 @@
     </div>
   </div>
 
-  <script src="/assets/js/config.js?v=182"></script>
-  <script src="/assets/js/catalog.js?v=182"></script>
-  <script src="/assets/js/offre.js?v=182"></script>
+  <script src="/assets/js/config.js?v=193"></script>
+  <script src="/assets/js/catalog.js?v=193"></script>
+  <script src="/assets/js/offre.js?v=193"></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 </body>
 </html>

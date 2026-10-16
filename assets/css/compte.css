@@ -1,0 +1,261 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   COMPTE — pages de connexion et espace professionnel.
+   S'appuie sur les jetons de couleur et de typographie de boutique.css.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.cadre {
+  min-height: 100dvh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 20px;
+  background: var(--bg-soft);
+}
+
+.carte-compte {
+  width: min(440px, 100%);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 40px 36px 32px;
+}
+.carte-compte .marque { display: block; height: 32px; margin: 0 auto 26px; }
+
+.onglets {
+  display: flex; gap: 4px;
+  background: var(--bg-soft); border-radius: 999px;
+  padding: 4px; margin-bottom: 26px;
+}
+.onglets button {
+  flex: 1; border: 0; cursor: pointer;
+  background: none; border-radius: 999px;
+  padding: 10px 8px;
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  color: var(--ink-soft);
+  transition: background .2s var(--ease), color .2s var(--ease);
+}
+.onglets button[aria-selected="true"] { background: var(--bg); color: var(--ink); box-shadow: var(--shadow-sm); }
+
+.champ { margin-bottom: 16px; }
+.champ label {
+  display: block; margin-bottom: 7px;
+  font-size: 13px; font-weight: 600; color: var(--ink-soft);
+}
+.champ input {
+  width: 100%; box-sizing: border-box;
+  padding: 13px 15px;
+  font-family: var(--font-body); font-size: 15px; color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  transition: border-color .15s var(--ease), box-shadow .15s var(--ease);
+}
+.champ input:focus {
+  outline: none; border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.14);
+}
+.champ .aide { margin-top: 6px; font-size: 12.5px; color: var(--ink-faint); }
+
+.bouton-plein {
+  width: 100%; margin-top: 8px; padding: 14px 20px;
+  border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--gradient); color: #fff;
+  font-family: var(--font-body); font-size: 15px; font-weight: 700;
+  transition: filter .2s var(--ease);
+}
+.bouton-plein:hover:not(:disabled) { filter: brightness(1.06); }
+.bouton-plein:disabled { opacity: .55; cursor: wait; }
+
+.message {
+  display: none; margin-bottom: 18px; padding: 12px 15px;
+  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
+}
+.message.on { display: block; }
+.message.erreur { background: #fdeceb; color: #9b1c12; }
+.message.succes { background: #e9f6ee; color: #14633a; }
+
+.sous-carte {
+  margin-top: 22px; padding-top: 20px;
+  border-top: 1px solid var(--line);
+  text-align: center; font-size: 13.5px; color: var(--ink-soft);
+}
+.sous-carte a { color: var(--gold-deep); font-weight: 600; }
+
+/* ── espace du compte ─────────────────────────────────────────────────── */
+
+.espace { width: min(1000px, 100% - 32px); margin: 0 auto; padding: 44px 0 90px; }
+
+.espace-tete {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  align-items: flex-end; justify-content: space-between;
+  margin-bottom: 34px;
+}
+.espace-tete h1 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(26px, 4vw, 34px); letter-spacing: -0.02em;
+  margin: 0 0 4px;
+}
+.espace-tete .mail { font-size: 14px; color: var(--ink-soft); }
+
+.bloc {
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); padding: 26px 28px; margin-bottom: 18px;
+}
+.bloc h2 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 17px; margin: 0 0 16px;
+}
+
+.paire { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+.paire:last-child { border-bottom: 0; }
+.paire dt { color: var(--ink-soft); }
+.paire dd { margin: 0; font-weight: 600; text-align: right; }
+
+.etiquette { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.etiquette.vert { background: #e9f6ee; color: #14633a; }
+.etiquette.gris { background: var(--bg-soft); color: var(--ink-soft); }
+
+.table-cmd { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.table-cmd th { text-align: left; padding: 10px 12px; background: var(--bg-soft); font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-soft); }
+.table-cmd td { padding: 13px 12px; border-bottom: 1px solid var(--line); }
+.table-cmd tr:last-child td { border-bottom: 0; }
+.table-cmd .nombre { text-align: right; font-variant-numeric: tabular-nums; }
+
+.vide { padding: 30px 4px; text-align: center; color: var(--ink-soft); font-size: 14.5px; line-height: 1.65; }
+
+.lien-sobre { background: none; border: 0; cursor: pointer; font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+.lien-sobre:hover { color: var(--ink); }
+
+@media (max-width: 560px) {
+  .carte-compte { padding: 32px 22px 26px; }
+  .table-cmd th:nth-child(3), .table-cmd td:nth-child(3) { display: none; }
+}
+
+/* ── formulaire d'inscription détaillé (étape 189) ───────────────────── */
+
+/* Le pays commande l'affichage du reste : tant qu'il n'est pas choisi,
+   la carte reste courte et ne décourage personne. */
+.carte-compte select {
+  width: 100%;
+  padding: .78rem .9rem;
+  border: 1px solid var(--trait, #d9d9de);
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23666' stroke-width='1.6' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right .9rem center;
+  background-size: 12px 8px;
+  padding-right: 2.4rem;
+}
+
+.carte-compte .section {
+  margin: 1.5rem 0 .6rem;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #8a8a92;
+}
+.carte-compte .section:first-child { margin-top: .4rem; }
+
+/* Deux champs côte à côte sur grand écran, l'un sous l'autre sur téléphone. */
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0 .7rem; }
+.duo-cp { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); }
+@media (max-width: 460px) {
+  .duo, .duo-cp { grid-template-columns: 1fr; gap: 0; }
+}
+
+.pied-aide {
+  margin-top: .8rem;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+/* Numéro d'entreprise invraisemblable : signalé, jamais bloquant. */
+.avis {
+  margin: 0 0 1.1rem;
+  padding: .8rem 1rem;
+  border: 1px solid #e8c37a;
+  border-left-width: 4px;
+  border-radius: 10px;
+  background: #fdf6e7;
+  color: #6b5316;
+  font-size: .92rem;
+  line-height: 1.45;
+}
+
+/* ── espace client modifiable (étape 193) ────────────────────────────── */
+
+/* Onglets de l'espace : même famille que ceux de la carte de connexion,
+   mais alignés à gauche et sans fond, pour ne pas peser sur la page. */
+.onglets-espace {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.onglets-espace button {
+  border: 0; background: none; cursor: pointer;
+  padding: 11px 16px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-body); font-size: 14.5px; font-weight: 600;
+  color: var(--ink-soft);
+  transition: color .15s var(--ease), border-color .15s var(--ease);
+  white-space: nowrap;
+}
+.onglets-espace button:hover { color: var(--ink); }
+.onglets-espace button[aria-selected="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--gold);
+}
+
+.bloc-aide {
+  margin: -8px 0 20px;
+  font-size: 13.5px; line-height: 1.55; color: var(--ink-soft);
+}
+
+/* Les blocs de l'espace accueillent maintenant des formulaires : on y
+   réutilise .champ, .section et .duo de la carte d'inscription. */
+.bloc select {
+  width: 100%; box-sizing: border-box;
+  padding: 13px 15px; padding-right: 38px;
+  font-family: var(--font-body); font-size: 15px; color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23666' stroke-width='1.6' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 12px 8px;
+}
+.bloc select:focus {
+  outline: none; border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.14);
+}
+
+.bloc .section {
+  margin: 24px 0 12px;
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.bloc .section:first-of-type { margin-top: 20px; }
+
+/* Les actions restent groupées à droite, à hauteur d'œil après le dernier
+   champ, pour qu'on sache toujours où est « Enregistrer ». */
+.barre-action {
+  display: flex; align-items: center; justify-content: flex-end; gap: 14px;
+  margin-top: 22px; padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.bouton-court { width: auto; min-width: 180px; margin-top: 0; }
+
+@media (max-width: 520px) {
+  .barre-action { flex-direction: column-reverse; align-items: stretch; }
+  .bouton-court { width: 100%; }
+  .onglets-espace { gap: 0; }
+  .onglets-espace button { padding: 11px 11px; font-size: 13.5px; }
+}

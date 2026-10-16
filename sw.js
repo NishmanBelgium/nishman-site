@@ -4,18 +4,18 @@
    · rendre le site installable sur Android (Chrome l'exige) ;
    · garder le catalogue consultable même sans connexion.
 
-   Les prix ne sont JAMAIS mis en cache : ils viennent du portier Google et
-   doivent toujours être frais.
+   Les prix ne sont JAMAIS mis en cache : ils viennent de /api/prix, qui ne
+   répond qu'à une session ouverte, et doivent toujours être frais.
    ========================================================================== */
 
-const VERSION = "nishman-v182";
+const VERSION = "nishman-193";
 const SOCLE = [
   "/produits/",
-  "/assets/css/site.css?v=182",
-  "/assets/js/catalog.js?v=182",
-  "/assets/js/offre.js?v=182",
-  "/assets/js/config.js?v=182",
-  "/assets/data/products.json?v=182",
+  "/assets/css/site.css?v=193",
+  "/assets/js/catalog.js?v=193",
+  "/assets/js/offre.js?v=193",
+  "/assets/js/config.js?v=193",
+  "/assets/data/products.json?v=193",
   "/assets/pwa/icon-192.png",
 ];
 
@@ -44,9 +44,14 @@ self.addEventListener("fetch", (e) => {
 
   const url = new URL(req.url);
 
-  // Tout ce qui est dynamique passe directement par le réseau :
-  // prix, stock, devis, appels au portier Google.
+  // Tout ce qui est dynamique passe directement par le réseau.
+  // /api/ et /pro/ en font partie, et c'est capital : ce sont les prix, la
+  // session et le compte. Une réponse de /api/prix gardée en cache
+  // continuerait d'afficher les tarifs après une déconnexion.
   if (url.origin !== self.location.origin ||
+      url.pathname.startsWith("/api/") ||
+      url.pathname.startsWith("/pro/connexion") ||
+      url.pathname.startsWith("/pro/compte") ||
       url.pathname.startsWith("/devis") ||
       url.hostname.indexOf("script.google.com") >= 0) {
     return;

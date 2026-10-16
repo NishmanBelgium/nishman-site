@@ -2673,3 +2673,42 @@ body.has-offre-barre .search-sticky {
 /* Ligne du carton offert sur le devis */
 .ligne-offerte td { background: #F2FAF3; }
 .ligne-offerte .prod-name { color: #2e7d32; font-weight: 700; }
+
+/* ── passerelle vers la boutique grand public ───────────────────────────── */
+.foot-line-soft { opacity: .62; margin-top: 10px; }
+
+/* ── accès au compte professionnel, dans la barre du catalogue ─────────── */
+.mon-compte {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 12px 17px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 700;
+  color: var(--ink); text-decoration: none; white-space: nowrap;
+  transition: border-color .18s ease;
+}
+.mon-compte:hover { border-color: var(--ink); }
+.mon-compte svg { display: block; }
+
+/* Sur petit écran, l'icône parle d'elle-même et la barre respire. */
+@media (max-width: 760px) {
+  .mon-compte { padding: 12px 13px; }
+  .mon-compte-mot { display: none; }
+}
+
+/* ── Fenêtre d'accès, étape 189 ──────────────────────────────────────────
+   Le code d'accès n'existe plus : la fenêtre ne contient que deux liens,
+   l'un vers la connexion, l'autre vers la création de compte. Comme ce sont
+   des liens et non des boutons, il faut leur retirer le soulignement et les
+   étaler sur toute la largeur du panneau. */
+#access-step-code a.access-submit,
+#access-step-code a.access-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+#access-step-code a.access-submit { margin-bottom: 10px; }
+#access-step-code a.access-link { margin: 0; }

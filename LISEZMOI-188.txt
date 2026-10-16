@@ -1,0 +1,35 @@
+NISHMAN — étape 188
+===================
+
+Ce lot remplace le 185, le 186 et le 187. Ne déposez que celui-ci.
+
+CE QUI CHANGE
+-------------
+Deux fichiers seulement, tous les deux dans functions/ :
+
+  functions/_commun.js        210 000 -> 100 000 tours de hachage
+  functions/api/connexion.js  la même correction dans l'empreinte factice
+
+Pourquoi : le moteur de Cloudflare refuse PBKDF2 au-delà de 100 000 tours.
+Avec 210 000 il levait l'erreur NotSupportedError et la création de compte
+échouait avec un message générique. Le reste du site est identique au 185.
+
+COMMENT LE DÉPOSER
+------------------
+1. GitHub -> dépôt nishman-site
+2. Vérifiez que vous êtes sur la branche NishmanCloudflare
+   (l'adresse doit contenir /tree/NishmanCloudflare)
+3. Add file -> Upload files
+4. Sélectionnez TOUT le contenu de ce dossier (Cmd+A dans le Finder)
+   et glissez-le dans la zone de dépôt
+5. Descendez en bas de la page et cliquez sur "Commit changes"
+   <- cette dernière étape est obligatoire : sans elle, rien n'est enregistré
+
+Le déploiement se relance tout seul. Attendez la coche verte dans
+Cloudflare -> Déploiements AVANT de réessayer la création de compte.
+
+VÉRIFIER QUE C'EST BIEN PASSÉ
+-----------------------------
+Ouvrez cette adresse : elle doit afficher 100000 et non 210000.
+
+https://github.com/NishmanBelgium/nishman-site/blob/NishmanCloudflare/functions/_commun.js
