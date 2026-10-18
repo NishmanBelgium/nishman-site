@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Espace professionnel — NISHMAN</title>
+<meta name="description" content="Connexion à l'espace professionnel NISHMAN : tarifs, historique de commandes et devis." />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=196" />
+<link rel="stylesheet" href="/assets/css/compte.css?v=196" />
+</head>
+<body>
+
+<main class="cadre">
+  <div class="carte-compte">
+    <a href="/pro/"><img class="marque" src="/assets/img/nishman.svg" alt="Nishman" /></a>
+
+    <div class="onglets" role="tablist">
+      <button role="tab" id="t-connexion" aria-selected="true">Connexion</button>
+      <button role="tab" id="t-inscription" aria-selected="false">Créer un compte</button>
+    </div>
+
+    <div class="message" id="message" role="status"></div>
+
+    <!-- ── connexion ── -->
+    <form id="form-connexion" novalidate>
+      <div class="champ">
+        <label for="c-email">Adresse e-mail</label>
+        <input type="email" id="c-email" name="email" autocomplete="email" required />
+      </div>
+      <div class="champ">
+        <label for="c-mdp">Mot de passe</label>
+        <input type="password" id="c-mdp" name="motdepasse" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="bouton-plein" id="b-connexion">Se connecter</button>
+      <p class="aide pied-aide"><a href="/pro/oublie/">Mot de passe oublié ?</a></p>
+    </form>
+
+    <!-- ── inscription ── -->
+    <!-- Le pays vient en premier : c'est lui qui décide de l'identifiant
+         demandé plus bas (TVA en Belgique et au Luxembourg, SIRET en
+         France, parce qu'un coiffeur français connaît son SIRET et
+         rarement son numéro intracommunautaire). -->
+    <form id="form-inscription" novalidate hidden>
+
+      <div class="champ">
+        <label for="i-pays">Pays</label>
+        <select id="i-pays" name="pays" required>
+          <option value="">Choisissez votre pays</option>
+          <option value="BE">Belgique</option>
+          <option value="FR">France</option>
+          <option value="LU">Luxembourg</option>
+        </select>
+      </div>
+
+      <!-- Tout ce qui suit n'apparaît qu'une fois le pays choisi. -->
+      <div id="bloc-inscription" hidden>
+
+        <p class="section">Votre entreprise</p>
+
+        <div class="champ">
+          <label for="i-societe">Nom de la société</label>
+          <input type="text" id="i-societe" name="societe" autocomplete="organization" />
+          <p class="aide">Plusieurs établissements ? Ajoutez la ville, par exemple « Barbershop Mons ».</p>
+        </div>
+
+        <div class="champ">
+          <label for="i-identifiant" id="l-identifiant">Numéro de TVA</label>
+          <input type="text" id="i-identifiant" name="identifiant"
+                 inputmode="numeric" autocomplete="off" spellcheck="false" />
+          <p class="aide" id="aide-identifiant"></p>
+        </div>
+
+        <p class="section">Vous</p>
+
+        <div class="duo">
+          <div class="champ">
+            <label for="i-prenom">Prénom</label>
+            <input type="text" id="i-prenom" name="prenom" autocomplete="given-name" />
+          </div>
+          <div class="champ">
+            <label for="i-nom">Nom</label>
+            <input type="text" id="i-nom" name="nom" autocomplete="family-name" />
+          </div>
+        </div>
+
+        <div class="champ">
+          <label for="i-tel">Téléphone</label>
+          <input type="tel" id="i-tel" name="telephone" autocomplete="tel" />
+          <p class="aide">Pour vous joindre en cas de question sur une commande.</p>
+        </div>
+
+        <p class="section">Adresse de livraison</p>
+
+        <div class="champ">
+          <label for="i-adresse">Rue et numéro</label>
+          <input type="text" id="i-adresse" name="adresse" autocomplete="street-address" />
+        </div>
+
+        <div class="duo duo-cp">
+          <div class="champ">
+            <label for="i-cp">Code postal</label>
+            <input type="text" id="i-cp" name="code_postal" autocomplete="postal-code" />
+          </div>
+          <div class="champ">
+            <label for="i-ville">Ville</label>
+            <input type="text" id="i-ville" name="ville" autocomplete="address-level2" />
+          </div>
+        </div>
+
+        <p class="section">Vos identifiants</p>
+
+        <div class="champ">
+          <label for="i-email">Adresse e-mail</label>
+          <input type="email" id="i-email" name="email" autocomplete="email" />
+        </div>
+
+        <div class="champ">
+          <label for="i-mdp">Mot de passe</label>
+          <input type="password" id="i-mdp" name="motdepasse" autocomplete="new-password" />
+          <p class="aide">Huit caractères minimum.</p>
+        </div>
+
+        <button type="submit" class="bouton-plein" id="b-inscription">Créer mon compte</button>
+        <p class="aide pied-aide">La création du compte ouvre l'accès aux tarifs professionnels.</p>
+      </div>
+    </form>
+
+    <p class="sous-carte" id="pied-carte">
+      Vous n'êtes pas professionnel ? <a href="/">Voir la boutique</a>
+    </p>
+  </div>
+</main>
+
+<script src="/assets/js/compte.js?v=196"></script>
+</body>
+</html>

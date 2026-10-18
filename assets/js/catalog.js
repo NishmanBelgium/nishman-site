@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "182";
+  const ASSET_V = "196";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -64,32 +64,10 @@
       articles: (n) => n + " article" + (n > 1 ? "s" : ""),
       seeSelection: "voir ma sélection", discover: "Découvrir",
       askPrice: "Prix sur demande", proAccess: "Accès professionnel",
-      enterCode: "Entrez votre code d'accès pour afficher les prix.",
-      codePlaceholder: "Code d'accès", unlock: "Afficher les prix",
-      wrongCode: "Code incorrect — vérifiez et réessayez.",
-      noCode: "Pas encore de code ?",
-      checking: "Vérification...",
-      signupLink: "Obtenir un accès professionnel",
+      accountNeeded: "Les tarifs professionnels sont réservés aux comptes clients. La création est immédiate et gratuite.",
+      accountLogin: "Se connecter",
+      accountCreate: "Créer un compte professionnel",
       signupTitle: "Accès réservé aux professionnels",
-      signupIntro: "Indiquez votre numéro d'entreprise et votre e-mail : votre code d'accès vous sera envoyé immédiatement.",
-      signupVat: "Numéro d'entreprise / TVA",
-      signupCountry: "Pays",
-      signupFormat: "Merci d'indiquer votre numéro d'entreprise complet.",
-      countries: { BE: "Belgique", FR: "France", LU: "Luxembourg" },
-      signupEmail: "E-mail professionnel",
-      signupSubmit: "Recevoir mon code",
-      signupInvalid: "Vérifiez le numéro d'entreprise et l'adresse e-mail.",
-      signupFailed: "La vérification a échoué. Réessayez dans un instant.",
-      signupSent: (m) => "Votre code d'accès vient d'être envoyé à " + m + ". Pensez à vérifier vos courriers indésirables.",
-      yourCode: "Votre code d'accès",
-      copyCode: "Copier le code",
-      codeCopied: "Code copié",
-      useCode: "Déverrouiller les prix maintenant",
-      alsoByMail: "Nous vous l'avons aussi envoyé par e-mail. Notez-le : il reste valable pour toutes vos prochaines visites.",
-      signupPending: "Votre demande a bien été reçue. Notre équipe la validera manuellement et vous recevrez votre code par e-mail.",
-      haveCode: "J'ai déjà un code",
-      sentOk: "Continuer",
-      codeMsg: "Bonjour, je souhaite un code d'accès professionnel pour voir les prix sur nishman.be.",
       lockedNote: "Prix réservés aux professionnels",
       addCart: "Ajouter au panier", updateCart: "Mettre à jour le panier",
       toastAdded: "Ajouté au panier", toastUpdated: "Panier mis à jour",
@@ -115,7 +93,6 @@
       proAccessShort: "Accès pro",
       footLegal: "Prix hors TVA réservés aux professionnels.",
       askQuote: "Demander un devis",
-      logout: "Masquer les prix",
       waMsg: "Bonjour, je souhaite une offre de prix pour les produits suivants :",
       boxDetail: (b, n, tot) => b + " carton" + (b > 1 ? "s" : "") + " de " + n + " (" + tot + " unités)",
     },
@@ -132,32 +109,10 @@
       articles: (n) => n + " item" + (n > 1 ? "s" : ""),
       seeSelection: "view my selection", discover: "Discover",
       askPrice: "Price on request", proAccess: "Professional access",
-      enterCode: "Enter your access code to display prices.",
-      codePlaceholder: "Access code", unlock: "Show prices",
-      wrongCode: "Invalid code — please check and try again.",
-      noCode: "No code yet?",
-      checking: "Checking...",
-      signupLink: "Get professional access",
+      accountNeeded: "Trade prices are reserved for account holders. Creating one is free and takes a minute.",
+      accountLogin: "Log in",
+      accountCreate: "Create a trade account",
       signupTitle: "Access reserved for professionals",
-      signupIntro: "Enter your company number and e-mail: your access code will be sent immediately.",
-      signupVat: "Company / VAT number",
-      signupCountry: "Country",
-      signupFormat: "Please enter your full company number.",
-      countries: { BE: "Belgium", FR: "France", LU: "Luxembourg" },
-      signupEmail: "Business e-mail",
-      signupSubmit: "Get my code",
-      signupInvalid: "Please check the company number and e-mail address.",
-      signupFailed: "Verification failed. Please try again shortly.",
-      signupSent: (m) => "Your access code has just been sent to " + m + ". Please also check your spam folder.",
-      yourCode: "Your access code",
-      copyCode: "Copy the code",
-      codeCopied: "Code copied",
-      useCode: "Unlock prices now",
-      alsoByMail: "We have also emailed it to you. Keep it: it stays valid for all your future visits.",
-      signupPending: "Your request has been received. Our team will review it and you will get your code by e-mail.",
-      haveCode: "I already have a code",
-      sentOk: "Continue",
-      codeMsg: "Hello, I would like a professional access code to see prices on nishman.be.",
       lockedNote: "Prices reserved for professionals",
       addCart: "Add to cart", updateCart: "Update cart",
       toastAdded: "Added to cart", toastUpdated: "Cart updated",
@@ -183,7 +138,6 @@
       proAccessShort: "Pro access",
       footLegal: "Prices excl. VAT, reserved for professionals.",
       askQuote: "Request a quotation",
-      logout: "Hide prices",
       waMsg: "Hello, I would like a price offer for the following products:",
       boxDetail: (b, n, tot) => b + " box" + (b > 1 ? "es" : "") + " of " + n + " (" + tot + " units)",
     },
@@ -200,32 +154,10 @@
       articles: (n) => n + " artikel" + (n > 1 ? "en" : ""),
       seeSelection: "bekijk mijn selectie", discover: "Ontdekken",
       askPrice: "Prijs op aanvraag", proAccess: "Professionele toegang",
-      enterCode: "Voer uw toegangscode in om de prijzen te tonen.",
-      codePlaceholder: "Toegangscode", unlock: "Prijzen tonen",
-      wrongCode: "Ongeldige code — controleer en probeer opnieuw.",
-      noCode: "Nog geen code?",
-      checking: "Controleren...",
-      signupLink: "Professionele toegang aanvragen",
+      accountNeeded: "Vakprijzen zijn voorbehouden aan klanten met een account. Aanmaken is gratis en onmiddellijk.",
+      accountLogin: "Aanmelden",
+      accountCreate: "Een professioneel account aanmaken",
       signupTitle: "Toegang voorbehouden aan professionals",
-      signupIntro: "Geef uw ondernemingsnummer en e-mailadres op: uw toegangscode wordt onmiddellijk verstuurd.",
-      signupVat: "Ondernemings- / btw-nummer",
-      signupCountry: "Land",
-      signupFormat: "Gelieve uw volledige ondernemingsnummer in te vullen.",
-      countries: { BE: "België", FR: "Frankrijk", LU: "Luxemburg" },
-      signupEmail: "Professioneel e-mailadres",
-      signupSubmit: "Mijn code ontvangen",
-      signupInvalid: "Controleer het ondernemingsnummer en het e-mailadres.",
-      signupFailed: "De controle is mislukt. Probeer het zo dadelijk opnieuw.",
-      signupSent: (m) => "Uw toegangscode is zonet verstuurd naar " + m + ". Controleer ook uw ongewenste e-mail.",
-      yourCode: "Uw toegangscode",
-      copyCode: "Code kopiëren",
-      codeCopied: "Code gekopieerd",
-      useCode: "Prijzen nu ontgrendelen",
-      alsoByMail: "We hebben hem ook per e-mail verstuurd. Bewaar hem: hij blijft geldig voor al uw volgende bezoeken.",
-      signupPending: "Uw aanvraag is goed ontvangen. Ons team bekijkt ze en u ontvangt uw code per e-mail.",
-      haveCode: "Ik heb al een code",
-      sentOk: "Doorgaan",
-      codeMsg: "Hallo, ik wil graag een professionele toegangscode om de prijzen op nishman.be te zien.",
       lockedNote: "Prijzen voorbehouden aan professionals",
       addCart: "In winkelmand", updateCart: "Winkelmand bijwerken",
       toastAdded: "Toegevoegd aan winkelmand", toastUpdated: "Winkelmand bijgewerkt",
@@ -251,7 +183,6 @@
       proAccessShort: "Pro-toegang",
       footLegal: "Prijzen excl. btw, voorbehouden aan professionals.",
       askQuote: "Offerte aanvragen",
-      logout: "Prijzen verbergen",
       waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
       boxDetail: (b, n, tot) => b + " do" + (b > 1 ? "zen" : "os") + " van " + n + " (" + tot + " stuks)",
     },
@@ -268,34 +199,11 @@
       articles: (n) => n + " Artikel",
       seeSelection: "meine Auswahl ansehen", discover: "Entdecken",
       askPrice: "Preis auf Anfrage", proAccess: "Professioneller Zugang",
-      enterCode: "Geben Sie Ihren Zugangscode ein, um die Preise anzuzeigen.",
-      codePlaceholder: "Zugangscode", unlock: "Preise anzeigen",
-      wrongCode: "Ungültiger Code — bitte prüfen und erneut versuchen.",
-      noCode: "Noch keinen Code?",
-      checking: "Prüfung läuft...",
-      signupLink: "Professionellen Zugang erhalten",
+      accountNeeded: "Händlerpreise sind Kontoinhabern vorbehalten. Die Anmeldung ist kostenlos und sofort möglich.",
+      accountLogin: "Anmelden",
+      accountCreate: "Händlerkonto erstellen",
       signupTitle: "Zugang nur für Fachkunden",
-      signupIntro: "Geben Sie Ihre Unternehmensnummer und E-Mail an: Ihr Zugangscode wird sofort versendet.",
-      signupVat: "Unternehmens- / USt-Nummer",
-      signupCountry: "Land",
-      signupFormat: "Bitte geben Sie Ihre vollständige Unternehmensnummer an.",
-      countries: { BE: "Belgien", FR: "Frankreich", LU: "Luxemburg" },
-      signupEmail: "Geschäftliche E-Mail",
-      signupSubmit: "Code erhalten",
-      signupInvalid: "Bitte prüfen Sie Unternehmensnummer und E-Mail-Adresse.",
-      signupFailed: "Die Prüfung ist fehlgeschlagen. Bitte versuchen Sie es gleich erneut.",
-      signupSent: (m) => "Ihr Zugangscode wurde soeben an " + m + " gesendet. Prüfen Sie auch den Spam-Ordner.",
-      yourCode: "Ihr Zugangscode",
-      copyCode: "Code kopieren",
-      codeCopied: "Code kopiert",
-      useCode: "Preise jetzt freischalten",
-      alsoByMail: "Wir haben ihn Ihnen auch per E-Mail geschickt. Bewahren Sie ihn auf: er bleibt fur alle weiteren Besuche gultig.",
-      signupPending: "Ihre Anfrage ist eingegangen. Unser Team prüft sie und Sie erhalten Ihren Code per E-Mail.",
-      haveCode: "Ich habe bereits einen Code",
-      sentOk: "Weiter",
-      codeMsg: "Hallo, ich hätte gerne einen professionellen Zugangscode, um die Preise auf nishman.be zu sehen.",
       lockedNote: "Preise Fachkunden vorbehalten",
-      logout: "Preise ausblenden",
       waMsg: "Hallo, ich bitte um ein Preisangebot für folgende Produkte:",
       boxDetail: (b, n, tot) => b + " Karton" + (b > 1 ? "s" : "") + " mit " + n + " (" + tot + " Stück)",
       addCart: "In den Warenkorb", updateCart: "Warenkorb aktualisieren",
@@ -336,34 +244,11 @@
       articles: (n) => n + " ürün",
       seeSelection: "seçimimi gör", discover: "Keşfet",
       askPrice: "Fiyat için sorunuz", proAccess: "Profesyonel erişim",
-      enterCode: "Fiyatları görüntülemek için erişim kodunuzu girin.",
-      codePlaceholder: "Erişim kodu", unlock: "Fiyatları göster",
-      wrongCode: "Geçersiz kod — kontrol edip tekrar deneyin.",
-      noCode: "Kodunuz yok mu?",
-      checking: "Kontrol ediliyor...",
-      signupLink: "Profesyonel erişim al",
+      accountNeeded: "Toptan fiyatlar yalnızca hesap sahiplerine açıktır. Hesap açmak ücretsiz ve anındadır.",
+      accountLogin: "Giriş yap",
+      accountCreate: "Profesyonel hesap oluştur",
       signupTitle: "Erişim yalnızca profesyonellere açıktır",
-      signupIntro: "Vergi numaranızı ve e-posta adresinizi girin: erişim kodunuz anında gönderilecektir.",
-      signupVat: "Firma / vergi numarası",
-      signupCountry: "Ülke",
-      signupFormat: "Lütfen tam şirket numaranızı girin.",
-      countries: { BE: "Belçika", FR: "Fransa", LU: "Lüksemburg" },
-      signupEmail: "Kurumsal e-posta",
-      signupSubmit: "Kodumu al",
-      signupInvalid: "Vergi numarasını ve e-posta adresini kontrol edin.",
-      signupFailed: "Doğrulama başarısız oldu. Lütfen birazdan tekrar deneyin.",
-      signupSent: (m) => "Erişim kodunuz " + m + " adresine gönderildi. Lütfen istenmeyen posta klasörünü de kontrol edin.",
-      yourCode: "Erisim kodunuz",
-      copyCode: "Kodu kopyala",
-      codeCopied: "Kod kopyalandi",
-      useCode: "Fiyatlari simdi ac",
-      alsoByMail: "Kodu ayrica e-posta ile de gonderdik. Saklayin: sonraki tum ziyaretlerinizde gecerlidir.",
-      signupPending: "Talebiniz alındı. Ekibimiz inceleyecek ve kodunuz e-posta ile gönderilecektir.",
-      haveCode: "Zaten bir kodum var",
-      sentOk: "Devam",
-      codeMsg: "Merhaba, nishman.be sitesinde fiyatları görebilmek için profesyonel erişim kodu talep ediyorum.",
       lockedNote: "Fiyatlar profesyonellere özeldir",
-      logout: "Fiyatları gizle",
       waMsg: "Merhaba, aşağıdaki ürünler için fiyat teklifi rica ediyorum:",
       boxDetail: (b, n, tot) => b + " adet " + n + "'lu koli (" + tot + " adet)",
       addCart: "Sepete ekle", updateCart: "Sepeti güncelle",
@@ -1499,61 +1384,33 @@
   }
 
   // ==========================================================================
-  // PRIX PROTÉGÉS — servis par le portier (script Google) après validation
-  // du code d'accès professionnel. Aucun prix n'existe dans les fichiers du
-  // site : sans code valide, il n'y a rien à télécharger ni à déchiffrer.
+  // PRIX PROTÉGÉS — servis par /api/prix, qui ne répond qu'à une session
+  // ouverte. Aucun prix n'existe dans les fichiers du site : sans compte
+  // professionnel connecté, il n'y a rien à télécharger ni à déchiffrer.
   // ==========================================================================
 
   let PRICES = null;        // { ean: prix } une fois l'accès validé
   let ACCESS_LABEL = null;  // entreprise associée au code (traçabilité)
   let LIMITS = null;        // { ean: {u, b, state} } limites de commande
 
-  function gateUrl() {
-    return (typeof SHARED !== "undefined" && SHARED.orderLog) ? SHARED.orderLog : "";
-  }
-
-  // Appel au portier. mode=jsonp car le script Google ne renvoie pas
-  // d'en-têtes CORS exploitables en lecture depuis un site tiers.
-  function callGate(params) {
-    return new Promise((resolve) => {
-      const url = gateUrl();
-      if (!url) return resolve(null);
-      const cb = "nishmanCb" + Date.now() + Math.floor(Math.random() * 1000);
-      const timer = setTimeout(() => {
-        cleanup();
-        resolve(null);
-      }, 12000);
-
-      function cleanup() {
-        clearTimeout(timer);
-        delete window[cb];
-        if (script.parentNode) script.parentNode.removeChild(script);
-      }
-
-      window[cb] = (data) => { cleanup(); resolve(data); };
-
-      const qs = Object.keys(params)
-        .map((k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]))
-        .join("&");
-      const script = document.createElement("script");
-      script.src = url + "?" + qs + "&callback=" + cb;
-      script.onerror = () => { cleanup(); resolve(null); };
-      document.head.appendChild(script);
-    });
-  }
-
-  // Valide un code et récupère les prix
-  async function tryUnlock(code) {
-    const clean = (code || "").trim().toUpperCase();
-    if (!clean) return false;
-    const res = await callGate({ action: "unlock", code: clean });
-    if (res && res.ok && res.prices) {
-      PRICES = res.prices;
-      LIMITS = res.limits || null;
-      ACCESS_LABEL = res.company || clean;
+  // Le navigateur ne connaît plus aucun code. Il demande les prix à son
+  // propre serveur, qui ne répond que si le cookie de session correspond à
+  // un compte professionnel actif. Rien à recopier, rien à faire circuler.
+  async function chargerPrix() {
+    try {
+      const r = await fetch("/api/prix", {
+        headers: { accept: "application/json" },
+        credentials: "same-origin",
+      });
+      const d = await r.json();
+      if (!d || !d.ok || !d.prices) return false;
+      PRICES = d.prices;
+      LIMITS = d.limits || null;
+      ACCESS_LABEL = d.societe || null;
       return true;
+    } catch (e) {
+      return false;
     }
-    return false;
   }
 
   function priceOf(p) {
@@ -1585,10 +1442,7 @@
   function unlocked() { return PRICES !== null; }
 
   async function initPriceLock() {
-    const saved = localStorage.getItem("nishman-access-code");
-    if (saved && (await tryUnlock(saved)) === false) {
-      localStorage.removeItem("nishman-access-code");
-    }
+    await chargerPrix();
   }
 
   // ---------- Fenêtre d'accès : saisie du code OU inscription ----------
@@ -1620,13 +1474,9 @@
   function openAccessModal() {
     const ov = document.getElementById("access-overlay");
     if (!ov) return;
-    document.getElementById("access-error").hidden = true;
-    document.getElementById("signup-error").hidden = true;
-    document.getElementById("access-input").value = "";
     showAccessStep("access-step-code");
     ov.hidden = false;
     syncScrollLock();
-    setTimeout(() => document.getElementById("access-input").focus(), 60);
   }
 
   function closeAccessModal() {
@@ -1635,186 +1485,27 @@
     syncScrollLock();
   }
 
-  async function submitAccessCode() {
-    const input = document.getElementById("access-input");
-    const err = document.getElementById("access-error");
-    const btn = document.getElementById("access-submit");
-    err.hidden = true;
-    btn.disabled = true;
-    btn.textContent = T.checking;
-    const ok = await tryUnlock(input.value);
-    btn.disabled = false;
-    btn.textContent = T.unlock;
-    if (ok) {
-      localStorage.setItem("nishman-access-code", input.value.trim().toUpperCase());
-      closeAccessModal();
-      renderGrid();
-      renderProAccessBtn();
-    } else {
-      err.textContent = T.wrongCode;
-      err.hidden = false;
-    }
-  }
-
-  // ---------- Inscription : vérification du numéro de TVA ----------
-
-  // Formats de numéro de TVA par pays. Le préfixe n'est plus saisi à la main :
-  // il vient de la liste déroulante, ce qui supprime la cause d'erreur la plus
-  // fréquente (un Français qui tape son numéro sans « FR », traité en belge).
-  // Formats indicatifs seulement : ils servent à afficher un exemple et une
-  // aide de saisie. Le site ne refuse plus un numéro qui ne colle pas — trop
-  // de coiffeurs restaient bloqués. Seul un minimum de 8 caractères est exigé.
-  const VAT_FORMATS = {
-    BE: { ex: "0817750283",   hint: "numéro d'entreprise, avec ou sans BE devant" },
-    FR: { ex: "12345678901",  hint: "numéro de TVA, avec ou sans FR devant" },
-    LU: { ex: "12345678",     hint: "numéro de TVA, avec ou sans LU devant" },
-  };
-
-  function signupCountry() {
-    const sel = document.getElementById("signup-country");
-    return (sel && sel.value) || "BE";
-  }
-
-  // Le champ s'adapte au pays : exemple, longueur maximale, aide de saisie.
-  function refreshVatField() {
-    const c = signupCountry();
-    const f = VAT_FORMATS[c] || VAT_FORMATS.BE;
-    const vat = document.getElementById("signup-vat");
-    const hint = document.getElementById("signup-hint");
-    if (vat) {
-      vat.placeholder = f.ex;
-      vat.value = "";
-      vat.classList.remove("invalid");
-    }
-    if (hint) hint.textContent = f.hint;
-  }
-
-  function buildVat() {
-    const c = signupCountry();
-    const raw = (document.getElementById("signup-vat").value || "")
-      .replace(/[\s.\-]/g, "").toUpperCase();
-    // Tolérance : si le visiteur a quand même retapé le préfixe, on l'enlève.
-    // On retire le préfixe s'il est là, quel qu'il soit : le pays qui compte
-    // est celui de la liste déroulante. « BE0817750283 », « 0817750283 » et
-    // « be 0817.750.283 » donnent donc le même résultat.
-    var num = /^[A-Z]{2}/.test(raw) ? raw.substring(2) : raw;
-    // Beaucoup de Belges tapent encore les 9 chiffres sans le zéro de tête.
-    if (c === "BE" && /^[0-9]{9}$/.test(num)) num = "0" + num;
-    return { pays: c, num: num, full: c + num, raw: num };
-  }
-
-  async function submitSignup() {
-    const vat = document.getElementById("signup-vat");
-    const mail = document.getElementById("signup-email");
-    const err = document.getElementById("signup-error");
-    const btn = document.getElementById("signup-submit");
-    err.hidden = true;
-
-    const c = signupCountry();
-    const built = buildVat();
-    const fmt = VAT_FORMATS[c] || VAT_FORMATS.BE;
-    const v = built.full;
-    const m = (mail.value || "").trim();
-
-    // Seul contrôle conservé : au moins 8 caractères. Le reste est laissé
-    // passer, quitte à ce que le numéro soit vérifié plus tard à la main.
-    const vatOk = built.raw.replace(/[^0-9A-Z]/g, "").length >= 8;
-    const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m);
-    vat.classList.toggle("invalid", !vatOk);
-    mail.classList.toggle("invalid", !mailOk);
-    if (!vatOk || !mailOk) {
-      err.textContent = !vatOk ? T.signupFormat : T.signupInvalid;
-      err.hidden = false;
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = T.checking;
-    const res = await callGate({ action: "signup", vat: v, email: m, lang: LANG });
-    btn.disabled = false;
-    btn.textContent = T.signupSubmit;
-
-    if (res && res.ok) {
-      const boite = document.getElementById("code-box");
-      const useBtn = document.getElementById("code-use");
-
-      if (res.code && !res.pending) {
-        // Le code est affiché à l'écran : l'accès ne dépend plus de la bonne
-        // réception du mail (certaines messageries le rejettent en silence).
-        document.getElementById("sent-text").textContent = T.alsoByMail;
-        document.getElementById("t-yourcode").textContent = T.yourCode;
-        document.getElementById("code-value").textContent = res.code;
-        const copie = document.getElementById("code-copy");
-        copie.textContent = T.copyCode;
-        copie.onclick = () => {
-          const done = () => { copie.textContent = T.codeCopied;
-                               setTimeout(() => (copie.textContent = T.copyCode), 2000); };
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(res.code).then(done).catch(() => {});
-          } else {
-            // Safari ancien : on sélectionne le texte, l'utilisateur copie
-            const r = document.createRange();
-            r.selectNodeContents(document.getElementById("code-value"));
-            const sel = window.getSelection();
-            sel.removeAllRanges(); sel.addRange(r); done();
-          }
-        };
-        boite.hidden = false;
-
-        useBtn.hidden = false;
-        useBtn.textContent = T.useCode;
-        useBtn.onclick = async () => {
-          useBtn.disabled = true;
-          useBtn.textContent = T.checking;
-          const ok = await tryUnlock(res.code);
-          useBtn.disabled = false;
-          useBtn.textContent = T.useCode;
-          if (ok) {
-            localStorage.setItem("nishman-access-code", res.code);
-            closeAccessModal();
-            renderGrid();
-            renderProAccessBtn();
-          }
-        };
-      } else {
-        document.getElementById("sent-text").textContent =
-          (res.pending ? T.signupPending : T.signupSent(m));
-        boite.hidden = true;
-        useBtn.hidden = true;
-      }
-      showAccessStep("access-step-sent");
-    } else {
-      err.textContent = (res && res.message) ? res.message : T.signupFailed;
-      err.hidden = false;
-    }
-  }
-
-  function lockPrices() {
-    PRICES = null;
-    ACCESS_LABEL = null;
-    // Sans prix, le panier n'a plus de sens : on repart d'une base propre.
-    selection = {};
-    saveSelection();
-    localStorage.removeItem("nishman-access-code");
-    renderGrid();
-    renderProAccessBtn();
-  }
-
   function renderProAccessBtn() {
     const btn = document.getElementById("pro-access");
     if (!btn) return;
+
+    // Une fois les prix affichés, ce bouton n'a plus lieu d'être : il ne
+    // proposait que de les masquer, ce qui revenait à se déconnecter. La
+    // déconnexion est à sa place sur la page du compte, pas dans la barre
+    // du catalogue. On retire donc le bouton au lieu d'en changer le texte.
+    btn.style.display = unlocked() ? "none" : "";
+    if (unlocked()) return;
+
     // Sur petit écran, le libellé complet déborde de la pilule
     const court = window.matchMedia("(max-width: 620px)").matches;
     const lab = document.getElementById("pro-access-label") || btn;
-    lab.textContent = unlocked()
-      ? T.logout
-      : (court ? T.proAccessShort : T.proAccess);
-    btn.classList.toggle("unlocked", unlocked());
+    lab.textContent = court ? T.proAccessShort : T.proAccess;
+    btn.classList.remove("unlocked");
   }
 
   function initAccessControls() {
     const btn = document.getElementById("pro-access");
-    if (btn) btn.addEventListener("click", () => (unlocked() ? lockPrices() : openAccessModal()));
+    if (btn) btn.addEventListener("click", openAccessModal);
     const close = document.getElementById("access-close");
     if (close) close.addEventListener("click", closeAccessModal);
     const ov = document.getElementById("access-overlay");
@@ -1837,34 +1528,6 @@
         downOnBackdrop = false;
       });
     }
-
-    const submit = document.getElementById("access-submit");
-    if (submit) submit.addEventListener("click", submitAccessCode);
-    const input = document.getElementById("access-input");
-    if (input) input.addEventListener("keydown", (e) => { if (e.key === "Enter") submitAccessCode(); });
-
-    // Navigation entre saisie du code et inscription
-    const toSignup = document.getElementById("go-signup");
-    if (toSignup) toSignup.addEventListener("click", (e) => {
-      e.preventDefault();
-      showAccessStep("access-step-signup");
-      setTimeout(() => document.getElementById("signup-vat").focus(), 60);
-    });
-    const toCode = document.getElementById("go-code");
-    if (toCode) toCode.addEventListener("click", (e) => {
-      e.preventDefault();
-      showAccessStep("access-step-code");
-    });
-    const sSubmit = document.getElementById("signup-submit");
-    if (sSubmit) sSubmit.addEventListener("click", submitSignup);
-    const sCountry = document.getElementById("signup-country");
-    if (sCountry) sCountry.addEventListener("change", refreshVatField);
-    const sVat = document.getElementById("signup-vat");
-    if (sVat) sVat.addEventListener("keydown", (e) => { if (e.key === "Enter") submitSignup(); });
-    const sMail = document.getElementById("signup-email");
-    if (sMail) sMail.addEventListener("keydown", (e) => { if (e.key === "Enter") submitSignup(); });
-    const done = document.getElementById("sent-close");
-    if (done) done.addEventListener("click", () => showAccessStep("access-step-code"));
 
     renderProAccessBtn();
   }
@@ -1903,40 +1566,16 @@
     const accTitle = document.getElementById("access-title");
     if (accTitle) accTitle.textContent = T.proAccess;
     const accDesc = document.getElementById("access-desc");
-    if (accDesc) accDesc.textContent = T.enterCode;
-    const accInput = document.getElementById("access-input");
-    if (accInput) accInput.placeholder = T.codePlaceholder;
-    const accSubmit = document.getElementById("access-submit");
-    if (accSubmit) accSubmit.textContent = T.unlock;
-    const accErr = document.getElementById("access-error");
-    if (accErr) accErr.textContent = T.wrongCode;
-    const accNo = document.getElementById("access-nocode");
-    if (accNo) accNo.textContent = T.noCode;
-    const map2 = {
-      "go-signup": T.signupLink,
-      "signup-intro": T.signupIntro,
-      "t-clear": T.clearCart,
-      "t-signup-country": T.signupCountry,
-      "t-signup-vat": T.signupVat,
-      "t-signup-email": T.signupEmail,
-      "signup-submit": T.signupSubmit,
-      "go-code": T.haveCode,
-      "sent-close": T.sentOk,
-    };
+    if (accDesc) accDesc.textContent = T.accountNeeded;
+    const accLogin = document.getElementById("access-login");
+    if (accLogin) accLogin.textContent = T.accountLogin;
+    const accCreate = document.getElementById("access-create");
+    if (accCreate) accCreate.textContent = T.accountCreate;
+    const map2 = { "t-clear": T.clearCart };
     Object.keys(map2).forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.textContent = map2[id];
     });
-    // Liste des pays : libellés traduits, sélection conservée
-    const csel = document.getElementById("signup-country");
-    if (csel) {
-      const garde = csel.value || "BE";
-      csel.innerHTML = ["BE", "FR", "LU"]
-        .map((c) => `<option value="${c}">${(T.countries && T.countries[c]) || c}</option>`)
-        .join("");
-      csel.value = garde;
-      refreshVatField();
-    }
     document.documentElement.lang = LANG;
   }
 
@@ -1965,8 +1604,9 @@
           : "https://www.facebook.com/share/19Kw4PGMRF/";
         const liens = [];
         if (ig) {
-          liens.push(`<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">
-               <img class="foot-ig-icon" src="/assets/img/instagram.png" alt="" />Instagram</a>`);
+          // Le logo d'Instagram est une marque déposée : on ne le redessine pas.
+          // Un lien texte fait le même travail et ne dépend d'aucun fichier.
+          liens.push(`<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">Instagram</a>`);
         }
         if (fb) {
           liens.push(`<a class="foot-btn foot-fb" target="_blank" rel="noopener" href="${fb}">

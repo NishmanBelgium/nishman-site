@@ -1,0 +1,43 @@
+NISHMAN — étape 196
+===================
+
+Ce lot remplace le 195. Ne déposez que celui-ci.
+
+Correction : le pack contient UNE huile de soin, pas deux.
+Il passe donc de 30 à 29 pièces, dans les cinq langues de la fiche.
+
+DEUX CHOSES À FAIRE
+===================
+
+1. Déposer ces fichiers sur GitHub
+   Branche NishmanCloudflare -> Add file -> Upload files ->
+   tout sélectionner (Cmd+A) -> glisser -> Commit changes EN BAS DE PAGE.
+
+2. Ajouter le prix dans votre script Google
+   Extensions -> Apps Script -> Cmd+F -> cherchez :  "NISH-PACK-MCB":500
+   Juste après, ajoutez :   "NISH-PACK-BBX":100,
+   Cmd+S, puis Déployer -> Gérer les déploiements -> crayon ->
+   Nouvelle version -> Déployer.
+
+   Sans cette ligne, le pack s'affiche sans prix.
+
+VALEUR DU PACK, AUX PRIX PRO DU SITE
+====================================
+  2 x gel Gum Effect 300 ML      3,50      7,00
+  1 x gel Argan 300 ML           3,50      3,50
+  2 x Adonis 75 ML               5,50     11,00
+  2 x Genius 75 ML               5,50     11,00
+  3 x wax mate 100 ML            2,70      8,10
+  6 x Aqua Wax 150 ML            2,00     12,00
+  6 x cologne 400 ML             3,50     21,00
+  6 x poudre P1 20 Gr            3,70     22,20
+  1 x Care Oil 75 ML             4,50      4,50
+                              TOTAL     100,30
+
+Vendu 100 € HT, la remise est donc de 30 centimes. Autrement dit, il n'y
+en a pas : c'est le prix du contenu, à l'arrondi près.
+
+Ce n'est pas forcément un problème si l'argument est la commodité — un
+poste complet en un seul geste, sans prendre un carton par référence. Mais
+si vous comptiez sur ce pack pour accrocher au stand, il faut descendre le
+prix ou ajouter quelque chose dedans.
