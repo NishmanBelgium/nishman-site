@@ -1,0 +1,51 @@
+NISHMAN.BE — ajout du PACK BBX
+==============================
+
+CE LOT EST POUR LA BRANCHE **main**, celle qui publie nishman.be.
+Ce n'est PAS le lot 196 : celui-là est fait pour le site Cloudflare,
+qui est un autre site, avec les comptes clients. Ne mélangez pas les deux.
+
+AVANT TOUT : ANNULER LE DÉPÔT DE CE MATIN
+=========================================
+Le lot 196 a été déposé sur main par erreur à 6h50. C'est ce qui casse
+l'affichage de nishman.be en ce moment.
+
+Ouvrez :
+  https://github.com/NishmanBelgium/nishman-site/commit/08dbf8a
+
+Bouton ••• en haut à droite -> Revert -> Create pull request ->
+Merge pull request -> Confirm merge.
+
+Attendez une minute, vérifiez que nishman.be s'affiche de nouveau
+normalement. ENSUITE SEULEMENT, déposez le présent lot.
+
+DÉPOSER CE LOT
+==============
+GitHub -> vérifiez que l'adresse contient /tree/main
+Add file -> Upload files -> tout sélectionner (Cmd+A) -> glisser ->
+Commit changes EN BAS DE PAGE.
+
+AJOUTER LE PRIX DANS VOTRE SCRIPT GOOGLE
+========================================
+Si ce n'est pas déjà fait. Le script est commun aux deux sites.
+
+Extensions -> Apps Script -> Cmd+F -> "NISH-PACK-MCB":500
+Juste après, ajoutez :  "NISH-PACK-BBX":100,
+Cmd+S, puis Déployer -> Gérer les déploiements -> crayon ->
+Nouvelle version -> Déployer.
+
+CE QUE CONTIENT CE LOT
+======================
+  assets/data/products.json              la fiche du pack ajoutée
+  assets/img/products/NISH-PACK-BBX.webp le visuel
+  les pages et scripts                   version 182 -> 183, pour que
+                                         les navigateurs rechargent
+
+Rien d'autre ne bouge : votre site garde l'accès par code, son catalogue
+et son fonctionnement actuels.
+
+VÉRIFIÉ AVANT ENVOI
+===================
+Catalogue ouvert dans un navigateur sur la version de nishman.be :
+le pack s'affiche, 29 pièces, visuel présent, aucune ressource manquante,
+aucune erreur JavaScript, et l'accès professionnel par code est intact.

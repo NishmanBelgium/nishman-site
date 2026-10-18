@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "196";
+  const ASSET_V = "183";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
@@ -41,6 +41,7 @@
   const SEL_KEYS_FALLBACK = ["nishman-selection", "nishman_selection"];
   const CLIENT_KEY = "nishman-client";
   const LANG_KEY = "nishman-lang";
+  const CODE_KEY = "nishman-access-code";
 
   const LANGS = ["fr", "en", "nl", "de", "tr"];
   const LANG = LANGS.includes(localStorage.getItem(LANG_KEY)) ? localStorage.getItem(LANG_KEY) : "fr";
@@ -250,18 +251,39 @@
                                    // vient d'être masqué.
   }
 
-  // Les prix viennent du serveur du site, qui ne répond qu'à une session
-  // ouverte. Le devis affiche donc des prix si et seulement si la personne
-  // est connectée à son compte professionnel.
+  // Déverrouillage des prix : même mécanique que le catalogue, avec le code déjà saisi
+  // Récupération des prix auprès du portier (script Google), exactement comme
+  // le catalogue. L'ancien fichier chiffré prices.enc.json n'existe plus.
+  function callGate(params) {
+    return new Promise((resolve) => {
+      const url = (typeof SHARED !== "undefined" && SHARED.orderLog) ? SHARED.orderLog : "";
+      if (!url) return resolve(null);
+      const cb = "nishmanQ" + Date.now() + Math.floor(Math.random() * 1000);
+      const timer = setTimeout(() => { cleanup(); resolve(null); }, 12000);
+
+      function cleanup() {
+        clearTimeout(timer);
+        delete window[cb];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[cb] = (data) => { cleanup(); resolve(data); };
+
+      const qs = Object.keys(params)
+        .map((k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]))
+        .join("&");
+      const script = document.createElement("script");
+      script.src = url + "?" + qs + "&callback=" + cb;
+      script.onerror = () => { cleanup(); resolve(null); };
+      document.head.appendChild(script);
+    });
+  }
+
   async function loadPrices() {
-    try {
-      const r = await fetch("/api/prix", {
-        headers: { accept: "application/json" },
-        credentials: "same-origin",
-      });
-      const d = await r.json();
-      if (d && d.ok && d.prices) PRICES = d.prices;
-    } catch (e) { /* devis sans prix : la demande reste envoyable */ }
+    const code = localStorage.getItem(CODE_KEY);
+    if (!code) return;
+    const res = await callGate({ action: "unlock", code: code.trim().toUpperCase() });
+    if (res && res.ok && res.prices) PRICES = res.prices;
   }
 
   // ---------- Lignes du devis ----------
