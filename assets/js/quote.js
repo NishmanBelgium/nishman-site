@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "194";
+  const ASSET_V = "197";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
@@ -67,6 +67,8 @@
       legal: "Document non contractuel — sous réserve de confirmation, de disponibilité et de validation des conditions par NBD Distribution SRL. Prix hors TVA, hors frais de livraison éventuels. Validité indicative : 30 jours.",
       send: "Envoyer ma demande de devis", sending: "Envoi en cours...",
       print: "Imprimer / PDF", edit: "Modifier mes coordonnées",
+      fromAccount: "Ces informations viennent de votre compte professionnel. Vous pouvez les modifier ici pour cette commande seulement.",
+      editAccount: "Les changer définitivement",
       required: "Merci de compléter les champs surlignés.",
       bademail: "L'adresse e-mail ne semble pas valide.",
       empty: "Votre panier est vide. Retournez au catalogue pour composer votre demande.",
@@ -96,6 +98,8 @@
       legal: "Non-contractual document — subject to confirmation, availability and approval of terms by NBD Distribution SRL. Prices excl. VAT, excl. any delivery costs. Indicative validity: 30 days.",
       send: "Send my quotation request", sending: "Sending...",
       print: "Print / PDF", edit: "Edit my details",
+      fromAccount: "These details come from your trade account. You can edit them here for this order only.",
+      editAccount: "Change them permanently",
       required: "Please complete the highlighted fields.",
       bademail: "This e-mail address does not look valid.",
       empty: "Your cart is empty. Go back to the catalogue to build your request.",
@@ -125,6 +129,8 @@
       legal: "Niet-contractueel document — onder voorbehoud van bevestiging, beschikbaarheid en goedkeuring van de voorwaarden door NBD Distribution SRL. Prijzen excl. btw, excl. eventuele leveringskosten. Indicatieve geldigheid: 30 dagen.",
       send: "Mijn offerteaanvraag versturen", sending: "Bezig met versturen...",
       print: "Afdrukken / PDF", edit: "Mijn gegevens wijzigen",
+      fromAccount: "Deze gegevens komen uit uw professionele account. U kunt ze hier aanpassen, enkel voor deze bestelling.",
+      editAccount: "Ze definitief wijzigen",
       required: "Gelieve de gemarkeerde velden in te vullen.",
       bademail: "Dit e-mailadres lijkt niet geldig.",
       empty: "Uw winkelmand is leeg. Ga terug naar de catalogus om uw aanvraag samen te stellen.",
@@ -154,6 +160,8 @@
       legal: "Unverbindliches Dokument — vorbehaltlich Bestätigung, Verfügbarkeit und Genehmigung der Konditionen durch NBD Distribution SRL. Preise zzgl. MwSt., zzgl. eventueller Lieferkosten. Richtwert der Gültigkeit: 30 Tage.",
       send: "Angebotsanfrage senden", sending: "Wird gesendet...",
       print: "Drucken / PDF", edit: "Meine Daten ändern",
+      fromAccount: "Diese Angaben stammen aus Ihrem Händlerkonto. Sie können sie hier nur für diese Bestellung ändern.",
+      editAccount: "Dauerhaft ändern",
       required: "Bitte füllen Sie die markierten Felder aus.",
       bademail: "Diese E-Mail-Adresse scheint ungültig zu sein.",
       empty: "Ihr Warenkorb ist leer. Kehren Sie zum Katalog zurück, um Ihre Anfrage zusammenzustellen.",
@@ -183,6 +191,8 @@
       legal: "Bağlayıcı olmayan belge — NBD Distribution SRL tarafından onay, stok durumu ve koşulların kabulüne tabidir. Fiyatlar KDV hariçtir, olası teslimat masrafları dahil değildir. Tahmini geçerlilik: 30 gün.",
       send: "Fiyat teklifi talebimi gönder", sending: "Gönderiliyor...",
       print: "Yazdır / PDF", edit: "Bilgilerimi düzenle",
+      fromAccount: "Bu bilgiler profesyonel hesabınızdan gelir. Yalnızca bu sipariş için burada değiştirebilirsiniz.",
+      editAccount: "Kalıcı olarak değiştir",
       required: "Lütfen işaretli alanları doldurun.",
       bademail: "Bu e-posta adresi geçerli görünmüyor.",
       empty: "Sepetiniz boş. Talebinizi oluşturmak için kataloğa dönün.",
@@ -241,6 +251,47 @@
   function loadClient() {
     try { client = JSON.parse(localStorage.getItem(CLIENT_KEY)) || {}; }
     catch (e) { client = {}; }
+  }
+
+  // Le compte professionnel fait foi. Depuis que les prix exigent une
+  // session, toute personne qui arrive ici a renseigné ces informations à
+  // l'inscription : les lui redemander serait du travail en double, et deux
+  // saisies finissent toujours par diverger.
+  const PAYS_DU_CODE = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
+
+  async function chargerCompte() {
+    try {
+      const r = await fetch("/api/moi", {
+        headers: { accept: "application/json" },
+        credentials: "same-origin",
+      });
+      const d = await r.json();
+      if (!d || !d.connecte) return false;
+      const c = d.compte;
+
+      // Le numéro de TVA vient du compte. Pour la France, il a été
+      // reconstitué à partir du SIRET au moment de l'inscription : le
+      // coiffeur n'a jamais eu à le connaître, et il n'a pas à le chercher
+      // maintenant non plus.
+      client = {
+        first:    c.prenom || client.first || "",
+        last:     c.nom || client.last || "",
+        company:  c.salon || client.company || "",
+        vat:      c.tva || client.vat || "",
+        phone:    c.telephone || client.phone || "",
+        email:    c.email || client.email || "",
+        street:   c.adresse || client.street || "",
+        zip:      c.code_postal || client.zip || "",
+        city:     c.ville || client.city || "",
+        country:  PAYS_DU_CODE[c.pays] || client.country || "",
+        // Le mode de réception est un choix de commande, pas une donnée de
+        // compte : on garde celui de la dernière fois.
+        shipmode: client.shipmode || "",
+      };
+      return true;
+    } catch (e) {
+      return false;   // hors ligne : on retombe sur la saisie manuelle
+    }
   }
 
   async function loadProducts() {
@@ -519,6 +570,17 @@
     return data;
   }
 
+  // Dire d'où viennent les informations, sinon le client se demande qui
+  // les a saisies à sa place — et ne pense pas à les corriger si son salon
+  // a déménagé.
+  function montrerBandeauCompte() {
+    const zone = document.getElementById("bandeau-compte");
+    if (!zone) return;
+    zone.innerHTML = esc(T.fromAccount) +
+      ' <a href="/pro/compte/#coordonnees">' + esc(T.editAccount) + "</a>";
+    zone.hidden = false;
+  }
+
   // ---------- Envoi ----------
 
   function endpoint() {
@@ -618,8 +680,10 @@
     applyI18n();
     loadSelection();
     loadClient();
+    const connecte = await chargerCompte();
     fillForm();
     brancherPays();
+    if (connecte) montrerBandeauCompte();
 
     if (Object.keys(selection).length === 0) {
       $("step-form").innerHTML =

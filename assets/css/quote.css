@@ -436,3 +436,22 @@
 }
 
 .vat-aide-ok { color: #2e7d32; font-weight: 700; }
+
+/* ── coordonnées reprises du compte (étape 197) ──────────────────────────
+   Un encadré discret : il informe sans couper la lecture du formulaire. */
+.bandeau-compte {
+  margin: 0 0 20px;
+  padding: 12px 15px;
+  border: 1px solid var(--line, #e6e6ea);
+  border-left: 3px solid var(--gold, #ff8a00);
+  border-radius: 10px;
+  background: var(--bg-soft, #f7f7f8);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-soft, #5c5c66);
+}
+.bandeau-compte a {
+  color: var(--gold-deep, #d97500);
+  font-weight: 600;
+  white-space: nowrap;
+}

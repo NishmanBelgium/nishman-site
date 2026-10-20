@@ -1,0 +1,72 @@
+NISHMAN — étape 197
+===================
+
+POUR LA BRANCHE NishmanCloudflare. Surtout pas pour nishman.be.
+
+Ce lot rattrape tout ce qui n'était jamais arrivé sur cette branche :
+le Pack BBX (lots 195 et 196) ET le devis pré-rempli. Un seul dépôt.
+
+LE DEVIS SE REMPLIT TOUT SEUL
+=============================
+Un coiffeur connecté qui ouvre /devis/ trouve ses coordonnées déjà
+saisies : pays, prénom, nom, société, numéro de TVA, téléphone, e-mail,
+adresse, code postal, ville. Il vérifie et valide.
+
+Un bandeau lui dit d'où viennent ces informations, avec un lien vers son
+compte pour les corriger définitivement. Les champs restent modifiables :
+une livraison exceptionnelle à une autre adresse reste possible, sans
+toucher à sa fiche.
+
+LE PROBLÈME DU SIRET EST RÉSOLU AU PASSAGE
+==========================================
+Un coiffeur français s'inscrit avec son SIRET, qu'il connaît. Le site en
+déduit son numéro de TVA intracommunautaire et le garde dans son compte.
+Au moment du devis, c'est ce numéro-là qui apparaît tout seul : le
+coiffeur n'a jamais eu à le chercher, et vous avez le bon numéro pour
+facturer hors TVA.
+
+CE QUI NE CHANGE PAS
+====================
+· Un visiteur non connecté voit le formulaire vide et le remplit à la
+  main, comme avant.
+· Le mode de réception n'est pas repris du compte : c'est un choix de
+  commande. Il garde celui de la dernière fois.
+· Si le serveur ne répond pas, on retombe sur la saisie manuelle, sans
+  message d'erreur.
+
+LE PACK BBX
+===========
+Fiche NISH-PACK-BBX, 100 € HT, 29 pièces, visuel et descriptions dans
+les cinq langues. Pensez à ajouter son prix dans le script Google si ce
+n'est pas déjà fait :
+
+  Extensions -> Apps Script -> Cmd+F -> "NISH-PACK-MCB":500
+  Juste après, ajoutez :  "NISH-PACK-BBX":100,
+  Cmd+S, puis Déployer -> Gérer les déploiements -> crayon ->
+  Nouvelle version -> Déployer.
+
+À FAIRE
+=======
+Le dépôt, et rien d'autre. Pas de base à modifier, pas de variable à
+ajouter.
+
+GitHub -> vérifiez que l'adresse contient /tree/NishmanCloudflare ->
+Add file -> Upload files -> tout sélectionner (Cmd+A) -> glisser ->
+Commit changes EN BAS DE PAGE.
+
+VÉRIFIÉ AVANT ENVOI
+===================
+Au navigateur, sur un parcours réel :
+· compte français avec SIRET -> les dix champs pré-remplis, numéro de TVA
+  reconstitué juste, passage au récapitulatif sans ressaisie
+· visiteur jamais connecté -> formulaire vide et utilisable
+· aucune erreur JavaScript dans les deux cas
+
+DEUX FICHIERS À SUPPRIMER SUR LA BRANCHE
+========================================
+_commun.js et le dossier api/ traînent à la racine depuis un envoi raté
+et exposent du code serveur publiquement. Ils ne sont pas dans ce lot,
+justement : il faut les SUPPRIMER, pas les redéposer.
+
+Sur GitHub, ouvrez le fichier, icône corbeille, commit. Pour le dossier
+api/ : ouvrez-le, bouton ••• en haut à droite, Delete directory.
