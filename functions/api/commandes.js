@@ -7,7 +7,7 @@ import { configure, partenaireParEmail, commandesDuClient } from "../_odoo.js";
 
 export async function onRequestGet({ request, env }) {
   const compte = await compteConnecte(request, env.DB);
-  if (!compte) return erreur("Connectez-vous pour voir vos commandes.", 401);
+  if (!compte) return erreur("Connectez-vous pour voir vos commandes.", 401, "session_requise");
 
   if (!configure(env)) {
     // Le pont vers Odoo n'est pas encore branché : on le dit franchement

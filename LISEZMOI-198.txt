@@ -1,0 +1,88 @@
+NISHMAN — étape 198
+===================
+
+POUR LA BRANCHE NishmanCloudflare. Surtout pas pour nishman.be.
+
+TOUT L'ESPACE PROFESSIONNEL PARLE LES CINQ LANGUES
+==================================================
+Jusqu'ici, le catalogue et le devis étaient traduits, mais tout ce qui a
+été construit ces dernières semaines restait en français : la page de
+connexion, la création de compte, le mot de passe oublié, l'espace du
+client, et surtout les messages d'erreur du serveur.
+
+Un coiffeur flamand ou turc qui se trompait de mot de passe lisait une
+phrase en français. C'est réglé : français, anglais, néerlandais,
+allemand et turc, partout.
+
+CE QUI EST TRADUIT
+==================
+· page de connexion et formulaire de création de compte (45 textes)
+· espace du client : les quatre onglets, l'aperçu, les coordonnées, la
+  sécurité, les commandes (69 textes)
+· mot de passe oublié et choix du nouveau mot de passe
+· les 31 messages que le serveur renvoie : identifiants faux, numéro trop
+  court, adresse déjà prise, lien périmé, compte suspendu…
+· la date d'ouverture du compte, au format du pays
+· dans le devis : les listes « Pays » et « Mode de réception », qui
+  étaient restées en français quelle que soit la langue choisie
+
+UN SÉLECTEUR DE LANGUE SUR CHAQUE PAGE
+======================================
+Ces pages s'ouvrent souvent depuis un lien reçu par courriel, sans passer
+par la boutique : il fallait pouvoir changer de langue sur place. Cinq
+boutons discrets, FR EN NL DE TR, sous le logo des cartes de connexion et
+en pied de l'espace du client. Le choix est partagé avec le reste du
+site : il suit la personne du catalogue à son compte.
+
+COMMENT C'EST CONSTRUIT
+=======================
+Les textes ne sont plus écrits dans le code. Ils sont tous dans un seul
+fichier, assets/js/compte-langues.js, une langue après l'autre. Pour
+corriger une tournure qui vous déplaît, vous ouvrez ce fichier, vous
+modifiez la ligne, et c'est tout — rien d'autre à toucher.
+
+Le serveur, lui, envoie désormais un code avec chaque message (par
+exemple « mdp_court »), et c'est le navigateur qui choisit la phrase.
+Le texte français part quand même : si un code venait à manquer, la page
+afficherait le message français plutôt que rien.
+
+À FAIRE
+=======
+Le dépôt, et rien d'autre. Pas de base à modifier, pas de variable à
+ajouter, pas de script Google à retoucher.
+
+GitHub -> vérifiez que l'adresse contient /tree/NishmanCloudflare ->
+Add file -> Upload files -> tout sélectionner (Cmd+A) -> glisser ->
+Commit changes EN BAS DE PAGE.
+
+AU PASSAGE : UNE PETITE ICÔNE MANQUANTE
+=======================================
+Toutes les pages du site réclamaient /assets/img/favicon-32.png, qui
+n'existait pas : chaque visite produisait une erreur 404 silencieuse et
+l'onglet du navigateur restait sans icône. Le fichier est dans ce lot.
+
+VÉRIFIÉ AVANT ENVOI
+===================
+Au navigateur, les cinq langues l'une après l'autre, sur un parcours réel
+pour chacune :
+· connexion avec un mauvais mot de passe -> le message du serveur traduit
+· création de compte, pays France puis Belgique -> le bon libellé
+  d'identifiant à chaque fois ; un SIRET trop court -> « le SIRET compte
+  14 chiffres, vous en avez saisi 10 » dans la langue choisie
+· mot de passe oublié -> la réponse du serveur traduite
+· lien de réinitialisation sans jeton, puis deux mots de passe différents
+· espace du client au complet, avec un compte français : les neuf
+  intitulés de l'aperçu, les quatre onglets, la date au format du pays
+· devis pré-rempli : les dix champs repris du compte, les listes
+  déroulantes traduites, et la valeur envoyée chez Odoo inchangée
+  (« France » reste « France » dans le devis, même en allemand)
+Aucune erreur JavaScript, dans aucune des cinq langues.
+
+TOUJOURS EN SUSPENS, SANS URGENCE
+=================================
+_commun.js et le dossier api/ traînent à la racine de la branche depuis
+un envoi raté. Après vérification, ils ne contiennent aucun mot de passe
+ni aucune clé : c'est du rangement, pas un risque. Ils ne sont pas dans
+ce lot. Quand vous aurez un moment : ouvrez le fichier sur GitHub, icône
+corbeille, commit ; pour le dossier api/, bouton ••• en haut à droite,
+Delete directory.

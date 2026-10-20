@@ -10,20 +10,20 @@ import {
 
 export async function onRequestPost({ request, env }) {
   const db = env.DB;
-  if (!db) return erreur("La base de données n'est pas branchée.", 500);
+  if (!db) return erreur("La base de données n'est pas branchée.", 500, "base_absente");
 
   let corps;
   try { corps = await request.json(); }
-  catch (e) { return erreur("Requête illisible."); }
+  catch (e) { return erreur("Requête illisible.", 400, "illisible"); }
 
   const cle = cleEmail(corps.email || "");
   const mdp = String(corps.motdepasse || "");
 
-  if (!cle || !mdp) return erreur("Adresse e-mail et mot de passe requis.");
+  if (!cle || !mdp) return erreur("Adresse e-mail et mot de passe requis.", 400, "identifiants_requis");
 
   if (await tropDeTentatives(db, cle)) {
     return erreur(
-      "Trop de tentatives. Réessayez dans un quart d'heure.", 429
+      "Trop de tentatives. Réessayez dans un quart d'heure.", 429, "trop_tentatives"
     );
   }
 
@@ -40,13 +40,11 @@ export async function onRequestPost({ request, env }) {
 
   if (!compte || !bon) {
     await noterTentative(db, cle);
-    return erreur("Adresse e-mail ou mot de passe incorrect.", 401);
+    return erreur("Adresse e-mail ou mot de passe incorrect.", 401, "identifiants_faux");
   }
 
   if (compte.etat !== "actif") {
-    return erreur(
-      "Ce compte est suspendu. Contactez-nous à contact@nishman.be.", 403
-    );
+    return erreur("Ce compte est suspendu. Contactez-nous à contact@nishman.be.", 403, "compte_suspendu");
   }
 
   await effacerTentatives(db, cle);
@@ -68,5 +66,5 @@ export async function onRequestPost({ request, env }) {
 }
 
 export async function onRequest() {
-  return erreur("Méthode non autorisée.", 405);
+  return erreur("Méthode non autorisée.", 405, "methode");
 }

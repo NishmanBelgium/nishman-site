@@ -11,28 +11,28 @@ import {
 
 export async function onRequestPost({ request, env }) {
   const db = env.DB;
-  if (!db) return erreur("La base de données n'est pas branchée.", 500);
+  if (!db) return erreur("La base de données n'est pas branchée.", 500, "base_absente");
 
   const compte = await compteConnecte(request, db);
-  if (!compte) return erreur("Session expirée. Reconnectez-vous.", 401);
+  if (!compte) return erreur("Session expirée. Reconnectez-vous.", 401, "session_expiree");
 
   let corps;
   try { corps = await request.json(); }
-  catch (e) { return erreur("Requête illisible."); }
+  catch (e) { return erreur("Requête illisible.", 400, "illisible"); }
 
   const actuel  = String(corps.actuel || "");
   const nouveau = String(corps.nouveau || "");
 
   if (!motDePasseValide(nouveau))
-    return erreur("Le nouveau mot de passe doit faire au moins 8 caractères.");
+    return erreur("Le nouveau mot de passe doit faire au moins 8 caractères.", 400, "mdp_court");
   if (actuel === nouveau)
-    return erreur("Le nouveau mot de passe est identique à l'ancien.");
+    return erreur("Le nouveau mot de passe est identique à l'ancien.", 400, "mdp_identique");
 
   // compteConnecte ne ramène pas l'empreinte : on va la chercher ici.
   const ligne = await db.prepare("SELECT mot_de_passe FROM comptes WHERE id = ?")
     .bind(compte.id).first();
   if (!ligne || !(await verifier(actuel, ligne.mot_de_passe)))
-    return erreur("Mot de passe actuel incorrect.", 403);
+    return erreur("Mot de passe actuel incorrect.", 403, "mdp_actuel_faux");
 
   const empreinte = await hacher(nouveau);
   await db.prepare("UPDATE comptes SET mot_de_passe = ? WHERE id = ?")
@@ -49,5 +49,5 @@ export async function onRequestPost({ request, env }) {
 }
 
 export async function onRequest() {
-  return erreur("Méthode non autorisée.", 405);
+  return erreur("Méthode non autorisée.", 405, "methode");
 }

@@ -1,15 +1,109 @@
 /* ==========================================================================
    COMPTE — le navigateur côté client : formulaires, session, espace.
-   Un seul fichier sert les deux pages ; chacune n'active que ce qui la
-   concerne, selon les éléments présents dans son HTML.
+   Un seul fichier sert les quatre pages de l'espace professionnel ; chacune
+   n'active que ce qui la concerne, selon les éléments présents dans son HTML.
+
+   Les textes ne sont pas écrits ici : ils viennent de compte-langues.js,
+   chargé juste avant. Ce fichier ne contient que de la logique.
    ========================================================================== */
 (function () {
   "use strict";
 
   var $ = function (s) { return document.querySelector(s); };
 
-  function echappe(t) {
-    return String(t == null ? "" : t)
+  /* ── langue ───────────────────────────────────────────────────────── */
+
+  var LANGS = ["fr", "en", "nl", "de", "tr"];
+  var CLE_LANGUE = "nishman-lang";
+
+  var LANG = (function () {
+    try {
+      var l = localStorage.getItem(CLE_LANGUE);
+      if (LANGS.indexOf(l) !== -1) return l;
+    } catch (x) {}
+    return "fr";
+  })();
+
+  var TOUT = window.NISHMAN_LANGUES || {};
+  var T = TOUT[LANG] || TOUT.fr || {};
+  var FR = TOUT.fr || {};
+
+  // Une clé oubliée dans une langue retombe sur le français plutôt que sur
+  // du vide : une page incomplète reste lisible.
+  function t(cle) {
+    if (T[cle] != null) return T[cle];
+    if (FR[cle] != null) return FR[cle];
+    return "";
+  }
+
+  function remplir(texte, valeurs) {
+    return String(texte).replace(/\{(\w+)\}/g, function (tout, cle) {
+      return valeurs && valeurs[cle] != null ? valeurs[cle] : tout;
+    });
+  }
+
+  // Le serveur renvoie son message en français ET un code. On préfère la
+  // traduction ; faute de code connu, le message français passe quand même,
+  // ce qui vaut toujours mieux qu'un écran muet.
+  function messageServeur(donnees, parDefaut) {
+    if (!donnees) return parDefaut || "";
+    var table = T.erreurs || FR.erreurs || {};
+    var texte = table[donnees.code];
+    if (texte) return remplir(texte, donnees);
+    return donnees.erreur || donnees.message || parDefaut || "";
+  }
+
+  /* ── application des textes au HTML ───────────────────────────────── */
+
+  function appliquerLangue() {
+    document.documentElement.setAttribute("lang", LANG);
+
+    var noeuds = document.querySelectorAll("[data-t]");
+    for (var i = 0; i < noeuds.length; i++) {
+      var texte = t(noeuds[i].getAttribute("data-t"));
+      if (texte) noeuds[i].textContent = texte;
+    }
+    // Quelques textes contiennent un retour à la ligne volontaire.
+    var html = document.querySelectorAll("[data-t-html]");
+    for (var j = 0; j < html.length; j++) {
+      var h = t(html[j].getAttribute("data-t-html"));
+      if (h) html[j].innerHTML = h;
+    }
+    var aria = document.querySelectorAll("[data-t-aria]");
+    for (var a = 0; a < aria.length; a++) {
+      var et = t(aria[a].getAttribute("data-t-aria"));
+      if (et) aria[a].setAttribute("aria-label", et);
+    }
+    var metas = document.querySelectorAll("meta[data-t-contenu]");
+    for (var k = 0; k < metas.length; k++) {
+      var c = t(metas[k].getAttribute("data-t-contenu"));
+      if (c) metas[k].setAttribute("content", c);
+    }
+  }
+
+  function brancherChoixLangue() {
+    var boutons = document.querySelectorAll("[data-langue]");
+    for (var i = 0; i < boutons.length; i++) {
+      var b = boutons[i];
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-langue") === LANG));
+      b.addEventListener("click", function () {
+        var choisie = this.getAttribute("data-langue");
+        if (choisie === LANG) return;
+        try { localStorage.setItem(CLE_LANGUE, choisie); } catch (x) {}
+        // Une partie des textes est posée par ce script au chargement :
+        // on recharge plutôt que de tout repeindre à la main.
+        location.reload();
+      });
+    }
+  }
+
+  appliquerLangue();
+  brancherChoixLangue();
+
+  /* ── outils ───────────────────────────────────────────────────────── */
+
+  function echappe(txt) {
+    return String(txt == null ? "" : txt)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
   }
@@ -23,7 +117,12 @@
     if (!iso) return "—";
     var d = new Date(String(iso).replace(" ", "T"));
     if (isNaN(d)) return String(iso).slice(0, 10);
-    return d.toLocaleDateString("fr-BE", { day: "2-digit", month: "short", year: "numeric" });
+    try {
+      return d.toLocaleDateString(t("locale") || "fr-BE",
+        { day: "2-digit", month: "short", year: "numeric" });
+    } catch (x) {
+      return String(iso).slice(0, 10);
+    }
   }
 
   function envoyer(url, corps) {
@@ -37,6 +136,21 @@
         return { ok: r.ok, statut: r.status, donnees: d };
       });
     });
+  }
+
+  // Ce que l'on demande dépend du pays : un coiffeur français connaît son
+  // SIRET et presque jamais son numéro intracommunautaire, qui sera
+  // reconstitué à partir du SIREN côté serveur.
+  function modelesIdentifiant() {
+    return {
+      BE: { label: t("id_BE_label"), aide: t("id_BE_aide") },
+      FR: { label: t("id_FR_label"), aide: t("id_FR_aide") },
+      LU: { label: t("id_LU_label"), aide: t("id_LU_aide") },
+    };
+  }
+
+  function nomsPays() {
+    return { BE: t("pays_BE"), FR: t("pays_FR"), LU: t("pays_LU") };
   }
 
   /* ── page de connexion ────────────────────────────────────────────── */
@@ -97,41 +211,32 @@
       taire();
       var bouton = $("#b-connexion");
       bouton.disabled = true;
-      bouton.textContent = "Connexion…";
+      bouton.textContent = t("b_connexion_cours");
+
+      function rendreBouton() {
+        bouton.disabled = false;
+        bouton.textContent = t("b_connexion");
+      }
 
       envoyer("/api/connexion", {
         email: $("#c-email").value.trim(),
         motdepasse: $("#c-mdp").value,
       }).then(function (r) {
         if (r.ok) { location.href = "/pro/compte/"; return; }
-        dire(r.donnees.erreur || "La connexion a échoué.");
-        bouton.disabled = false;
-        bouton.textContent = "Se connecter";
+        dire(messageServeur(r.donnees, t("echec_connexion")));
+        rendreBouton();
       }).catch(function () {
-        dire("Connexion au serveur impossible. Réessayez.");
-        bouton.disabled = false;
-        bouton.textContent = "Se connecter";
+        dire(t("serveur"));
+        rendreBouton();
       });
     });
 
-    // Ce que l'on demande dépend du pays : un coiffeur français connaît son
-    // SIRET et presque jamais son numéro intracommunautaire, qui sera
-    // reconstitué à partir du SIREN côté serveur.
-    var IDENTIFIANT = {
-      BE: { label: "Numéro d'entreprise (TVA)",
-            aide: "Dix chiffres, avec ou sans BE devant. Exemple : 0817.750.283." },
-      FR: { label: "Numéro de SIRET",
-            aide: "Quatorze chiffres, tels qu'ils figurent sur votre avis de situation." },
-      LU: { label: "Numéro de TVA",
-            aide: "Huit chiffres, avec ou sans LU devant." },
-    };
-
+    var IDENTIFIANT = modelesIdentifiant();
     var selPays = $("#i-pays");
     var blocInscription = $("#bloc-inscription");
 
     function majPays() {
-      var p = selPays.value;
-      var modele = IDENTIFIANT[p];
+      var modele = IDENTIFIANT[selPays.value];
       blocInscription.hidden = !modele;
       if (!modele) return;
       $("#l-identifiant").textContent = modele.label;
@@ -145,11 +250,16 @@
       e.preventDefault();
       taire();
 
-      if (!selPays.value) { dire("Choisissez d'abord votre pays."); return; }
+      if (!selPays.value) { dire(t("pays_dabord")); return; }
 
       var bouton = $("#b-inscription");
       bouton.disabled = true;
-      bouton.textContent = "Création…";
+      bouton.textContent = t("b_inscription_cours");
+
+      function rendreBouton() {
+        bouton.disabled = false;
+        bouton.textContent = t("b_inscription");
+      }
 
       envoyer("/api/inscription", {
         pays: selPays.value,
@@ -167,19 +277,24 @@
         if (r.ok) {
           // Un numéro douteux ne bloque pas l'inscription, mais on ne le passe
           // pas sous silence : il repart avec l'inscrit sur sa page de compte.
+          // On transmet le code, pas la phrase : la page de compte le rendra
+          // dans la langue qui y est choisie.
           if (r.donnees.avertissement) {
-            try { sessionStorage.setItem("nishman-avis", r.donnees.avertissement); } catch (x) {}
+            try {
+              sessionStorage.setItem("nishman-avis", JSON.stringify({
+                code: r.donnees.avertissement_code || "",
+                texte: r.donnees.avertissement,
+              }));
+            } catch (x) {}
           }
           location.href = "/pro/compte/";
           return;
         }
-        dire(r.donnees.erreur || "La création du compte a échoué.");
-        bouton.disabled = false;
-        bouton.textContent = "Créer mon compte";
+        dire(messageServeur(r.donnees, t("echec_inscription")));
+        rendreBouton();
       }).catch(function () {
-        dire("Connexion au serveur impossible. Réessayez.");
-        bouton.disabled = false;
-        bouton.textContent = "Créer mon compte";
+        dire(t("serveur"));
+        rendreBouton();
       });
     });
   }
@@ -196,27 +311,27 @@
       msgOubli.className = "message";
       var b = $("#b-oubli");
       b.disabled = true;
-      b.textContent = "Envoi…";
+      b.textContent = t("b_oubli_cours");
 
       envoyer("/api/oubli", { email: $("#o-email").value.trim() })
         .then(function (r) {
           b.disabled = false;
-          b.textContent = "Recevoir le lien";
+          b.textContent = t("b_oubli");
           if (!r.ok) {
-            msgOubli.textContent = r.donnees.erreur || "L'envoi a échoué.";
+            msgOubli.textContent = messageServeur(r.donnees, t("echec_envoi"));
             msgOubli.className = "message on erreur";
             return;
           }
           // Le message est le même que l'adresse existe ou non : le serveur
           // ne dit pas qui est client, et la page ne le trahit pas non plus.
-          msgOubli.textContent = r.donnees.message;
+          msgOubli.textContent = messageServeur(r.donnees);
           msgOubli.className = "message on succes";
           formOubli.hidden = true;
         })
         .catch(function () {
           b.disabled = false;
-          b.textContent = "Recevoir le lien";
-          msgOubli.textContent = "Connexion au serveur impossible. Réessayez.";
+          b.textContent = t("b_oubli");
+          msgOubli.textContent = t("serveur");
           msgOubli.className = "message on erreur";
         });
     });
@@ -231,7 +346,7 @@
     var jeton = new URLSearchParams(location.search).get("j") || "";
 
     if (!jeton) {
-      msgReinit.textContent = "Ce lien est incomplet. Redemandez-en un depuis la page « Mot de passe oublié ».";
+      msgReinit.textContent = t("lien_incomplet_page");
       msgReinit.className = "message on erreur";
       formReinit.hidden = true;
     }
@@ -242,33 +357,33 @@
 
       var mdp = $("#r-mdp").value;
       if (mdp !== $("#r-confirme").value) {
-        msgReinit.textContent = "Les deux mots de passe ne correspondent pas.";
+        msgReinit.textContent = t("mdp_differents");
         msgReinit.className = "message on erreur";
         return;
       }
 
       var b = $("#b-reinit");
       b.disabled = true;
-      b.textContent = "Enregistrement…";
+      b.textContent = t("b_enregistrer_cours");
 
       envoyer("/api/reinitialiser", { jeton: jeton, motdepasse: mdp })
         .then(function (r) {
           if (r.ok) {
-            msgReinit.textContent = "Mot de passe enregistré. Vous pouvez vous connecter.";
+            msgReinit.textContent = t("mdp_enregistre");
             msgReinit.className = "message on succes";
             formReinit.hidden = true;
             setTimeout(function () { location.href = "/pro/connexion/"; }, 2500);
             return;
           }
           b.disabled = false;
-          b.textContent = "Enregistrer";
-          msgReinit.textContent = r.donnees.erreur || "L'enregistrement a échoué.";
+          b.textContent = t("b_enregistrer");
+          msgReinit.textContent = messageServeur(r.donnees, t("echec_enregistrement"));
           msgReinit.className = "message on erreur";
         })
         .catch(function () {
           b.disabled = false;
-          b.textContent = "Enregistrer";
-          msgReinit.textContent = "Connexion au serveur impossible. Réessayez.";
+          b.textContent = t("b_enregistrer");
+          msgReinit.textContent = t("serveur");
           msgReinit.className = "message on erreur";
         });
     });
@@ -280,18 +395,8 @@
 
   if (espace) {
     var MOI = null;
-
-    var PAYS = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
-
-    // Ce que l'on demande dépend du pays, exactement comme à l'inscription.
-    var IDENTIFIANT = {
-      BE: { label: "Numéro d'entreprise (TVA)",
-            aide: "Dix chiffres, avec ou sans BE devant. Exemple : 0817.750.283." },
-      FR: { label: "Numéro de SIRET",
-            aide: "Quatorze chiffres, tels qu'ils figurent sur votre avis de situation." },
-      LU: { label: "Numéro de TVA",
-            aide: "Huit chiffres, avec ou sans LU devant." },
-    };
+    var PAYS = nomsPays();
+    var MODELES = modelesIdentifiant();
 
     fetch("/api/moi", { headers: { accept: "application/json" }, credentials: "same-origin" })
       .then(function (r) { return r.json(); })
@@ -343,10 +448,14 @@
 
       // Un avertissement déposé à l'inscription est montré une fois, ici.
       try {
-        var avis = sessionStorage.getItem("nishman-avis");
-        if (avis) {
+        var brut = sessionStorage.getItem("nishman-avis");
+        if (brut) {
           sessionStorage.removeItem("nishman-avis");
-          dire($("#msg-profil"), avis, "erreur");
+          var avis;
+          try { avis = JSON.parse(brut); } catch (y) { avis = { texte: brut }; }
+          dire($("#msg-profil"), messageServeur({
+            code: avis.code, erreur: avis.texte,
+          }), "erreur");
           montrerVue("coordonnees");
         }
       } catch (x) {}
@@ -355,30 +464,32 @@
     function remplirApercu() {
       var c = MOI;
       var etiquette = c.tva_valide
-        ? ' <span class="etiquette vert">vérifié</span>'
-        : ' <span class="etiquette gris">à vérifier</span>';
+        ? ' <span class="etiquette vert">' + echappe(t("etiq_verifie")) + "</span>"
+        : ' <span class="etiquette gris">' + echappe(t("etiq_a_verifier")) + "</span>";
 
       var html =
-        paire("Société", echappe(c.salon)) +
-        paire("Responsable", echappe([c.prenom, c.nom].filter(Boolean).join(" ")) || "—") +
-        paire("Pays", echappe(PAYS[c.pays] || c.pays || "—"));
+        paire(t("a_societe"), echappe(c.salon)) +
+        paire(t("a_responsable"),
+              echappe([c.prenom, c.nom].filter(Boolean).join(" ")) || "—") +
+        paire(t("a_pays"), echappe(PAYS[c.pays] || c.pays || "—"));
 
-      if (c.siret) html += paire("SIRET", echappe(c.siret));
-      html += paire("Numéro de TVA", c.tva ? echappe(c.tva) + etiquette
-                                     : '<span class="etiquette gris">à renseigner</span>');
+      if (c.siret) html += paire(t("a_siret"), echappe(c.siret));
+      html += paire(t("a_tva"), c.tva
+        ? echappe(c.tva) + etiquette
+        : '<span class="etiquette gris">' + echappe(t("etiq_a_renseigner")) + "</span>");
 
       var adresse = [c.adresse, [c.code_postal, c.ville].filter(Boolean).join(" ")]
         .filter(Boolean).join(", ");
-      html += paire("Adresse", echappe(adresse) || "—") +
-              paire("Téléphone", echappe(c.telephone) || "—") +
-              paire("Adresse e-mail", echappe(c.email)) +
-              paire("Compte créé le", dateCourte(c.depuis));
+      html += paire(t("a_adresse"), echappe(adresse) || "—") +
+              paire(t("a_tel"), echappe(c.telephone) || "—") +
+              paire(t("a_email"), echappe(c.email)) +
+              paire(t("a_cree"), dateCourte(c.depuis));
 
       $("#infos").innerHTML = html;
     }
 
     function paire(terme, valeur) {
-      return '<div class="paire"><dt>' + terme + "</dt><dd>" + valeur + "</dd></div>";
+      return '<div class="paire"><dt>' + echappe(terme) + "</dt><dd>" + valeur + "</dd></div>";
     }
 
     /* ---- messages ---- */
@@ -392,10 +503,10 @@
     /* ---- coordonnées ---- */
 
     var formProfil = $("#form-profil");
-    var selPays = $("#p-pays");
+    var selPaysProfil = $("#p-pays");
 
     function remplirProfil() {
-      selPays.value = MOI.pays || "BE";
+      selPaysProfil.value = MOI.pays || "BE";
       $("#p-societe").value = MOI.salon || "";
       $("#p-identifiant").value = MOI.pays === "FR" ? (MOI.siret || "")
                                                     : (MOI.tva || "").replace(/^[A-Z]{2}/, "");
@@ -405,15 +516,15 @@
       $("#p-adresse").value = MOI.adresse || "";
       $("#p-cp").value = MOI.code_postal || "";
       $("#p-ville").value = MOI.ville || "";
-      majPays();
+      majPaysProfil();
     }
 
-    function majPays() {
-      var modele = IDENTIFIANT[selPays.value] || IDENTIFIANT.BE;
+    function majPaysProfil() {
+      var modele = MODELES[selPaysProfil.value] || MODELES.BE;
       $("#p-l-identifiant").textContent = modele.label;
       $("#p-aide-identifiant").textContent = modele.aide;
     }
-    selPays.addEventListener("change", majPays);
+    selPaysProfil.addEventListener("change", majPaysProfil);
 
     $("#b-profil-annuler").addEventListener("click", function () {
       remplirProfil();
@@ -426,10 +537,10 @@
       taire(zone);
       var b = $("#b-profil");
       b.disabled = true;
-      b.textContent = "Enregistrement…";
+      b.textContent = t("b_enregistrer_cours");
 
       envoyer("/api/profil", {
-        pays: selPays.value,
+        pays: selPaysProfil.value,
         societe: $("#p-societe").value.trim(),
         identifiant: $("#p-identifiant").value.trim(),
         prenom: $("#p-prenom").value.trim(),
@@ -440,11 +551,17 @@
         ville: $("#p-ville").value.trim(),
       }).then(function (r) {
         b.disabled = false;
-        b.textContent = "Enregistrer";
-        if (!r.ok) { dire(zone, r.donnees.erreur || "L'enregistrement a échoué."); return; }
+        b.textContent = t("b_enregistrer");
+        if (!r.ok) {
+          dire(zone, messageServeur(r.donnees, t("echec_enregistrement")));
+          return;
+        }
 
-        dire(zone, r.donnees.avertissement || "Vos coordonnées sont à jour.",
-             r.donnees.avertissement ? "erreur" : "succes");
+        var avis = r.donnees.avertissement
+          ? messageServeur({ code: r.donnees.avertissement_code,
+                             erreur: r.donnees.avertissement })
+          : "";
+        dire(zone, avis || t("profil_ok"), avis ? "erreur" : "succes");
 
         // On relit le compte plutôt que de recopier ce qu'on vient d'envoyer :
         // c'est le serveur qui a le dernier mot, notamment sur le numéro de
@@ -456,8 +573,8 @@
           });
       }).catch(function () {
         b.disabled = false;
-        b.textContent = "Enregistrer";
-        dire(zone, "Connexion au serveur impossible. Réessayez.");
+        b.textContent = t("b_enregistrer");
+        dire(zone, t("serveur"));
       });
     });
 
@@ -469,25 +586,28 @@
       taire(zone);
       var b = $("#b-email");
       b.disabled = true;
-      b.textContent = "Changement…";
+      b.textContent = t("b_changement_cours");
 
       envoyer("/api/email", {
         email: $("#e-email").value.trim(),
         motdepasse: $("#e-mdp").value,
       }).then(function (r) {
         b.disabled = false;
-        b.textContent = "Changer l'adresse";
-        if (!r.ok) { dire(zone, r.donnees.erreur || "Le changement a échoué."); return; }
+        b.textContent = t("b_changer_email");
+        if (!r.ok) {
+          dire(zone, messageServeur(r.donnees, t("echec_changement")));
+          return;
+        }
         MOI.email = r.donnees.email;
         remplirEntete();
         remplirApercu();
         $("#e-email").value = "";
         $("#e-mdp").value = "";
-        dire(zone, "Votre adresse de connexion est désormais " + r.donnees.email + ".", "succes");
+        dire(zone, remplir(t("email_ok"), { email: r.donnees.email }), "succes");
       }).catch(function () {
         b.disabled = false;
-        b.textContent = "Changer l'adresse";
-        dire(zone, "Connexion au serveur impossible. Réessayez.");
+        b.textContent = t("b_changer_email");
+        dire(zone, t("serveur"));
       });
     });
 
@@ -500,29 +620,32 @@
 
       var nouveau = $("#m-nouveau").value;
       if (nouveau !== $("#m-confirme").value) {
-        dire(zone, "Les deux nouveaux mots de passe ne correspondent pas.");
+        dire(zone, t("mdp_differents_nouveaux"));
         return;
       }
 
       var b = $("#b-mdp");
       b.disabled = true;
-      b.textContent = "Changement…";
+      b.textContent = t("b_changement_cours");
 
       envoyer("/api/motdepasse", {
         actuel: $("#m-actuel").value,
         nouveau: nouveau,
       }).then(function (r) {
         b.disabled = false;
-        b.textContent = "Changer le mot de passe";
-        if (!r.ok) { dire(zone, r.donnees.erreur || "Le changement a échoué."); return; }
+        b.textContent = t("b_changer_mdp");
+        if (!r.ok) {
+          dire(zone, messageServeur(r.donnees, t("echec_changement")));
+          return;
+        }
         $("#m-actuel").value = "";
         $("#m-nouveau").value = "";
         $("#m-confirme").value = "";
-        dire(zone, "Mot de passe changé. Les autres appareils ont été déconnectés.", "succes");
+        dire(zone, t("mdp_change"), "succes");
       }).catch(function () {
         b.disabled = false;
-        b.textContent = "Changer le mot de passe";
-        dire(zone, "Connexion au serveur impossible. Réessayez.");
+        b.textContent = t("b_changer_mdp");
+        dire(zone, t("serveur"));
       });
     });
 
@@ -533,29 +656,25 @@
       fetch("/api/commandes", { headers: { accept: "application/json" }, credentials: "same-origin" })
         .then(function (r) { return r.json(); })
         .then(function (d) {
-          if (!d.pret) {
-            zone.innerHTML = '<p class="vide">L\'historique sera disponible dès que la liaison avec notre gestion sera activée.<br />En attendant, vos commandes vous sont confirmées par e-mail.</p>';
-            return;
-          }
-          if (d.inconnu) {
-            zone.innerHTML = '<p class="vide">Nous n\'avons pas encore de commande associée à cette adresse.<br />Elles apparaîtront ici après votre première commande.</p>';
-            return;
-          }
-          if (!d.commandes.length) {
-            zone.innerHTML = '<p class="vide">Aucune commande pour le moment.</p>';
-            return;
-          }
+          if (!d.pret)     { zone.innerHTML = vide(t("cmd_pas_prete")); return; }
+          if (d.inconnu)   { zone.innerHTML = vide(t("cmd_inconnu"));   return; }
+          if (!d.commandes.length) { zone.innerHTML = vide(t("cmd_vide")); return; }
           zone.innerHTML = tableau(d.commandes);
         })
-        .catch(function () {
-          zone.innerHTML = '<p class="vide">L\'historique n\'a pas pu être chargé. Réessayez dans un instant.</p>';
-        });
+        .catch(function () { zone.innerHTML = vide(t("cmd_echec")); });
     }
+
+    // Ces trois messages contiennent un <br /> voulu : ils viennent de la
+    // table des langues, pas d'une saisie, et ne sont donc pas échappés.
+    function vide(texte) { return '<p class="vide">' + texte + "</p>"; }
 
     function tableau(lignes) {
       var html = '<table class="table-cmd"><thead><tr>' +
-        "<th>Référence</th><th>Date</th><th>État</th>" +
-        '<th class="nombre">Total HT</th></tr></thead><tbody>';
+        "<th>" + echappe(t("t_reference")) + "</th>" +
+        "<th>" + echappe(t("t_date")) + "</th>" +
+        "<th>" + echappe(t("t_etat")) + "</th>" +
+        '<th class="nombre">' + echappe(t("t_total")) + "</th>" +
+        "</tr></thead><tbody>";
       for (var i = 0; i < lignes.length; i++) {
         var c = lignes[i];
         html += "<tr><td>" + echappe(c.reference) + "</td>" +

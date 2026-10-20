@@ -273,3 +273,41 @@
   text-align: center;
 }
 .pied-aide a { color: var(--gold-deep); font-weight: 600; }
+
+/* ── choix de la langue ───────────────────────────────────────────────── */
+/* Les pages du compte sont souvent ouvertes depuis un lien reçu par
+   courriel, sans passer par la boutique : il faut pouvoir changer de langue
+   sur place. Le choix est partagé avec le reste du site. */
+
+.langues { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+
+.langues button {
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 12.5px; font-weight: 700; letter-spacing: .04em;
+  color: var(--ink-soft);
+  transition: border-color .18s var(--ease), color .18s var(--ease), background .18s var(--ease);
+}
+.langues button:hover { border-color: var(--line-strong); color: var(--ink); }
+.langues button[aria-pressed="true"] {
+  background: var(--ink); border-color: var(--ink); color: #fff; cursor: default;
+}
+
+/* au-dessus de la carte de connexion */
+.langues-carte { margin: -6px 0 22px; }
+
+/* en pied de l'espace du compte */
+.pied-langues {
+  margin-top: 46px; padding-top: 24px;
+  border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 12px;
+  align-items: center; justify-content: center;
+}
+.pied-langues .intitule {
+  font-size: 12.5px; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--ink-faint);
+}

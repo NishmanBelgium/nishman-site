@@ -8,14 +8,14 @@
    répond qu'à une session ouverte, et doivent toujours être frais.
    ========================================================================== */
 
-const VERSION = "nishman-197";
+const VERSION = "nishman-198";
 const SOCLE = [
   "/produits/",
-  "/assets/css/site.css?v=197",
-  "/assets/js/catalog.js?v=197",
-  "/assets/js/offre.js?v=197",
-  "/assets/js/config.js?v=197",
-  "/assets/data/products.json?v=197",
+  "/assets/css/site.css?v=198",
+  "/assets/js/catalog.js?v=198",
+  "/assets/js/offre.js?v=198",
+  "/assets/js/config.js?v=198",
+  "/assets/data/products.json?v=198",
   "/assets/pwa/icon-192.png",
 ];
 
@@ -52,6 +52,8 @@ self.addEventListener("fetch", (e) => {
       url.pathname.startsWith("/api/") ||
       url.pathname.startsWith("/pro/connexion") ||
       url.pathname.startsWith("/pro/compte") ||
+      url.pathname.startsWith("/pro/oublie") ||
+      url.pathname.startsWith("/pro/reinit") ||
       url.pathname.startsWith("/devis") ||
       url.hostname.indexOf("script.google.com") >= 0) {
     return;

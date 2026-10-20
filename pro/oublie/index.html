@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Mot de passe oublié — NISHMAN</title>
+<title data-t="titre_oubli">Mot de passe oublié — NISHMAN</title>
 <meta name="robots" content="noindex, nofollow" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
-<link rel="stylesheet" href="/assets/css/boutique.css?v=197" />
-<link rel="stylesheet" href="/assets/css/compte.css?v=197" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=198" />
+<link rel="stylesheet" href="/assets/css/compte.css?v=198" />
 </head>
 <body>
 
@@ -19,8 +19,16 @@
   <div class="carte-compte">
     <a href="/pro/"><img class="marque" src="/assets/img/nishman.svg" alt="Nishman" /></a>
 
-    <h1 class="titre-carte">Mot de passe oublié</h1>
-    <p class="intro-carte">
+    <div class="langues langues-carte" role="group" data-t-aria="langue" aria-label="Langue">
+      <button type="button" data-langue="fr">FR</button>
+      <button type="button" data-langue="en">EN</button>
+      <button type="button" data-langue="nl">NL</button>
+      <button type="button" data-langue="de">DE</button>
+      <button type="button" data-langue="tr">TR</button>
+    </div>
+
+    <h1 class="titre-carte" data-t="h_oubli">Mot de passe oublié</h1>
+    <p class="intro-carte" data-t="intro_oubli">
       Indiquez l'adresse e-mail de votre compte. Nous vous enverrons un lien
       pour choisir un nouveau mot de passe.
     </p>
@@ -29,18 +37,19 @@
 
     <form id="form-oubli" novalidate>
       <div class="champ">
-        <label for="o-email">Adresse e-mail</label>
+        <label for="o-email" data-t="l_email">Adresse e-mail</label>
         <input type="email" id="o-email" autocomplete="email" required />
       </div>
-      <button type="submit" class="bouton-plein" id="b-oubli">Recevoir le lien</button>
+      <button type="submit" class="bouton-plein" id="b-oubli" data-t="b_oubli">Recevoir le lien</button>
     </form>
 
     <p class="sous-carte">
-      <a href="/pro/connexion/">Retour à la connexion</a>
+      <a href="/pro/connexion/" data-t="retour_connexion">Retour à la connexion</a>
     </p>
   </div>
 </main>
 
-<script src="/assets/js/compte.js?v=197"></script>
+<script src="/assets/js/compte-langues.js?v=198"></script>
+<script src="/assets/js/compte.js?v=198"></script>
 </body>
 </html>

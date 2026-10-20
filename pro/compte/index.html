@@ -3,24 +3,24 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Mon compte — NISHMAN</title>
+<title data-t="titre_compte">Mon compte — NISHMAN</title>
 <meta name="robots" content="noindex, nofollow" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
-<link rel="stylesheet" href="/assets/css/boutique.css?v=197" />
-<link rel="stylesheet" href="/assets/css/compte.css?v=197" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=198" />
+<link rel="stylesheet" href="/assets/css/compte.css?v=198" />
 </head>
 <body>
 
 <header class="bar">
   <div class="wrap bar-in">
-    <a class="logo" href="/pro/" aria-label="Nishman, espace professionnel"><img src="/assets/img/nishman.svg" alt="Nishman" /></a>
+    <a class="logo" href="/pro/" aria-label="Nishman"><img src="/assets/img/nishman.svg" alt="Nishman" /></a>
     <div class="bar-sp"></div>
-    <a class="pill" href="/produits/"><span class="long">Catalogue</span><span class="court">Produits</span></a>
-    <button class="pill" id="b-deconnexion">Déconnexion</button>
+    <a class="pill" href="/produits/"><span class="long" data-t="nav_catalogue">Catalogue</span><span class="court" data-t="nav_produits">Produits</span></a>
+    <button class="pill" id="b-deconnexion" data-t="b_deconnexion">Déconnexion</button>
   </div>
 </header>
 
@@ -31,22 +31,22 @@
       <h1 id="nom-salon">—</h1>
       <div class="mail" id="mail-compte"></div>
     </div>
-    <a class="pill pill-gold" href="/devis/">Composer une commande</a>
+    <a class="pill pill-gold" href="/devis/" data-t="b_commande">Composer une commande</a>
   </div>
 
   <!-- Les onglets gardent la page courte : on ne fait voir que la section
        sur laquelle on travaille, au lieu d'un mur de champs. -->
   <nav class="onglets-espace" id="onglets-espace" role="tablist">
-    <button role="tab" data-vue="apercu" aria-selected="true">Aperçu</button>
-    <button role="tab" data-vue="coordonnees" aria-selected="false">Mes coordonnées</button>
-    <button role="tab" data-vue="securite" aria-selected="false">Connexion et sécurité</button>
-    <button role="tab" data-vue="commandes" aria-selected="false">Mes commandes</button>
+    <button role="tab" data-vue="apercu" aria-selected="true" data-t="ongl_apercu">Aperçu</button>
+    <button role="tab" data-vue="coordonnees" aria-selected="false" data-t="ongl_coordonnees">Mes coordonnées</button>
+    <button role="tab" data-vue="securite" aria-selected="false" data-t="ongl_securite">Connexion et sécurité</button>
+    <button role="tab" data-vue="commandes" aria-selected="false" data-t="ongl_commandes">Mes commandes</button>
   </nav>
 
   <!-- ─────────────────────────── aperçu ─────────────────────────── -->
   <section class="vue" data-vue="apercu">
     <div class="bloc">
-      <h2>Récapitulatif</h2>
+      <h2 data-t="h_recap">Récapitulatif</h2>
       <dl id="infos"></dl>
     </div>
   </section>
@@ -54,24 +54,24 @@
   <!-- ──────────────────────── coordonnées ───────────────────────── -->
   <section class="vue" data-vue="coordonnees" hidden>
     <form class="bloc" id="form-profil" novalidate>
-      <h2>Mes coordonnées</h2>
-      <p class="bloc-aide">Ces informations figurent sur vos devis et vos factures. Modifiez-les librement.</p>
+      <h2 data-t="h_coordonnees">Mes coordonnées</h2>
+      <p class="bloc-aide" data-t="aide_coordonnees">Ces informations figurent sur vos devis et vos factures. Modifiez-les librement.</p>
 
       <div class="message" id="msg-profil" role="status"></div>
 
       <div class="champ">
-        <label for="p-pays">Pays</label>
+        <label for="p-pays" data-t="l_pays">Pays</label>
         <select id="p-pays">
-          <option value="BE">Belgique</option>
-          <option value="FR">France</option>
-          <option value="LU">Luxembourg</option>
+          <option value="BE" data-t="pays_BE">Belgique</option>
+          <option value="FR" data-t="pays_FR">France</option>
+          <option value="LU" data-t="pays_LU">Luxembourg</option>
         </select>
       </div>
 
-      <p class="section">Votre entreprise</p>
+      <p class="section" data-t="sec_entreprise">Votre entreprise</p>
 
       <div class="champ">
-        <label for="p-societe">Nom de la société</label>
+        <label for="p-societe" data-t="l_societe">Nom de la société</label>
         <input type="text" id="p-societe" autocomplete="organization" />
       </div>
 
@@ -81,45 +81,45 @@
         <p class="aide" id="p-aide-identifiant"></p>
       </div>
 
-      <p class="section">Vous</p>
+      <p class="section" data-t="sec_vous">Vous</p>
 
       <div class="duo">
         <div class="champ">
-          <label for="p-prenom">Prénom</label>
+          <label for="p-prenom" data-t="l_prenom">Prénom</label>
           <input type="text" id="p-prenom" autocomplete="given-name" />
         </div>
         <div class="champ">
-          <label for="p-nom">Nom</label>
+          <label for="p-nom" data-t="l_nom">Nom</label>
           <input type="text" id="p-nom" autocomplete="family-name" />
         </div>
       </div>
 
       <div class="champ">
-        <label for="p-tel">Téléphone</label>
+        <label for="p-tel" data-t="l_tel">Téléphone</label>
         <input type="tel" id="p-tel" autocomplete="tel" />
       </div>
 
-      <p class="section">Adresse de livraison</p>
+      <p class="section" data-t="sec_livraison">Adresse de livraison</p>
 
       <div class="champ">
-        <label for="p-adresse">Rue et numéro</label>
+        <label for="p-adresse" data-t="l_adresse">Rue et numéro</label>
         <input type="text" id="p-adresse" autocomplete="street-address" />
       </div>
 
       <div class="duo duo-cp">
         <div class="champ">
-          <label for="p-cp">Code postal</label>
+          <label for="p-cp" data-t="l_cp">Code postal</label>
           <input type="text" id="p-cp" autocomplete="postal-code" />
         </div>
         <div class="champ">
-          <label for="p-ville">Ville</label>
+          <label for="p-ville" data-t="l_ville">Ville</label>
           <input type="text" id="p-ville" autocomplete="address-level2" />
         </div>
       </div>
 
       <div class="barre-action">
-        <button type="button" class="lien-sobre" id="b-profil-annuler">Annuler</button>
-        <button type="submit" class="bouton-plein bouton-court" id="b-profil">Enregistrer</button>
+        <button type="button" class="lien-sobre" id="b-profil-annuler" data-t="b_annuler">Annuler</button>
+        <button type="submit" class="bouton-plein bouton-court" id="b-profil" data-t="b_enregistrer">Enregistrer</button>
       </div>
     </form>
   </section>
@@ -128,47 +128,47 @@
   <section class="vue" data-vue="securite" hidden>
 
     <form class="bloc" id="form-email" novalidate>
-      <h2>Adresse de connexion</h2>
-      <p class="bloc-aide">C'est l'adresse avec laquelle vous vous connectez. La changer demande votre mot de passe.</p>
+      <h2 data-t="h_email">Adresse de connexion</h2>
+      <p class="bloc-aide" data-t="aide_email">C'est l'adresse avec laquelle vous vous connectez. La changer demande votre mot de passe.</p>
 
       <div class="message" id="msg-email" role="status"></div>
 
       <div class="champ">
-        <label for="e-email">Nouvelle adresse e-mail</label>
+        <label for="e-email" data-t="l_nouvel_email">Nouvelle adresse e-mail</label>
         <input type="email" id="e-email" autocomplete="email" />
       </div>
       <div class="champ">
-        <label for="e-mdp">Votre mot de passe</label>
+        <label for="e-mdp" data-t="l_votre_mdp">Votre mot de passe</label>
         <input type="password" id="e-mdp" autocomplete="current-password" />
       </div>
 
       <div class="barre-action">
-        <button type="submit" class="bouton-plein bouton-court" id="b-email">Changer l'adresse</button>
+        <button type="submit" class="bouton-plein bouton-court" id="b-email" data-t="b_changer_email">Changer l'adresse</button>
       </div>
     </form>
 
     <form class="bloc" id="form-mdp" novalidate>
-      <h2>Mot de passe</h2>
-      <p class="bloc-aide">Par précaution, le changer ferme toutes les autres sessions ouvertes sur d'autres appareils.</p>
+      <h2 data-t="h_mdp">Mot de passe</h2>
+      <p class="bloc-aide" data-t="aide_mdp_bloc">Par précaution, le changer ferme toutes les autres sessions ouvertes sur d'autres appareils.</p>
 
       <div class="message" id="msg-mdp" role="status"></div>
 
       <div class="champ">
-        <label for="m-actuel">Mot de passe actuel</label>
+        <label for="m-actuel" data-t="l_mdp_actuel">Mot de passe actuel</label>
         <input type="password" id="m-actuel" autocomplete="current-password" />
       </div>
       <div class="champ">
-        <label for="m-nouveau">Nouveau mot de passe</label>
+        <label for="m-nouveau" data-t="l_mdp_nouveau">Nouveau mot de passe</label>
         <input type="password" id="m-nouveau" autocomplete="new-password" />
-        <p class="aide">Huit caractères minimum.</p>
+        <p class="aide" data-t="aide_mdp">Huit caractères minimum.</p>
       </div>
       <div class="champ">
-        <label for="m-confirme">Confirmer le nouveau mot de passe</label>
+        <label for="m-confirme" data-t="l_mdp_confirme_nouveau">Confirmer le nouveau mot de passe</label>
         <input type="password" id="m-confirme" autocomplete="new-password" />
       </div>
 
       <div class="barre-action">
-        <button type="submit" class="bouton-plein bouton-court" id="b-mdp">Changer le mot de passe</button>
+        <button type="submit" class="bouton-plein bouton-court" id="b-mdp" data-t="b_changer_mdp">Changer le mot de passe</button>
       </div>
     </form>
 
@@ -177,13 +177,27 @@
   <!-- ───────────────────────── commandes ────────────────────────── -->
   <section class="vue" data-vue="commandes" hidden>
     <div class="bloc">
-      <h2>Mes commandes</h2>
-      <div id="commandes"><p class="vide">Chargement…</p></div>
+      <h2 data-t="h_commandes">Mes commandes</h2>
+      <div id="commandes"><p class="vide" data-t="chargement">Chargement…</p></div>
     </div>
   </section>
 
+  <!-- Discret, en pied : la barre du haut est déjà chargée sur téléphone,
+       et cette page s'ouvre parfois depuis un lien reçu par courriel. -->
+  <div class="pied-langues">
+    <span class="intitule" data-t="langue">Langue</span>
+    <div class="langues" role="group" data-t-aria="langue" aria-label="Langue">
+      <button type="button" data-langue="fr">FR</button>
+      <button type="button" data-langue="en">EN</button>
+      <button type="button" data-langue="nl">NL</button>
+      <button type="button" data-langue="de">DE</button>
+      <button type="button" data-langue="tr">TR</button>
+    </div>
+  </div>
+
 </main>
 
-<script src="/assets/js/compte.js?v=197"></script>
+<script src="/assets/js/compte-langues.js?v=198"></script>
+<script src="/assets/js/compte.js?v=198"></script>
 </body>
 </html>

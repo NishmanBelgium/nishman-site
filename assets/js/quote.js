@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "197";
+  const ASSET_V = "198";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
@@ -58,6 +58,7 @@
       vatHint: (n) => `${n} caractères attendus`,
       street: "Adresse (rue et numéro)", zip: "Code postal", city: "Ville", country: "Pays",
       shipMode: "Mode de réception", shipDelivery: "Livraison", shipPickup: "Retrait à Binche",
+      paysBE: "Belgique", paysFR: "France", paysLU: "Luxembourg",
       shipFee: "Frais de livraison", shipFree: "Livraison offerte", subTotal: "Sous-total HT",
       minBlock: (min, m) => `Minimum de commande en livraison : ${min} HT. Il vous manque ${m}. Ajoutez des produits, ou choisissez le retrait a Binche — sans minimum.`,
       cont: "Continuer", saved: "Vos coordonnées sont conservées sur cet appareil pour vos prochaines demandes.",
@@ -89,6 +90,7 @@
       vatHint: (n) => `${n} characters expected`,
       street: "Address (street and number)", zip: "Postcode", city: "City", country: "Country",
       shipMode: "Delivery method", shipDelivery: "Delivery", shipPickup: "Collection in Binche",
+      paysBE: "Belgium", paysFR: "France", paysLU: "Luxembourg",
       shipFee: "Delivery charge", shipFree: "Free delivery", subTotal: "Subtotal excl. VAT",
       minBlock: (min, m) => `Minimum order for delivery: ${min} excl. VAT. You are ${m} short. Add products, or choose collection in Binche — no minimum.`,
       cont: "Continue", saved: "Your details are kept on this device for your next requests.",
@@ -120,6 +122,7 @@
       vatHint: (n) => `${n} tekens verwacht`,
       street: "Adres (straat en nummer)", zip: "Postcode", city: "Stad", country: "Land",
       shipMode: "Wijze van ontvangst", shipDelivery: "Levering", shipPickup: "Afhalen in Binche",
+      paysBE: "België", paysFR: "Frankrijk", paysLU: "Luxemburg",
       shipFee: "Leveringskosten", shipFree: "Gratis levering", subTotal: "Subtotaal excl. btw",
       minBlock: (min, m) => `Minimumbestelling bij levering: ${min} excl. btw. Er ontbreekt nog ${m}. Voeg producten toe of kies afhalen in Binche — zonder minimum.`,
       cont: "Doorgaan", saved: "Uw gegevens worden op dit toestel bewaard voor volgende aanvragen.",
@@ -151,6 +154,7 @@
       vatHint: (n) => `${n} Zeichen erwartet`,
       street: "Adresse (Straße und Nummer)", zip: "PLZ", city: "Stadt", country: "Land",
       shipMode: "Art des Empfangs", shipDelivery: "Lieferung", shipPickup: "Abholung in Binche",
+      paysBE: "Belgien", paysFR: "Frankreich", paysLU: "Luxemburg",
       shipFee: "Versandkosten", shipFree: "Kostenlose Lieferung", subTotal: "Zwischensumme netto",
       minBlock: (min, m) => `Mindestbestellwert bei Lieferung: ${min} netto. Es fehlen ${m}. Fugen Sie Produkte hinzu oder wahlen Sie Abholung in Binche — ohne Mindestwert.`,
       cont: "Weiter", saved: "Ihre Daten werden auf diesem Gerät für künftige Anfragen gespeichert.",
@@ -182,6 +186,7 @@
       vatHint: (n) => `${n} karakter bekleniyor`,
       street: "Adres (cadde ve numara)", zip: "Posta kodu", city: "Şehir", country: "Ülke",
       shipMode: "Teslim şekli", shipDelivery: "Teslimat", shipPickup: "Binche'ten teslim alma",
+      paysBE: "Belçika", paysFR: "Fransa", paysLU: "Lüksemburg",
       shipFee: "Teslimat ücreti", shipFree: "Teslimat ücretsiz", subTotal: "Ara toplam (KDV hariç)",
       minBlock: (min, m) => `Teslimat icin minimum siparis: ${min} (KDV haric). ${m} eksik. Urun ekleyin veya Binche teslim almayi secin — minimum yok.`,
       cont: "Devam", saved: "Bilgileriniz sonraki talepleriniz için bu cihazda saklanır.",
@@ -672,6 +677,23 @@
       "t-donetitle": T.donetitle, "t-print2": T.print, "t-backcat": T.back,
     };
     Object.keys(map).forEach((id) => txt(id, map[id]));
+
+    // Les listes déroulantes : on traduit ce qui s'affiche, jamais la
+    // valeur, qui part telle quelle dans le devis et dans Odoo.
+    etiquetterOptions("f-country", {
+      Belgique: T.paysBE, France: T.paysFR, Luxembourg: T.paysLU,
+    });
+    etiquetterOptions("f-shipmode", {
+      livraison: T.shipDelivery, retrait: T.shipPickup,
+    });
+  }
+
+  function etiquetterOptions(id, libelles) {
+    const sel = $(id);
+    if (!sel) return;
+    for (const opt of sel.options) {
+      if (libelles[opt.value]) opt.textContent = libelles[opt.value];
+    }
   }
 
   // ---------- Initialisation ----------

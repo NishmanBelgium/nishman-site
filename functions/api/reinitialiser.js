@@ -8,17 +8,17 @@ import {
 
 export async function onRequestPost({ request, env }) {
   const db = env.DB;
-  if (!db) return erreur("La base de données n'est pas branchée.", 500);
+  if (!db) return erreur("La base de données n'est pas branchée.", 500, "base_absente");
 
   let corps;
   try { corps = await request.json(); }
-  catch (e) { return erreur("Requête illisible."); }
+  catch (e) { return erreur("Requête illisible.", 400, "illisible"); }
 
   const jeton = String(corps.jeton || "");
   const mdp = String(corps.motdepasse || "");
-  if (!jeton) return erreur("Lien incomplet.", 400);
+  if (!jeton) return erreur("Lien incomplet.", 400, "lien_incomplet");
   if (!motDePasseValide(mdp))
-    return erreur("Le mot de passe doit faire au moins 8 caractères.");
+    return erreur("Le mot de passe doit faire au moins 8 caractères.", 400, "mdp_court");
 
   const ligne = await db.prepare(`
     SELECT r.compte_id, r.expire_le, r.utilise, c.etat
@@ -32,10 +32,10 @@ export async function onRequestPost({ request, env }) {
     || new Date(ligne.expire_le) < new Date();
 
   if (perime) {
-    return erreur("Ce lien n'est plus valable. Demandez-en un nouveau.", 410);
+    return erreur("Ce lien n'est plus valable. Demandez-en un nouveau.", 410, "lien_perime");
   }
   if (ligne.etat !== "actif") {
-    return erreur("Ce compte est suspendu. Contactez-nous à contact@nishman.be.", 403);
+    return erreur("Ce compte est suspendu. Contactez-nous à contact@nishman.be.", 403, "compte_suspendu");
   }
 
   const empreinte = await hacher(mdp);
@@ -56,5 +56,5 @@ export async function onRequestPost({ request, env }) {
 }
 
 export async function onRequest() {
-  return erreur("Méthode non autorisée.", 405);
+  return erreur("Méthode non autorisée.", 405, "methode");
 }

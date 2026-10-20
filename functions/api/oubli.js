@@ -14,21 +14,24 @@ import {
 const PORTIER_DEFAUT =
   "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec";
 
+// Réponse volontairement identique que le compte existe ou non : sinon la page
+// devient un outil pour savoir qui est client.
 const REPONSE = {
   ok: true,
   message: "Si un compte existe avec cette adresse, vous allez recevoir un lien dans quelques instants. Pensez à regarder vos courriers indésirables.",
+  code: "lien_envoye",
 };
 
 export async function onRequestPost({ request, env }) {
   const db = env.DB;
-  if (!db) return erreur("La base de données n'est pas branchée.", 500);
+  if (!db) return erreur("La base de données n'est pas branchée.", 500, "base_absente");
 
   let corps;
   try { corps = await request.json(); }
-  catch (e) { return erreur("Requête illisible."); }
+  catch (e) { return erreur("Requête illisible.", 400, "illisible"); }
 
   const email = String(corps.email || "").trim();
-  if (!emailValide(email)) return erreur("Cette adresse e-mail n'est pas valide.");
+  if (!emailValide(email)) return erreur("Cette adresse e-mail n'est pas valide.", 400, "email_invalide");
 
   const cle = cleEmail(email);
 
@@ -66,5 +69,5 @@ export async function onRequestPost({ request, env }) {
 }
 
 export async function onRequest() {
-  return erreur("Méthode non autorisée.", 405);
+  return erreur("Méthode non autorisée.", 405, "methode");
 }

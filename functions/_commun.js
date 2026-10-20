@@ -16,8 +16,13 @@ export function json(donnees, statut = 200, entetes = {}) {
   });
 }
 
-export function erreur(message, statut = 400) {
-  return json({ erreur: message }, statut);
+// Le message français part quand même : il sert de secours si le navigateur
+// ne connaît pas le code (version du site plus ancienne que celle du serveur).
+export function erreur(message, statut = 400, code = "", extra = null) {
+  const corps = { erreur: message };
+  if (code) corps.code = code;
+  if (extra) Object.assign(corps, extra);
+  return json(corps, statut);
 }
 
 /* --- Mots de passe ------------------------------------------------------ */
@@ -292,19 +297,22 @@ export function identifiantFiscal(pays, saisie) {
   const num = chiffresSeuls(saisie);
   if (pays === "FR") {
     if (num.length !== 14) {
-      return { erreur: "Le SIRET compte 14 chiffres. Vous en avez saisi " + num.length + "." };
+      return { erreur: "Le SIRET compte 14 chiffres. Vous en avez saisi " + num.length + ".",
+               code: "siret_longueur", attendu: 14, saisi: num.length };
     }
     return { siret: num, tva: tvaDepuisSiret(num), coherent: siretCoherent(num) };
   }
   if (pays === "BE") {
     const n = num.length === 9 ? "0" + num : num;   // beaucoup oublient le zéro de tête
     if (n.length !== 10) {
-      return { erreur: "Le numéro d'entreprise compte 10 chiffres. Vous en avez saisi " + num.length + "." };
+      return { erreur: "Le numéro d'entreprise compte 10 chiffres. Vous en avez saisi " + num.length + ".",
+               code: "tva_longueur", attendu: 10, saisi: num.length };
     }
     return { siret: null, tva: "BE" + n, coherent: tvaBelgeCoherente(n) };
   }
   if (num.length !== 8) {
-    return { erreur: "Le numéro de TVA luxembourgeois compte 8 chiffres. Vous en avez saisi " + num.length + "." };
+    return { erreur: "Le numéro de TVA luxembourgeois compte 8 chiffres. Vous en avez saisi " + num.length + ".",
+             code: "tva_longueur", attendu: 8, saisi: num.length };
   }
   return { siret: null, tva: "LU" + num, coherent: tvaLuxCoherente(num) };
 }
