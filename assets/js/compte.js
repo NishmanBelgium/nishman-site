@@ -675,12 +675,118 @@
         "<th>" + echappe(t("t_etat")) + "</th>" +
         '<th class="nombre">' + echappe(t("t_total")) + "</th>" +
         "</tr></thead><tbody>";
+
       for (var i = 0; i < lignes.length; i++) {
         var c = lignes[i];
-        html += "<tr><td>" + echappe(c.reference) + "</td>" +
+        // L'état arrive d'Odoo sous forme de code ; le texte français qui
+        // l'accompagne ne sert que si la langue ne connaît pas ce code.
+        var etat = (T.etats || {})[c.etat_code] || c.etat || "";
+        var ouvrable = c.id != null;
+
+        html += "<tr" +
+          (ouvrable
+            ? ' class="cmd-ouvrable" data-id="' + echappe(c.id) + '"' +
+              ' tabindex="0" role="button" aria-expanded="false"' +
+              ' title="' + echappe(t("det_voir")) + '"'
+            : "") +
+          "><td>" + echappe(c.reference) + "</td>" +
           "<td>" + dateCourte(c.date) + "</td>" +
-          "<td>" + echappe(c.etat) + "</td>" +
+          "<td>" + echappe(etat) + "</td>" +
           '<td class="nombre">' + euros(c.total_ht) + "</td></tr>";
+
+        if (ouvrable) {
+          html += '<tr class="cmd-detail" data-detail="' + echappe(c.id) +
+                  '" hidden><td colspan="4"></td></tr>';
+        }
+      }
+      return html + "</tbody></table>";
+    }
+
+    /* ---- le détail d'une commande ---- */
+
+    // La zone, elle, ne change jamais : on écoute sur elle plutôt que sur
+    // des lignes qui sont réécrites à chaque chargement.
+    var zoneCmd = $("#commandes");
+
+    zoneCmd.addEventListener("click", function (e) {
+      var tr = e.target.closest("tr.cmd-ouvrable");
+      if (tr) basculerDetail(tr);
+    });
+
+    // Une ligne qui se déplie à la souris doit se déplier au clavier.
+    zoneCmd.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
+      var tr = e.target.closest ? e.target.closest("tr.cmd-ouvrable") : null;
+      if (!tr) return;
+      e.preventDefault();
+      basculerDetail(tr);
+    });
+
+    function basculerDetail(tr) {
+      var id = tr.getAttribute("data-id");
+      var det = zoneCmd.querySelector('tr.cmd-detail[data-detail="' + id + '"]');
+      if (!det) return;
+
+      if (!det.hidden) {
+        det.hidden = true;
+        tr.setAttribute("aria-expanded", "false");
+        return;
+      }
+      det.hidden = false;
+      tr.setAttribute("aria-expanded", "true");
+
+      // Une commande déjà lue ne se redemande pas : son contenu ne bouge plus.
+      if (det.getAttribute("data-charge")) return;
+
+      var cellule = det.firstElementChild;
+      cellule.innerHTML = note(t("det_chargement"));
+
+      fetch("/api/commande?id=" + encodeURIComponent(id), {
+        headers: { accept: "application/json" },
+        credentials: "same-origin",
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d || !d.pret || !d.lignes) {
+            cellule.innerHTML = note(messageServeur(d, t("det_echec")));
+            return;
+          }
+          if (!d.lignes.length) {
+            cellule.innerHTML = note(t("det_vide"));
+            return;
+          }
+          cellule.innerHTML = detail(d.lignes);
+          det.setAttribute("data-charge", "1");
+        })
+        .catch(function () { cellule.innerHTML = note(t("det_echec")); });
+    }
+
+    function note(texte) {
+      return '<p class="det-note">' + echappe(texte) + "</p>";
+    }
+
+    // Deux décimales au plus, et pas de « 2,00 » là où « 2 » suffit.
+    function nombre(n) {
+      if (n == null || isNaN(n)) return "—";
+      return String(Math.round(Number(n) * 100) / 100).replace(".", ",");
+    }
+
+    function detail(lignes) {
+      var html = '<table class="table-det"><thead><tr>' +
+        "<th>" + echappe(t("det_produit")) + "</th>" +
+        '<th class="nombre">' + echappe(t("det_quantite")) + "</th>" +
+        '<th class="nombre">' + echappe(t("det_pu")) + "</th>" +
+        '<th class="nombre">' + echappe(t("det_remise")) + "</th>" +
+        '<th class="nombre">' + echappe(t("det_total")) + "</th>" +
+        "</tr></thead><tbody>";
+
+      for (var i = 0; i < lignes.length; i++) {
+        var l = lignes[i];
+        html += "<tr><td>" + echappe(l.designation) + "</td>" +
+          '<td class="nombre">' + nombre(l.quantite) + "</td>" +
+          '<td class="nombre">' + euros(l.prix_unitaire) + "</td>" +
+          '<td class="nombre">' + (l.remise ? nombre(l.remise) + " %" : "—") + "</td>" +
+          '<td class="nombre">' + euros(l.total) + "</td></tr>";
       }
       return html + "</tbody></table>";
     }

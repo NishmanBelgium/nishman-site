@@ -1,0 +1,67 @@
+NISHMAN — étape 200
+===================
+
+POUR LA BRANCHE NishmanCloudflare.
+
+L'INTÉRIEUR DES DEVIS
+=====================
+Dans « Mes commandes », chaque ligne se déplie d'un clic. Le client voit
+ce qu'il a commandé : chaque produit, la quantité, le prix unitaire, la
+remise s'il y en a une, le total de la ligne.
+
+Un chevron à gauche de la référence indique les lignes qu'on peut ouvrir ;
+il pivote quand c'est déplié. Un deuxième clic referme. Ça marche aussi au
+clavier, pour qui navigue sans souris.
+
+Le détail n'est lu dans Odoo qu'au moment où on l'ouvre, et une seule fois
+par commande : ouvrir et refermer dix fois ne fait pas dix allers-retours.
+
+CE QUI EMPÊCHE DE LIRE LE DEVIS DU VOISIN
+=========================================
+Le point délicat de ce genre de page : si le site demandait simplement
+« donne-moi la commande numéro 159 », il suffirait de changer ce numéro
+dans l'adresse pour lire les commandes d'un autre salon.
+
+Le site ne demande jamais ça. Il demande « la commande numéro 159 DE ce
+client-ci », les deux critères ensemble. Une commande qui n'est pas la
+sienne ne remonte pas du tout — elle n'existe pas, de son point de vue.
+Et les lignes ne sont demandées qu'après ce contrôle.
+
+LES ÉTATS SONT ENFIN TRADUITS
+=============================
+La colonne « État » affichait Devis / Confirmée / Clôturée en français
+quelle que soit la langue choisie. Je vous l'avais signalé, c'est réglé :
+Quotation, Offerte, Angebot, Teklif selon la langue. Le serveur envoie
+maintenant le code d'état, et c'est la page qui choisit le mot.
+
+À FAIRE
+=======
+Le dépôt, puis RELANCER LE DÉPLOIEMENT.
+
+Ce lot ajoute un nouveau point d'entrée serveur (functions/api/commande.js).
+Contrairement aux lots précédents qui ne touchaient que des pages, celui-ci
+ne prendra effet qu'après un redéploiement — même manipulation que tout à
+l'heure : onglet Déploiements -> première ligne de « All deployments » ->
+bouton ••• -> Relancer le déploiement.
+
+Aucune variable à ajouter, aucune base à modifier.
+
+VÉRIFIÉ AVANT ENVOI
+===================
+Au navigateur, les cinq langues l'une après l'autre : dépliage d'une
+commande, en-têtes du détail traduits, quantités et montants au bon
+format, repli, et les états de commande dans la bonne langue. Aucune
+erreur JavaScript.
+
+Et le contrôle d'appartenance a été vérifié séparément, sur la requête
+réellement envoyée à Odoo : elle porte bien sur la commande ET sur le
+client, jamais sur la commande seule.
+
+CE QUI RESTE EN SUSPENS
+=======================
+Le rapprochement entre un compte du site et une fiche client Odoo se fait
+sur l'adresse e-mail. Votre test de ce soir a montré que votre script
+Google, lui, range les devis par numéro de TVA : les deux ne se rencontrent
+pas. Tant que ce point n'est pas tranché, un client ne verra ni son
+historique ni ce détail. C'est la décision qui vous attend — rapprochement
+automatique par TVA, ou validé par vous.

@@ -57,8 +57,22 @@ export async function partenaireParEmail(env, email) {
 export async function commandesDuClient(env, partnerId, limite = 50) {
   return appel(env, "sale.order", "search_read",
     [[["partner_id", "=", partnerId]],
-     ["name", "date_order", "state", "amount_untaxed", "amount_total", "delivery_status", "invoice_status"]],
+     ["id", "name", "date_order", "state", "amount_untaxed", "amount_total",
+      "delivery_status", "invoice_status"]],
     { limit: limite, order: "date_order desc" });
+}
+
+// Relit une commande en exigeant qu'elle soit AU client demandé. Le filtre
+// porte sur les deux critères à la fois : une commande qui n'est pas la
+// sienne ne revient pas, plutôt que de revenir et d'être écartée ensuite.
+// C'est ce qui empêche de lire le devis du voisin en changeant un numéro
+// dans l'adresse.
+export async function commandeDuClient(env, partnerId, commandeId) {
+  const r = await appel(env, "sale.order", "search_read",
+    [[["id", "=", commandeId], ["partner_id", "=", partnerId]],
+     ["id", "name", "date_order", "state", "amount_untaxed", "amount_total"]],
+    { limit: 1 });
+  return r && r[0] ? r[0] : null;
 }
 
 export async function lignesDeCommande(env, commandeId) {

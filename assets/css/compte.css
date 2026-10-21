@@ -311,3 +311,51 @@
   font-size: 12.5px; text-transform: uppercase; letter-spacing: .08em;
   color: var(--ink-faint);
 }
+
+/* ── détail d'une commande ────────────────────────────────────────────── */
+/* La ligne de commande se déplie sur place : le client garde sa liste sous
+   les yeux au lieu de naviguer vers une page et de revenir. */
+
+.table-cmd tr.cmd-ouvrable { cursor: pointer; }
+.table-cmd tr.cmd-ouvrable:hover > td { background: var(--bg-soft); }
+.table-cmd tr.cmd-ouvrable:focus-visible {
+  outline: 2px solid var(--gold); outline-offset: -2px;
+}
+
+/* Un repère discret : le premier champ s'orne d'un chevron qui pivote. */
+.table-cmd tr.cmd-ouvrable > td:first-child::before {
+  content: "›";
+  display: inline-block;
+  margin-right: 9px;
+  color: var(--ink-faint);
+  transition: transform .18s var(--ease), color .18s var(--ease);
+}
+.table-cmd tr.cmd-ouvrable[aria-expanded="true"] > td:first-child::before {
+  transform: rotate(90deg); color: var(--gold-deep);
+}
+
+.table-cmd tr.cmd-detail > td {
+  padding: 0 12px 20px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--line);
+}
+
+.det-note { padding: 18px 4px; color: var(--ink-soft); font-size: 14px; }
+
+.table-det { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.table-det th {
+  text-align: left; padding: 10px 10px 8px;
+  font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--ink-faint); border-bottom: 1px solid var(--line);
+}
+.table-det td { padding: 9px 10px; border-bottom: 1px solid var(--line); }
+.table-det tr:last-child td { border-bottom: 0; }
+.table-det .nombre { text-align: right; font-variant-numeric: tabular-nums; }
+.table-det td:first-child { color: var(--ink); }
+
+/* Sur téléphone, la remise saute avant le reste : c'est la colonne dont on
+   se passe le plus facilement. */
+@media (max-width: 560px) {
+  .table-det th:nth-child(4), .table-det td:nth-child(4) { display: none; }
+  .table-det th:nth-child(3), .table-det td:nth-child(3) { display: none; }
+}

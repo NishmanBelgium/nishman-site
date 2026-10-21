@@ -33,9 +33,13 @@ export async function onRequestGet({ request, env }) {
 
     const brut = await commandesDuClient(env, partnerId);
     const commandes = brut.map((c) => ({
+      id: c.id,
       reference: c.name,
       date: c.date_order,
+      // Le texte français sert de secours ; c'est le code que le navigateur
+      // traduit dans la langue choisie.
       etat: etatLisible(c.state),
+      etat_code: c.state,
       total_ht: c.amount_untaxed,
       total: c.amount_total,
       livraison: c.delivery_status || null,
