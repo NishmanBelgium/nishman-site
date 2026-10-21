@@ -62,6 +62,8 @@ export async function onRequestGet({ request, env }) {
     limits: data.limits || null,
     societe: compte ? compte.salon : null,
     email: compte ? compte.email : null,
+    // Le pays décide du seuil de port affiché dans le panier.
+    pays: compte ? compte.pays : null,
   }, 200, cookie ? { "set-cookie": cookie } : {});
 }
 

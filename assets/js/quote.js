@@ -8,12 +8,28 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "201";
+  const ASSET_V = "202";
 
   // Mêmes conditions commerciales que le catalogue.
-  // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
-  // n'est soumis a aucun minimum : c'est le transport qu'il protege.
-  const MIN_ORDER = 300;
+  //
+  // Frais de port en euros HT, par pays de livraison. Au-delà du seuil le
+  // transport est offert ; en dessous il est facturé au forfait. Il n'y a
+  // plus de minimum de commande : une petite commande est possible, elle
+  // paie simplement son transport. Le retrait à Binche ne coûte rien.
+  const PORT = {
+    BE: { seuil: 300, forfait: 10 },
+    FR: { seuil: 500, forfait: 15 },
+    LU: { seuil: 500, forfait: 15 },
+  };
+  const PAYS_CODE = { Belgique: "BE", France: "FR", Luxembourg: "LU" };
+
+  // Le seuil s'apprécie sur le montant réellement dû pour la marchandise,
+  // remise déduite.
+  function fraisDePort(pays, montant, retrait) {
+    if (retrait) return 0;
+    const regle = PORT[PAYS_CODE[pays]] || PORT.BE;
+    return montant >= regle.seuil ? 0 : regle.forfait;
+  }
 
   // ---------- Code promo ----------
   // Un seul code actif, sans date de fin ni minimum de commande, accepte
@@ -63,7 +79,7 @@
       loginText: "Votre sélection est conservée. Connectez-vous ou créez votre compte professionnel : vous reviendrez ici avec vos coordonnées déjà remplies.",
       loginBtn: "Se connecter", createBtn: "Créer mon compte",
       shipFee: "Frais de livraison", shipFree: "Livraison offerte", subTotal: "Sous-total HT",
-      minBlock: (min, m) => `Minimum de commande en livraison : ${min} HT. Il vous manque ${m}. Ajoutez des produits, ou choisissez le retrait a Binche — sans minimum.`,
+      portManque: (m, seuil) => `Ajoutez ${m} pour que la livraison soit offerte (à partir de ${seuil} HT).`,
       cont: "Continuer", saved: "Vos coordonnées sont conservées sur cet appareil pour vos prochaines demandes.",
       doctitle: "DEMANDE DE DEVIS", ref: "Référence", date: "Date", client: "Client",
       thProd: "Produit", thEan: "EAN", thU: "Unités", thB: "Cartons", thTot: "Total pièces",
@@ -98,7 +114,7 @@
       loginText: "Your selection is kept. Sign in or create your trade account: you will come back here with your details already filled in.",
       loginBtn: "Sign in", createBtn: "Create my account",
       shipFee: "Delivery charge", shipFree: "Free delivery", subTotal: "Subtotal excl. VAT",
-      minBlock: (min, m) => `Minimum order for delivery: ${min} excl. VAT. You are ${m} short. Add products, or choose collection in Binche — no minimum.`,
+      portManque: (m, seuil) => `Add ${m} more and delivery is free (from ${seuil} excl. VAT).`,
       cont: "Continue", saved: "Your details are kept on this device for your next requests.",
       doctitle: "QUOTATION REQUEST", ref: "Reference", date: "Date", client: "Customer",
       thProd: "Product", thEan: "EAN", thU: "Units", thB: "Boxes", thTot: "Total pcs",
@@ -133,7 +149,7 @@
       loginText: "Uw selectie blijft bewaard. Meld u aan of maak uw zakelijk account aan: u komt hier terug met uw gegevens al ingevuld.",
       loginBtn: "Aanmelden", createBtn: "Mijn account aanmaken",
       shipFee: "Leveringskosten", shipFree: "Gratis levering", subTotal: "Subtotaal excl. btw",
-      minBlock: (min, m) => `Minimumbestelling bij levering: ${min} excl. btw. Er ontbreekt nog ${m}. Voeg producten toe of kies afhalen in Binche — zonder minimum.`,
+      portManque: (m, seuil) => `Voeg nog ${m} toe en de levering is gratis (vanaf ${seuil} excl. btw).`,
       cont: "Doorgaan", saved: "Uw gegevens worden op dit toestel bewaard voor volgende aanvragen.",
       doctitle: "OFFERTEAANVRAAG", ref: "Referentie", date: "Datum", client: "Klant",
       thProd: "Product", thEan: "EAN", thU: "Stuks", thB: "Dozen", thTot: "Totaal stuks",
@@ -168,7 +184,7 @@
       loginText: "Ihre Auswahl bleibt erhalten. Melden Sie sich an oder erstellen Sie Ihr Händlerkonto: Sie kehren hierher zurück, Ihre Daten bereits ausgefüllt.",
       loginBtn: "Anmelden", createBtn: "Mein Konto erstellen",
       shipFee: "Versandkosten", shipFree: "Kostenlose Lieferung", subTotal: "Zwischensumme netto",
-      minBlock: (min, m) => `Mindestbestellwert bei Lieferung: ${min} netto. Es fehlen ${m}. Fugen Sie Produkte hinzu oder wahlen Sie Abholung in Binche — ohne Mindestwert.`,
+      portManque: (m, seuil) => `Noch ${m} und die Lieferung ist kostenlos (ab ${seuil} netto).`,
       cont: "Weiter", saved: "Ihre Daten werden auf diesem Gerät für künftige Anfragen gespeichert.",
       doctitle: "ANGEBOTSANFRAGE", ref: "Referenz", date: "Datum", client: "Kunde",
       thProd: "Produkt", thEan: "EAN", thU: "Stück", thB: "Kartons", thTot: "Stück gesamt",
@@ -203,7 +219,7 @@
       loginText: "Seçiminiz korunur. Giriş yapın veya profesyonel hesabınızı oluşturun: bilgileriniz önceden doldurulmuş olarak buraya döneceksiniz.",
       loginBtn: "Giriş yap", createBtn: "Hesabımı oluştur",
       shipFee: "Teslimat ücreti", shipFree: "Teslimat ücretsiz", subTotal: "Ara toplam (KDV hariç)",
-      minBlock: (min, m) => `Teslimat icin minimum siparis: ${min} (KDV haric). ${m} eksik. Urun ekleyin veya Binche teslim almayi secin — minimum yok.`,
+      portManque: (m, seuil) => `${m} daha ekleyin, teslimat ücretsiz olsun (${seuil} KDV hariç üzeri).`,
       cont: "Devam", saved: "Bilgileriniz sonraki talepleriniz için bu cihazda saklanır.",
       doctitle: "FİYAT TEKLİFİ TALEBİ", ref: "Referans", date: "Tarih", client: "Müşteri",
       thProd: "Ürün", thEan: "EAN", thU: "Adet", thB: "Koli", thTot: "Toplam adet",
@@ -436,14 +452,24 @@
       }
     }
 
-    // Plus de frais de livraison : la ligne reste dans la page mais ne
-    // s'affiche jamais, pour ne pas casser la mise en page du document.
-    const rowShip = $("doc-ship-row");
-    if (rowShip) rowShip.hidden = true;
+    // Frais de port : offerts au-delà du seuil du pays, forfaitaires en
+    // dessous, nuls en retrait sur place.
+    const port = (showPrices && total > 0)
+      ? fraisDePort(client.country, total, retrait) : 0;
 
+    const rowShip = $("doc-ship-row");
+    if (rowShip) {
+      rowShip.hidden = !(showPrices && total > 0 && !retrait);
+      if (!rowShip.hidden) {
+        txt("doc-ship-label", T.shipFee);
+        txt("doc-ship-value", port > 0 ? money(port) : T.shipFree);
+      }
+    }
+
+    const aPayer = Math.round((total + port) * 100) / 100;
     if (showPrices && total > 0) {
       $("doc-total-row").hidden = false;
-      txt("doc-total", money(total));
+      txt("doc-total", money(aPayer));
     } else {
       $("doc-total-row").hidden = true;
     }
@@ -453,22 +479,29 @@
       window.offreMaj(cadeaux);
     }
 
-    // Minimum de commande : bloquant en livraison, jamais en retrait.
-    const manque = (!retrait && showPrices && total > 0 && total < MIN_ORDER)
-      ? MIN_ORDER - total : 0;
+    // Plus rien ne bloque l'envoi. On se contente de dire ce qu'il
+    // manquerait pour que le transport soit offert : c'est une invitation
+    // à compléter la commande, pas une barrière.
+    const regle = PORT[PAYS_CODE[client.country]] || PORT.BE;
+    const manquePort = (!retrait && showPrices && port > 0)
+      ? Math.round((regle.seuil - total) * 100) / 100 : 0;
+
     const btn = $("btn-send"), avert = $("min-warn");
     if (btn) {
-      btn.disabled = manque > 0;
-      btn.classList.toggle("cta-bloque", manque > 0);
+      btn.disabled = false;
+      btn.classList.remove("cta-bloque");
     }
     if (avert) {
-      avert.hidden = manque <= 0;
-      if (manque > 0) avert.textContent = T.minBlock(money(MIN_ORDER), money(manque));
+      avert.hidden = manquePort <= 0;
+      if (manquePort > 0) {
+        avert.textContent = T.portManque(money(manquePort), money(regle.seuil));
+      }
     }
 
-    return { lines: toutes, total: total, subTotal: brut, shipping: 0,
+    return { lines: toutes, total: aPayer, subTotal: brut, shipping: port,
+             goods: total,
              promo: promoOk ? PROMO_CODE : "", discount: remise,
-             pickup: retrait, showPrices: showPrices, manque: manque };
+             pickup: retrait, showPrices: showPrices, manque: 0 };
   }
 
   // ---------- Formulaire ----------

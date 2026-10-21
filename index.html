@@ -23,15 +23,15 @@
     rel="stylesheet"
   />
 
-  <link rel="manifest" href="/manifest.json?v=201" />
+  <link rel="manifest" href="/manifest.json?v=202" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Nishman" />
-  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=201" />
+  <link rel="apple-touch-icon" href="/assets/pwa/icon-192.png?v=202" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=201" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=202" />
 </head>
 <body class="catalog-body">
 
@@ -90,6 +90,34 @@
           </svg>
           <span class="mon-compte-mot">Mon compte</span>
         </a>
+      </div>
+    </div>
+
+
+    <!-- Conditions de livraison, par pays. Posées ici plutôt que dans le
+         pied de page : c'est au moment de composer sa commande qu'elles
+         comptent, pas une fois qu'on a fini de lire. -->
+    <div class="ban-port" id="ban-port" role="note">
+      <div class="ban-port-cell">
+        <svg class="ban-port-ico" viewBox="0 0 24 24" aria-hidden="true" width="17" height="17">
+          <path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+            stroke-linejoin="round" d="M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19.5a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2zM17.5 19.5a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2z"/>
+        </svg>
+        <span id="ban-be"></span>
+      </div>
+      <div class="ban-port-cell">
+        <svg class="ban-port-ico" viewBox="0 0 24 24" aria-hidden="true" width="17" height="17">
+          <path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+            stroke-linejoin="round" d="M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19.5a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2zM17.5 19.5a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2z"/>
+        </svg>
+        <span id="ban-fr"></span>
+      </div>
+      <div class="ban-port-cell ban-port-retrait">
+        <svg class="ban-port-ico" viewBox="0 0 24 24" aria-hidden="true" width="17" height="17">
+          <path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"
+            stroke-linejoin="round" d="M4 9h16v11H4zM4 9l1.6-4h12.8L20 9M9 20v-6h6v6"/>
+        </svg>
+        <span id="ban-retrait"></span>
       </div>
     </div>
 
@@ -201,6 +229,7 @@
         <p class="access-desc" id="access-desc"></p>
         <a class="access-submit" id="access-login" href="/pro/connexion/"></a>
         <a class="access-link" id="access-create" href="/pro/connexion/?creer"></a>
+        <button class="access-passer" id="access-continue" type="button" hidden></button>
       </div>
     </div>
   </div>
@@ -212,9 +241,9 @@
     </div>
   </div>
 
-  <script src="/assets/js/config.js?v=201"></script>
-  <script src="/assets/js/catalog.js?v=201"></script>
-  <script src="/assets/js/offre.js?v=201"></script>
+  <script src="/assets/js/config.js?v=202"></script>
+  <script src="/assets/js/catalog.js?v=202"></script>
+  <script src="/assets/js/offre.js?v=202"></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 </body>
 </html>

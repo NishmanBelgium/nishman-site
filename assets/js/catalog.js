@@ -16,13 +16,19 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "201";
+  const ASSET_V = "202";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
   // Minimum de commande pour une LIVRAISON, en euros HT. Le retrait sur
   // place n'est soumis à aucun minimum.
-  const MIN_ORDER = 300;
+  // Frais de port HT par pays de livraison : offerts au-delà du seuil,
+  // forfaitaires en dessous. Il n'y a plus de minimum de commande.
+  const PORT = {
+    BE: { seuil: 300, forfait: 10 },
+    FR: { seuil: 500, forfait: 15 },
+    LU: { seuil: 500, forfait: 15 },
+  };
 
   const STORAGE_KEY = "nishman_selection_v1";
 
@@ -64,6 +70,10 @@
       articles: (n) => n + " article" + (n > 1 ? "s" : ""),
       seeSelection: "voir ma sélection", discover: "Découvrir",
       askPrice: "Prix sur demande", proAccess: "Accès professionnel",
+      priceLoading: "Chargement des tarifs…",
+      welcomeTitle: "Catalogue professionnel",
+      welcomeText: "Ce catalogue s'adresse aux salons de coiffure et aux barbiers. Les tarifs affichés sont nos prix professionnels. Pour commander, il faut un compte — la création est immédiate et gratuite.",
+      welcomeSkip: "Continuer la visite",
       accountNeeded: "Pour envoyer une demande de devis, il faut un compte professionnel. La création est immédiate et gratuite.",
       accountLogin: "Se connecter",
       accountCreate: "Créer un compte professionnel",
@@ -75,9 +85,13 @@
       clearConfirm: "Vider tout le panier ?",
       toastCleared: "Panier vidé",
       totalHT: "Total HT", salesTeam: "Service commercial Nishman",
-      minLeft: (m) => `Encore ${m} pour atteindre le minimum de commande`,
-      minPickup: "Minimum 300 € HT en livraison — aucun minimum en retrait sur place.",
-      minOk: "Minimum de commande atteint",
+      portManque: (m, seuil) => `Encore ${m} et la livraison est offerte`,
+      portOffert: "Livraison offerte sur cette commande",
+      portRegles: "Livraison offerte dès 300 € HT en Belgique, dès 500 € en France et au Luxembourg.",
+      portRetrait: "Retrait à Binche : toujours gratuit.",
+      banBE: "Belgique — livraison offerte dès 300 € HT, sinon 10 €",
+      banFR: "France et Luxembourg — offerte dès 500 € HT, sinon 15 €",
+      banRetrait: "Retrait à Binche — toujours gratuit",
       contactTitle: "Une question ? Écrivez-nous", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Bonjour, j'ai une question concernant les produits Nishman.",
       outOfStock: "Momentanément indisponible",
@@ -109,6 +123,10 @@
       articles: (n) => n + " item" + (n > 1 ? "s" : ""),
       seeSelection: "view my selection", discover: "Discover",
       askPrice: "Price on request", proAccess: "Professional access",
+      priceLoading: "Loading prices…",
+      welcomeTitle: "Trade catalogue",
+      welcomeText: "This catalogue is for hair salons and barbershops. The prices shown are our trade prices. An account is required to order — creating one is free and immediate.",
+      welcomeSkip: "Keep browsing",
       accountNeeded: "To send a quote request you need a trade account. Creating one is free and takes a minute.",
       accountLogin: "Log in",
       accountCreate: "Create a trade account",
@@ -120,9 +138,13 @@
       clearConfirm: "Empty the whole cart?",
       toastCleared: "Cart cleared",
       totalHT: "Total excl. VAT", salesTeam: "Nishman sales team",
-      minLeft: (m) => `${m} more to reach the minimum order`,
-      minPickup: "Minimum €300 excl. VAT for delivery — no minimum for collection.",
-      minOk: "Minimum order reached",
+      portManque: (m, seuil) => `${m} more and delivery is free`,
+      portOffert: "Free delivery on this order",
+      portRegles: "Free delivery from €300 excl. VAT in Belgium, from €500 in France and Luxembourg.",
+      portRetrait: "Collection in Binche: always free.",
+      banBE: "Belgium — free delivery from €300 excl. VAT, otherwise €10",
+      banFR: "France and Luxembourg — free from €500 excl. VAT, otherwise €15",
+      banRetrait: "Collection in Binche — always free",
       contactTitle: "A question? Write to us", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hello, I have a question about Nishman products.",
       outOfStock: "Temporarily unavailable",
@@ -154,6 +176,10 @@
       articles: (n) => n + " artikel" + (n > 1 ? "en" : ""),
       seeSelection: "bekijk mijn selectie", discover: "Ontdekken",
       askPrice: "Prijs op aanvraag", proAccess: "Professionele toegang",
+      priceLoading: "Prijzen laden…",
+      welcomeTitle: "Vakcatalogus",
+      welcomeText: "Deze catalogus is bedoeld voor kapsalons en barbershops. De getoonde tarieven zijn onze vakprijzen. Om te bestellen hebt u een account nodig — aanmaken is gratis en onmiddellijk.",
+      welcomeSkip: "Verder kijken",
       accountNeeded: "Om een offerteaanvraag te versturen hebt u een zakelijk account nodig. Aanmaken is gratis en onmiddellijk.",
       accountLogin: "Aanmelden",
       accountCreate: "Een professioneel account aanmaken",
@@ -165,9 +191,13 @@
       clearConfirm: "De hele mand legen?",
       toastCleared: "Mand geleegd",
       totalHT: "Totaal excl. btw", salesTeam: "Nishman verkoopdienst",
-      minLeft: (m) => `Nog ${m} tot het minimumbedrag`,
-      minPickup: "Minimum € 300 excl. btw bij levering — geen minimum bij afhalen.",
-      minOk: "Minimumbedrag bereikt",
+      portManque: (m, seuil) => `Nog ${m} en de levering is gratis`,
+      portOffert: "Gratis levering op deze bestelling",
+      portRegles: "Gratis levering vanaf € 300 excl. btw in België, vanaf € 500 in Frankrijk en Luxemburg.",
+      portRetrait: "Afhalen in Binche: altijd gratis.",
+      banBE: "België — gratis levering vanaf € 300 excl. btw, anders € 10",
+      banFR: "Frankrijk en Luxemburg — gratis vanaf € 500 excl. btw, anders € 15",
+      banRetrait: "Afhalen in Binche — altijd gratis",
       contactTitle: "Een vraag? Schrijf ons", contactWa: "WhatsApp", contactMail: "E-mail",
       contactMsg: "Hallo, ik heb een vraag over de Nishman-producten.",
       outOfStock: "Tijdelijk niet beschikbaar",
@@ -199,6 +229,10 @@
       articles: (n) => n + " Artikel",
       seeSelection: "meine Auswahl ansehen", discover: "Entdecken",
       askPrice: "Preis auf Anfrage", proAccess: "Professioneller Zugang",
+      priceLoading: "Preise werden geladen…",
+      welcomeTitle: "Fachkatalog",
+      welcomeText: "Dieser Katalog richtet sich an Friseursalons und Barbershops. Die angezeigten Preise sind unsere Händlerpreise. Zum Bestellen ist ein Konto nötig — die Anmeldung ist kostenlos und sofort möglich.",
+      welcomeSkip: "Weiter stöbern",
       accountNeeded: "Für eine Angebotsanfrage benötigen Sie ein Händlerkonto. Die Anmeldung ist kostenlos und sofort möglich.",
       accountLogin: "Anmelden",
       accountCreate: "Händlerkonto erstellen",
@@ -212,9 +246,13 @@
       clearConfirm: "Den gesamten Warenkorb leeren?",
       toastCleared: "Warenkorb geleert",
       totalHT: "Gesamt zzgl. MwSt.", salesTeam: "Nishman Vertriebsteam",
-      minLeft: (m) => `Noch ${m} bis zum Mindestbestellwert`,
-      minPickup: "Mindestbestellwert 300 € netto bei Lieferung — kein Mindestwert bei Abholung.",
-      minOk: "Mindestbestellwert erreicht",
+      portManque: (m, seuil) => `Noch ${m} und die Lieferung ist kostenlos`,
+      portOffert: "Kostenlose Lieferung für diese Bestellung",
+      portRegles: "Kostenlose Lieferung ab 300 € netto in Belgien, ab 500 € in Frankreich und Luxemburg.",
+      portRetrait: "Abholung in Binche: immer kostenlos.",
+      banBE: "Belgien — kostenlose Lieferung ab 300 € netto, sonst 10 €",
+      banFR: "Frankreich und Luxemburg — kostenlos ab 500 € netto, sonst 15 €",
+      banRetrait: "Abholung in Binche — immer kostenlos",
       contactTitle: "Eine Frage? Schreiben Sie uns", contactWa: "WhatsApp", contactMail: "E-Mail",
       contactMsg: "Guten Tag, ich habe eine Frage zu den Nishman-Produkten.",
       outOfStock: "Vorübergehend nicht verfügbar",
@@ -244,6 +282,10 @@
       articles: (n) => n + " ürün",
       seeSelection: "seçimimi gör", discover: "Keşfet",
       askPrice: "Fiyat için sorunuz", proAccess: "Profesyonel erişim",
+      priceLoading: "Fiyatlar yükleniyor…",
+      welcomeTitle: "Profesyonel katalog",
+      welcomeText: "Bu katalog kuaför salonları ve berberler içindir. Gösterilen fiyatlar profesyonel fiyatlarımızdır. Sipariş vermek için hesap gerekir — hesap açmak ücretsiz ve anındadır.",
+      welcomeSkip: "Göz atmaya devam et",
       accountNeeded: "Teklif talebi göndermek için profesyonel bir hesap gerekir. Hesap açmak ücretsiz ve anındadır.",
       accountLogin: "Giriş yap",
       accountCreate: "Profesyonel hesap oluştur",
@@ -257,9 +299,13 @@
       clearConfirm: "Sepetin tamamı boşaltılsın mı?",
       toastCleared: "Sepet boşaltıldı",
       totalHT: "Toplam (KDV hariç)", salesTeam: "Nishman Satış Ekibi",
-      minLeft: (m) => `Minimum sipariş tutarına ${m} kaldı`,
-      minPickup: "Teslimatta minimum 300 € (KDV hariç) — yerinden teslim almada minimum yok.",
-      minOk: "Minimum sipariş tutarına ulaşıldı",
+      portManque: (m, seuil) => `${m} daha, teslimat ücretsiz olsun`,
+      portOffert: "Bu siparişte teslimat ücretsiz",
+      portRegles: "Belçika'da 300 € (KDV hariç) üzeri, Fransa ve Lüksemburg'da 500 € üzeri teslimat ücretsiz.",
+      portRetrait: "Binche'ten teslim alma: her zaman ücretsiz.",
+      banBE: "Belçika — 300 € (KDV hariç) üzeri ücretsiz teslimat, altında 10 €",
+      banFR: "Fransa ve Lüksemburg — 500 € üzeri ücretsiz, altında 15 €",
+      banRetrait: "Binche'ten teslim alma — her zaman ücretsiz",
       contactTitle: "Sorunuz mu var? Bize yazın", contactWa: "WhatsApp", contactMail: "E-posta",
       contactMsg: "Merhaba, Nishman ürünleri hakkında bir sorum var.",
       outOfStock: "Geçici olarak mevcut değil",
@@ -509,7 +555,12 @@
       const v = priceOf(p);
       return `<span class="product-price ${cls || ""}">${formatPrice(v)}<span class="vat-note">${T.unitNote}</span></span>`;
     }
-    return `<button class="price-locked" data-action="access">&#128274; ${T.askPrice}</button>`;
+    // Les prix arrivent une seconde après le catalogue. Pendant ce court
+    // instant on laisse un gabarit muet : afficher « Prix sur demande »
+    // pour le démentir aussitôt donnait l'impression d'un site qui se
+    // ravise, et contredisait ce qu'on vient de décider — les prix sont
+    // visibles de tous.
+    return `<span class="product-price price-attente ${cls || ""}" aria-hidden="true"></span>`;
   }
 
   // Squelette affiché pendant le chargement des produits : le visiteur voit
@@ -723,12 +774,10 @@
       return;
     }
 
-    // Sans accès professionnel : aucune possibilité d'ajouter au panier.
+    // Les prix ne sont pas encore arrivés : on le dit sobrement plutôt que
+    // de proposer un accès dont plus personne n'a besoin.
     if (!unlocked()) {
-      zone.innerHTML = `<p class="sheet-locked">${T.lockedNote}</p>
-        <button class="buy-add sheet-unlock" data-action="access">${T.proAccess}</button>`;
-      const b = zone.querySelector("[data-action='access']");
-      if (b) b.addEventListener("click", () => { closeProductSheet(); openAccessModal(); });
+      zone.innerHTML = `<p class="sheet-locked">${T.priceLoading}</p>`;
       return;
     }
     const p = PRODUCTS.find((x) => x.ean === ean);
@@ -960,17 +1009,21 @@
       if (known && total > 0) {
         list.innerHTML += `<div class="drawer-total"><span>${T.totalHT}</span><strong>${formatPrice(total)}</strong></div>`;
 
-        // Sous le minimum : on annonce le complément à atteindre, et on
-        // rappelle que le retrait sur place n'a pas de minimum.
-        if (total < MIN_ORDER) {
-          const manque = MIN_ORDER - total;
+        // Rien ne bloque : on dit seulement où en est le client par rapport
+        // au port offert. Tant qu'on ne connaît pas son pays, on énonce les
+        // deux règles plutôt que d'en supposer une.
+        const regle = PORT[PAYS_CLIENT] || null;
+        if (!regle) {
+          list.innerHTML +=
+            `<div class="ship-note"><span class="ship-note-sub">${T.portRegles}</span></div>`;
+        } else if (total < regle.seuil) {
           list.innerHTML +=
             `<div class="ship-note">` +
-              `<span class="ship-note-main">${T.minLeft(formatPrice(manque))}</span>` +
-              `<span class="ship-note-sub">${T.minPickup}</span>` +
+              `<span class="ship-note-main">${T.portManque(formatPrice(regle.seuil - total), formatPrice(regle.seuil))}</span>` +
+              `<span class="ship-note-sub">${T.portRetrait}</span>` +
             `</div>`;
         } else {
-          list.innerHTML += `<div class="ship-note ship-ok">${T.minOk}</div>`;
+          list.innerHTML += `<div class="ship-note ship-ok">${T.portOffert}</div>`;
         }
       }
     }
@@ -1155,6 +1208,9 @@
         renderProAccessBtn();
         if (ajuste) showToast(T.cartLimited);
       }
+      // Après coup seulement : avant la réponse, on ignore si la personne
+      // est déjà cliente, et on l'accueillerait pour rien.
+      initBienvenue();
     });
     initLangControls();
     initAccessControls();
@@ -1393,6 +1449,7 @@
   let ACCESS_LABEL = null;  // société du compte connecté, s'il y en a un
   let LIMITS = null;        // { ean: {u, b, state} } limites de commande
   let CONNECTE = false;     // une session professionnelle est-elle ouverte ?
+  let PAYS_CLIENT = null;   // pays du compte, qui décide du seuil de port
 
   // Le navigateur ne connaît aucun code : il demande les prix à son propre
   // serveur. Depuis l'étape 201 ils sont servis à tout le monde ; la réponse
@@ -1410,6 +1467,7 @@
       LIMITS = d.limits || null;
       ACCESS_LABEL = d.societe || null;
       CONNECTE = !!d.connecte;
+      PAYS_CLIENT = d.pays || null;
       return true;
     } catch (e) {
       return false;
@@ -1478,12 +1536,53 @@
     });
   }
 
-  function openAccessModal() {
+  function openAccessModal(propos) {
     const ov = document.getElementById("access-overlay");
     if (!ov) return;
+
+    // Même fenêtre, deux propos : à l'arrivée on explique à qui s'adresse
+    // ce catalogue ; depuis le bouton, on explique pourquoi un compte est
+    // nécessaire pour commander.
+    const arrivee = propos === "arrivee";
+    const titre = document.getElementById("access-title");
+    const desc = document.getElementById("access-desc");
+    if (titre) titre.textContent = arrivee ? T.welcomeTitle : T.proAccess;
+    if (desc) desc.textContent = arrivee ? T.welcomeText : T.accountNeeded;
+
+    const passer = document.getElementById("access-continue");
+    if (passer) {
+      passer.hidden = !arrivee;
+      passer.textContent = T.welcomeSkip;
+    }
+
     showAccessStep("access-step-code");
     ov.hidden = false;
     syncScrollLock();
+  }
+
+  // ── accueil du visiteur ────────────────────────────────────────────
+  const CLE_BIENVENUE = "nishman-bienvenue";
+
+  // Montrée une fois, à un visiteur non connecté, et jamais par-dessus la
+  // cinématique du logo : on attend qu'il arrive au catalogue, ou qu'il
+  // reste assez longtemps pour qu'on puisse supposer qu'il lit.
+  function initBienvenue() {
+    if (connecte()) return;
+    try { if (localStorage.getItem(CLE_BIENVENUE)) return; } catch (x) {}
+
+    let fait = false;
+    const montrer = () => {
+      if (fait || connecte()) return;
+      fait = true;
+      try { localStorage.setItem(CLE_BIENVENUE, "1"); } catch (x) {}
+      window.removeEventListener("scroll", surScroll);
+      openAccessModal("arrivee");
+    };
+    const surScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.55) montrer();
+    };
+    window.addEventListener("scroll", surScroll, { passive: true });
+    setTimeout(montrer, 6000);
   }
 
   function closeAccessModal() {
@@ -1516,6 +1615,8 @@
     if (btn) btn.addEventListener("click", openAccessModal);
     const close = document.getElementById("access-close");
     if (close) close.addEventListener("click", closeAccessModal);
+    const passer = document.getElementById("access-continue");
+    if (passer) passer.addEventListener("click", closeAccessModal);
     const ov = document.getElementById("access-overlay");
     if (ov) {
       // Sur iOS, l'appui long pour coller déclenche un « clic » sur le fond
@@ -1579,7 +1680,10 @@
     if (accLogin) accLogin.textContent = T.accountLogin;
     const accCreate = document.getElementById("access-create");
     if (accCreate) accCreate.textContent = T.accountCreate;
-    const map2 = { "t-clear": T.clearCart };
+    const map2 = {
+      "t-clear": T.clearCart,
+      "ban-be": T.banBE, "ban-fr": T.banFR, "ban-retrait": T.banRetrait,
+    };
     Object.keys(map2).forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.textContent = map2[id];

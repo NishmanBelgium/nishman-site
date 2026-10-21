@@ -1,0 +1,82 @@
+NISHMAN — étape 202
+===================
+
+POUR LA BRANCHE NishmanCloudflare.
+
+TROIS CHOSES DANS CE LOT
+========================
+
+1. PLUS DE « PRIX SUR DEMANDE » AU CHARGEMENT
+---------------------------------------------
+Le catalogue s'affiche avant que les tarifs ne soient revenus du serveur,
+une seconde ou deux. Pendant ce temps, les cartes annonçaient « Prix sur
+demande » — puis se dédisaient. La place est maintenant réservée par une
+barre neutre qui respire, et le prix s'y pose quand il arrive. Le visiteur
+ne lit plus rien qu'on doive démentir.
+
+Une précision utile : si un produit affiche encore « Prix sur demande »
+APRÈS le chargement, ce n'est pas un défaut d'affichage — c'est que cette
+référence manque dans la table des prix de votre script Google. Ça vous
+sert de signal.
+
+2. LA BANDEROLE DES FRAIS DE LIVRAISON
+--------------------------------------
+Trois cellules sous la barre de recherche, sur l'accueil et sur le
+catalogue, dans les cinq langues :
+
+  Belgique .............. offerte dès 300 € HT, sinon 10 €
+  France et Luxembourg .. offerte dès 500 € HT, sinon 15 €
+  Retrait à Binche ...... toujours gratuit
+
+Mais ce n'est pas qu'un affichage : la règle est VRAIMENT appliquée dans
+le devis. Le port apparaît sur sa propre ligne, il s'ajoute au total, et
+le document envoyé chez vous le porte.
+
+ATTENTION, CECI REMPLACE UNE RÈGLE EXISTANTE
+Jusqu'ici, une commande en livraison sous 300 € HT était BLOQUÉE : le
+bouton d'envoi restait inerte tant que le minimum n'était pas atteint.
+Ce blocage disparaît. Un coiffeur peut maintenant commander pour 150 € ;
+il paie 10 € de port. À la place du blocage, un message l'informe de ce
+qu'il manque pour que le transport soit offert — une invitation, pas une
+barrière. Si vous teniez à ce minimum, dites-le moi et je le remets.
+
+3. UNE FENÊTRE D'ACCUEIL
+------------------------
+Un visiteur non connecté voit une fois, et une seule, une fenêtre qui
+explique que ce catalogue s'adresse aux salons et aux barbiers, que les
+tarifs affichés sont les prix professionnels, et qu'un compte est
+nécessaire pour commander. Deux boutons : se connecter, créer un compte.
+Et une sortie visible, « Continuer la visite » — un pop-up dont on ne
+voit pas comment sortir est un pop-up qu'on subit.
+
+Elle ne s'affiche jamais à un client déjà connecté, jamais par-dessus la
+cinématique du logo, et jamais deux fois.
+
+À FAIRE
+=======
+Le dépôt, puis RELANCER LE DÉPLOIEMENT — functions/api/prix.js change
+(il renvoie désormais le pays du client, qui décide du seuil de port
+affiché dans son panier).
+
+VÉRIFIÉ AVANT ENVOI
+===================
+· chargement ralenti volontairement à 2,5 s : zéro « Prix sur demande »
+  pendant l'attente, 203 gabarits, puis 203 prix
+· banderole relue dans les cinq langues
+· fenêtre d'accueil : affichée au visiteur neuf, pas au visiteur revenu,
+  pas au client connecté, et refermée par « Continuer la visite »
+· frais de port, cinq situations réelles jusqu'au récapitulatif du devis :
+    BE 200 € -> 10 € -> total 210 €
+    BE 300 € -> offerte -> total 300 €
+    FR 400 € -> 15 € -> total 415 €
+    FR 500 € -> offerte -> total 500 €
+    retrait  -> aucune ligne de port -> total 200 €
+  et l'envoi n'est bloqué dans aucun cas
+· aucune erreur JavaScript
+
+CE QUI N'EST PAS DANS CE LOT
+============================
+La page de validation de commande avec adresse de livraison, récapitulatif
+et paiement. C'est un chantier à part, qui dépend de choses qui ne sont pas
+encore en place de votre côté. Le document « Ce qu'il faudra ajouter dans
+Odoo » que je vous ai remis fait le tour de la question.

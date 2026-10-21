@@ -2712,3 +2712,63 @@ body.has-offre-barre .search-sticky {
 }
 #access-step-code a.access-submit { margin-bottom: 10px; }
 #access-step-code a.access-link { margin: 0; }
+
+/* ── gabarit du prix pendant le chargement (étape 202) ──────────────────
+   Le catalogue s'affiche avant que les tarifs ne soient revenus. Plutôt
+   qu'un texte qu'il faudrait démentir une seconde plus tard, on réserve
+   la place avec une barre neutre qui respire. */
+.product-price.price-attente {
+  display: inline-block;
+  width: 78px; height: 17px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ececed 25%, #f6f6f7 50%, #ececed 75%);
+  background-size: 240% 100%;
+  animation: attente 1.25s ease-in-out infinite;
+}
+@keyframes attente {
+  from { background-position: 120% 0; }
+  to   { background-position: -120% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-price.price-attente { animation: none; }
+}
+
+/* ── banderole des conditions de livraison (étape 202) ──────────────────
+   Trois règles à énoncer sans assommer : une ligne, trois cellules, et
+   une colonne sur téléphone. Le ton reste sobre — c'est une information
+   utile, pas une promotion. */
+.ban-port {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin: 4px 0 18px;
+}
+.ban-port-cell {
+  flex: 1 1 260px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 13px; line-height: 1.35; color: var(--ink-soft);
+}
+.ban-port-ico { flex: none; color: var(--gold-deep); }
+.ban-port-cell.ban-port-retrait .ban-port-ico { color: var(--ink-faint); }
+/* La troisième règle tient en quatre mots : qu'elle ne vole pas la place
+   des deux autres, qui en ont besoin pour ne pas se couper en deux. */
+.ban-port-cell.ban-port-retrait { flex: 0 1 auto; }
+
+@media (max-width: 760px) {
+  .ban-port { gap: 8px; }
+  .ban-port-cell { flex: 1 1 100%; padding: 10px 12px; font-size: 12.5px; }
+}
+
+/* ── « continuer la visite » sous la fenêtre d'accueil ──────────────────
+   Une sortie visible : un pop-up dont on ne voit pas comment sortir est
+   un pop-up qu'on subit. */
+.access-passer {
+  display: block; width: 100%;
+  margin-top: 14px; padding: 6px;
+  background: none; border: 0; cursor: pointer;
+  font-family: var(--font-body); font-size: 13.5px; color: var(--ink-faint);
+  text-align: center;
+}
+.access-passer:hover { color: var(--ink-soft); text-decoration: underline; }
