@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>NISHMAN — Boutique officielle</title>
+<meta name="description" content="Cires, colognes, poudres et soins barbe NISHMAN. Importateur officiel pour la Belgique, la France et le Luxembourg. Livraison en 2 jours ouvrables." />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=199" />
+</head>
+<body>
+
+<div class="ruban">
+  Livraison offerte dès <b>49 €</b> · Expédition sous 2 jours ouvrables · Belgique, France, Luxembourg
+</div>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="logo" href="/boutique/" aria-label="Nishman, accueil"><img src="/assets/img/nishman.svg" alt="Nishman" /></a>
+    <div class="bar-sp"></div>
+    <a class="pill" href="/"><span class="long">Espace professionnel</span><span class="court">Pro</span></a>
+    <button class="pill pill-gold" id="btn-panier">
+      Panier <span class="dot" id="compteur" style="display:none">0</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero">
+    <h1>Le grooming NISHMAN,<br />directement chez vous.</h1>
+    <p>Importateur officiel pour la Belgique, la France et le Luxembourg.
+       Les produits que votre barbier utilise, aux mêmes formules, livrés chez vous.</p>
+  </section>
+
+  <nav class="filtres">
+    <div class="wrap filtres-in" id="filtres"></div>
+  </nav>
+
+  <div class="wrap">
+    <div class="grille" id="grille"></div>
+  </div>
+</main>
+
+<footer class="pied">
+  <div class="wrap">
+    <div class="pied-cols">
+      <div>
+        <h3>Commander</h3>
+        <p>Livraison offerte dès 49 €</p>
+        <p>Expédition sous 2 jours ouvrables</p>
+        <a href="/conditions-de-vente/">Conditions générales de vente</a>
+        <a href="/retractation/">Formulaire de rétractation</a>
+      </div>
+      <div>
+        <h3>Nous joindre</h3>
+        <a href="mailto:contact@nishman.be">contact@nishman.be</a>
+        <a href="https://www.instagram.com/nishman.be.fr" target="_blank" rel="noopener">Instagram</a>
+        <a href="/">Espace professionnel</a>
+      </div>
+      <div>
+        <h3>NBD Distribution SRL</h3>
+        <p>Avenue Léopold III 21<br />7133 Binche, Belgique</p>
+        <p>TVA BE 0817.750.283</p>
+      </div>
+    </div>
+    <div class="pied-bas">
+      Importateur officiel NISHMAN pour la Belgique, la France et le Luxembourg.
+      Prix affichés toutes taxes comprises.
+    </div>
+  </div>
+</footer>
+
+<!-- panneau panier -->
+<div class="voile" id="voile"></div>
+<aside class="panier" id="panier" aria-label="Panier">
+  <div class="panier-tete">
+    <h2>Mon panier</h2>
+    <button class="fermer" id="fermer-panier" aria-label="Fermer">×</button>
+  </div>
+  <div class="panier-corps" id="panier-corps"></div>
+  <div class="panier-pied" id="panier-pied"></div>
+</aside>
+
+<!-- fiche produit -->
+<section class="fiche" id="fiche" aria-label="Fiche produit">
+  <div class="fiche-in">
+    <button class="fiche-retour" id="fiche-retour">← Retour à la boutique</button>
+    <div class="fiche-grid">
+      <div class="fiche-img" id="fiche-img"></div>
+      <div>
+        <h1 id="fiche-nom"></h1>
+        <div class="fiche-vol" id="fiche-vol"></div>
+        <div class="fiche-prix" id="fiche-prix"></div>
+        <div class="fiche-tva">TVA comprise · Livraison offerte dès 49 €</div>
+        <p class="fiche-desc" id="fiche-desc"></p>
+        <button class="fiche-add" id="fiche-add">Ajouter au panier</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- fenêtre d'orientation : professionnel ou particulier -->
+<div class="porte" id="porte" hidden>
+  <div class="porte-carte" role="dialog" aria-modal="true" aria-labelledby="porte-titre">
+    <button class="porte-fermer" id="porte-fermer" aria-label="Fermer">&times;</button>
+    <img class="porte-logo" src="/assets/img/nishman.svg" alt="Nishman" />
+    <h2 id="porte-titre">Vous êtes professionnel ?</h2>
+    <p>Salons de coiffure, barbershops et revendeurs disposent d'un espace dédié :
+       catalogue complet, tarifs professionnels et demande de devis.</p>
+    <a class="porte-oui" href="/">Accéder à l'espace professionnel</a>
+    <button class="porte-non" id="porte-non">Continuer vers la boutique</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/assets/js/boutique.js?v=199"></script>
+<script src="/assets/js/porte.js?v=199"></script>
+</body>
+</html>

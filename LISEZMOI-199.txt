@@ -1,0 +1,89 @@
+NISHMAN — étape 199
+===================
+
+POUR LA BRANCHE NishmanCloudflare. Surtout pas pour nishman.be.
+
+CE LOT REMPLACE LE 198 : NE DÉPOSEZ QUE CELUI-CI.
+Il contient les traductions de l'étape 198 ET la nouvelle structure.
+
+
+LE SITE EST DÉSORMAIS PUREMENT PROFESSIONNEL
+============================================
+Avant, un visiteur arrivait sur la boutique grand public et devait
+cliquer « Accès professionnel » pour atteindre le catalogue. Cette
+première page a disparu du parcours.
+
+Maintenant, on arrive directement sur le site B2B : le logo, puis le
+catalogue des 203 produits, avec « Prix sur demande » tant qu'on n'est
+pas connecté, et les boutons « Accès professionnel » et « Mon compte »
+en haut.
+
+CE QUI A BOUGÉ, EN DÉTAIL
+=========================
+· L'accueil professionnel, qui était à /pro/, est maintenant à la
+  racine du site.
+· /pro/ continue de répondre et renvoie à l'accueil. Rien ne casse si
+  cette adresse a été partagée, imprimée ou mise en favori.
+· La boutique grand public est conservée telle quelle à /boutique/.
+  Plus aucun lien du site n'y mène, et elle reste invisible pour Google.
+  Si le B2C revient un jour, tout est là, intact.
+· Les conditions de vente « boutique » et le formulaire de rétractation
+  restent en ligne eux aussi, sans lien vers eux. Ils se renvoient l'un
+  à l'autre et vers /boutique/, pour rester cohérents entre eux.
+· Les invitations aux particuliers ont été retirées des pieds de page du
+  catalogue, de /contact/, de /france/ et de la carte de connexion.
+· Le pied de page professionnel pointe toujours vers /cgv/, qui sont vos
+  conditions professionnelles — celles-là ne bougent pas.
+
+UNE DÉCISION QUE J'AI PRISE, À VALIDER
+======================================
+L'ancienne page /pro/ portait une balise « noindex » : elle était cachée
+derrière la boutique, Google n'avait pas à la référencer. Devenue votre
+page d'accueil, cette balise aurait rendu tout le site invisible dans les
+résultats de recherche. Je l'ai retirée.
+
+Le catalogue /produits/, lui, reste en « noindex » comme avant. C'est un
+choix à faire : l'ouvrir à Google ferait remonter vos pages produits sur
+des recherches comme « cire Nishman », ce qui amène des coiffeurs — les
+prix restent de toute façon masqués. Dites-moi si vous le voulez.
+
+AU PASSAGE
+==========
+La page /liens/ réclamait une icône à une adresse où elle n'existe pas :
+corrigé.
+
+CE QUE CONTIENT AUSSI CE LOT (étape 198)
+========================================
+Tout l'espace professionnel en cinq langues : connexion, création de
+compte, mot de passe oublié, espace client, et les 31 messages renvoyés
+par le serveur. Un sélecteur FR EN NL DE TR sur chaque page. Les listes
+« Pays » et « Mode de réception » du devis, restées en français, sont
+traduites à l'affichage sans toucher à la valeur envoyée chez Odoo.
+
+Les textes sont tous dans assets/js/compte-langues.js : pour corriger une
+tournure, vous modifiez la ligne, rien d'autre à toucher.
+
+À FAIRE
+=======
+Le dépôt, et rien d'autre. Pas de base à modifier, pas de variable à
+ajouter, pas de script Google à retoucher.
+
+GitHub -> vérifiez que l'adresse contient /tree/NishmanCloudflare ->
+Add file -> Upload files -> tout sélectionner (Cmd+A) -> glisser ->
+Commit changes EN BAS DE PAGE.
+
+ATTENTION : nishman.be N'EST PAS CONCERNÉ
+=========================================
+nishman.be sert toujours l'ancien site, celui avec le code d'accès.
+Ce lot ne change que nishman-site.pages.dev. Le jour où vous basculerez
+nishman.be sur cette branche, c'est à ce moment-là que vos clients
+verront le nouveau site.
+
+VÉRIFIÉ AVANT ENVOI
+===================
+Au navigateur, les treize pages du site visitées l'une après l'autre :
+· / affiche bien l'accueil professionnel
+· /pro/ renvoie à / sans erreur
+· /boutique/, /conditions-de-vente/, /retractation/ répondent toujours
+· les onze adresses internes citées par le site existent toutes
+· aucune erreur JavaScript, aucun fichier manquant
