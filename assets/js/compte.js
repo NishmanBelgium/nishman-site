@@ -36,6 +36,17 @@
     return "";
   }
 
+  // Une page peut renvoyer ici avec ?retour=/devis/ : on y retourne après
+  // la connexion. On n'accepte qu'un chemin de ce site — « //ailleurs.com »
+  // ressemble à un chemin mais mène dehors.
+  function retourSur() {
+    try {
+      var r = new URLSearchParams(location.search).get("retour") || "";
+      if (/^\/(?!\/)/.test(r)) return r;
+    } catch (x) {}
+    return "";
+  }
+
   function remplir(texte, valeurs) {
     return String(texte).replace(/\{(\w+)\}/g, function (tout, cle) {
       return valeurs && valeurs[cle] != null ? valeurs[cle] : tout;
@@ -173,7 +184,7 @@
       })
         .then(function (r) { return r.json(); })
         .then(function (d) {
-          if (d && d.connecte) { location.replace("/pro/compte/"); return; }
+          if (d && d.connecte) { location.replace(retourSur() || "/pro/compte/"); return; }
           carte.style.visibility = "";
         })
         .catch(function () { carte.style.visibility = ""; });
@@ -222,7 +233,7 @@
         email: $("#c-email").value.trim(),
         motdepasse: $("#c-mdp").value,
       }).then(function (r) {
-        if (r.ok) { location.href = "/pro/compte/"; return; }
+        if (r.ok) { location.href = retourSur() || "/pro/compte/"; return; }
         dire(messageServeur(r.donnees, t("echec_connexion")));
         rendreBouton();
       }).catch(function () {
@@ -287,7 +298,7 @@
               }));
             } catch (x) {}
           }
-          location.href = "/pro/compte/";
+          location.href = retourSur() || "/pro/compte/";
           return;
         }
         dire(messageServeur(r.donnees, t("echec_inscription")));

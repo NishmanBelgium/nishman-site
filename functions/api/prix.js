@@ -1,11 +1,14 @@
 /* ==========================================================================
-   PRIX — les tarifs professionnels, servis uniquement à une session ouverte.
+   PRIX — les tarifs professionnels, visibles de tous.
 
-   Avant, le navigateur réclamait les prix au portier (le script Google) en
-   présentant un code d'accès. Le code circulait donc chez le visiteur, et se
-   recopiait d'un salon à l'autre. Désormais c'est le serveur qui interroge le
-   portier, avec un code qui ne quitte jamais Cloudflare, et il ne le fait que
-   si le cookie de session correspond à un compte actif.
+   Le navigateur ne connaît aucun code : il demande les prix à son propre
+   serveur, qui interroge le portier (le script Google) avec un code qui ne
+   quitte jamais Cloudflare.
+
+   Les prix sont servis sans condition depuis l'étape 201 : c'est la commande,
+   et non la consultation, qui demande un compte. La session reste lue malgré
+   tout — pour la prolonger, et pour dire à la page si elle doit proposer
+   « Accès professionnel » ou « Mon compte ».
    ========================================================================== */
 
 import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
@@ -27,11 +30,10 @@ export async function onRequestGet({ request, env }) {
   if (!env.DB) return json({ ok: false, raison: "base" });
 
   const compte = await compteConnecte(request, env.DB);
-  if (!compte) return json({ ok: false, raison: "anonyme" });
 
   // Le catalogue appelle cette page à chaque visite : c'est le meilleur
   // endroit pour repousser l'échéance de la session.
-  const cookie = await prolongerSiBesoin(env.DB, compte);
+  const cookie = compte ? await prolongerSiBesoin(env.DB, compte) : null;
 
   const code = env.PORTIER_CODE;
   if (!code) return json({ ok: false, raison: "portier" });
@@ -51,13 +53,15 @@ export async function onRequestGet({ request, env }) {
   if (!data || !data.ok || !data.prices) return json({ ok: false, raison: "portier" });
 
   // Le nom affiché est celui du compte, pas celui rattaché au code interne :
-  // c'est le client qui regarde ses prix, pas NBD.
+  // c'est le client qui regarde ses prix, pas NBD. Un visiteur anonyme n'a
+  // évidemment ni l'un ni l'autre.
   return json({
     ok: true,
+    connecte: !!compte,
     prices: data.prices,
     limits: data.limits || null,
-    societe: compte.salon,
-    email: compte.email,
+    societe: compte ? compte.salon : null,
+    email: compte ? compte.email : null,
   }, 200, cookie ? { "set-cookie": cookie } : {});
 }
 

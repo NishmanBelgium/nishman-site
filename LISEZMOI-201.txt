@@ -1,0 +1,71 @@
+NISHMAN — étape 201
+===================
+
+POUR LA BRANCHE NishmanCloudflare.
+
+LES PRIX SONT VISIBLES DE TOUS
+==============================
+Un visiteur qui arrive sur le catalogue voit désormais vos tarifs, sans
+compte et sans rien demander. Plus de « Prix sur demande », plus de mur.
+
+Ce qui demande un compte, c'est la commande. Le visiteur compose sa
+sélection librement, et c'est au moment d'envoyer sa demande de devis
+qu'on lui demande de se connecter.
+
+LE PANIER N'EST PAS PERDU
+=========================
+C'est le point qui fait ou défait ce genre de parcours. La sélection est
+gardée dans le navigateur : le coiffeur qui crée son compte à ce
+moment-là revient sur sa demande intacte, et ses coordonnées sont déjà
+remplies depuis son compte. Il ne recommence rien.
+
+Techniquement, le lien de connexion emporte l'adresse de retour
+(/pro/connexion/?retour=/devis/) et la page le ramène là après coup. Une
+adresse de retour qui mènerait hors du site est refusée — sinon ce
+paramètre deviendrait un moyen de faire rebondir vos clients ailleurs.
+
+LA BARRE DU HAUT
+================
+Le bouton de la barre ne dépend plus des prix mais de la session :
+« Accès professionnel » pour un visiteur, « Mon compte » pour un client
+connecté. Jamais les deux, jamais aucun — avant, un visiteur anonyme
+voyait les deux.
+
+À FAIRE
+=======
+Le dépôt, puis RELANCER LE DÉPLOIEMENT — ce lot modifie un point d'entrée
+serveur (functions/api/prix.js), qui ne change qu'au redéploiement.
+
+Onglet Déploiements -> première ligne de « All deployments » -> bouton
+••• -> Relancer le déploiement.
+
+CE QUE ÇA IMPLIQUE, UNE DERNIÈRE FOIS
+=====================================
+Vos tarifs professionnels sont maintenant publics. Vos concurrents et les
+revendeurs non autorisés peuvent les relever. Vous avez tranché en
+connaissance de cause, je le note ici pour que ce soit écrit noir sur
+blanc dans l'historique du projet, pas pour y revenir.
+
+Deux conséquences pratiques :
+
+· Le catalogue /produits/ est toujours en « noindex ». Maintenant que les
+  prix sont publics, le cacher à Google n'a plus grand sens : vous vous
+  privez de visites sans rien protéger. Dites-moi si je l'ouvre.
+
+· La pastille « à vérifier » sur les numéros de TVA reste inerte. Elle
+  comptait peu tant que les prix étaient fermés ; elle compte encore moins
+  maintenant. Le contrôle VIES garde son intérêt pour savoir qui sont vos
+  clients, pas pour garder vos prix.
+
+VÉRIFIÉ AVANT ENVOI
+===================
+Au navigateur, les quatre situations :
+· visiteur anonyme sur le catalogue -> les 203 prix affichés, aucun
+  « Prix sur demande » restant, bouton « Accès professionnel » présent et
+  « Mon compte » masqué
+· client connecté -> l'inverse exact sur les deux boutons
+· visiteur anonyme sur /devis/ avec un panier -> l'invitation à se
+  connecter, avec les deux liens portant la bonne adresse de retour
+· client connecté sur /devis/ -> formulaire pré-rempli comme avant
+Et le retour après connexion : /devis/ ramène sur /devis/, une adresse
+extérieure est refusée et renvoie sur le compte. Aucune erreur JavaScript.

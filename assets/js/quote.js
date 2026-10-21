@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "200";
+  const ASSET_V = "201";
 
   // Mêmes conditions commerciales que le catalogue.
   // Minimum de commande en LIVRAISON, en euros HT. Le retrait sur place
@@ -59,6 +59,9 @@
       street: "Adresse (rue et numéro)", zip: "Code postal", city: "Ville", country: "Pays",
       shipMode: "Mode de réception", shipDelivery: "Livraison", shipPickup: "Retrait à Binche",
       paysBE: "Belgique", paysFR: "France", paysLU: "Luxembourg",
+      loginTitle: "Connectez-vous pour envoyer votre demande",
+      loginText: "Votre sélection est conservée. Connectez-vous ou créez votre compte professionnel : vous reviendrez ici avec vos coordonnées déjà remplies.",
+      loginBtn: "Se connecter", createBtn: "Créer mon compte",
       shipFee: "Frais de livraison", shipFree: "Livraison offerte", subTotal: "Sous-total HT",
       minBlock: (min, m) => `Minimum de commande en livraison : ${min} HT. Il vous manque ${m}. Ajoutez des produits, ou choisissez le retrait a Binche — sans minimum.`,
       cont: "Continuer", saved: "Vos coordonnées sont conservées sur cet appareil pour vos prochaines demandes.",
@@ -91,6 +94,9 @@
       street: "Address (street and number)", zip: "Postcode", city: "City", country: "Country",
       shipMode: "Delivery method", shipDelivery: "Delivery", shipPickup: "Collection in Binche",
       paysBE: "Belgium", paysFR: "France", paysLU: "Luxembourg",
+      loginTitle: "Sign in to send your request",
+      loginText: "Your selection is kept. Sign in or create your trade account: you will come back here with your details already filled in.",
+      loginBtn: "Sign in", createBtn: "Create my account",
       shipFee: "Delivery charge", shipFree: "Free delivery", subTotal: "Subtotal excl. VAT",
       minBlock: (min, m) => `Minimum order for delivery: ${min} excl. VAT. You are ${m} short. Add products, or choose collection in Binche — no minimum.`,
       cont: "Continue", saved: "Your details are kept on this device for your next requests.",
@@ -123,6 +129,9 @@
       street: "Adres (straat en nummer)", zip: "Postcode", city: "Stad", country: "Land",
       shipMode: "Wijze van ontvangst", shipDelivery: "Levering", shipPickup: "Afhalen in Binche",
       paysBE: "België", paysFR: "Frankrijk", paysLU: "Luxemburg",
+      loginTitle: "Meld u aan om uw aanvraag te versturen",
+      loginText: "Uw selectie blijft bewaard. Meld u aan of maak uw zakelijk account aan: u komt hier terug met uw gegevens al ingevuld.",
+      loginBtn: "Aanmelden", createBtn: "Mijn account aanmaken",
       shipFee: "Leveringskosten", shipFree: "Gratis levering", subTotal: "Subtotaal excl. btw",
       minBlock: (min, m) => `Minimumbestelling bij levering: ${min} excl. btw. Er ontbreekt nog ${m}. Voeg producten toe of kies afhalen in Binche — zonder minimum.`,
       cont: "Doorgaan", saved: "Uw gegevens worden op dit toestel bewaard voor volgende aanvragen.",
@@ -155,6 +164,9 @@
       street: "Adresse (Straße und Nummer)", zip: "PLZ", city: "Stadt", country: "Land",
       shipMode: "Art des Empfangs", shipDelivery: "Lieferung", shipPickup: "Abholung in Binche",
       paysBE: "Belgien", paysFR: "Frankreich", paysLU: "Luxemburg",
+      loginTitle: "Melden Sie sich an, um Ihre Anfrage zu senden",
+      loginText: "Ihre Auswahl bleibt erhalten. Melden Sie sich an oder erstellen Sie Ihr Händlerkonto: Sie kehren hierher zurück, Ihre Daten bereits ausgefüllt.",
+      loginBtn: "Anmelden", createBtn: "Mein Konto erstellen",
       shipFee: "Versandkosten", shipFree: "Kostenlose Lieferung", subTotal: "Zwischensumme netto",
       minBlock: (min, m) => `Mindestbestellwert bei Lieferung: ${min} netto. Es fehlen ${m}. Fugen Sie Produkte hinzu oder wahlen Sie Abholung in Binche — ohne Mindestwert.`,
       cont: "Weiter", saved: "Ihre Daten werden auf diesem Gerät für künftige Anfragen gespeichert.",
@@ -187,6 +199,9 @@
       street: "Adres (cadde ve numara)", zip: "Posta kodu", city: "Şehir", country: "Ülke",
       shipMode: "Teslim şekli", shipDelivery: "Teslimat", shipPickup: "Binche'ten teslim alma",
       paysBE: "Belçika", paysFR: "Fransa", paysLU: "Lüksemburg",
+      loginTitle: "Talebinizi göndermek için giriş yapın",
+      loginText: "Seçiminiz korunur. Giriş yapın veya profesyonel hesabınızı oluşturun: bilgileriniz önceden doldurulmuş olarak buraya döneceksiniz.",
+      loginBtn: "Giriş yap", createBtn: "Hesabımı oluştur",
       shipFee: "Teslimat ücreti", shipFree: "Teslimat ücretsiz", subTotal: "Ara toplam (KDV hariç)",
       minBlock: (min, m) => `Teslimat icin minimum siparis: ${min} (KDV haric). ${m} eksik. Urun ekleyin veya Binche teslim almayi secin — minimum yok.`,
       cont: "Devam", saved: "Bilgileriniz sonraki talepleriniz için bu cihazda saklanır.",
@@ -711,6 +726,22 @@
       $("step-form").innerHTML =
         '<h1 class="quote-title">' + esc(T.empty) + "</h1>" +
         '<a class="quote-alt" href="/produits/">' + esc(T.back) + "</a>";
+      return;
+    }
+
+    // Les prix sont visibles de tous, mais une demande de devis engage une
+    // relation commerciale : elle part d'un compte. La sélection, elle, reste
+    // dans le navigateur — l'inscription ne la fait pas perdre.
+    if (!connecte) {
+      const retour = encodeURIComponent(location.pathname);
+      $("step-form").innerHTML =
+        '<p class="quote-eyebrow">' + esc(T.step1) + "</p>" +
+        '<h1 class="quote-title">' + esc(T.loginTitle) + "</h1>" +
+        '<p class="quote-lead">' + esc(T.loginText) + "</p>" +
+        '<a class="quote-cta" href="/pro/connexion/?retour=' + retour + '">' +
+          esc(T.loginBtn) + "</a>" +
+        '<a class="quote-alt" href="/pro/connexion/?creer&retour=' + retour + '">' +
+          esc(T.createBtn) + "</a>";
       return;
     }
 

@@ -455,3 +455,10 @@
   font-weight: 600;
   white-space: nowrap;
 }
+
+/* ── invitation à se connecter (étape 201) ───────────────────────────────
+   Les prix sont visibles de tous ; envoyer une demande suppose un compte.
+   Ici « Se connecter » et « Créer mon compte » sont des liens, pas des
+   boutons : il faut leur retirer le soulignement du navigateur. */
+a.quote-cta, a.quote-alt { text-decoration: none; }
+a.quote-cta + a.quote-alt { margin-left: 12px; }

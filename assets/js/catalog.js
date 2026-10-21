@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "200";
+  const ASSET_V = "201";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -64,7 +64,7 @@
       articles: (n) => n + " article" + (n > 1 ? "s" : ""),
       seeSelection: "voir ma sélection", discover: "Découvrir",
       askPrice: "Prix sur demande", proAccess: "Accès professionnel",
-      accountNeeded: "Les tarifs professionnels sont réservés aux comptes clients. La création est immédiate et gratuite.",
+      accountNeeded: "Pour envoyer une demande de devis, il faut un compte professionnel. La création est immédiate et gratuite.",
       accountLogin: "Se connecter",
       accountCreate: "Créer un compte professionnel",
       signupTitle: "Accès réservé aux professionnels",
@@ -109,7 +109,7 @@
       articles: (n) => n + " item" + (n > 1 ? "s" : ""),
       seeSelection: "view my selection", discover: "Discover",
       askPrice: "Price on request", proAccess: "Professional access",
-      accountNeeded: "Trade prices are reserved for account holders. Creating one is free and takes a minute.",
+      accountNeeded: "To send a quote request you need a trade account. Creating one is free and takes a minute.",
       accountLogin: "Log in",
       accountCreate: "Create a trade account",
       signupTitle: "Access reserved for professionals",
@@ -154,7 +154,7 @@
       articles: (n) => n + " artikel" + (n > 1 ? "en" : ""),
       seeSelection: "bekijk mijn selectie", discover: "Ontdekken",
       askPrice: "Prijs op aanvraag", proAccess: "Professionele toegang",
-      accountNeeded: "Vakprijzen zijn voorbehouden aan klanten met een account. Aanmaken is gratis en onmiddellijk.",
+      accountNeeded: "Om een offerteaanvraag te versturen hebt u een zakelijk account nodig. Aanmaken is gratis en onmiddellijk.",
       accountLogin: "Aanmelden",
       accountCreate: "Een professioneel account aanmaken",
       signupTitle: "Toegang voorbehouden aan professionals",
@@ -199,7 +199,7 @@
       articles: (n) => n + " Artikel",
       seeSelection: "meine Auswahl ansehen", discover: "Entdecken",
       askPrice: "Preis auf Anfrage", proAccess: "Professioneller Zugang",
-      accountNeeded: "Händlerpreise sind Kontoinhabern vorbehalten. Die Anmeldung ist kostenlos und sofort möglich.",
+      accountNeeded: "Für eine Angebotsanfrage benötigen Sie ein Händlerkonto. Die Anmeldung ist kostenlos und sofort möglich.",
       accountLogin: "Anmelden",
       accountCreate: "Händlerkonto erstellen",
       signupTitle: "Zugang nur für Fachkunden",
@@ -244,7 +244,7 @@
       articles: (n) => n + " ürün",
       seeSelection: "seçimimi gör", discover: "Keşfet",
       askPrice: "Fiyat için sorunuz", proAccess: "Profesyonel erişim",
-      accountNeeded: "Toptan fiyatlar yalnızca hesap sahiplerine açıktır. Hesap açmak ücretsiz ve anındadır.",
+      accountNeeded: "Teklif talebi göndermek için profesyonel bir hesap gerekir. Hesap açmak ücretsiz ve anındadır.",
       accountLogin: "Giriş yap",
       accountCreate: "Profesyonel hesap oluştur",
       signupTitle: "Erişim yalnızca profesyonellere açıktır",
@@ -1389,13 +1389,15 @@
   // professionnel connecté, il n'y a rien à télécharger ni à déchiffrer.
   // ==========================================================================
 
-  let PRICES = null;        // { ean: prix } une fois l'accès validé
-  let ACCESS_LABEL = null;  // entreprise associée au code (traçabilité)
+  let PRICES = null;        // { ean: prix }
+  let ACCESS_LABEL = null;  // société du compte connecté, s'il y en a un
   let LIMITS = null;        // { ean: {u, b, state} } limites de commande
+  let CONNECTE = false;     // une session professionnelle est-elle ouverte ?
 
-  // Le navigateur ne connaît plus aucun code. Il demande les prix à son
-  // propre serveur, qui ne répond que si le cookie de session correspond à
-  // un compte professionnel actif. Rien à recopier, rien à faire circuler.
+  // Le navigateur ne connaît aucun code : il demande les prix à son propre
+  // serveur. Depuis l'étape 201 ils sont servis à tout le monde ; la réponse
+  // dit en plus si une session est ouverte, ce qui décide du bouton affiché
+  // dans la barre — « Accès professionnel » ou « Mon compte ».
   async function chargerPrix() {
     try {
       const r = await fetch("/api/prix", {
@@ -1407,6 +1409,7 @@
       PRICES = d.prices;
       LIMITS = d.limits || null;
       ACCESS_LABEL = d.societe || null;
+      CONNECTE = !!d.connecte;
       return true;
     } catch (e) {
       return false;
@@ -1440,6 +1443,10 @@
   }
 
   function unlocked() { return PRICES !== null; }
+
+  // À ne pas confondre avec unlocked() : les prix sont visibles de tous,
+  // mais commander demande un compte.
+  function connecte() { return CONNECTE; }
 
   async function initPriceLock() {
     await chargerPrix();
@@ -1487,14 +1494,15 @@
 
   function renderProAccessBtn() {
     const btn = document.getElementById("pro-access");
-    if (!btn) return;
 
-    // Une fois les prix affichés, ce bouton n'a plus lieu d'être : il ne
-    // proposait que de les masquer, ce qui revenait à se déconnecter. La
-    // déconnexion est à sa place sur la page du compte, pas dans la barre
-    // du catalogue. On retire donc le bouton au lieu d'en changer le texte.
-    btn.style.display = unlocked() ? "none" : "";
-    if (unlocked()) return;
+    // Les deux boutons de la barre s'excluent : on propose de se connecter,
+    // ou on mène au compte. Jamais les deux, jamais aucun.
+    const compte = document.querySelector(".mon-compte");
+    if (compte) compte.style.display = connecte() ? "" : "none";
+
+    if (!btn) return;
+    btn.style.display = connecte() ? "none" : "";
+    if (connecte()) return;
 
     // Sur petit écran, le libellé complet déborde de la pilule
     const court = window.matchMedia("(max-width: 620px)").matches;
