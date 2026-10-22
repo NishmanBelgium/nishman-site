@@ -1,0 +1,45 @@
+ÉTAPE 210 — LE TUNNEL EST BRANCHÉ
+=================================
+
+CE QUI CHANGE POUR VOS CLIENTS
+------------------------------
+Le panier propose désormais deux portes au lieu d'une :
+
+  • Commander            → /commander/   (compte professionnel requis)
+  • Demander un devis    → /devis/       (sans compte, comme avant)
+
+L'ordre s'inverse selon la situation. Un client déjà connecté voit
+« Commander » en premier et mis en avant : c'est ce qu'il vient faire.
+Un visiteur non connecté voit « Demander un devis » en premier, parce
+qu'il découvre encore. Les deux restent accessibles dans tous les cas.
+
+Chaque porte porte un sous-titre qui dit ce qui les distingue, pour
+qu'on n'ait pas à deviner lequel nous concerne.
+
+
+LES CINQ LANGUES
+----------------
+Le tunnel de commande est traduit en français, anglais, néerlandais,
+allemand et turc — y compris les messages d'erreur du serveur. Une
+clé oubliée retomberait sur le français plutôt que d'afficher un
+libellé technique.
+
+
+VÉRIFIÉ AVANT LIVRAISON
+-----------------------
+  • les 5 langues ouvrent le tunnel, affichent les bons libellés et
+    mènent la commande jusqu'à la confirmation
+  • aucun reste de français dans les 4 autres langues
+  • le panier présente les deux portes dans le bon ordre, connecté
+    comme non connecté
+  • aucune erreur de script sur aucun parcours
+
+
+FICHIERS
+--------
+  assets/js/commander-langues.js   (4 langues ajoutées)
+  assets/js/catalog.js             (les deux portes du panier)
+  assets/css/site.css              (sous-titres des deux portes)
+
+Branche : NishmanCloudflare
+Aucun fichier functions/ modifié : le déploiement automatique suffit.

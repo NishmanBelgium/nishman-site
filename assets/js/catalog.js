@@ -118,6 +118,9 @@
       proAccessShort: "Accès pro",
       footLegal: "Prix hors TVA réservés aux professionnels.",
       askQuote: "Demander un devis",
+      orderNow: "Commander",
+      orderSub: "Compte professionnel requis",
+      quoteSub: "Sans compte, réponse sous 24 h",
       waMsg: "Bonjour, je souhaite une offre de prix pour les produits suivants :",
       boxDetail: (b, n, tot) => b + " carton" + (b > 1 ? "s" : "") + " de " + n + " (" + tot + " unités)",
     },
@@ -182,6 +185,9 @@
       proAccessShort: "Pro access",
       footLegal: "Prices excl. VAT, reserved for professionals.",
       askQuote: "Request a quotation",
+      orderNow: "Place an order",
+      orderSub: "Professional account required",
+      quoteSub: "No account needed, reply within 24 h",
       waMsg: "Hello, I would like a price offer for the following products:",
       boxDetail: (b, n, tot) => b + " box" + (b > 1 ? "es" : "") + " of " + n + " (" + tot + " units)",
     },
@@ -246,6 +252,9 @@
       proAccessShort: "Pro-toegang",
       footLegal: "Prijzen excl. btw, voorbehouden aan professionals.",
       askQuote: "Offerte aanvragen",
+      orderNow: "Bestellen",
+      orderSub: "Zakelijk account vereist",
+      quoteSub: "Zonder account, antwoord binnen 24 u",
       waMsg: "Hallo, ik wil graag een prijsofferte voor de volgende producten:",
       boxDetail: (b, n, tot) => b + " do" + (b > 1 ? "zen" : "os") + " van " + n + " (" + tot + " stuks)",
     },
@@ -312,6 +321,9 @@
       proAccessShort: "Fachzugang",
       footLegal: "Preise zzgl. MwSt., Fachkunden vorbehalten.",
       askQuote: "Angebot anfordern",
+      orderNow: "Bestellen",
+      orderSub: "Geschäftskonto erforderlich",
+      quoteSub: "Ohne Konto, Antwort innerhalb von 24 Std.",
     },
     tr: {
       search: "Ürün veya EAN kodu ara...",
@@ -376,6 +388,9 @@
       proAccessShort: "Pro erişim",
       footLegal: "Fiyatlar KDV hariçtir, profesyonellere özeldir.",
       askQuote: "Fiyat teklifi iste",
+      orderNow: "Sipariş ver",
+      orderSub: "Kurumsal hesap gerekli",
+      quoteSub: "Hesapsız, 24 saat içinde yanıt",
     },
   };
 
@@ -1284,16 +1299,32 @@
     const wrap = document.getElementById("agent-pick-list");
     wrap.innerHTML = "";
 
-    // 1) Parcours principal : demande de devis (formulaire + document + envoi)
-    const quote = document.createElement("a");
-    quote.className = "label-row primary";
-    quote.href = "/devis/";
-    quote.innerHTML = `
-      <span class="swatch swatch-quote"></span>
-      <span class="row-text">${T.askQuote}</span>
+    // Deux portes, et une hiérarchie claire plutôt que deux boutons de même
+    // poids : celui qui sait ce qu'il veut commande, celui qui découvre
+    // demande un prix. L'ordre s'inverse selon qu'une session est ouverte,
+    // pour que l'action la plus probable soit toujours la première.
+    const relie = connecte();
+
+    const commander = document.createElement("a");
+    commander.className = "label-row" + (relie ? " primary" : "");
+    commander.href = "/commander/";
+    commander.innerHTML = `
+      <span class="swatch swatch-order"></span>
+      <span class="row-text">${T.orderNow}<small class="row-sub">${T.orderSub}</small></span>
       <span class="chevron">&#8250;</span>
     `;
-    wrap.appendChild(quote);
+
+    const devis = document.createElement("a");
+    devis.className = "label-row" + (relie ? "" : " primary");
+    devis.href = "/devis/";
+    devis.innerHTML = `
+      <span class="swatch swatch-quote"></span>
+      <span class="row-text">${T.askQuote}<small class="row-sub">${T.quoteSub}</small></span>
+      <span class="chevron">&#8250;</span>
+    `;
+
+    if (relie) { wrap.appendChild(commander); wrap.appendChild(devis); }
+    else       { wrap.appendChild(devis); wrap.appendChild(commander); }
   }
 
   // ---------- Initialisation ----------

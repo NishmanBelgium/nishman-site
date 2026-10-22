@@ -2846,3 +2846,20 @@ body.has-offre-barre .search-sticky {
   .qui-titre { font-size: 19px; margin-bottom: 20px; }
   .qui-points { grid-template-columns: 1fr; gap: 22px; }
 }
+
+/* ---------- Panier : les deux portes (commander / devis) ---------------- */
+
+.swatch-order { background: var(--gold, #ED9B24); }
+.drawer .label-row.primary .swatch-order { background: var(--gold, #ED9B24) !important; opacity: 1 !important; }
+
+/* Le sous-titre dit ce qui distingue les deux chemins — un compte ou pas.
+   Sans lui, le client doit deviner lequel le concerne. */
+.drawer .label-row .row-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  opacity: 0.68;
+}
+.drawer .label-row.primary .row-sub { opacity: 0.8; }

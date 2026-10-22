@@ -1,11 +1,9 @@
 /* ==========================================================================
    COMMANDER — les textes.
 
-   Le français est complet. Les quatre autres langues viennent à l'étape
-   suivante : d'ici là, elles retombent sur le français plutôt que d'afficher
-   une clé technique. C'est pour cette raison que la page n'est pas encore
-   reliée au catalogue — personne ne doit y arriver par hasard avant que les
-   cinq langues y soient.
+   Les cinq langues du site. Toute clé manquante retombe sur le français
+   plutôt que d'afficher un libellé technique : une traduction oubliée se
+   voit, mais ne casse rien.
    ========================================================================== */
 
 window.NISHMAN_CMD_LANGUES = {
@@ -99,6 +97,374 @@ window.NISHMAN_CMD_LANGUES = {
       muet: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité — réessayez dans un instant.",
       refus: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité — contactez-nous et nous la saisissons pour vous.",
       reseau: "Connexion interrompue. Votre panier est conservé : réessayez.",
+    },
+  },
+
+  en: {
+    retour: "Back to catalogue",
+    chargement: "Preparing your order…",
+
+    vide_titre: "Your basket is empty",
+    vide_texte: "Add products from the catalogue to place an order.",
+    vide_cta: "View the catalogue",
+
+    conn_titre: "Sign in to order",
+    conn_texte: "We sell to professionals only. Your basket is saved — you will find it again after signing in.",
+    conn_cta: "Sign in",
+    conn_creer: "I don't have an account yet",
+    conn_devis: "Or request a quotation without an account",
+
+    ident_titre: "Your details",
+    ident_modifier: "Edit in my account",
+
+    recep_titre: "Delivery",
+    recep_livraison: "Delivery",
+    recep_retrait: "Collection in Binche",
+    recep_retrait_sous: "Free, by appointment",
+    recep_meme: "Deliver to my billing address",
+
+    liv_nom: "Recipient name",
+    liv_adresse: "Street and number",
+    liv_cp: "Postcode",
+    liv_ville: "Town",
+    liv_pays: "Country",
+
+    recap_titre: "Your order",
+    th_produit: "Product",
+    th_pieces: "Items",
+    th_pu: "Unit excl. VAT",
+    th_total: "Total excl. VAT",
+
+    tot_sous: "Subtotal excl. VAT",
+    tot_port: "Delivery charge",
+    tot_total: "Total payable",
+    tot_remise: "Discount",
+    tva_label: "VAT",
+
+    port_offert: "Free",
+    port_regle: (seuil, forfait) =>
+      "Free from \u20ac" + seuil + " excl. VAT, otherwise \u20ac" + forfait,
+    port_manque: (manque, seuil) =>
+      "\u20ac" + manque + " more excl. VAT for free delivery (from \u20ac" + seuil + " excl. VAT).",
+
+    regime_intracom: "Reverse charge: invoiced excluding VAT. You declare the VAT in your own country.",
+    regime_sans_tva: "Your VAT number has not been validated yet, so Belgian VAT at 21% applies.",
+
+    promo_label: "Promo code (optional)",
+    promo_btn: "Apply",
+    promo_ok: (code) => "Code " + code + " applied.",
+    promo_non: "This code is not recognised.",
+
+    ecartees: (n) => n + " item(s) in your basket are no longer available and have been removed.",
+
+    valid_titre: "Confirmation",
+    valid_cgv_html: "I accept the <a href=\"/conditions-de-vente/\" target=\"_blank\" rel=\"noopener\">terms of sale</a>.",
+    valid_cta: "Place my order",
+    valid_envoi: "Saving…",
+    valid_note: "Your order is recorded with us and you receive the matching quotation by e-mail. No payment is taken at this stage.",
+
+    pay_titre: "Online payment",
+    pay_texte: "Card and Bancontact payment are coming soon. In the meantime, confirm your order below: you will receive a quotation to approve, payable by bank transfer.",
+
+    fini_titre: "Order recorded",
+    fini_texte: (ref, email) =>
+      "Reference " + ref + ". The matching quotation is on its way to " + email + ".",
+    fini_partiel: "One detail of your order needs checking on our side. We will contact you before confirming.",
+    fini_compte: "View my orders",
+    fini_catalogue: "Back to catalogue",
+
+    erreurs: {
+      session: "Your session has expired. Please sign in again — your basket is saved.",
+      cgv: "Please accept the terms of sale to continue.",
+      vide: "Your basket is empty.",
+      livraison_absente: "Please give a delivery address.",
+      livraison_nom: "Please give the recipient's name.",
+      livraison_adresse: "Please give the street and number.",
+      livraison_cp: "Please give a postcode.",
+      livraison_ville: "Please give the town.",
+      livraison_pays: "We deliver to Belgium, France and Luxembourg.",
+      tarifs: "Prices are briefly unavailable. Please try again in a moment.",
+      odoo: "Your order could not be recorded. Nothing has been charged — try again shortly or contact us.",
+      injoignable: "Your order could not be recorded. Nothing has been charged — please try again shortly.",
+      muet: "Your order could not be recorded. Nothing has been charged — please try again shortly.",
+      refus: "Your order could not be recorded. Nothing has been charged — contact us and we will enter it for you.",
+      reseau: "Connection lost. Your basket is saved — please try again.",
+    },
+  },
+
+  nl: {
+    retour: "Terug naar de catalogus",
+    chargement: "We maken uw bestelling klaar…",
+
+    vide_titre: "Uw winkelmandje is leeg",
+    vide_texte: "Voeg producten toe via de catalogus om te bestellen.",
+    vide_cta: "Naar de catalogus",
+
+    conn_titre: "Meld u aan om te bestellen",
+    conn_texte: "Wij verkopen uitsluitend aan professionals. Uw mandje blijft bewaard: u vindt het terug na het aanmelden.",
+    conn_cta: "Aanmelden",
+    conn_creer: "Ik heb nog geen account",
+    conn_devis: "Of vraag een offerte aan zonder account",
+
+    ident_titre: "Uw gegevens",
+    ident_modifier: "Wijzigen in mijn account",
+
+    recep_titre: "Ontvangst",
+    recep_livraison: "Levering",
+    recep_retrait: "Afhalen in Binche",
+    recep_retrait_sous: "Gratis, op afspraak",
+    recep_meme: "Leveren op mijn facturatieadres",
+
+    liv_nom: "Naam van de ontvanger",
+    liv_adresse: "Straat en nummer",
+    liv_cp: "Postcode",
+    liv_ville: "Gemeente",
+    liv_pays: "Land",
+
+    recap_titre: "Uw bestelling",
+    th_produit: "Product",
+    th_pieces: "Stuks",
+    th_pu: "Prijs excl. btw",
+    th_total: "Totaal excl. btw",
+
+    tot_sous: "Subtotaal excl. btw",
+    tot_port: "Leveringskosten",
+    tot_total: "Te betalen totaal",
+    tot_remise: "Korting",
+    tva_label: "Btw",
+
+    port_offert: "Gratis",
+    port_regle: (seuil, forfait) =>
+      "Gratis vanaf " + seuil + " \u20ac excl. btw, anders " + forfait + " \u20ac",
+    port_manque: (manque, seuil) =>
+      "Nog " + manque + " \u20ac excl. btw voor gratis levering (vanaf " + seuil + " \u20ac excl. btw).",
+
+    regime_intracom: "Verlegging: gefactureerd zonder btw. U geeft de btw aan in uw eigen land.",
+    regime_sans_tva: "Uw btw-nummer is nog niet gevalideerd, daarom geldt de Belgische btw van 21%.",
+
+    promo_label: "Kortingscode (optioneel)",
+    promo_btn: "Toepassen",
+    promo_ok: (code) => "Code " + code + " toegepast.",
+    promo_non: "Deze code wordt niet herkend.",
+
+    ecartees: (n) => n + " artikel(en) in uw mandje zijn niet meer beschikbaar en werden verwijderd.",
+
+    valid_titre: "Bevestiging",
+    valid_cgv_html: "Ik aanvaard de <a href=\"/conditions-de-vente/\" target=\"_blank\" rel=\"noopener\">verkoopvoorwaarden</a>.",
+    valid_cta: "Mijn bestelling bevestigen",
+    valid_envoi: "Bezig met opslaan…",
+    valid_note: "Uw bestelling wordt bij ons geregistreerd en u ontvangt de bijbehorende offerte per e-mail. In deze stap wordt niets afgeschreven.",
+
+    pay_titre: "Online betalen",
+    pay_texte: "Betalen met kaart en Bancontact komt binnenkort. Bevestig intussen uw bestelling hieronder: u ontvangt een offerte ter goedkeuring, betaalbaar via overschrijving.",
+
+    fini_titre: "Bestelling geregistreerd",
+    fini_texte: (ref, email) =>
+      "Referentie " + ref + ". De bijbehorende offerte wordt verstuurd naar " + email + ".",
+    fini_partiel: "Eén detail van uw bestelling vraagt een controle van onze kant. Wij nemen contact op voor de bevestiging.",
+    fini_compte: "Mijn bestellingen bekijken",
+    fini_catalogue: "Terug naar de catalogus",
+
+    erreurs: {
+      session: "Uw sessie is verlopen. Meld u opnieuw aan — uw mandje blijft bewaard.",
+      cgv: "Aanvaard de verkoopvoorwaarden om verder te gaan.",
+      vide: "Uw winkelmandje is leeg.",
+      livraison_absente: "Geef een leveringsadres op.",
+      livraison_nom: "Geef de naam van de ontvanger op.",
+      livraison_adresse: "Geef straat en nummer op.",
+      livraison_cp: "Geef een postcode op.",
+      livraison_ville: "Geef de gemeente op.",
+      livraison_pays: "Wij leveren in België, Frankrijk en Luxemburg.",
+      tarifs: "De tarieven zijn even niet beschikbaar. Probeer het zo meteen opnieuw.",
+      odoo: "Uw bestelling kon niet worden geregistreerd. Er werd niets afgeschreven — probeer het zo meteen opnieuw of neem contact op.",
+      injoignable: "Uw bestelling kon niet worden geregistreerd. Er werd niets afgeschreven — probeer het zo meteen opnieuw.",
+      muet: "Uw bestelling kon niet worden geregistreerd. Er werd niets afgeschreven — probeer het zo meteen opnieuw.",
+      refus: "Uw bestelling kon niet worden geregistreerd. Er werd niets afgeschreven — neem contact op, wij voeren ze voor u in.",
+      reseau: "Verbinding onderbroken. Uw mandje blijft bewaard — probeer het opnieuw.",
+    },
+  },
+
+  de: {
+    retour: "Zurück zum Katalog",
+    chargement: "Wir bereiten Ihre Bestellung vor…",
+
+    vide_titre: "Ihr Warenkorb ist leer",
+    vide_texte: "Fügen Sie Produkte aus dem Katalog hinzu, um zu bestellen.",
+    vide_cta: "Zum Katalog",
+
+    conn_titre: "Melden Sie sich an, um zu bestellen",
+    conn_texte: "Wir verkaufen ausschließlich an Gewerbetreibende. Ihr Warenkorb bleibt erhalten: Sie finden ihn nach der Anmeldung wieder.",
+    conn_cta: "Anmelden",
+    conn_creer: "Ich habe noch kein Konto",
+    conn_devis: "Oder ein Angebot ohne Konto anfordern",
+
+    ident_titre: "Ihre Daten",
+    ident_modifier: "In meinem Konto ändern",
+
+    recep_titre: "Empfang",
+    recep_livraison: "Lieferung",
+    recep_retrait: "Abholung in Binche",
+    recep_retrait_sous: "Kostenlos, nach Vereinbarung",
+    recep_meme: "An meine Rechnungsadresse liefern",
+
+    liv_nom: "Name des Empfängers",
+    liv_adresse: "Straße und Hausnummer",
+    liv_cp: "Postleitzahl",
+    liv_ville: "Ort",
+    liv_pays: "Land",
+
+    recap_titre: "Ihre Bestellung",
+    th_produit: "Produkt",
+    th_pieces: "Stück",
+    th_pu: "Preis netto",
+    th_total: "Gesamt netto",
+
+    tot_sous: "Zwischensumme netto",
+    tot_port: "Versandkosten",
+    tot_total: "Zu zahlender Betrag",
+    tot_remise: "Rabatt",
+    tva_label: "MwSt.",
+
+    port_offert: "Kostenlos",
+    port_regle: (seuil, forfait) =>
+      "Kostenlos ab " + seuil + " \u20ac netto, sonst " + forfait + " \u20ac",
+    port_manque: (manque, seuil) =>
+      "Noch " + manque + " \u20ac netto bis zur kostenlosen Lieferung (ab " + seuil + " \u20ac netto).",
+
+    regime_intracom: "Reverse-Charge: Rechnung ohne MwSt. Sie melden die MwSt. in Ihrem Land an.",
+    regime_sans_tva: "Ihre USt-IdNr. ist noch nicht bestätigt, daher gilt die belgische MwSt. von 21%.",
+
+    promo_label: "Aktionscode (optional)",
+    promo_btn: "Anwenden",
+    promo_ok: (code) => "Code " + code + " angewendet.",
+    promo_non: "Dieser Code wird nicht erkannt.",
+
+    ecartees: (n) => n + " Artikel in Ihrem Warenkorb sind nicht mehr verfügbar und wurden entfernt.",
+
+    valid_titre: "Bestätigung",
+    valid_cgv_html: "Ich akzeptiere die <a href=\"/conditions-de-vente/\" target=\"_blank\" rel=\"noopener\">Verkaufsbedingungen</a>.",
+    valid_cta: "Bestellung abschicken",
+    valid_envoi: "Wird gespeichert…",
+    valid_note: "Ihre Bestellung wird bei uns erfasst und Sie erhalten das zugehörige Angebot per E-Mail. In diesem Schritt wird nichts abgebucht.",
+
+    pay_titre: "Online-Zahlung",
+    pay_texte: "Zahlung per Karte und Bancontact folgt in Kürze. Bestätigen Sie Ihre Bestellung bis dahin unten: Sie erhalten ein Angebot zur Freigabe, zahlbar per Überweisung.",
+
+    fini_titre: "Bestellung erfasst",
+    fini_texte: (ref, email) =>
+      "Referenz " + ref + ". Das zugehörige Angebot geht an " + email + ".",
+    fini_partiel: "Ein Detail Ihrer Bestellung muss von uns geprüft werden. Wir melden uns vor der Bestätigung.",
+    fini_compte: "Meine Bestellungen ansehen",
+    fini_catalogue: "Zurück zum Katalog",
+
+    erreurs: {
+      session: "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an — Ihr Warenkorb bleibt erhalten.",
+      cgv: "Bitte akzeptieren Sie die Verkaufsbedingungen, um fortzufahren.",
+      vide: "Ihr Warenkorb ist leer.",
+      livraison_absente: "Bitte geben Sie eine Lieferadresse an.",
+      livraison_nom: "Bitte geben Sie den Namen des Empfängers an.",
+      livraison_adresse: "Bitte geben Sie Straße und Hausnummer an.",
+      livraison_cp: "Bitte geben Sie eine Postleitzahl an.",
+      livraison_ville: "Bitte geben Sie den Ort an.",
+      livraison_pays: "Wir liefern nach Belgien, Frankreich und Luxemburg.",
+      tarifs: "Die Preise sind kurzzeitig nicht verfügbar. Bitte versuchen Sie es gleich erneut.",
+      odoo: "Ihre Bestellung konnte nicht erfasst werden. Es wurde nichts abgebucht — versuchen Sie es gleich erneut oder kontaktieren Sie uns.",
+      injoignable: "Ihre Bestellung konnte nicht erfasst werden. Es wurde nichts abgebucht — bitte versuchen Sie es gleich erneut.",
+      muet: "Ihre Bestellung konnte nicht erfasst werden. Es wurde nichts abgebucht — bitte versuchen Sie es gleich erneut.",
+      refus: "Ihre Bestellung konnte nicht erfasst werden. Es wurde nichts abgebucht — kontaktieren Sie uns, wir erfassen sie für Sie.",
+      reseau: "Verbindung unterbrochen. Ihr Warenkorb bleibt erhalten — bitte versuchen Sie es erneut.",
+    },
+  },
+
+  tr: {
+    retour: "Katalo\u011fa d\u00f6n",
+    chargement: "Sipari\u015finizi haz\u0131rl\u0131yoruz…",
+
+    vide_titre: "Sepetiniz bo\u015f",
+    vide_texte: "Sipari\u015f vermek i\u00e7in katalogdan \u00fcr\u00fcn ekleyin.",
+    vide_cta: "Kataloga git",
+
+    conn_titre: "Sipari\u015f vermek i\u00e7in giri\u015f yap\u0131n",
+    conn_texte: "Yaln\u0131zca profesyonellere sat\u0131\u015f yap\u0131yoruz. Sepetiniz saklan\u0131r: giri\u015f yapt\u0131ktan sonra onu yeniden bulursunuz.",
+    conn_cta: "Giri\u015f yap",
+    conn_creer: "Hen\u00fcz hesab\u0131m yok",
+    conn_devis: "Veya hesaps\u0131z fiyat teklifi isteyin",
+
+    ident_titre: "Bilgileriniz",
+    ident_modifier: "Hesab\u0131mda d\u00fczenle",
+
+    recep_titre: "Teslim",
+    recep_livraison: "Teslimat",
+    recep_retrait: "Binche'den teslim alma",
+    recep_retrait_sous: "\u00dccretsiz, randevu ile",
+    recep_meme: "Fatura adresime teslim et",
+
+    liv_nom: "Al\u0131c\u0131n\u0131n ad\u0131",
+    liv_adresse: "Sokak ve numara",
+    liv_cp: "Posta kodu",
+    liv_ville: "\u015eehir",
+    liv_pays: "\u00dclke",
+
+    recap_titre: "Sipari\u015finiz",
+    th_produit: "\u00dcr\u00fcn",
+    th_pieces: "Adet",
+    th_pu: "Birim (KDV hari\u00e7)",
+    th_total: "Toplam (KDV hari\u00e7)",
+
+    tot_sous: "Ara toplam (KDV hari\u00e7)",
+    tot_port: "Teslimat \u00fccreti",
+    tot_total: "\u00d6denecek tutar",
+    tot_remise: "\u0130ndirim",
+    tva_label: "KDV",
+
+    port_offert: "\u00dccretsiz",
+    port_regle: (seuil, forfait) =>
+      seuil + " \u20ac (KDV hari\u00e7) \u00fczeri \u00fccretsiz, alt\u0131nda " + forfait + " \u20ac",
+    port_manque: (manque, seuil) =>
+      "\u00dccretsiz teslimat i\u00e7in " + manque + " \u20ac (KDV hari\u00e7) daha gerekiyor (" + seuil + " \u20ac \u00fczeri).",
+
+    regime_intracom: "Tersine KDV: KDV'siz faturaland\u0131r\u0131l\u0131r. KDV'yi kendi \u00fclkenizde beyan edersiniz.",
+    regime_sans_tva: "KDV numaran\u0131z hen\u00fcz do\u011frulanmad\u0131, bu nedenle %21 Bel\u00e7ika KDV'si uygulan\u0131r.",
+
+    promo_label: "Promosyon kodu (iste\u011fe ba\u011fl\u0131)",
+    promo_btn: "Uygula",
+    promo_ok: (code) => code + " kodu uyguland\u0131.",
+    promo_non: "Bu kod tan\u0131nm\u0131yor.",
+
+    ecartees: (n) => "Sepetinizdeki " + n + " \u00fcr\u00fcn art\u0131k mevcut de\u011fil ve kald\u0131r\u0131ld\u0131.",
+
+    valid_titre: "Onay",
+    valid_cgv_html: "<a href=\"/conditions-de-vente/\" target=\"_blank\" rel=\"noopener\">Sat\u0131\u015f ko\u015fullar\u0131n\u0131</a> kabul ediyorum.",
+    valid_cta: "Sipari\u015fimi onayla",
+    valid_envoi: "Kaydediliyor…",
+    valid_note: "Sipari\u015finiz taraf\u0131m\u0131zca kaydedilir ve ilgili teklifi e-posta ile al\u0131rs\u0131n\u0131z. Bu a\u015famada hi\u00e7bir \u00f6deme al\u0131nmaz.",
+
+    pay_titre: "\u00c7evrimi\u00e7i \u00f6deme",
+    pay_texte: "Kart ve Bancontact ile \u00f6deme \u00e7ok yak\u0131nda. O zamana kadar sipari\u015finizi a\u015fa\u011f\u0131dan onaylay\u0131n: havale ile \u00f6denebilen bir teklif alacaks\u0131n\u0131z.",
+
+    fini_titre: "Sipari\u015f kaydedildi",
+    fini_texte: (ref, email) =>
+      "Referans " + ref + ". \u0130lgili teklif " + email + " adresine g\u00f6nderiliyor.",
+    fini_partiel: "Sipari\u015finizin bir ayr\u0131nt\u0131s\u0131 taraf\u0131m\u0131zdan kontrol edilmeli. Onaydan \u00f6nce sizinle ileti\u015fime ge\u00e7ece\u011fiz.",
+    fini_compte: "Sipari\u015flerimi g\u00f6r",
+    fini_catalogue: "Katalo\u011fa d\u00f6n",
+
+    erreurs: {
+      session: "Oturumunuz sona erdi. L\u00fctfen yeniden giri\u015f yap\u0131n — sepetiniz saklan\u0131yor.",
+      cgv: "Devam etmek i\u00e7in sat\u0131\u015f ko\u015fullar\u0131n\u0131 kabul edin.",
+      vide: "Sepetiniz bo\u015f.",
+      livraison_absente: "L\u00fctfen bir teslimat adresi belirtin.",
+      livraison_nom: "L\u00fctfen al\u0131c\u0131n\u0131n ad\u0131n\u0131 belirtin.",
+      livraison_adresse: "L\u00fctfen sokak ve numaray\u0131 belirtin.",
+      livraison_cp: "L\u00fctfen bir posta kodu belirtin.",
+      livraison_ville: "L\u00fctfen \u015fehri belirtin.",
+      livraison_pays: "Bel\u00e7ika, Fransa ve L\u00fcksemburg'a teslimat yap\u0131yoruz.",
+      tarifs: "Fiyatlar k\u0131sa s\u00fcreli\u011fine kullan\u0131lam\u0131yor. L\u00fctfen birazdan tekrar deneyin.",
+      odoo: "Sipari\u015finiz kaydedilemedi. Hesab\u0131n\u0131zdan hi\u00e7bir tutar \u00e7ekilmedi — birazdan tekrar deneyin veya bize ula\u015f\u0131n.",
+      injoignable: "Sipari\u015finiz kaydedilemedi. Hi\u00e7bir tutar \u00e7ekilmedi — l\u00fctfen birazdan tekrar deneyin.",
+      muet: "Sipari\u015finiz kaydedilemedi. Hi\u00e7bir tutar \u00e7ekilmedi — l\u00fctfen birazdan tekrar deneyin.",
+      refus: "Sipari\u015finiz kaydedilemedi. Hi\u00e7bir tutar \u00e7ekilmedi — bize ula\u015f\u0131n, sizin i\u00e7in girelim.",
+      reseau: "Ba\u011flant\u0131 kesildi. Sepetiniz saklan\u0131yor — l\u00fctfen tekrar deneyin.",
     },
   },
 };
