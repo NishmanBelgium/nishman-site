@@ -1,0 +1,213 @@
+/* ==========================================================================
+   COMMANDER — mise en page du tunnel.
+
+   Volontairement sobre : la charte visuelle est reprise de site.css et
+   quote.css, ce fichier ne fait que la structure propre au tunnel. Le travail
+   d'habillage viendra quand le fonctionnement sera arrêté.
+   ========================================================================== */
+
+.cmd-main { padding-bottom: 60px; }
+
+/* --- Attente -------------------------------------------------------- */
+
+.cmd-attente { text-align: center; }
+.cmd-attente-txt {
+  margin: 0;
+  padding: 18px 0;
+  font-weight: 600;
+  color: var(--ink-soft, #5a5a5a);
+}
+
+/* --- Un bloc d'étape ------------------------------------------------ */
+
+.cmd-bloc { position: relative; padding-top: 28px; }
+
+.cmd-num {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  margin: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--gold, #ED9B24);
+  color: #111;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 26px;
+  text-align: center;
+}
+
+.cmd-titre {
+  margin: 0 0 14px 38px;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cmd-recap-ident {
+  margin: 0 0 6px;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+/* --- Choix de réception --------------------------------------------- */
+
+.cmd-choix {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.cmd-radio,
+.cmd-case {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px 15px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: var(--radius-sm, 12px);
+  cursor: pointer;
+  /* 44 px de haut minimum : la cible doit rester prenable au pouce */
+  min-height: 44px;
+}
+
+.cmd-radio input,
+.cmd-case input {
+  margin-top: 2px;
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+  accent-color: var(--gold-deep, #C9841F);
+}
+
+.cmd-radio:has(input:checked) {
+  border-color: var(--gold, #ED9B24);
+  background: var(--gradient-soft, rgba(237, 155, 36, 0.08));
+}
+
+.cmd-radio strong { display: block; font-size: 15px; }
+.cmd-radio small {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--ink-soft, #5a5a5a);
+}
+
+.cmd-case { margin-bottom: 10px; font-size: 14.5px; }
+
+.cmd-adresse-facture {
+  margin: 0 0 14px 44px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft, #5a5a5a);
+}
+
+/* --- Récapitulatif --------------------------------------------------- */
+
+.cmd-table td { vertical-align: top; }
+
+.cmd-detail {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--ink-soft, #5a5a5a);
+}
+
+.cmd-ecartees {
+  margin: 12px 0 0;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm, 12px);
+  background: rgba(200, 60, 40, 0.07);
+  border: 1px solid rgba(200, 60, 40, 0.3);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.cmd-totaux {
+  margin: 18px 0 0;
+  padding: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.cmd-ligne-tot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  font-size: 14.5px;
+}
+
+.cmd-ligne-tot dt { margin: 0; }
+.cmd-ligne-tot dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+.cmd-ligne-grand {
+  margin-top: 4px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(0, 0, 0, 0.14);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.cmd-info {
+  margin: 12px 0 0;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm, 12px);
+  background: var(--gradient-soft, rgba(237, 155, 36, 0.08));
+  border: 1px solid rgba(237, 155, 36, 0.32);
+  font-size: 13.5px;
+  line-height: 1.55;
+  font-weight: 600;
+  color: var(--gold-deep, #C9841F);
+}
+
+/* « hidden » doit l'emporter, toujours.
+   Le navigateur masque un élément [hidden] avec une règle de très faible
+   priorité : la moindre classe qui impose un display (une grille, une ligne
+   en flex) la bat, et l'élément reste visible alors que le script le croit
+   caché. C'est ainsi que les champs d'adresse et la ligne de remise
+   s'affichaient quand ils n'auraient pas dû. */
+.cmd-main [hidden],
+.cmd-bloc [hidden] { display: none !important; }
+
+/* --- Code promo ------------------------------------------------------ */
+
+.cmd-promo { margin-top: 18px; }
+
+.cmd-promo-row { display: flex; gap: 9px; }
+.cmd-promo-row input { flex: 1 1 auto; min-width: 0; }
+.cmd-promo-row .quote-alt { flex: 0 0 auto; white-space: nowrap; }
+
+/* --- Paiement, en attente de décision -------------------------------- */
+
+.cmd-paiement-attente {
+  margin: 16px 0;
+  padding: 15px 17px;
+  border-radius: var(--radius-sm, 12px);
+  border: 1px dashed rgba(0, 0, 0, 0.26);
+  background: rgba(0, 0, 0, 0.025);
+}
+
+.cmd-paiement-titre {
+  margin: 0 0 5px;
+  font-weight: 700;
+  font-size: 14.5px;
+}
+
+.cmd-paiement-txt {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-soft, #5a5a5a);
+}
+
+/* --- Téléphone ------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .cmd-titre { margin-left: 36px; font-size: 17px; }
+  .cmd-ligne-grand { font-size: 17px; }
+  .cmd-promo-row { flex-direction: column; }
+  .cmd-promo-row .quote-alt { width: 100%; }
+  .cmd-table th:nth-child(3),
+  .cmd-table td:nth-child(3) { display: none; }  /* le P.U. passe à la trappe, le total reste */
+}

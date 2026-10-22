@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Commander — Nishman</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&family=Baloo+2:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="manifest" href="/manifest.json?v=209" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=209" />
+  <link rel="stylesheet" href="/assets/css/quote.css?v=209" />
+  <link rel="stylesheet" href="/assets/css/commander.css?v=209" />
+</head>
+<body class="quote-body">
+
+  <header class="quote-top">
+    <a class="quote-back" href="/produits/"><span aria-hidden="true">&#8249;</span> <span data-t="retour">Retour au catalogue</span></a>
+    <img class="quote-top-logo" src="/assets/img/logo-black.png" alt="Nishman" />
+  </header>
+
+  <main class="quote-main cmd-main">
+
+    <!-- Chargement : tant qu'on n'a pas interrogé le serveur, on n'affiche
+         aucun montant plutôt qu'un montant provisoire. -->
+    <section class="quote-card cmd-attente" id="cmd-attente">
+      <p class="cmd-attente-txt" data-t="chargement">Nous préparons votre commande…</p>
+    </section>
+
+    <!-- Panier vide -->
+    <section class="quote-card" id="cmd-vide" hidden>
+      <h1 class="quote-title" data-t="vide_titre">Votre panier est vide</h1>
+      <p class="quote-lead" data-t="vide_texte">Ajoutez des produits au catalogue pour passer commande.</p>
+      <a class="quote-cta" href="/produits/" data-t="vide_cta">Voir le catalogue</a>
+    </section>
+
+    <!-- Non connecté : le panier est conservé, on ne le perd pas en route -->
+    <section class="quote-card" id="cmd-connexion" hidden>
+      <h1 class="quote-title" data-t="conn_titre">Connectez-vous pour commander</h1>
+      <p class="quote-lead" data-t="conn_texte">
+        Nous vendons exclusivement aux professionnels. Votre panier est conservé :
+        vous le retrouverez après connexion.
+      </p>
+      <a class="quote-cta" id="cmd-vers-connexion" href="/pro/connexion/" data-t="conn_cta">Me connecter</a>
+      <p class="quote-note">
+        <a id="cmd-vers-inscription" href="/pro/connexion/?mode=inscription" data-t="conn_creer">Je n'ai pas encore de compte</a>
+      </p>
+      <p class="quote-note">
+        <a href="/devis/" data-t="conn_devis">Ou demander un devis sans compte</a>
+      </p>
+    </section>
+
+    <!-- ===================== LE TUNNEL ===================== -->
+    <div id="cmd-tunnel" hidden>
+
+      <!-- 1. Qui commande -->
+      <section class="quote-card cmd-bloc">
+        <p class="cmd-num">1</p>
+        <h2 class="cmd-titre" data-t="ident_titre">Vos coordonnées</h2>
+        <p class="cmd-recap-ident" id="cmd-ident">—</p>
+        <p class="quote-note">
+          <a href="/pro/compte/" data-t="ident_modifier">Modifier dans mon compte</a>
+        </p>
+      </section>
+
+      <!-- 2. Réception -->
+      <section class="quote-card cmd-bloc">
+        <p class="cmd-num">2</p>
+        <h2 class="cmd-titre" data-t="recep_titre">Réception</h2>
+
+        <div class="cmd-choix">
+          <label class="cmd-radio">
+            <input type="radio" name="cmd-mode" value="livraison" checked />
+            <span>
+              <strong data-t="recep_livraison">Livraison</strong>
+              <small id="cmd-port-regle">—</small>
+            </span>
+          </label>
+          <label class="cmd-radio">
+            <input type="radio" name="cmd-mode" value="retrait" />
+            <span>
+              <strong data-t="recep_retrait">Retrait à Binche</strong>
+              <small data-t="recep_retrait_sous">Sans frais, sur rendez-vous</small>
+            </span>
+          </label>
+        </div>
+
+        <div id="cmd-livraison-zone">
+          <label class="cmd-case">
+            <input type="checkbox" id="cmd-meme-adresse" checked />
+            <span data-t="recep_meme">Livrer à mon adresse de facturation</span>
+          </label>
+          <p class="cmd-adresse-facture" id="cmd-adresse-facture">—</p>
+
+          <div class="field-grid" id="cmd-autre-adresse" hidden>
+            <label class="field field-wide">
+              <span data-t="liv_nom">Nom du destinataire</span>
+              <input type="text" id="liv-nom" autocomplete="name" />
+            </label>
+            <label class="field field-wide">
+              <span data-t="liv_adresse">Adresse (rue et numéro)</span>
+              <input type="text" id="liv-adresse" autocomplete="street-address" />
+            </label>
+            <label class="field">
+              <span data-t="liv_cp">Code postal</span>
+              <input type="text" id="liv-cp" autocomplete="postal-code" />
+            </label>
+            <label class="field">
+              <span data-t="liv_ville">Ville</span>
+              <input type="text" id="liv-ville" autocomplete="address-level2" />
+            </label>
+            <label class="field field-wide">
+              <span data-t="liv_pays">Pays</span>
+              <select id="liv-pays">
+                <option value="BE">Belgique</option>
+                <option value="FR">France</option>
+                <option value="LU">Luxembourg</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Le récapitulatif -->
+      <section class="quote-card cmd-bloc">
+        <p class="cmd-num">3</p>
+        <h2 class="cmd-titre" data-t="recap_titre">Votre commande</h2>
+
+        <div class="doc-table-wrap">
+          <table class="doc-table cmd-table">
+            <thead>
+              <tr>
+                <th data-t="th_produit">Produit</th>
+                <th class="num" data-t="th_pieces">Pièces</th>
+                <th class="num" data-t="th_pu">P.U. HT</th>
+                <th class="num" data-t="th_total">Total HT</th>
+              </tr>
+            </thead>
+            <tbody id="cmd-lignes"></tbody>
+          </table>
+        </div>
+
+        <p class="cmd-ecartees" id="cmd-ecartees" hidden></p>
+
+        <dl class="cmd-totaux">
+          <div class="cmd-ligne-tot"><dt data-t="tot_sous">Sous-total HT</dt><dd id="tot-sous">—</dd></div>
+          <div class="cmd-ligne-tot" id="row-remise" hidden><dt id="lab-remise">Remise</dt><dd id="tot-remise">—</dd></div>
+          <div class="cmd-ligne-tot"><dt id="lab-port" data-t="tot_port">Frais de livraison</dt><dd id="tot-port">—</dd></div>
+          <div class="cmd-ligne-tot"><dt id="lab-tva">TVA</dt><dd id="tot-tva">—</dd></div>
+          <div class="cmd-ligne-tot cmd-ligne-grand"><dt data-t="tot_total">Total à payer</dt><dd id="tot-total">—</dd></div>
+        </dl>
+
+        <p class="cmd-info" id="cmd-port-manque" hidden></p>
+        <p class="cmd-info" id="cmd-regime" hidden></p>
+
+        <label class="field field-wide cmd-promo">
+          <span data-t="promo_label">Code promo (facultatif)</span>
+          <div class="cmd-promo-row">
+            <input type="text" id="cmd-promo" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+            <button type="button" class="quote-alt" id="cmd-promo-btn" data-t="promo_btn">Appliquer</button>
+          </div>
+        </label>
+        <p class="cmd-info" id="cmd-promo-msg" hidden></p>
+      </section>
+
+      <!-- 4. Validation -->
+      <section class="quote-card cmd-bloc">
+        <p class="cmd-num">4</p>
+        <h2 class="cmd-titre" data-t="valid_titre">Validation</h2>
+
+        <label class="cmd-case">
+          <input type="checkbox" id="cmd-cgv" />
+          <span data-t-html="valid_cgv">
+            J'accepte les <a href="/conditions-de-vente/" target="_blank" rel="noopener">conditions de vente</a>.
+          </span>
+        </label>
+
+        <!-- Paiement en ligne : la place est faite, le prestataire n'est pas
+             choisi. Rien de cliquable tant que ce n'est pas décidé. -->
+        <div class="cmd-paiement-attente" id="cmd-paiement-attente">
+          <p class="cmd-paiement-titre" data-t="pay_titre">Paiement en ligne</p>
+          <p class="cmd-paiement-txt" data-t="pay_texte">
+            Le paiement par carte et Bancontact arrive prochainement. En attendant,
+            validez votre commande ci-dessous : vous recevrez un devis à confirmer,
+            payable par virement.
+          </p>
+        </div>
+
+        <button class="quote-cta" id="cmd-envoyer" data-t="valid_cta">Valider ma commande</button>
+        <p class="quote-error" id="cmd-erreur" hidden></p>
+        <p class="quote-note" data-t="valid_note">
+          Votre commande est enregistrée chez nous et vous recevez le devis
+          correspondant par e-mail. Aucun paiement n'est prélevé à cette étape.
+        </p>
+      </section>
+    </div>
+
+    <!-- Confirmation -->
+    <section class="quote-card quote-done" id="cmd-fini" hidden>
+      <div class="done-check" aria-hidden="true">&#10003;</div>
+      <h1 class="quote-title" data-t="fini_titre">Commande enregistrée</h1>
+      <p class="quote-lead" id="cmd-fini-texte">—</p>
+      <p class="cmd-info" id="cmd-fini-partiel" hidden></p>
+      <div class="quote-actions-row">
+        <a class="quote-alt" href="/pro/compte/" data-t="fini_compte">Voir mes commandes</a>
+        <a class="quote-alt" href="/produits/" data-t="fini_catalogue">Retour au catalogue</a>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/assets/js/config.js?v=209"></script>
+  <script src="/assets/js/commander-langues.js?v=209"></script>
+  <script src="/assets/js/commander.js?v=209"></script>
+</body>
+</html>

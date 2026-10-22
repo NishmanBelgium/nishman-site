@@ -1,0 +1,63 @@
+ÉTAPE 209 — LE TUNNEL DE COMMANDE
+=================================
+
+CE QUI EST AJOUTÉ
+-----------------
+Une page /commander/ : une seule page, quatre blocs — vos coordonnées,
+la réception, le récapitulatif, la validation.
+
+Elle n'est reliée à rien pour l'instant. Aucun bouton du catalogue n'y
+mène : on y accède uniquement en tapant l'adresse. C'est volontaire —
+les quatre autres langues manquent encore, et personne ne doit y
+arriver par hasard avant qu'elles y soient.
+
+Pour la voir : https://nishman-site.pages.dev/commander/
+(mettez d'abord quelques produits au panier depuis le catalogue)
+
+
+CE QUI CHANGE EN PROFONDEUR
+---------------------------
+La page n'additionne rien. Pas un prix, pas un port, pas une TVA.
+Chaque montant affiché est demandé au serveur, et le montant engagé
+est celui que le serveur a calculé. Un navigateur modifié ne peut plus
+faire baisser un total.
+
+Et surtout : la commande part du serveur, pas du navigateur. Jusqu'ici
+la demande de devis était envoyée « à l'aveugle » — le navigateur ne
+pouvait pas lire la réponse et considérait l'absence d'erreur réseau
+comme un succès. C'est ainsi qu'un client pouvait voir « envoyé »
+alors qu'Odoo avait refusé. Désormais la vraie réponse est lue : si
+Odoo tombe, le client voit un échec honnête, pas une confirmation.
+
+
+DEUX DÉFAUTS CORRIGÉS EN CHEMIN
+-------------------------------
+1. Une commande en livraison sans adresse partait silencieusement à
+   l'adresse de facturation. Il faut maintenant soit une adresse
+   complète, soit la case « même adresse » explicitement cochée.
+
+2. Un élément masqué par le script restait visible quand une classe
+   lui imposait une mise en page. Les champs d'adresse et la ligne de
+   remise s'affichaient quand ils n'auraient pas dû.
+
+
+CE QUI N'EST PAS LÀ
+-------------------
+- Le paiement en ligne : la place est faite, le prestataire n'est pas
+  choisi. Le bloc est présent et dit clairement que ça arrive.
+- Les langues nl / de / en / tr : à l'étape suivante.
+- Le lien depuis le catalogue : une fois les langues faites.
+
+
+FICHIERS
+--------
+  commander/index.html              (nouveau)
+  assets/js/commander.js            (nouveau)
+  assets/js/commander-langues.js    (nouveau)
+  assets/css/commander.css          (nouveau)
+  functions/api/commander.js        (nouveau)
+  functions/_tarifs.js              (nouveau)
+  functions/api/panier.js           (modifié)
+
+Branche : NishmanCloudflare
+Après dépôt : relancer le déploiement (functions/ a changé).

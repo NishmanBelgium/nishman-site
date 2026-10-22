@@ -12,52 +12,9 @@
 
 import { json, erreur, compteConnecte } from "../_commun.js";
 import { calculer } from "../_calcul.js";
+import { catalogue, tableDePrix } from "../_tarifs.js";
 
 const PAYS_CONNUS = { BE: 1, FR: 1, LU: 1 };
-
-const PORTIER_DEFAUT =
-  "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec";
-
-function extraireJson(texte) {
-  const debut = texte.indexOf("(");
-  const fin = texte.lastIndexOf(")");
-  if (debut === -1 || fin <= debut) return null;
-  try { return JSON.parse(texte.slice(debut + 1, fin)); } catch (e) { return null; }
-}
-
-// Le catalogue et les prix changent rarement à l'échelle d'une poignée de
-// requêtes : on les garde le temps de vie de l'isolat, pas au-delà.
-let cacheCatalogue = null;
-let cachePrix = null;
-let cachePrixExpire = 0;
-const PRIX_DUREE_MS = 60 * 1000;
-
-async function catalogue(request) {
-  if (cacheCatalogue) return cacheCatalogue;
-  const r = await fetch(new URL("/assets/data/products.json", request.url));
-  if (!r.ok) throw new Error("catalogue injoignable");
-  const d = await r.json();
-  cacheCatalogue = Array.isArray(d) ? d : (d.products || []);
-  return cacheCatalogue;
-}
-
-async function tableDePrix(env) {
-  if (cachePrix && Date.now() < cachePrixExpire) return cachePrix;
-  const code = env.PORTIER_CODE;
-  if (!code) throw new Error("portier non configuré");
-
-  const url = (env.PORTIER_URL || PORTIER_DEFAUT)
-    + "?action=unlock&callback=p&code=" + encodeURIComponent(code);
-  const r = await fetch(url, { headers: { accept: "*/*" } });
-  if (!r.ok) throw new Error("portier injoignable");
-
-  const d = extraireJson(await r.text());
-  if (!d || !d.ok || !d.prices) throw new Error("portier sans prix");
-
-  cachePrix = d.prices;
-  cachePrixExpire = Date.now() + PRIX_DUREE_MS;
-  return cachePrix;
-}
 
 export async function onRequestPost({ request, env }) {
   let corps;
@@ -95,6 +52,20 @@ export async function onRequestPost({ request, env }) {
   return json({
     ok: true,
     connecte: !!compte,
+    // L'identité telle qu'elle figurera sur le devis. Ce sont les données du
+    // compte lui-même, renvoyées à sa propre session : la page de commande
+    // les affiche pour que le client vérifie avant de valider.
+    compte: compte ? {
+      societe: compte.salon || "",
+      prenom: compte.prenom || "",
+      nom: compte.nom || "",
+      email: compte.email || "",
+      telephone: compte.telephone || "",
+      adresse: compte.adresse || "",
+      code_postal: compte.code_postal || "",
+      ville: compte.ville || "",
+      tva: compte.tva || compte.siret || "",
+    } : null,
     // Sans session, le pays est une hypothèse : le montant affiché est
     // indicatif et la page doit le dire. Avec session, il fait foi.
     pays_certain: !!compte,
