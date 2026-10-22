@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "204";
+  const ASSET_V = "205";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -91,6 +91,16 @@
       portRegles: "Livraison offerte dès 300 € HT en Belgique, dès 500 € en France et au Luxembourg.",
       portRetrait: "Retrait à Binche : toujours gratuit.",
       banBE: "Belgique — livraison offerte dès 300 € HT, sinon 10 €",
+      banImportateur: "Importateur officiel Nishman — Belgique, France, Luxembourg",
+      banHT: "Prix professionnels hors TVA",
+      quiTitre: "Qui vous livre",
+      quiOfficiel: "Circuit officiel",
+      quiOfficielTexte: "NBD Distribution est l'importateur officiel et exclusif de Nishman pour la Belgique, la France et le Luxembourg. Les produits viennent directement de la marque.",
+      quiDepot: "Dépôt et showroom à Binche",
+      quiDepotTexte: "Les salons y sont reçus sur rendez-vous. Le retrait sur place est possible, sans frais.",
+      quiCommerciaux: "Livré par nos commerciaux",
+      quiCommerciauxTexte: "Une partie des commandes est livrée en main propre, en Belgique et dans le nord de la France.",
+      quiRefs: (n) => `${n} références au catalogue`,
       banFR: "France et Luxembourg — offerte dès 500 € HT, sinon 15 €",
       banRetrait: "Retrait à Binche — toujours gratuit",
       contactTitle: "Une question ? Écrivez-nous", contactWa: "WhatsApp", contactMail: "E-mail",
@@ -145,6 +155,16 @@
       portRegles: "Free delivery from €300 excl. VAT in Belgium, from €500 in France and Luxembourg.",
       portRetrait: "Collection in Binche: always free.",
       banBE: "Belgium — free delivery from €300 excl. VAT, otherwise €10",
+      banImportateur: "Official Nishman importer — Belgium, France, Luxembourg",
+      banHT: "Trade prices, VAT excluded",
+      quiTitre: "Who delivers to you",
+      quiOfficiel: "Official channel",
+      quiOfficielTexte: "NBD Distribution is the official and exclusive Nishman importer for Belgium, France and Luxembourg. Products come straight from the brand.",
+      quiDepot: "Warehouse and showroom in Binche",
+      quiDepotTexte: "Salons are welcome by appointment. Collection on site is possible, free of charge.",
+      quiCommerciaux: "Delivered by our own reps",
+      quiCommerciauxTexte: "Part of the orders are delivered by hand, in Belgium and northern France.",
+      quiRefs: (n) => `${n} references in the catalogue`,
       banFR: "France and Luxembourg — free from €500 excl. VAT, otherwise €15",
       banRetrait: "Collection in Binche — always free",
       contactTitle: "A question? Write to us", contactWa: "WhatsApp", contactMail: "E-mail",
@@ -199,6 +219,16 @@
       portRegles: "Gratis levering vanaf € 300 excl. btw in België, vanaf € 500 in Frankrijk en Luxemburg.",
       portRetrait: "Afhalen in Binche: altijd gratis.",
       banBE: "België — gratis levering vanaf € 300 excl. btw, anders € 10",
+      banImportateur: "Officiële Nishman-invoerder — België, Frankrijk, Luxemburg",
+      banHT: "Vakprijzen, excl. btw",
+      quiTitre: "Wie bij u levert",
+      quiOfficiel: "Officieel circuit",
+      quiOfficielTexte: "NBD Distribution is de officiële en exclusieve invoerder van Nishman voor België, Frankrijk en Luxemburg. De producten komen rechtstreeks van het merk.",
+      quiDepot: "Magazijn en showroom in Binche",
+      quiDepotTexte: "Salons zijn welkom op afspraak. Afhalen ter plaatse kan, zonder kosten.",
+      quiCommerciaux: "Geleverd door onze vertegenwoordigers",
+      quiCommerciauxTexte: "Een deel van de bestellingen wordt persoonlijk geleverd, in België en Noord-Frankrijk.",
+      quiRefs: (n) => `${n} referenties in de catalogus`,
       banFR: "Frankrijk en Luxemburg — gratis vanaf € 500 excl. btw, anders € 15",
       banRetrait: "Afhalen in Binche — altijd gratis",
       contactTitle: "Een vraag? Schrijf ons", contactWa: "WhatsApp", contactMail: "E-mail",
@@ -255,6 +285,16 @@
       portRegles: "Kostenlose Lieferung ab 300 € netto in Belgien, ab 500 € in Frankreich und Luxemburg.",
       portRetrait: "Abholung in Binche: immer kostenlos.",
       banBE: "Belgien — kostenlose Lieferung ab 300 € netto, sonst 10 €",
+      banImportateur: "Offizieller Nishman-Importeur — Belgien, Frankreich, Luxemburg",
+      banHT: "Händlerpreise, ohne MwSt.",
+      quiTitre: "Wer Sie beliefert",
+      quiOfficiel: "Offizieller Vertriebsweg",
+      quiOfficielTexte: "NBD Distribution ist der offizielle und exklusive Nishman-Importeur für Belgien, Frankreich und Luxemburg. Die Produkte kommen direkt von der Marke.",
+      quiDepot: "Lager und Showroom in Binche",
+      quiDepotTexte: "Salons sind nach Vereinbarung willkommen. Abholung vor Ort ist kostenlos möglich.",
+      quiCommerciaux: "Von unseren Außendienstlern geliefert",
+      quiCommerciauxTexte: "Ein Teil der Bestellungen wird persönlich geliefert, in Belgien und Nordfrankreich.",
+      quiRefs: (n) => `${n} Artikel im Katalog`,
       banFR: "Frankreich und Luxemburg — kostenlos ab 500 € netto, sonst 15 €",
       banRetrait: "Abholung in Binche — immer kostenlos",
       contactTitle: "Eine Frage? Schreiben Sie uns", contactWa: "WhatsApp", contactMail: "E-Mail",
@@ -309,6 +349,16 @@
       portRegles: "Belçika'da 300 € (KDV hariç) üzeri, Fransa ve Lüksemburg'da 500 € üzeri teslimat ücretsiz.",
       portRetrait: "Binche'ten teslim alma: her zaman ücretsiz.",
       banBE: "Belçika — 300 € (KDV hariç) üzeri ücretsiz teslimat, altında 10 €",
+      banImportateur: "Resmî Nishman ithalatçısı — Belçika, Fransa, Lüksemburg",
+      banHT: "Profesyonel fiyatlar, KDV hariç",
+      quiTitre: "Size kim teslim ediyor",
+      quiOfficiel: "Resmî kanal",
+      quiOfficielTexte: "NBD Distribution, Belçika, Fransa ve Lüksemburg için Nishman'ın resmî ve münhasır ithalatçısıdır. Ürünler doğrudan markadan gelir.",
+      quiDepot: "Binche'te depo ve showroom",
+      quiDepotTexte: "Salonlar randevuyla kabul edilir. Yerinden teslim alma mümkündür, ücretsizdir.",
+      quiCommerciaux: "Kendi temsilcilerimizle teslimat",
+      quiCommerciauxTexte: "Siparişlerin bir kısmı Belçika ve Kuzey Fransa'da elden teslim edilir.",
+      quiRefs: (n) => `Katalogda ${n} ürün`,
       banFR: "Fransa ve Lüksemburg — 500 € üzeri ücretsiz, altında 15 €",
       banRetrait: "Binche'ten teslim alma — her zaman ücretsiz",
       contactTitle: "Sorunuz mu var? Bize yazın", contactWa: "WhatsApp", contactMail: "E-posta",
@@ -628,6 +678,17 @@
               '<div class="sk-line sk-mid"></div></div>';
     }
     grid.innerHTML = html;
+  }
+
+  // Le bloc « Qui vous livre » attend le catalogue : son compteur en vient,
+  // et un bloc qui s'affiche avec un nombre vide fait mauvais effet.
+  function montrerQui() {
+    const bloc = document.getElementById("qui");
+    if (!bloc) return;
+    const refs = document.getElementById("qui-refs");
+    const visibles = PRODUCTS.length;
+    if (refs && visibles) refs.textContent = T.quiRefs(visibles);
+    bloc.hidden = !visibles;
   }
 
   function renderGrid() {
@@ -1249,6 +1310,7 @@
     // et rafraîchit simplement les prix quand elle aboutit : plus d'attente
     // avant de voir le catalogue.
     await loadProducts();
+    montrerQui();
     renderCatButton();
     renderGrid();
     renderFloatBar();
@@ -1735,6 +1797,11 @@
     if (accCreate) accCreate.textContent = T.accountCreate;
     const map2 = {
       "t-clear": T.clearCart,
+      "ban-importateur": T.banImportateur, "ban-ht": T.banHT,
+      "qui-titre": T.quiTitre,
+      "qui-officiel": T.quiOfficiel, "qui-officiel-texte": T.quiOfficielTexte,
+      "qui-depot": T.quiDepot, "qui-depot-texte": T.quiDepotTexte,
+      "qui-commerciaux": T.quiCommerciaux, "qui-commerciaux-texte": T.quiCommerciauxTexte,
       "ban-be": T.banBE, "ban-fr": T.banFR, "ban-retrait": T.banRetrait,
     };
     Object.keys(map2).forEach((id) => {

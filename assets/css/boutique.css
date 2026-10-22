@@ -12,9 +12,12 @@
   --ink-soft: #6e6e73;
   --ink-faint: #a4a4a9;
 
-  --gold: #ff8a00;
-  --gold-deep: #e07200;
-  --gradient: linear-gradient(135deg, #ffb340 0%, #ff8a00 100%);
+  /* Orange Nishman officiel. Le dégradé n'en est plus un : en redéfinissant
+     la variable, les 25 endroits qui l'emploient deviennent plats d'un coup,
+     sans toucher à une seule règle. */
+  --gold: #ED9B24;
+  --gold-deep: #C9841F;
+  --gradient: #ED9B24;
 
   --line: rgba(10, 10, 10, 0.09);
   --line-strong: rgba(10, 10, 10, 0.16);

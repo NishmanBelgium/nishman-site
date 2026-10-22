@@ -11,7 +11,7 @@
   --color-surface-raised: #201a14;
   --color-ink: #f3ece1;         /* texte principal, ivoire chaud */
   --color-ink-soft: #a99d8c;    /* texte secondaire, taupe clair */
-  --color-gold: #faa21b;        /* or-orangé exact du logo Nishman */
+  --color-gold: #ED9B24;        /* orange Nishman officiel */
   --color-gold-deep: #c97e10;   /* or plus profond, hover / bordures */
   --color-whatsapp: #3fb464;    /* vert whatsapp, légèrement assourdi */
   --color-line: rgba(243, 236, 225, 0.12);
@@ -50,7 +50,7 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: linear-gradient(rgba(250, 162, 27, 0.02) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(237, 155, 36, 0.02) 1px, transparent 1px);
   background-size: 100% 3px;
   opacity: 0.5;
 }

@@ -1,0 +1,97 @@
+NISHMAN — étape 206
+===================
+
+POUR LA BRANCHE NishmanCloudflare.
+CE LOT CONTIENT AUSSI LE 205 (vous ne l'aviez pas encore déposé) :
+un seul dépôt suffit, lisez aussi LISEZMOI-205.txt.
+
+
+LE CALCUL PASSE CÔTÉ SERVEUR
+============================
+C'est la première brique du squelette, et la plus structurante.
+
+Jusqu'ici, le navigateur calculait les prix, la remise et les frais de
+port, puis les envoyait. Ça tenait tant qu'un devis passait sous vos yeux
+avant de devenir une facture. Ça ne tient plus dès qu'on encaisse : un
+navigateur se modifie en trois clics, et quelqu'un pourrait payer ce qu'il
+décide.
+
+Désormais le navigateur n'envoie que des RÉFÉRENCES et des QUANTITÉS. Tout
+le reste est recalculé ici, à partir du catalogue, de votre table de prix
+et du compte connecté.
+
+CE QUI EST CALCULÉ
+==================
+· le prix de chaque ligne, unités et cartons
+· la remise FIRST10
+· les frais de port selon le pays du COMPTE, pas selon ce que dit la page
+· LA TVA — c'est nouveau, le site ne l'avait jamais calculée :
+     client belge ......................... 21 %
+     français ou luxembourgeois, TVA valide  0 %, autoliquidation
+     français ou luxembourgeois sans TVA ... 21 % belge
+  Le régime est renvoyé avec le montant, pour pouvoir l'afficher au client
+  avant qu'il paie, comme votre brief le demande.
+
+CE QU'UN NAVIGATEUR NE PEUT PLUS FAIRE
+======================================
+Vérifié en lui faisant essayer :
+  · glisser un prix dans le panier .............. ignoré, la table fait foi
+  · commander une référence inexistante ......... écartée
+  · envoyer une quantité négative ............... écartée
+  · envoyer 2,7 unités .......................... ramené à 2
+  · commander un carton d'un produit vendu seul . écarté
+  · se déclarer français pour éviter la TVA ..... impossible : le pays vient
+    du compte, pas de la page
+
+Et un compte suspendu n'ouvre aucune session : son panier est calculé comme
+celui d'un visiteur anonyme, sans pays certain.
+
+RIEN NE CHANGE ENCORE POUR VOS CLIENTS
+======================================
+C'est voulu. Le point d'entrée existe et répond, mais aucune page ne
+l'appelle encore. Le devis continue de fonctionner exactement comme avant.
+
+La raison : brancher le devis dessus, c'est toucher à un parcours qui
+marche. Ce calcul a été construit pour la PAGE DE COMMANDE, qui est
+l'étape suivante — elle naîtra directement branchée dessus, et le devis
+basculera ensuite, une fois la page éprouvée. Une brique à la fois, chacune
+réversible.
+
+UN POINT COMMERCIAL À CONFIRMER
+===============================
+Avec FIRST10, la remise peut faire repasser une commande sous le seuil du
+port offert. Exemple vérifié : 318 € de marchandise, −10 % = 286,20 €,
+donc 10 € de port. Le client voit sa remise ET des frais de port apparaître
+en même temps.
+
+C'est le calcul habituel, mais il surprend. Si vous préférez que le seuil
+s'apprécie AVANT remise, c'est une ligne à changer — dites-le moi.
+
+VÉRIFIÉ AVANT ENVOI
+===================
+Les règles de calcul sont dans un fichier séparé, sans aucun appel réseau :
+elles se vérifient donc au centime, sans Cloudflare et sans Odoo.
+
+Neuf situations de montants, toutes justes : Belgique sous et au-dessus du
+seuil, cartons, France avec et sans TVA valide, Luxembourg, retrait, remise,
+et le cas de la remise qui repasse sous le seuil.
+
+Puis le point d'entrée lui-même : visiteur anonyme, client belge, client
+français en autoliquidation, corps illisible, mauvaise méthode, portier
+injoignable, compte suspendu.
+
+Une précision d'honnêteté : un écart est apparu au premier essai. C'était
+mon montant attendu qui était faux, pas le code — 296,20 × 21 % font bien
+62,20.
+
+PAS DE NOUVELLE VERSION D'ASSETS
+================================
+Ce lot ne touche aucun fichier du navigateur : inutile de vider les caches.
+Seul functions/ change — donc dépôt PUIS RELANCE DU DÉPLOIEMENT.
+
+LA SUITE
+========
+La page de commande sur une seule page, branchée sur ce calcul, avec le
+choix « payer » ou « envoyer en devis ». Elle pourra être mise en ligne
+avec le seul choix « devis » tant que Mollie n'est pas actif : le parcours
+sera testable en vrai sans attendre le paiement.

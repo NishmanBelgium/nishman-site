@@ -1,0 +1,104 @@
+NISHMAN — étape 205
+===================
+
+POUR LA BRANCHE NishmanCloudflare.
+Ce lot suppose le 204 déposé avant lui.
+
+L'étape 1 de votre plan — « prix publics et vitrine » — est terminée.
+
+
+1. L'ORANGE DE MARQUE
+=====================
+Votre brief fixe l'orange Nishman à #ED9B24, sans dégradé. C'était à
+appliquer tel quel : c'est fait.
+
+VOUS AVIEZ TROIS ORANGE DIFFÉRENTS dans le code, chacun se présentant
+comme le bon :
+  #ff8a00  dans site.css et boutique.css
+  #faa21b  dans style.css, commenté « or-orangé exact du logo Nishman »
+  #ED9B24  celui de votre brief
+Les trois sont maintenant #ED9B24.
+
+Les dégradés ont disparu sans toucher aux 25 endroits qui les employaient :
+la variable --gradient ne contient plus un dégradé mais une couleur unie.
+Un seul mot à changer pour revenir en arrière, si l'effet ne vous plaît pas.
+
+CE QUE J'AI MESURÉ, ET UN POINT À TRANCHER
+Texte noir sur votre orange : 8,78 pour 1. Excellent — vos boutons sont
+parfaitement lisibles.
+
+En revanche, l'orange en PETIT TEXTE SUR FOND BLANC — les lignes de
+description des cartes produits, les liens — donne 2,25 pour 1, là où la
+norme d'accessibilité demande 4,5. Je l'ai assombri à #C9841F pour ces
+usages-là, ce qui monte à 3,1 : mieux, mais toujours sous le seuil.
+
+Pour atteindre la norme il faudrait #A36A18, un ton nettement plus brun
+qui ne ressemble plus vraiment à votre orange. C'est un arbitrage entre
+fidélité de marque et lisibilité, et il vous revient. Dites-moi.
+
+Précision : l'orange de votre logo n'est pas affecté, c'est une image.
+
+
+2. LE BANDEAU
+=============
+L'ancien bandeau de livraison en trois encadrés devient une ligne fine de
+faits séparés par des points, sous la barre de recherche :
+
+  Importateur officiel Nishman — Belgique, France, Luxembourg ·
+  Prix professionnels hors TVA ·
+  Belgique — livraison offerte dès 300 € HT, sinon 10 € ·
+  France et Luxembourg — offerte dès 500 € HT, sinon 15 € ·
+  Retrait à Binche — toujours gratuit
+
+Plus léger qu'avant : 105 px de haut sur iPhone contre environ 130 pour
+les trois encadrés, alors qu'il dit deux choses de plus.
+
+PAS DE « PAIEMENT SÉCURISÉ » dans ce bandeau. Votre brief le prévoit
+« une fois actif » : tant que Mollie n'est pas en service, l'annoncer
+serait une promesse fausse. Je l'ajouterai le jour venu.
+
+
+3. LE BLOC « QUI VOUS LIVRE »
+=============================
+Sur l'accueil, APRÈS le catalogue. Votre brief demande de ne pas repousser
+les produits sous la ligne de flottaison : le visiteur vient pour la
+gamme, et découvre qui la lui vend quand il a fini de la parcourir. Le
+bandeau du haut, lui, dit déjà l'essentiel en une ligne.
+
+Trois faits, tous tirés de votre brief, tous vérifiables :
+  · Circuit officiel — importateur officiel et exclusif BE/FR/LU,
+    produits venant directement de la marque
+  · Dépôt et showroom à Binche — salons reçus sur rendez-vous, retrait
+    sur place sans frais
+  · Livré par nos commerciaux — en Belgique et dans le nord de la France
+
+Et le nombre de références, CALCULÉ depuis le catalogue à chaque
+affichage, jamais écrit en dur : il ne peut pas devenir faux.
+
+Aucun superlatif, aucun avis client, aucune photo inventée.
+
+IL ME MANQUE LA PHOTO
+Votre brief prévoit une vraie photo du dépôt. Je n'en ai pas mis : je
+n'allais pas en fabriquer une. Envoyez-la-moi et je l'intègre. Si vous
+avez des salons clients d'accord pour témoigner, leurs noms aussi.
+
+À FAIRE
+=======
+Le dépôt, puis la relance du déploiement.
+
+VÉRIFIÉ AVANT ENVOI
+===================
+· bandeau et bloc relus en français et en néerlandais, au navigateur
+· le compteur affiche bien 203, pris dans le catalogue
+· le bloc reste masqué tant que le catalogue n'est pas chargé — pas de
+  bloc avec un nombre vide
+· hauteur du bandeau mesurée sur iPhone 13
+· contrastes calculés, pas estimés
+· aucune erreur JavaScript
+
+UNE REMARQUE, SANS ACTION DE MA PART
+====================================
+assets/css/style.css n'est chargé par AUCUNE page du site. C'est du code
+mort, environ 300 lignes. Je ne l'ai pas supprimé — votre brief me demande
+de m'arrêter avant toute suppression — mais vous pouvez l'enlever sans
+risque, ou me dire de le faire.

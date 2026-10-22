@@ -13,10 +13,14 @@
   --ink-soft: #6e6e73;
   --ink-faint: #a4a4a9;
 
-  --gold: #ff8a00;
-  --gold-deep: #e07200;
-  --gradient: linear-gradient(135deg, #ffb340 0%, #ff8a00 100%);
-  --gradient-soft: linear-gradient(135deg, rgba(255,138,0,0.10), rgba(255,138,0,0.04));
+  /* Orange Nishman officiel. Le dégradé n'en est plus un : en redéfinissant
+     la variable, les 25 endroits qui l'emploient deviennent plats d'un coup,
+     sans toucher à une seule règle. */
+  --gold: #ED9B24;
+  --gold-deep: #C9841F;
+  --gradient: #ED9B24;
+  /* Voile orange, désormais uni lui aussi. */
+  --gradient-soft: rgba(237, 155, 36, 0.08);
 
   --whatsapp: #25d366;
   --line: rgba(10, 10, 10, 0.09);
@@ -2733,33 +2737,6 @@ body.has-offre-barre .search-sticky {
   .product-price.price-attente { animation: none; }
 }
 
-/* ── banderole des conditions de livraison (étape 202) ──────────────────
-   Trois règles à énoncer sans assommer : une ligne, trois cellules, et
-   une colonne sur téléphone. Le ton reste sobre — c'est une information
-   utile, pas une promotion. */
-.ban-port {
-  display: flex; flex-wrap: wrap; gap: 10px;
-  margin: 4px 0 18px;
-}
-.ban-port-cell {
-  flex: 1 1 260px;
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 14px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  font-size: 13px; line-height: 1.35; color: var(--ink-soft);
-}
-.ban-port-ico { flex: none; color: var(--gold-deep); }
-.ban-port-cell.ban-port-retrait .ban-port-ico { color: var(--ink-faint); }
-/* La troisième règle tient en quatre mots : qu'elle ne vole pas la place
-   des deux autres, qui en ont besoin pour ne pas se couper en deux. */
-.ban-port-cell.ban-port-retrait { flex: 0 1 auto; }
-
-@media (max-width: 760px) {
-  .ban-port { gap: 8px; }
-  .ban-port-cell { flex: 1 1 100%; padding: 10px 12px; font-size: 12.5px; }
-}
 
 /* ── « continuer la visite » sous la fenêtre d'accueil ──────────────────
    Une sortie visible : un pop-up dont on ne voit pas comment sortir est
@@ -2801,4 +2778,71 @@ body.has-offre-barre .search-sticky {
   .product-footer .add-btn,
   .add-btn { min-width: 44px; min-height: 44px; }
   .sel-chip { min-height: 44px; padding: 7px 10px; }
+}
+
+/* ── bandeau de faits sous l'en-tête (étape 205) ────────────────────────
+   Une ligne, des faits séparés par des points. Sobre par construction :
+   c'est une mention de confiance, pas une bannière promotionnelle. */
+.ban-faits {
+  margin: 2px 0 16px;
+  font-size: 12.5px; line-height: 1.7; color: var(--ink-soft);
+}
+.ban-fait { white-space: nowrap; }
+.ban-fait + .ban-fait::before {
+  content: "·";
+  margin: 0 9px;
+  color: var(--ink-faint);
+}
+.ban-fait-cle { color: var(--ink); font-weight: 700; }
+
+/* Sur téléphone, les mentions se coupent en milieu de phrase si on les
+   garde insécables : on les laisse respirer. */
+@media (max-width: 760px) {
+  .ban-faits { font-size: 12px; line-height: 1.75; margin-bottom: 12px; }
+  .ban-fait { white-space: normal; }
+  .ban-fait + .ban-fait::before { margin: 0 7px; }
+}
+
+/* ── « Qui vous livre » (étape 205) ─────────────────────────────────────
+   Après le catalogue, pas avant : le visiteur vient pour les produits.
+   Trois faits vérifiables, pas d'accroche. */
+.qui {
+  margin: 54px 0 8px;
+  padding: 34px 0 0;
+  border-top: 1px solid var(--line);
+}
+.qui-titre {
+  margin: 0 0 24px;
+  font-family: var(--font-display);
+  font-size: 21px; font-weight: 700; color: var(--ink);
+}
+.qui-points {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+}
+.qui-point h3 {
+  margin: 0 0 7px;
+  font-size: 13.5px; font-weight: 700; color: var(--ink);
+}
+.qui-point h3::before {
+  content: "";
+  display: block;
+  width: 26px; height: 2px;
+  background: var(--gold);
+  margin-bottom: 11px;
+}
+.qui-point p {
+  margin: 0;
+  font-size: 13.5px; line-height: 1.6; color: var(--ink-soft);
+}
+.qui-refs {
+  margin: 26px 0 0;
+  font-size: 12.5px; color: var(--ink-faint);
+}
+
+@media (max-width: 760px) {
+  .qui { margin-top: 38px; padding-top: 26px; }
+  .qui-titre { font-size: 19px; margin-bottom: 20px; }
+  .qui-points { grid-template-columns: 1fr; gap: 22px; }
 }
