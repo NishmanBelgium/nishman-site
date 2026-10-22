@@ -78,8 +78,21 @@ export async function commandeDuClient(env, partnerId, commandeId) {
 export async function lignesDeCommande(env, commandeId) {
   return appel(env, "sale.order.line", "search_read",
     [[["order_id", "=", commandeId]],
-     ["name", "product_uom_qty", "price_unit", "discount", "price_subtotal"]],
+     ["name", "product_id", "product_uom_qty", "price_unit", "discount", "price_subtotal"]],
     { limit: 300 });
+}
+
+// Le site parle EAN, Odoo parle identifiants internes. Sans cette table de
+// correspondance, « commander à nouveau » ne saurait pas quels produits
+// remettre au panier.
+export async function codesBarres(env, produitIds) {
+  const ids = [...new Set(produitIds.filter(Boolean))];
+  if (!ids.length) return {};
+  const r = await appel(env, "product.product", "read",
+    [ids, ["barcode"]], {});
+  const table = {};
+  for (const p of r || []) if (p.barcode) table[p.id] = String(p.barcode);
+  return table;
 }
 
 export async function facturesDuClient(env, partnerId, limite = 50) {

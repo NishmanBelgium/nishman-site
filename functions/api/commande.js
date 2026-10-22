@@ -4,7 +4,7 @@
    ========================================================================== */
 
 import { json, erreur, compteConnecte } from "../_commun.js";
-import { configure, commandeDuClient, lignesDeCommande } from "../_odoo.js";
+import { configure, commandeDuClient, lignesDeCommande, codesBarres } from "../_odoo.js";
 
 export async function onRequestGet({ request, env }) {
   const compte = await compteConnecte(request, env.DB);
@@ -27,12 +27,16 @@ export async function onRequestGet({ request, env }) {
 
     const brut = await lignesDeCommande(env, commande.id);
 
+    // Les codes EAN permettent de reconstituer le panier d'un clic.
+    const eans = await codesBarres(env, brut.map((l) => l.product_id && l.product_id[0]));
+
     // Odoo garde aussi dans sale.order.line les notes et les sections, qui
     // n'ont ni quantité ni prix : elles n'ont rien à faire dans un récapitulatif.
     const lignes = brut
       .filter((l) => Number(l.product_uom_qty) > 0)
       .map((l) => ({
         designation: String(l.name || "").split("\n")[0],
+        ean: (l.product_id && eans[l.product_id[0]]) || null,
         quantite: l.product_uom_qty,
         prix_unitaire: l.price_unit,
         remise: l.discount || 0,
