@@ -2772,3 +2772,33 @@ body.has-offre-barre .search-sticky {
   text-align: center;
 }
 .access-passer:hover { color: var(--ink-soft); text-decoration: underline; }
+
+/* ── lisibilité et prise en main sur téléphone (étape 203) ──────────────
+   Deux constats mesurés sur un écran de 390 px : la ligne de description
+   était coupée en plein mot sur presque toutes les cartes (« BASE AQUEUSE
+   — FINI B… »), et les boutons d'ajout tombaient sous les 44 px au-dessous
+   desquels un pouce rate sa cible. */
+
+@media (max-width: 620px) {
+  /* La description passe sur deux lignes plutôt que d'être tronquée. Les
+     cartes restent alignées entre elles : c'est un nombre de lignes fixe,
+     pas un texte libre. */
+  .product-cat {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.25;
+    min-height: calc(2 * 1.25em);
+  }
+
+  /* Ces deux lignes coûtent de la hauteur : on la reprend sur l'image, qui
+     en a de reste. La carte reste aussi courte qu'avant. */
+  .product-image-wrap { aspect-ratio: 5 / 4; }
+
+  /* 44 px, le minimum au-dessous duquel une cible devient pénible à
+     atteindre au pouce. */
+  .product-footer .add-btn,
+  .add-btn { min-width: 44px; min-height: 44px; }
+  .sel-chip { min-height: 44px; padding: 7px 10px; }
+}

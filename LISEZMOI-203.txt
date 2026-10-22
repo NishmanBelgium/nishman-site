@@ -1,0 +1,148 @@
+NISHMAN — étape 203
+===================
+
+POUR LA BRANCHE NishmanCloudflare.
+
+Trois améliorations, chacune choisie sur une mesure et non sur une
+impression, chacune testée.
+
+
+1. LA RECHERCHE NE TROUVAIT RIEN
+================================
+
+LE PROBLÈME, MESURÉ
+La recherche ne regardait que le nom du produit et le code EAN. Or vos
+noms sont en anglais, et vos clients cherchent dans leur langue. Résultat,
+sur vos 203 références :
+
+  « cire »          0 résultat        « poudre »       0 résultat
+  « shampoing »     0 résultat        « crème »        0 résultat
+  « après rasage »  0 résultat        « barbe »        3 résultats
+
+Un coiffeur belge qui tape « cire » sur votre catalogue de cires repart en
+pensant que vous n'en vendez pas. En néerlandais c'était pire : « baard »,
+« poeder », « waterbasis » renvoyaient zéro.
+
+CE QUI CHANGE
+La recherche regarde désormais le nom, l'EAN, la catégorie, le volume, la
+accroche et la description — dans la langue choisie. Les accents ne
+comptent plus : « creme » trouve « crème ». Plusieurs mots se cumulent :
+« aqua wax 04 » ne sort que ce qui contient les trois.
+
+Et les résultats sont classés par pertinence : qui tape « mat » voit
+d'abord MATTE CLAY, pas les quarante produits dont la notice contient le
+mot. Sans recherche, l'ordre du catalogue reste exactement le vôtre.
+
+  « cire »          36 résultats      « poudre »      18 résultats
+  « shampoing »     51 résultats      « crème »       18 résultats
+  « après rasage »  33 résultats      « baard » (nl)  15 résultats
+
+Au passage : le message « aucun produit ne correspond » était en français
+quelle que soit la langue. Traduit.
+
+
+2. COMMANDER À NOUVEAU
+======================
+
+LE PROBLÈME
+Un salon recommande les mêmes références tous les mois. Il devait les
+retrouver une par une dans 203 produits, de mémoire. C'est le geste le
+plus fréquent du métier, et c'était le plus pénible.
+
+CE QUI CHANGE
+Dans « Mes commandes », sous le détail d'une commande dépliée, un bouton
+« Commander à nouveau ». Un clic, et les produits de cette commande sont
+dans sa sélection, prêts pour un nouveau devis.
+
+Trois précautions :
+
+· On AJOUTE à la sélection en cours, on ne l'écrase pas. Quelqu'un qui
+  avait déjà composé un panier ne le perd pas.
+· Rien ne part tout seul. Le client arrive sur son devis, vérifie,
+  modifie, et valide lui-même.
+· Un produit qui n'est plus au catalogue est ignoré, et le client en est
+  informé : « 2 produits ajoutés. 1 n'a pas pu être repris : il n'est plus
+  au catalogue. »
+
+Une limite à connaître : les quantités reviennent d'Odoo en pièces, donc
+elles sont remises à l'unité. Quelqu'un qui avait commandé un carton de 48
+retrouvera 48 unités, pas 1 carton. Le total est le même ; la présentation
+diffère. Dites-moi si vous voulez que je reconvertisse en cartons.
+
+
+3. LE CATALOGUE SUR TÉLÉPHONE
+=============================
+
+LE PROBLÈME, MESURÉ SUR UN IPHONE 13 (390 px)
+Deux défauts objectifs :
+
+· La ligne de description était coupée en plein mot sur 39 cartes :
+  « BASE AQUEUSE — FINI B… », « 29 PIÈCES POUR DÉCOU… ». Illisible, et ça
+  donne l'impression d'un site cassé.
+· 200 éléments cliquables mesuraient moins de 44 px, le seuil au-dessous
+  duquel un pouce rate sa cible. Les boutons « + » du catalogue étaient à
+  42 px, les pastilles de quantité à 33 px de haut.
+
+CE QUI CHANGE
+La description passe sur deux lignes au lieu d'être tronquée, et l'image
+du produit est légèrement moins haute pour compenser. Résultat : la carte
+est plus COURTE qu'avant — 289 px contre 304 — tout en affichant le texte
+entier. Les boutons d'ajout passent à 44 px.
+
+  descriptions coupées : 39 -> 1
+  cibles sous 44 px : 200 -> 12
+  hauteur de carte : 304 px -> 289 px
+
+Rien ne bouge sur ordinateur : tout est dans une règle qui ne s'applique
+qu'en dessous de 620 px de large.
+
+
+CE QUE JE DOIS VOUS SIGNALER
+============================
+
+Votre brief indique qu'un suivi des événements et des statistiques existe
+dans la bêta. J'ai cherché : sur cette branche, il n'y a AUCUN outil de
+mesure. Ni Google Analytics, ni Plausible, ni balise Cloudflare, ni
+compteur maison. Aucun événement n'est enregistré nulle part.
+
+Ce n'est pas un reproche — c'est peut-être sur l'autre branche, ou vous
+pensiez à autre chose. Mais en l'état, impossible de savoir où vos
+visiteurs abandonnent, combien cherchent sans trouver, ou si ces trois
+améliorations servent à quelque chose. C'est le prochain sujet que je
+recommanderais, avant d'autres améliorations à l'aveugle.
+
+
+FICHIERS TOUCHÉS
+================
+assets/js/catalog.js ......... recherche, message sans résultat
+assets/js/compte.js .......... commander à nouveau
+assets/js/compte-langues.js .. textes du bouton, 5 langues
+assets/css/site.css .......... carte produit sur téléphone
+assets/css/compte.css ........ bouton commander à nouveau
+functions/_odoo.js ........... codes EAN des lignes de commande
+functions/api/commande.js .... EAN transmis au navigateur
+sw.js + numéros de version
+
+À FAIRE
+=======
+Le dépôt, puis RELANCER LE DÉPLOIEMENT (functions/ change).
+
+TESTS EXÉCUTÉS
+==============
+· recherche : 11 requêtes en français, 3 en néerlandais, au navigateur,
+  avec le nombre de résultats et les deux premiers produits
+· commander à nouveau : panier vide ET panier déjà rempli, avec une ligne
+  sans EAN ; vérification du contenu réel du panier après le clic
+· téléphone : mesures avant/après sur iPhone 13
+· NON-RÉGRESSION, tout repassé : détail des commandes dans les cinq
+  langues, les cinq cas de frais de port, prix publics, porte du devis,
+  retour après connexion, banderole, fenêtre d'accueil
+· aucune erreur JavaScript nulle part
+
+CE QUE JE N'AI PAS FAIT
+=======================
+Un constat que je garde pour la suite : sur téléphone, régler une quantité
+demande d'ouvrir la fiche produit. Un professionnel qui commande trente
+références ouvre et ferme trente fiches. C'est, à mon avis, le gain mobile
+le plus important qui reste — mais il touche un parcours critique et je
+préfère le traiter seul, pas en fin de lot.

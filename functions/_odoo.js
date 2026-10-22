@@ -54,6 +54,31 @@ export async function partenaireParEmail(env, email) {
   return r && r[0] ? r[0] : null;
 }
 
+// Retrouve la fiche client par son numéro de TVA. Odoo n'impose aucun
+// format : « BE0817750283 », « BE 0817.750.283 » et « 0817750283 » désignent
+// la même entreprise. On essaie les écritures courantes, puis les chiffres
+// seuls.
+//
+// Si DEUX fiches portent le même numéro, on ne rapproche rien : mieux vaut un
+// historique vide qu'un client qui lit les commandes d'un autre.
+export async function partenaireParTva(env, tva) {
+  if (!tva) return null;
+  const brut = String(tva).replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+  if (brut.length < 8) return null;
+  const sansPays = brut.replace(/^[A-Z]{2}/, "");
+
+  const formes = [...new Set([brut, sansPays, "BE" + sansPays, "FR" + sansPays, "LU" + sansPays])];
+  let r = await appel(env, "res.partner", "search_read",
+    [[["vat", "in", formes]], ["id", "name", "vat", "email"]], { limit: 3 });
+
+  if (!r || !r.length) {
+    r = await appel(env, "res.partner", "search_read",
+      [[["vat", "ilike", sansPays]], ["id", "name", "vat", "email"]], { limit: 3 });
+  }
+  if (!r || r.length !== 1) return null;
+  return r[0];
+}
+
 export async function commandesDuClient(env, partnerId, limite = 50) {
   return appel(env, "sale.order", "search_read",
     [[["partner_id", "=", partnerId]],

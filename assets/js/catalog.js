@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "202";
+  const ASSET_V = "204";
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -71,6 +71,7 @@
       seeSelection: "voir ma sélection", discover: "Découvrir",
       askPrice: "Prix sur demande", proAccess: "Accès professionnel",
       priceLoading: "Chargement des tarifs…",
+      noResults: "Aucun produit ne correspond à votre recherche.",
       welcomeTitle: "Catalogue professionnel",
       welcomeText: "Ce catalogue s'adresse aux salons de coiffure et aux barbiers. Les tarifs affichés sont nos prix professionnels. Pour commander, il faut un compte — la création est immédiate et gratuite.",
       welcomeSkip: "Continuer la visite",
@@ -124,6 +125,7 @@
       seeSelection: "view my selection", discover: "Discover",
       askPrice: "Price on request", proAccess: "Professional access",
       priceLoading: "Loading prices…",
+      noResults: "No product matches your search.",
       welcomeTitle: "Trade catalogue",
       welcomeText: "This catalogue is for hair salons and barbershops. The prices shown are our trade prices. An account is required to order — creating one is free and immediate.",
       welcomeSkip: "Keep browsing",
@@ -177,6 +179,7 @@
       seeSelection: "bekijk mijn selectie", discover: "Ontdekken",
       askPrice: "Prijs op aanvraag", proAccess: "Professionele toegang",
       priceLoading: "Prijzen laden…",
+      noResults: "Geen enkel product komt overeen met uw zoekopdracht.",
       welcomeTitle: "Vakcatalogus",
       welcomeText: "Deze catalogus is bedoeld voor kapsalons en barbershops. De getoonde tarieven zijn onze vakprijzen. Om te bestellen hebt u een account nodig — aanmaken is gratis en onmiddellijk.",
       welcomeSkip: "Verder kijken",
@@ -230,6 +233,7 @@
       seeSelection: "meine Auswahl ansehen", discover: "Entdecken",
       askPrice: "Preis auf Anfrage", proAccess: "Professioneller Zugang",
       priceLoading: "Preise werden geladen…",
+      noResults: "Kein Produkt entspricht Ihrer Suche.",
       welcomeTitle: "Fachkatalog",
       welcomeText: "Dieser Katalog richtet sich an Friseursalons und Barbershops. Die angezeigten Preise sind unsere Händlerpreise. Zum Bestellen ist ein Konto nötig — die Anmeldung ist kostenlos und sofort möglich.",
       welcomeSkip: "Weiter stöbern",
@@ -283,6 +287,7 @@
       seeSelection: "seçimimi gör", discover: "Keşfet",
       askPrice: "Fiyat için sorunuz", proAccess: "Profesyonel erişim",
       priceLoading: "Fiyatlar yükleniyor…",
+      noResults: "Aramanızla eşleşen ürün yok.",
       welcomeTitle: "Profesyonel katalog",
       welcomeText: "Bu katalog kuaför salonları ve berberler içindir. Gösterilen fiyatlar profesyonel fiyatlarımızdır. Sipariş vermek için hesap gerekir — hesap açmak ücretsiz ve anındadır.",
       welcomeSkip: "Göz atmaya devam et",
@@ -532,16 +537,64 @@
 
   // ---------- Rendu : grille produits ----------
 
+  // Les accents sont une faute de frappe comme une autre : « creme » doit
+  // trouver « crème ». On compare des formes aplaties, jamais le texte brut.
+  function aplati(t) {
+    return String(t == null ? "" : t)
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }
+
+  // Ce dans quoi on cherche, et ce que vaut une trouvaille. Le nom pèse plus
+  // que la description : qui tape « mat » veut d'abord les produits qui
+  // s'appellent ainsi, pas les quarante dont la notice contient le mot.
+  function champsCherchables(p) {
+    return [
+      { texte: p.name, poids: 100 },
+      { texte: p.ean, poids: 90 },
+      { texte: catLabel(p.category), poids: 60 },
+      { texte: p.category, poids: 55 },
+      { texte: p.volume, poids: 50 },
+      { texte: pText(p, "tagline"), poids: 40 },
+      { texte: p.tagline, poids: 35 },
+      { texte: pText(p, "description"), poids: 20 },
+      { texte: p.description, poids: 15 },
+    ];
+  }
+
+  // Score d'un produit pour une requête : chaque mot doit se trouver quelque
+  // part (sinon le produit ne sort pas), et on retient le champ le mieux
+  // placé. Un mot absent partout = 0 = produit écarté.
+  function score(p, mots) {
+    let total = 0;
+    const champs = champsCherchables(p).map((c) => ({ t: aplati(c.texte), poids: c.poids }));
+    for (const mot of mots) {
+      let meilleur = 0;
+      for (const c of champs) {
+        if (c.t.indexOf(mot) === -1) continue;
+        // Un mot qui commence un champ vaut mieux qu'un mot au milieu.
+        const bonus = c.t.indexOf(mot) === 0 ? 10 : 0;
+        if (c.poids + bonus > meilleur) meilleur = c.poids + bonus;
+      }
+      if (!meilleur) return 0;
+      total += meilleur;
+    }
+    return total;
+  }
+
   function getFiltered() {
-    const term = searchTerm.trim().toLowerCase();
-    return PRODUCTS.filter((p) => {
-      const matchCat = activeCategory === "Tous" || p.category === activeCategory;
-      const matchTerm =
-        !term ||
-        p.name.toLowerCase().includes(term) ||
-        p.ean.includes(term);
-      return matchCat && matchTerm;
-    });
+    const mots = aplati(searchTerm).trim().split(/\s+/).filter(Boolean);
+    const parCategorie = PRODUCTS.filter(
+      (p) => activeCategory === "Tous" || p.category === activeCategory
+    );
+    if (!mots.length) return parCategorie;
+
+    // On classe par pertinence, mais seulement quand il y a une recherche :
+    // sans requête, l'ordre du catalogue reste celui que vous avez choisi.
+    return parCategorie
+      .map((p) => ({ p: p, s: score(p, mots) }))
+      .filter((x) => x.s > 0)
+      .sort((a, b) => b.s - a.s)
+      .map((x) => x.p);
   }
 
   function formatPrice(price) {
@@ -585,7 +638,7 @@
     countEl.textContent = T.results(filtered.length);
 
     if (filtered.length === 0) {
-      grid.innerHTML = `<p class="no-results">Aucun produit ne correspond à votre recherche.</p>`;
+      grid.innerHTML = `<p class="no-results">${T.noResults}</p>`;
       return;
     }
 

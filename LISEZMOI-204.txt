@@ -1,0 +1,79 @@
+NISHMAN — étape 204
+===================
+
+POUR LA BRANCHE NishmanCloudflare.
+
+LE RAPPROCHEMENT COMPTE ↔ FICHE ODOO
+====================================
+Vous avez tranché : automatique, mais tracé. C'est fait.
+
+Quand un client ouvre « Mes commandes » pour la première fois, le site
+cherche sa fiche dans Odoo — d'abord par adresse e-mail, et si ça ne donne
+rien, par numéro de TVA. Il retient le lien et n'a plus à chercher ensuite.
+
+C'est ce qui débloque tout l'espace professionnel : sans lui, l'historique,
+le détail des commandes et « Commander à nouveau » restaient vides pour vos
+vrais clients. Le cas que vous avez vu hier soir — votre compte en hotmail,
+la fiche en contact@nishman.be — se résout maintenant tout seul par la TVA.
+
+CE QU'IL REFUSE DE FAIRE
+========================
+Si DEUX fiches Odoo portent le même numéro de TVA, le site ne rapproche
+rien du tout. Mieux vaut un historique vide qu'un client qui lit les
+commandes d'un autre. Vous le verrez : le client verra « nous n'avons pas
+encore de commande associée », et vous saurez qu'il faut dédoublonner la
+fiche dans Odoo.
+
+Il accepte les écritures libres : BE0817750283, 0817750283 et
+BE 0817.750.283 désignent la même entreprise.
+
+LA TRACE
+========
+Deux traces, pas une — parce qu'un numéro de TVA est une donnée publique
+et qu'une liaison faite sur ce seul critère mérite d'être vue passer.
+
+1. UNE LIGNE EN BASE, toujours : qui a été relié à quoi, sur quel critère,
+   quand. Elle existe même si le courriel se perd.
+2. UN COURRIEL à contact@nishman.be, avec un encadré d'avertissement quand
+   le rapprochement s'est fait par TVA : « si ce compte ne vous dit rien,
+   il voit désormais l'historique de cette fiche ».
+
+TROIS CHOSES À FAIRE, DANS CET ORDRE
+====================================
+
+1) LA TABLE DANS LA BASE
+   Cloudflare -> Storage & Databases -> D1 -> nishman-comptes -> Console.
+   Collez le contenu de base/migration-204.sql et exécutez.
+   Sans cette table, le rapprochement fonctionne mais n'est pas tracé.
+
+2) LE DÉPÔT, PUIS LA RELANCE DU DÉPLOIEMENT
+   Comme d'habitude. functions/ change, le dépôt seul ne suffit pas.
+
+3) L'ALERTE PAR COURRIEL (facultatif, 2 minutes)
+   Le fichier SCRIPT-GOOGLE-ajout-liaison.gs vous dit quoi coller dans
+   votre Apps Script. Si vous ne le faites pas, le rapprochement marche
+   quand même : vous n'aurez simplement pas l'alerte, et la trace restera
+   en base. Rien ne casse.
+
+VÉRIFIÉ AVANT ENVOI
+===================
+Le rapprochement a été testé fonction par fonction, sur un Odoo et une base
+simulés, dans neuf situations :
+
+  l'e-mail correspond .................. relié, tracé « email »
+  l'e-mail non, la TVA oui ............. relié, tracé « tva », alerte signalée
+  ni l'un ni l'autre ................... rien, aucune trace
+  DEUX fiches même TVA ................. rien, aucune trace
+  numéro sans le pays .................. relié
+  numéro écrit BE 0817.750.283 ......... relié (2e tentative)
+  numéro vide, numéro trop court ....... rien
+  script Google pas équipé ............. relié et tracé, pas d'alerte
+
+Et le filtre réellement envoyé à Odoo a été relu : il couvre les écritures
+courantes du numéro.
+
+CE QUI RESTE DE VOTRE CÔTÉ
+==========================
+Les sept autres missions de la liste. Les deux à lancer aujourd'hui restent
+Mollie et les grilles transporteurs — ce sont les seuls délais qui ne
+dépendent pas de vous.

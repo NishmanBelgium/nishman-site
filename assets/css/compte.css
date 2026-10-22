@@ -359,3 +359,23 @@
   .table-det th:nth-child(4), .table-det td:nth-child(4) { display: none; }
   .table-det th:nth-child(3), .table-det td:nth-child(3) { display: none; }
 }
+
+/* ── commander à nouveau (étape 203) ────────────────────────────────────
+   Sous le détail d'une commande : un professionnel recommande souvent les
+   mêmes références, autant lui éviter de les retrouver une par une. */
+.det-action {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+  padding: 16px 10px 6px;
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+}
+.det-suite { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+.det-suite:not(.on) { display: none; }
+.det-suite.succes { color: #14633a; }
+.det-suite.erreur { color: #a12020; }
+.det-suite a { color: var(--gold-deep); font-weight: 600; margin-left: 2px; }
+
+@media (max-width: 560px) {
+  .det-action { padding: 14px 4px 4px; }
+  .det-action .bouton-court { width: 100%; }
+}

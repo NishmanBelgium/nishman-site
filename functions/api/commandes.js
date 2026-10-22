@@ -3,7 +3,8 @@
    ========================================================================== */
 
 import { json, erreur, compteConnecte } from "../_commun.js";
-import { configure, partenaireParEmail, commandesDuClient } from "../_odoo.js";
+import { configure, commandesDuClient } from "../_odoo.js";
+import { rapprocher } from "../_liaison.js";
 
 export async function onRequestGet({ request, env }) {
   const compte = await compteConnecte(request, env.DB);
@@ -18,16 +19,9 @@ export async function onRequestGet({ request, env }) {
   try {
     let partnerId = compte.odoo_partner_id;
 
-    // Premier passage : on cherche la fiche client dans Odoo par l'e-mail,
-    // et on retient le lien pour ne plus avoir à chercher ensuite.
-    if (!partnerId) {
-      const p = await partenaireParEmail(env, compte.email);
-      if (p) {
-        partnerId = p.id;
-        await env.DB.prepare("UPDATE comptes SET odoo_partner_id = ? WHERE id = ?")
-          .bind(partnerId, compte.id).run();
-      }
-    }
+    // Premier passage : on cherche la fiche client dans Odoo, par e-mail puis
+    // par numéro de TVA, et on retient le lien pour ne plus avoir à chercher.
+    if (!partnerId) partnerId = await rapprocher(env, compte);
 
     if (!partnerId) return json({ pret: true, commandes: [], inconnu: true });
 

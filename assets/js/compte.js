@@ -766,14 +766,80 @@
             cellule.innerHTML = note(t("det_vide"));
             return;
           }
-          cellule.innerHTML = detail(d.lignes);
+          cellule.innerHTML = detail(d.lignes) + boutonRecommander(d.lignes);
           det.setAttribute("data-charge", "1");
+          var b = cellule.querySelector("[data-recommander]");
+          if (b) {
+            b.addEventListener("click", function () {
+              recommander(d.lignes, cellule.querySelector(".det-suite"));
+            });
+          }
         })
         .catch(function () { cellule.innerHTML = note(t("det_echec")); });
     }
 
     function note(texte) {
       return '<p class="det-note">' + echappe(texte) + "</p>";
+    }
+
+    /* ---- commander à nouveau ---- */
+
+    // Le panier vit dans le navigateur, sous la même clé que le catalogue.
+    var CLE_PANIER = "nishman_selection_v1";
+
+    function boutonRecommander(lignes) {
+      var utiles = lignes.filter(function (l) { return l.ean; }).length;
+      if (!utiles) return "";
+      return '<div class="det-action">' +
+        '<button type="button" class="bouton-plein bouton-court" data-recommander>' +
+          echappe(t("det_recommander")) + "</button>" +
+        '<p class="det-suite" role="status"></p>' +
+      "</div>";
+    }
+
+    // On AJOUTE à la sélection en cours, on ne la remplace pas : écraser le
+    // panier de quelqu'un qui a déjà composé sa commande serait brutal, et
+    // rien ne part sans qu'il valide ensuite son devis.
+    function recommander(lignes, zone) {
+      var panier = {};
+      try { panier = JSON.parse(localStorage.getItem(CLE_PANIER)) || {}; }
+      catch (x) { panier = {}; }
+
+      var ajoutes = 0, ignores = 0;
+      for (var i = 0; i < lignes.length; i++) {
+        var l = lignes[i];
+        var qte = Math.round(Number(l.quantite) || 0);
+        if (!l.ean || qte <= 0) { ignores++; continue; }
+        var actuel = panier[l.ean] || { u: 0, b: 0 };
+        if (typeof actuel === "number") actuel = { u: actuel, b: 0 };
+        // Les quantités reviennent d'Odoo en pièces : on les remet à l'unité,
+        // charge au client de repasser en cartons s'il le préfère.
+        actuel.u = (actuel.u || 0) + qte;
+        panier[l.ean] = actuel;
+        ajoutes++;
+      }
+
+      if (!ajoutes) { suite(zone, t("det_recommander_rien"), "erreur"); return; }
+      try { localStorage.setItem(CLE_PANIER, JSON.stringify(panier)); }
+      catch (x) { suite(zone, t("det_recommander_echec"), "erreur"); return; }
+
+      // Le français ne dit pas « 1 produits ajoutés » : on distingue.
+      var texte = ajoutes === 1
+        ? t("det_recommander_ok_un")
+        : remplir(t("det_recommander_ok"), { n: ajoutes });
+      if (ignores) {
+        texte += " " + (ignores === 1
+          ? t("det_recommander_ignores_un")
+          : remplir(t("det_recommander_ignores"), { n: ignores }));
+      }
+      suite(zone, texte, "succes",
+        ' <a href="/devis/">' + echappe(t("det_voir_panier")) + "</a>");
+    }
+
+    function suite(zone, texte, genre, apres) {
+      if (!zone) return;
+      zone.innerHTML = echappe(texte) + (apres || "");
+      zone.className = "det-suite on " + genre;
     }
 
     // Deux décimales au plus, et pas de « 2,00 » là où « 2 » suffit.
