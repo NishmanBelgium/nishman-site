@@ -379,3 +379,64 @@
   .det-action { padding: 14px 4px 4px; }
   .det-action .bouton-court { width: 100%; }
 }
+
+/* ---------- Statut du numéro de TVA au registre européen --------------- */
+
+.tva-etat {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm, 12px);
+  background: rgba(0, 0, 0, 0.025);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.tva-etat[hidden] { display: none; }
+
+.tva-ligne {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Une pastille colorée plutôt qu'un mot de plus : le statut se lit d'un
+   coup d'œil, et la couleur n'est jamais seule à porter le sens. */
+.tva-pastille {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #9a9a9a;
+}
+.tva-pastille.vert   { background: #2e7d32; }
+.tva-pastille.rouge  { background: #c62828; }
+.tva-pastille.orange { background: var(--gold-deep, #C9841F); }
+.tva-pastille.gris   { background: #9a9a9a; }
+
+.tva-detail {
+  margin: 7px 0 0 18px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-soft, #5a5a5a);
+}
+.tva-detail[hidden] { display: none; }
+
+.tva-bouton {
+  margin-top: 11px;
+  min-height: 40px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #fff;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tva-bouton:hover { border-color: var(--gold, #ED9B24); }
+.tva-bouton:disabled { opacity: 0.55; cursor: progress; }
+
+@media (max-width: 560px) {
+  .tva-bouton { width: 100%; }
+}

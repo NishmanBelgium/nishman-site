@@ -1,7 +1,8 @@
 /* ==========================================================================
    CONFIG — SEUL FICHIER À MODIFIER AU QUOTIDIEN.
    - AGENTS : les commerciaux (slug = URL des cartes QR, ne jamais changer).
-   - SHARED.orderLog : URL du registre Google Sheets (voir REGISTRE-GUIDE.txt).
+   - Le registre Google n'est plus joint depuis le navigateur : la page de
+     devis passe par /api/devis, et le code d'appel reste chez Cloudflare.
      Laisser vide ("") tant que le registre n'est pas configuré.
    ========================================================================== */
 
@@ -17,5 +18,4 @@ const SHARED = {
   website: "https://nishman.be",
   bio: "Distributeur officiel Nishman pour la Belgique, la France et le Luxembourg. Produits professionnels pour barbers et coiffeurs.",
   // Collez ici l'URL /exec de votre script Google (entre les guillemets) :
-  orderLog: "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec",
 };

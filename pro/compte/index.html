@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title data-t="titre_compte">Mon compte — NISHMAN</title>
 <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="https://nishman.be/pro/compte/" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -79,6 +80,19 @@
         <label for="p-identifiant" id="p-l-identifiant">Numéro de TVA</label>
         <input type="text" id="p-identifiant" inputmode="numeric" autocomplete="off" spellcheck="false" />
         <p class="aide" id="p-aide-identifiant"></p>
+
+        <!-- Statut du numero au registre europeen VIES. C'est lui qui
+             decide de l'autoliquidation : le client doit pouvoir le voir
+             et le relancer lui-meme plutot que de nous appeler. -->
+        <div class="tva-etat" id="tva-etat" hidden>
+          <p class="tva-ligne">
+            <span class="tva-pastille" id="tva-pastille"></span>
+            <span id="tva-texte"></span>
+          </p>
+          <p class="tva-detail" id="tva-detail" hidden></p>
+          <button type="button" class="tva-bouton" id="tva-verifier"
+                  data-t="tva_verifier">Vérifier maintenant</button>
+        </div>
       </div>
 
       <p class="section" data-t="sec_vous">Vous</p>

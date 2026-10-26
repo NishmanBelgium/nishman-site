@@ -16,6 +16,15 @@
 const RACINE = "https://ec.europa.eu/taxation_customs/vies/rest-api";
 const DELAI_MS = 8000;
 
+// Chaque État membre répond pour lui-même, et certains saturent — la France
+// surtout. Une saturation dure rarement plus de quelques secondes, alors
+// qu'un abandon immédiat fait payer la TVA à un client qui n'aurait pas dû.
+// On insiste donc, brièvement, avant de conclure à l'indisponibilité.
+const TENTATIVES = 3;
+const ATTENTE_MS = [0, 400, 1200];   // croissante : on n'aggrave pas l'engorgement
+
+const attendre = (ms) => ms > 0 ? new Promise((r) => setTimeout(r, ms)) : null;
+
 /** Les trois seuls États où nous vendons. */
 const PAYS_SERVIS = { BE: 1, FR: 1, LU: 1 };
 
@@ -55,6 +64,29 @@ export function decouper(numero, paysCompte) {
  *   indisponible  on n'a pas pu savoir — on ne tranche pas à sa place
  */
 export async function verifier(numero, paysCompte, requerant) {
+  let dernier = null;
+
+  for (let essai = 0; essai < TENTATIVES; essai++) {
+    const pause = ATTENTE_MS[essai];
+    if (pause) await attendre(pause);
+
+    const r = await interroger(numero, paysCompte, requerant);
+
+    // Une réponse claire, dans un sens ou dans l'autre, met fin aux essais :
+    // seule l'absence de réponse mérite d'insister.
+    if (r.statut !== "indisponible") return r;
+
+    // Une saisie refusée ne deviendra pas correcte en réessayant.
+    if (r.motif === "INVALID_INPUT") return r;
+
+    dernier = r;
+  }
+
+  return { ...dernier, essais: TENTATIVES };
+}
+
+/** Un aller-retour avec le registre. Ne lève jamais. */
+async function interroger(numero, paysCompte, requerant) {
   const part = decouper(numero, paysCompte);
   if (!part || !part.numero) {
     return { statut: "invalide", motif: "format", verifie_le: new Date().toISOString() };

@@ -1,7 +1,7 @@
 /* ==========================================================================
    DEMANDE DE DEVIS — page /devis/
    Lit le panier et les coordonnées (localStorage, partagés avec le catalogue),
-   compose le document, puis l'envoie au script Google (SHARED.orderLog) qui
+   compose le document, puis l'envoie à /api/devis, qui le relaie au script
    enregistre la ligne et expédie le devis par e-mail au client + copie NBD.
    ========================================================================== */
 
@@ -636,9 +636,10 @@
 
   // ---------- Envoi ----------
 
-  function endpoint() {
-    return (typeof SHARED !== "undefined" && SHARED.orderLog) ? SHARED.orderLog : "";
-  }
+  // La demande passe par notre propre serveur : le code qui authentifie
+  // l'appel au script Google ne descend jamais jusqu'au navigateur, et la
+  // réponse devient lisible — « envoyé » ne sera plus une supposition.
+  function endpoint() { return "/api/devis"; }
 
   async function sendQuote() {
     const data = renderDoc();
@@ -670,19 +671,16 @@
       })),
     };
 
-    const url = endpoint();
     let ok = false;
-    if (url) {
-      try {
-        await fetch(url, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload),
-        });
-        ok = true; // mode no-cors : la réponse n'est pas lisible, l'absence d'erreur vaut succès
-      } catch (e) { ok = false; }
-    }
+    try {
+      const r = await fetch(endpoint(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const d = await r.json();
+      ok = !!(d && d.ok);
+    } catch (e) { ok = false; }
 
     btn.disabled = false;
     $("t-send").textContent = T.send;

@@ -1245,55 +1245,10 @@
   // REGISTRE DES COMMANDES — envoi discret vers Google Sheets (Apps Script).
   // Une ligne par commande. N'interrompt jamais le parcours WhatsApp :
   // en cas d'échec réseau, la commande part quand même sur WhatsApp.
-  // L'URL est renseignée dans config.js (SHARED.orderLog) ; vide = désactivé.
-  // ==========================================================================
-
-  function orderLogUrl() {
-    return (typeof SHARED !== "undefined" && SHARED.orderLog) ? SHARED.orderLog : "";
-  }
-
-  function buildOrderPayload() {
-    const items = [];
-    let grand = 0;
-    let priced = unlocked();
-    Object.keys(selection).forEach((ean) => {
-      const p = PRODUCTS.find((x) => x.ean === ean);
-      if (!p) return;
-      const q = selection[ean];
-      const unit = priced ? priceOf(p) : null;
-      const parts = [];
-      if (q.u > 0) parts.push(q.u + " u");
-      if (q.b > 0) parts.push(q.b + " ct(" + p.box_qty + ")");
-      let lineTotal = null;
-      if (unit !== null) {
-        lineTotal = (q.u || 0) * unit + (q.b || 0) * (p.box_qty || 0) * unit;
-        grand += lineTotal;
-      }
-      items.push(p.name + " — " + parts.join(" + ") + (lineTotal !== null ? " = " + formatPrice(lineTotal) : ""));
-    });
-    return {
-      date: new Date().toISOString(),
-      lang: LANG,
-      access: ACCESS_LABEL || "—",       // quel code a servi (traçabilité)
-      itemCount: Object.keys(selection).length,
-      items: items.join(" | "),
-      totalHT: priced ? grand.toFixed(2) : "",
-    };
-  }
-
-  function logOrder() {
-    const url = orderLogUrl();
-    if (!url || Object.keys(selection).length === 0) return;
-    try {
-      const body = JSON.stringify(buildOrderPayload());
-      // sendBeacon : envoi "tire et oublie", survit même si l'onglet part sur WhatsApp
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(url, body);
-      } else {
-        fetch(url, { method: "POST", body: body, mode: "no-cors", keepalive: true });
-      }
-    } catch (e) { /* le registre ne doit jamais bloquer la commande */ }
-  }
+  /* Le mouchard qui recopiait les paniers dans la feuille Google a été
+     retiré : il n'était appelé nulle part, et il mettait l'adresse du
+     script dans le navigateur de chaque visiteur. Le suivi des demandes
+     se fait par /api/devis, côté serveur. */
 
   function renderAgentPicker() {
     const wrap = document.getElementById("agent-pick-list");

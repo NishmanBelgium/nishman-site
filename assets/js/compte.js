@@ -528,12 +528,83 @@
       $("#p-cp").value = MOI.code_postal || "";
       $("#p-ville").value = MOI.ville || "";
       majPaysProfil();
+      rendreEtatTva(null);
     }
 
     function majPaysProfil() {
       var modele = MODELES[selPaysProfil.value] || MODELES.BE;
       $("#p-l-identifiant").textContent = modele.label;
       $("#p-aide-identifiant").textContent = modele.aide;
+    }
+
+    /* ── Statut du numéro au registre européen ───────────────────────
+       C'est lui qui décide de l'autoliquidation. Le client doit pouvoir
+       le lire et le relancer sans nous appeler : une saturation du
+       registre dure quelques secondes, un coup de téléphone bien plus. */
+
+    function rendreEtatTva(etat) {
+      var zone = $("#tva-etat");
+      if (!zone) return;
+
+      var statut = (etat && etat.statut) || MOI.tva_statut || "jamais";
+      var pays = MOI.pays || "BE";
+      var numero = MOI.tva || MOI.siret || "";
+
+      // Sans numéro, il n'y a rien à vérifier.
+      if (!numero) { zone.hidden = true; return; }
+      zone.hidden = false;
+
+      var couleurs = { valide: "vert", invalide: "rouge",
+                       indisponible: "orange", jamais: "gris" };
+      var pastille = $("#tva-pastille");
+      pastille.className = "tva-pastille " + (couleurs[statut] || "gris");
+      $("#tva-texte").textContent = t("tva_" + statut) || t("tva_jamais");
+
+      // Ce que ça change concrètement pour ses commandes.
+      var detail = $("#tva-detail");
+      var phrase;
+      if (pays === "BE") phrase = t("tva_national");
+      else if (statut === "valide") phrase = t("tva_exonere");
+      else phrase = t("tva_avec_tva");
+
+      if (statut === "indisponible") phrase += " " + t("tva_retenter");
+      else if (statut === "invalide" && pays !== "BE") phrase += " " + t("tva_demander");
+
+      var quand = (etat && etat.verifie_le) || MOI.tva_verifiee_le || "";
+      if (quand) {
+        try {
+          phrase += " — " + t("tva_le") + " " +
+                    new Date(quand).toLocaleDateString(LANG === "fr" ? "fr-BE" : LANG);
+        } catch (x) {}
+      }
+      detail.textContent = phrase;
+      detail.hidden = false;
+    }
+
+    var boutonTva = $("#tva-verifier");
+    if (boutonTva) {
+      boutonTva.addEventListener("click", function () {
+        var libelle = boutonTva.textContent;
+        boutonTva.disabled = true;
+        boutonTva.textContent = t("tva_encours");
+
+        fetch("/api/tva", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (d && d.ok) {
+              MOI.tva_statut = d.statut;
+              MOI.tva_valide = d.statut === "valide";
+              MOI.tva_verifiee_le = d.verifie_le || "";
+              rendreEtatTva(d);
+              remplirApercu();
+            }
+          })
+          .catch(function () { /* le bouton revient, le client réessaie */ })
+          .then(function () {
+            boutonTva.disabled = false;
+            boutonTva.textContent = libelle;
+          });
+      });
     }
     selPaysProfil.addEventListener("change", majPaysProfil);
 
