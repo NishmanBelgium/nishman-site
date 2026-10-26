@@ -1,9 +1,10 @@
 /* ==========================================================================
    CONFIG — SEUL FICHIER À MODIFIER AU QUOTIDIEN.
    - AGENTS : les commerciaux (slug = URL des cartes QR, ne jamais changer).
-   - Le registre Google n'est plus joint depuis le navigateur : la page de
-     devis passe par /api/devis, et le code d'appel reste chez Cloudflare.
-     Laisser vide ("") tant que le registre n'est pas configuré.
+   - Le script Google n'est plus joint depuis le navigateur. La page de
+     devis passe par /api/devis, qui ajoute côté serveur le code
+     authentifiant l'appel. N'y remettez pas l'adresse du script : elle
+     serait de nouveau lisible par n'importe quel visiteur.
    ========================================================================== */
 
 const AGENTS = {
@@ -17,5 +18,4 @@ const SHARED = {
   catalog: "/produits/",
   website: "https://nishman.be",
   bio: "Distributeur officiel Nishman pour la Belgique, la France et le Luxembourg. Produits professionnels pour barbers et coiffeurs.",
-  // Collez ici l'URL /exec de votre script Google (entre les guillemets) :
 };
