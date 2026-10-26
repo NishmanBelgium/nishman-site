@@ -47,8 +47,8 @@ CE QUE J'AI CORRIGÉ TOUT SEUL
    Quand l'échec vient de nous, le message le dit (dans les cinq
    langues) au lieu de demander de vérifier la connexion du client.
 
-5. NOUVEAU : une page de diagnostic réservée à votre compte.
-        https://nishman.be/api/diagnostic
+5. NOUVEAU : une page « État du site » réservée à votre compte.
+        https://nishman.be/pro/etat/
    Lisible uniquement connectée avec contact@nishman.be ; pour tout le
    monde d'autre, elle n'existe pas (404). Elle ne crée rien, n'envoie
    rien, n'écrit rien. Elle vous dit en français :
@@ -60,6 +60,9 @@ CE QUE J'AI CORRIGÉ TOUT SEUL
    Aucun secret n'y figure : seulement la LONGUEUR du code et la
    présence d'espaces autour — de quoi repérer un copier-coller
    malheureux sans jamais révéler la valeur.
+   Si vous préférez une seconde adresse de connexion pour cette page,
+   la variable Cloudflare EMAIL_ADMIN accepte plusieurs adresses
+   séparées par des virgules. Sans elle, c'est contact@nishman.be.
 
 6. Les notes internes ne sont plus publiées.
    Les fichiers LISEZMOI-*.txt étaient à la racine, donc lisibles par
@@ -99,8 +102,9 @@ C. Redéployez
 
 D. Vérifiez — sans rien casser
    Connectez-vous sur le site avec contact@nishman.be, puis ouvrez
-        https://nishman.be/api/diagnostic
-   Vous devez lire :  "tout_va_bien": true
+        https://nishman.be/pro/etat/
+   Les trois lignes doivent porter une pastille verte, et le bandeau
+   du haut annoncer que tout répond normalement.
    Si « script_google » reste en erreur, le message vous dira laquelle
    des deux situations vous êtes : refus du code, ou script injoignable.
    Dans le premier cas, reprenez au point A : il reste une différence,

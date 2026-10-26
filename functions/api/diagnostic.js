@@ -81,8 +81,12 @@ async function etatVies(env) {
 
 export async function onRequestGet({ request, env }) {
   const compte = env.DB ? await compteConnecte(request, env.DB) : null;
-  const admin = String(env.EMAIL_ADMIN || ADMIN_DEFAUT).trim().toLowerCase();
-  if (!compte || String(compte.email || "").trim().toLowerCase() !== admin) {
+  // EMAIL_ADMIN accepte plusieurs adresses séparées par des virgules :
+  // vous pouvez vous ajouter une seconde adresse sans toucher au code.
+  const admins = String(env.EMAIL_ADMIN || ADMIN_DEFAUT)
+    .split(",").map((a) => a.trim().toLowerCase()).filter(Boolean);
+  const moi = String((compte && compte.email) || "").trim().toLowerCase();
+  if (!moi || admins.indexOf(moi) === -1) {
     return erreur("Page réservée.", 404, "reservee");
   }
 
