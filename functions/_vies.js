@@ -151,15 +151,39 @@ function premiereErreur(d) {
 }
 
 /**
+ * Combien de temps un résultat reste-t-il valable, selon ce qu'il dit.
+ *
+ * Un délai unique était une erreur : une saturation de trente secondes du
+ * service français taxait le client pendant une semaine entière. Un contrôle
+ * qui a abouti peut attendre ; un contrôle qui n'a pas pu se faire doit être
+ * retenté tout de suite.
+ */
+const VALIDITE_MINUTES = {
+  valide: 7 * 24 * 60,     // le registre a confirmé : une semaine suffit
+  invalide: 24 * 60,       // le registre a démenti : un jour, le temps qu'un
+                           // numéro fraîchement attribué soit enregistré
+  indisponible: 0,         // le registre n'a pas répondu : on retente
+  jamais: 0,
+};
+
+/**
  * Faut-il refaire la vérification ?
  *
  * L'autoliquidation se justifie au moment de la vente, pas six mois plus
- * tôt : un numéro radié entre-temps n'ouvre plus aucun droit. On revérifie
- * donc avant chaque commande dès que le contrôle date d'une semaine.
+ * tôt : un numéro radié entre-temps n'ouvre plus aucun droit.
+ *
+ * @param verifieLe  date du dernier contrôle
+ * @param statut     ce qu'il avait donné — c'est lui qui fixe le délai
  */
-export function aRevalider(verifieLe, jours = 7) {
+export function aRevalider(verifieLe, statut) {
   if (!verifieLe) return true;
   const d = new Date(verifieLe);
   if (isNaN(d)) return true;
-  return (Date.now() - d.getTime()) > jours * 24 * 3600 * 1000;
+
+  const minutes = VALIDITE_MINUTES[String(statut || "")];
+  // Statut inconnu : on reste prudent et on revérifie.
+  if (minutes === undefined) return true;
+  if (minutes === 0) return true;
+
+  return (Date.now() - d.getTime()) > minutes * 60 * 1000;
 }

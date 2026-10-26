@@ -1,0 +1,38 @@
+ÉTAPE 212 — LE DÉLAI DE REVÉRIFICATION DÉPEND DU RÉSULTAT
+=========================================================
+
+LE DÉFAUT CORRIGÉ
+-----------------
+L'étape 211 revérifiait un numéro de TVA tous les sept jours, quel que
+soit ce que VIES avait répondu la fois d'avant.
+
+Conséquence constatée le 26 octobre : le service fiscal français a
+répondu MS_MAX_CONCURRENT_REQ — saturation momentanée, trente secondes
+peut-être. Le compte est resté taxé à 21 % pour une semaine entière,
+alors qu'un simple nouvel essai aurait suffi.
+
+MAINTENANT
+----------
+Trois délais, selon ce que le registre a dit :
+
+  valide        7 jours   le registre a confirmé, rien ne presse
+  invalide      1 jour    le temps qu'un numéro fraîchement attribué
+                          soit enregistré au registre
+  indisponible  aussitôt  le registre n'a pas répondu : on retente
+  inconnu       aussitôt  par prudence
+
+Le principe de l'étape 211 ne change pas : rien n'est exonéré sans un
+« valide » explicite. Seule la fréquence des nouveaux essais change.
+
+VÉRIFIÉ
+-------
+46 contrôles au total : 31 sur le client VIES, 15 sur les nouveaux
+délais — dont le cas exact rencontré aujourd'hui.
+
+FICHIERS
+--------
+  functions/_vies.js   (délais par statut)
+  functions/_tva.js    (transmet le statut)
+
+Branche : NishmanCloudflare
+Aucune migration de base. Le dossier functions/ change.

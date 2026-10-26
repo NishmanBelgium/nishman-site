@@ -83,7 +83,7 @@ export async function controlerEtEnregistrer(db, compte, env) {
 export async function controlerSiBesoin(db, compte, env) {
   const etaitValide = !!compte.tva_valide;
 
-  if (!aRevalider(compte.tva_verifiee_le)) {
+  if (!aRevalider(compte.tva_verifiee_le, compte.tva_statut)) {
     return { valide: etaitValide, statut: compte.tva_statut || "", rafraichi: false,
              preuve: compte.tva_preuve || "" };
   }
