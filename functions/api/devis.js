@@ -17,9 +17,8 @@
    ========================================================================== */
 
 import { json, erreur, emailValide, texteValide, compteConnecte } from "../_commun.js";
+import { codePortier, adressePortier } from "../_portier.js";
 
-const PORTIER_DEFAUT =
-  "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec";
 
 // Garde-fous de volume : un devis honnête tient largement dessous, et une
 // tentative d'inondation s'arrête ici plutôt que dans votre Odoo.
@@ -70,10 +69,10 @@ export async function onRequestPost({ request, env }) {
     return erreur("Demande trop volumineuse.", 400, "volume");
   }
 
-  const code = env.PORTIER_CODE;
+  const code = codePortier(env);
   if (!code) return erreur("Service indisponible.", 503, "portier");
 
-  const url = env.PORTIER_URL || env.ORDER_LOG_URL || PORTIER_DEFAUT;
+  const url = adressePortier(env);
 
   let reponse;
   try {

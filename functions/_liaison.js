@@ -12,9 +12,8 @@
    ========================================================================== */
 
 import { partenaireParEmail, partenaireParTva } from "./_odoo.js";
+import { codePortier, adressePortier } from "./_portier.js";
 
-const PORTIER_DEFAUT =
-  "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec";
 
 /**
  * Cherche la fiche Odoo d'un compte, la retient, et en garde trace.
@@ -55,10 +54,10 @@ async function tracer(env, compte, fiche, critere) {
   // Le courriel part par le script Google, seul capable d'envoyer. S'il n'est
   // pas encore équipé de l'action, l'appel échoue sans conséquence : la ligne
   // ci-dessus reste la trace.
-  const code = env.PORTIER_CODE;
+  const code = codePortier(env);
   if (!code) return;
 
-  const url = (env.PORTIER_URL || PORTIER_DEFAUT)
+  const url = adressePortier(env)
     + "?action=liaison&callback=p"
     + "&code=" + encodeURIComponent(code)
     + "&compte=" + encodeURIComponent(compte.email)

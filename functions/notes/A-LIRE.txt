@@ -1,0 +1,17 @@
+NOTES INTERNES — pourquoi elles sont rangées ici
+================================================
+
+Ces fichiers décrivent le fonctionnement interne du site, étape par étape.
+Ils étaient jusqu'au 26 octobre 2026 à la racine du dépôt, donc publiés :
+n'importe qui pouvait lire https://nishman.be/LISEZMOI-209.txt et y
+apprendre comment le site est construit, quelles variables il attend et
+par où passent les commandes.
+
+Le dossier « functions » n'est pas publié : Cloudflare l'utilise comme
+code serveur et ne le sert jamais comme fichier. Seuls les fichiers .js
+qu'il contient deviennent des adresses /api/... ; un .txt ou un .gs y est
+simplement ignoré. Les notes y sont donc conservées, lisibles par vous
+dans GitHub, invisibles depuis le site.
+
+Rien n'a été supprimé. Pour en relire une, ouvrez-la dans GitHub :
+functions/notes/LISEZMOI-209.txt

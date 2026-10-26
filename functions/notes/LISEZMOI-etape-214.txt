@@ -1,0 +1,110 @@
+ÉTAPE 214 — LA PANNE DU 26 OCTOBRE, ET DE QUOI LA VOIR VENIR
+=============================================================
+
+CE QUI S'EST PASSÉ
+------------------
+Votre capture montrait deux symptômes sur la page de devis :
+  - « Total HT — » : aucun prix ne s'affichait ;
+  - « L'envoi a échoué. Vérifiez votre connexion. » à l'envoi.
+
+Les deux venaient d'une seule cause. J'ai interrogé les points d'entrée
+du site un par un depuis votre navigateur :
+
+  /api/devis  →  « code »     le script Google a REFUSÉ le code interne
+  /api/prix   →  « portier »  même refus, caché derrière un mot vague
+
+Autrement dit : le code interne enregistré chez Cloudflare (PORTIER_CODE)
+et celui inscrit dans le script Google (CODE_INTERNE) ne portent pas la
+même valeur. Le script a bien reçu les appels, et les a rejetés.
+
+Deux choses que cela prouve au passage, et qui sont de bonnes nouvelles :
+  - le garde-fou de l'étape 213 est bien en place et fonctionne ;
+  - votre session et la base de données répondent normalement.
+
+Mon test n'a créé aucun devis dans Odoo : le script l'a refusé avant.
+
+
+CE QUE J'AI CORRIGÉ TOUT SEUL
+-----------------------------
+1. Le code interne est désormais nettoyé avant usage.
+   Un espace ou un retour à la ligne invisible collé à la fin de la
+   valeur suffisait à faire échouer la comparaison, sans aucun indice.
+   C'est la cause la plus probable de cette panne. Désormais les espaces
+   autour sont retirés automatiquement, des deux côtés de la lecture.
+
+2. Un seul endroit sait joindre le script : functions/_portier.js
+   La même ligne était recopiée dans cinq fichiers (prix, tarifs,
+   liaison, oubli, devis). Cinq occasions de divergence. Il n'en reste
+   qu'une.
+
+3. Le site distingue maintenant trois pannes au lieu d'une.
+     « portier » : le script Google n'a pas répondu  → réessayer a du sens
+     « code »    : il a répondu et refusé le code    → réessayer est inutile
+     « ok »      : tout va bien
+   Avant, les trois disaient « portier ».
+
+4. La page de devis ne vous accuse plus à tort.
+   Quand l'échec vient de nous, le message le dit (dans les cinq
+   langues) au lieu de demander de vérifier la connexion du client.
+
+5. NOUVEAU : une page de diagnostic réservée à votre compte.
+        https://nishman.be/api/diagnostic
+   Lisible uniquement connectée avec contact@nishman.be ; pour tout le
+   monde d'autre, elle n'existe pas (404). Elle ne crée rien, n'envoie
+   rien, n'écrit rien. Elle vous dit en français :
+     - si la base de données répond, et combien de comptes elle contient
+     - si le script Google répond, s'il accepte le code, combien de
+       tarifs il renvoie
+     - si le registre européen de TVA répond
+     - et ce que la panne empêche concrètement pour vos clients
+   Aucun secret n'y figure : seulement la LONGUEUR du code et la
+   présence d'espaces autour — de quoi repérer un copier-coller
+   malheureux sans jamais révéler la valeur.
+
+6. Les notes internes ne sont plus publiées.
+   Les fichiers LISEZMOI-*.txt étaient à la racine, donc lisibles par
+   n'importe qui à l'adresse https://nishman.be/LISEZMOI-209.txt — avec
+   le détail du fonctionnement du site. Ils sont déplacés dans
+   functions/notes/, que Cloudflare n'a jamais le droit de servir.
+   Rien n'est supprimé : vous les relisez dans GitHub.
+
+Tests : 24 contrôles automatiques sur le nouveau module, tous passés
+(code nettoyé, trois états distingués, valeur réellement transmise).
+
+
+CE QUI NE DÉPEND QUE DE VOUS — LA SEULE CHOSE QUI RESTE
+--------------------------------------------------------
+Faire porter la MÊME valeur aux deux endroits. Je ne dois connaître
+ni l'une ni l'autre : ne me les envoyez pas.
+
+A. Relevez la valeur de référence
+   Ouvrez votre script Google (script.google.com, projet du site).
+   Cherchez la ligne   var CODE_INTERNE = "....";
+   Sélectionnez la valeur ENTRE LES GUILLEMETS, sans les guillemets,
+   sans espace avant ni après. Copiez-la (Ctrl+C).
+
+B. Reportez-la chez Cloudflare
+   Cloudflare → Workers & Pages → nishman-site → Settings
+   → Variables and Secrets
+   Sur la ligne PORTIER_CODE : Edit → effacez tout → collez → Save.
+   Le type doit rester « Secret », pas « Text ».
+   IMPORTANT : faites-le pour Production ET pour Preview. Les deux
+   environnements ont leurs propres variables ; c'est une cause
+   classique de « ça marche d'un côté et pas de l'autre ».
+
+C. Redéployez
+   Un changement de variable ne prend effet qu'au déploiement suivant.
+   Deployments → le déploiement le plus récent → bouton « Retry
+   deployment ». Comptez deux minutes.
+
+D. Vérifiez — sans rien casser
+   Connectez-vous sur le site avec contact@nishman.be, puis ouvrez
+        https://nishman.be/api/diagnostic
+   Vous devez lire :  "tout_va_bien": true
+   Si « script_google » reste en erreur, le message vous dira laquelle
+   des deux situations vous êtes : refus du code, ou script injoignable.
+   Dans le premier cas, reprenez au point A : il reste une différence,
+   le plus souvent un caractère collé en fin de valeur.
+
+Ensuite seulement, refaites votre essai de devis. Les prix doivent
+réapparaître dans le panier du même coup.

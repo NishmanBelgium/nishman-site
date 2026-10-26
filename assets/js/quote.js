@@ -93,6 +93,7 @@
       bademail: "L'adresse e-mail ne semble pas valide.",
       empty: "Votre panier est vide. Retournez au catalogue pour composer votre demande.",
       sendfail: "L'envoi a échoué. Vérifiez votre connexion et réessayez, ou imprimez le devis et transmettez-le à contact@nishman.be.",
+      sendfail_tech: "L'envoi n'a pas abouti pour une raison technique de notre côté — votre connexion n'est pas en cause et réessayer ne changera rien. Imprimez le devis et transmettez-le à contact@nishman.be : nous le traiterons à la main.",
       donetitle: "Demande envoyée",
       donetext: (mail) => "Votre devis a été envoyé à " + mail + ". Notre équipe commerciale revient vers vous rapidement.",
       askPrice: "Sur demande",
@@ -128,6 +129,7 @@
       bademail: "This e-mail address does not look valid.",
       empty: "Your cart is empty. Go back to the catalogue to build your request.",
       sendfail: "Sending failed. Check your connection and try again, or print the quotation and send it to contact@nishman.be.",
+      sendfail_tech: "Sending failed for a technical reason on our side — your connection is not at fault and retrying will not help. Please print the quotation and send it to contact@nishman.be: we will process it manually.",
       donetitle: "Request sent",
       donetext: (mail) => "Your quotation has been sent to " + mail + ". Our sales team will get back to you shortly.",
       askPrice: "On request",
@@ -163,6 +165,7 @@
       bademail: "Dit e-mailadres lijkt niet geldig.",
       empty: "Uw winkelmand is leeg. Ga terug naar de catalogus om uw aanvraag samen te stellen.",
       sendfail: "Versturen mislukt. Controleer uw verbinding en probeer opnieuw, of print de offerte en stuur ze naar contact@nishman.be.",
+      sendfail_tech: "Versturen mislukt door een technische fout aan onze kant — uw verbinding is niet de oorzaak en opnieuw proberen helpt niet. Print de offerte en stuur ze naar contact@nishman.be: wij behandelen ze manueel.",
       donetitle: "Aanvraag verzonden",
       donetext: (mail) => "Uw offerte is verzonden naar " + mail + ". Ons verkoopteam neemt binnenkort contact met u op.",
       askPrice: "Op aanvraag",
@@ -198,6 +201,7 @@
       bademail: "Diese E-Mail-Adresse scheint ungültig zu sein.",
       empty: "Ihr Warenkorb ist leer. Kehren Sie zum Katalog zurück, um Ihre Anfrage zusammenzustellen.",
       sendfail: "Senden fehlgeschlagen. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut, oder drucken Sie das Angebot und senden Sie es an contact@nishman.be.",
+      sendfail_tech: "Das Senden ist aus einem technischen Grund auf unserer Seite fehlgeschlagen — Ihre Verbindung ist nicht die Ursache, und ein erneuter Versuch hilft nicht. Drucken Sie das Angebot und senden Sie es an contact@nishman.be: wir bearbeiten es manuell.",
       donetitle: "Anfrage gesendet",
       donetext: (mail) => "Ihr Angebot wurde an " + mail + " gesendet. Unser Vertriebsteam meldet sich in Kürze bei Ihnen.",
       askPrice: "Auf Anfrage",
@@ -233,6 +237,7 @@
       bademail: "Bu e-posta adresi geçerli görünmüyor.",
       empty: "Sepetiniz boş. Talebinizi oluşturmak için kataloğa dönün.",
       sendfail: "Gönderim başarısız. Bağlantınızı kontrol edip tekrar deneyin veya teklifi yazdırıp contact@nishman.be adresine iletin.",
+      sendfail_tech: "Gönderim bizim tarafımızdaki teknik bir nedenle başarısız oldu — bağlantınızın sorunu yok ve tekrar denemek işe yaramaz. Teklifi yazdırıp contact@nishman.be adresine iletin: elle işleme alacağız.",
       donetitle: "Talep gönderildi",
       donetext: (mail) => "Teklifiniz " + mail + " adresine gönderildi. Satış ekibimiz kısa süre içinde sizinle iletişime geçecek.",
       askPrice: "Talep üzerine",
@@ -671,21 +676,33 @@
       })),
     };
 
+    // On distingue deux échecs, parce qu'ils n'appellent pas la même
+    // réaction : si le serveur a répondu, réessayer ne sert à rien et la
+    // connexion du client n'est pas en cause ; s'il n'a pas répondu du
+    // tout, réessayer a du sens.
     let ok = false;
+    let technique = false;
     try {
       const r = await fetch(endpoint(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const d = await r.json();
+      let d = null;
+      try { d = await r.json(); } catch (e) { d = null; }
       ok = !!(d && d.ok);
+      // Le serveur a parlé : l'échec vient de chez nous, pas du réseau.
+      if (!ok) technique = r.status >= 500 || !!(d && d.motif);
     } catch (e) { ok = false; }
 
     btn.disabled = false;
     $("t-send").textContent = T.send;
 
-    if (!ok) { err.textContent = T.sendfail; err.hidden = false; return; }
+    if (!ok) {
+      err.textContent = technique ? T.sendfail_tech : T.sendfail;
+      err.hidden = false;
+      return;
+    }
 
     // Panier vidé : la demande est partie
     [SEL_KEY].concat(SEL_KEYS_FALLBACK).forEach((k) => localStorage.removeItem(k));

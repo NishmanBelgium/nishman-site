@@ -7,16 +7,7 @@
    avec : une seule source, une seule durée de vie.
    ========================================================================== */
 
-const PORTIER_DEFAUT =
-  "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec";
-
-// Le script Google répond en JSONP : « p({...}) ». On extrait l'objet.
-function extraireJson(texte) {
-  const debut = texte.indexOf("(");
-  const fin = texte.lastIndexOf(")");
-  if (debut === -1 || fin <= debut) return null;
-  try { return JSON.parse(texte.slice(debut + 1, fin)); } catch (e) { return null; }
-}
+import { interrogerPortier, PORTIER_DEFAUT } from "./_portier.js";
 
 let cacheCatalogue = null;
 let cachePrix = null;
@@ -35,16 +26,12 @@ export async function catalogue(request) {
 export async function tableDePrix(env) {
   if (cachePrix && Date.now() < cachePrixExpire) return cachePrix;
 
-  const code = env.PORTIER_CODE;
-  if (!code) throw new Error("portier non configuré");
+  const appel = await interrogerPortier(env, "action=unlock&callback=p");
+  if (appel.etat === "code") throw new Error("code interne refusé");
+  if (appel.etat !== "ok") throw new Error("portier injoignable");
 
-  const url = (env.PORTIER_URL || PORTIER_DEFAUT)
-    + "?action=unlock&callback=p&code=" + encodeURIComponent(code);
-  const r = await fetch(url, { headers: { accept: "*/*" } });
-  if (!r.ok) throw new Error("portier injoignable");
-
-  const d = extraireJson(await r.text());
-  if (!d || !d.ok || !d.prices) throw new Error("portier sans prix");
+  const d = appel.donnees;
+  if (!d.prices) throw new Error("portier sans prix");
 
   cachePrix = d.prices;
   cachePrixExpire = Date.now() + PRIX_DUREE_MS;

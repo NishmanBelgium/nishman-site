@@ -12,19 +12,7 @@
    ========================================================================== */
 
 import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
-
-const PORTIER_DEFAUT =
-  "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec";
-
-// Le portier répond en JSONP : « nom(<json>); ». On récupère ce qu'il y a
-// entre la première parenthèse et la dernière.
-function extraireJson(texte) {
-  const debut = texte.indexOf("(");
-  const fin = texte.lastIndexOf(")");
-  if (debut === -1 || fin <= debut) return null;
-  try { return JSON.parse(texte.slice(debut + 1, fin)); }
-  catch (e) { return null; }
-}
+import { interrogerPortier } from "../_portier.js";
 
 export async function onRequestGet({ request, env }) {
   if (!env.DB) return json({ ok: false, raison: "base" });
@@ -35,22 +23,14 @@ export async function onRequestGet({ request, env }) {
   // endroit pour repousser l'échéance de la session.
   const cookie = compte ? await prolongerSiBesoin(env.DB, compte) : null;
 
-  const code = env.PORTIER_CODE;
-  if (!code) return json({ ok: false, raison: "portier" });
+  // « portier » = le script n'a pas répondu ; « code » = il a répondu et a
+  // refusé le code interne. Les deux donnaient le même mot avant le 214,
+  // ce qui rendait la panne du 26 octobre indéchiffrable depuis la page.
+  const appel = await interrogerPortier(env, "action=unlock&callback=p");
+  if (appel.etat !== "ok") return json({ ok: false, raison: appel.etat });
 
-  const url = (env.PORTIER_URL || PORTIER_DEFAUT)
-    + "?action=unlock&callback=p&code=" + encodeURIComponent(code);
-
-  let reponse;
-  try {
-    reponse = await fetch(url, { headers: { accept: "*/*" } });
-  } catch (e) {
-    return json({ ok: false, raison: "portier" });
-  }
-  if (!reponse.ok) return json({ ok: false, raison: "portier" });
-
-  const data = extraireJson(await reponse.text());
-  if (!data || !data.ok || !data.prices) return json({ ok: false, raison: "portier" });
+  const data = appel.donnees;
+  if (!data.prices) return json({ ok: false, raison: "portier" });
 
   // Le nom affiché est celui du compte, pas celui rattaché au code interne :
   // c'est le client qui regarde ses prix, pas NBD. Un visiteur anonyme n'a

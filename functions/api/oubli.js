@@ -6,13 +6,13 @@
    L'envoi passe par le script Google, qui sert déjà de portier aux prix.
    ========================================================================== */
 
+import { codePortier, adressePortier } from "../_portier.js";
+
 import {
   json, erreur, cleEmail, emailValide,
   creerLienReinit, tropDeTentatives, noterTentative,
 } from "../_commun.js";
 
-const PORTIER_DEFAUT =
-  "https://script.google.com/macros/s/AKfycbxGO1OpyvQVYdEKwuDr-TZgkD7Z9zL8Ly0PNZSMJZDnf_mfIHgz0GOGOMOPCzBAQTWMWw/exec";
 
 // Réponse volontairement identique que le compte existe ou non : sinon la page
 // devient un outil pour savoir qui est client.
@@ -51,9 +51,9 @@ export async function onRequestPost({ request, env }) {
   const origine = new URL(request.url).origin;
   const lien = origine + "/pro/reinit/?j=" + encodeURIComponent(jeton);
 
-  const url = (env.PORTIER_URL || PORTIER_DEFAUT)
+  const url = adressePortier(env)
     + "?action=reinit&callback=p"
-    + "&code=" + encodeURIComponent(env.PORTIER_CODE || "")
+    + "&code=" + encodeURIComponent(codePortier(env))
     + "&email=" + encodeURIComponent(compte.email)
     + "&salon=" + encodeURIComponent(compte.salon || "")
     + "&lien=" + encodeURIComponent(lien);
