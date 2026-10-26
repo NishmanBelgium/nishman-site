@@ -24,9 +24,18 @@ function notreNumero(env) {
  * numéro client est radié est une information utile — mais le résultat ne
  * change pas le régime.
  */
+const STATUTS_EXONERANTS = [
+  "valide",          // le registre européen a confirmé, preuve à l'appui
+  "valide_ancien",   // confirmé récemment, registre momentanément muet
+  "valide_manuel",   // vérifié autrement par NBD, numéro de consultation saisi
+];
+
 export function ouvreDroitAExoneration(pays, statut) {
-  return (pays === "FR" || pays === "LU") && statut === "valide";
+  return (pays === "FR" || pays === "LU")
+      && STATUTS_EXONERANTS.indexOf(String(statut || "")) !== -1;
 }
+
+export { STATUTS_EXONERANTS };
 
 /**
  * Vérifie et enregistre. Ne lève jamais : une panne de VIES ne doit bloquer
@@ -41,7 +50,28 @@ export async function controlerEtEnregistrer(db, compte, env) {
   }
 
   const r = await verifier(numero, compte.pays, notreNumero(env));
+  const etaitManuel = String(compte.tva_statut || "") === "valide_manuel";
+
+  // Une validation posée à la main par NBD n'est pas une donnée que le
+  // contrôle automatique peut effacer à la légère :
+  //   - le registre confirme     → on adopte sa preuve, qui vaut mieux ;
+  //   - le registre ne répond pas → on garde la validation manuelle ;
+  //   - le registre DÉMENT       → il gagne. La saisie manuelle palliait un
+  //     silence, pas un démenti ; continuer à facturer hors taxe un numéro
+  //     radié ferait porter le redressement à NBD.
+  if (etaitManuel && r.statut === "indisponible") {
+    return {
+      statut: "valide_manuel", valide: true,
+      verifie_le: compte.tva_verifiee_le || "",
+      preuve: compte.tva_preuve || "", nom: compte.tva_nom || "",
+      motif: "registre muet, validation manuelle conservée",
+    };
+  }
+
   const valide = r.statut === "valide" ? 1 : 0;
+  const motif = (etaitManuel && r.statut === "invalide")
+    ? "le registre a démenti une validation manuelle"
+    : (r.motif || null);
 
   try {
     await db.prepare(`
@@ -51,7 +81,7 @@ export async function controlerEtEnregistrer(db, compte, env) {
        WHERE id = ?
     `).bind(
       valide, r.statut, r.verifie_le || new Date().toISOString(),
-      r.preuve || null, r.nom || null, r.motif || null,
+      r.preuve || null, r.nom || null, motif,
       compte.id,
     ).run();
   } catch (e) {
@@ -65,7 +95,7 @@ export async function controlerEtEnregistrer(db, compte, env) {
     verifie_le: r.verifie_le,
     preuve: r.preuve || "",
     nom: r.nom || "",
-    motif: r.motif || "",
+    motif: motif || "",
   };
 }
 

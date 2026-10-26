@@ -196,6 +196,15 @@ const VALIDITE_MINUTES = {
                            // numéro fraîchement attribué soit enregistré
   indisponible: 0,         // le registre n'a pas répondu : on retente
   jamais: 0,
+
+  // Validé à la main par NBD, registre muet (étape 214). On laisse trois
+  // mois : assez pour ne pas harceler le registre, assez peu pour qu'un
+  // numéro radié entre-temps finisse par être repris.
+  valide_manuel: 90 * 24 * 60,
+
+  // Validation ancienne conservée faute de réponse : à retenter dès que
+  // possible, d'où l'absence volontaire de délai.
+  valide_ancien: 0,
 };
 
 /**

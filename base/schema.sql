@@ -24,6 +24,27 @@ CREATE TABLE IF NOT EXISTS comptes (
   siret           TEXT,
   tva_valide      INTEGER NOT NULL DEFAULT 0,
   tva_verifiee_le TEXT,
+
+  -- Résultat du dernier contrôle au registre européen (VIES).
+  --   valide         le registre a confirmé
+  --   invalide       le registre a démenti
+  --   indisponible   le registre n'a pas répondu
+  --   valide_manuel  vérifié autrement par NBD, numéro de consultation saisi
+  --   jamais         aucun contrôle encore effectué
+  tva_statut      TEXT    DEFAULT 'jamais',
+  -- Numéro de consultation rendu par VIES : la pièce à produire en cas de
+  -- contrôle pour justifier une facture en autoliquidation.
+  tva_preuve      TEXT,
+  -- Raison sociale telle que le registre la connaît, utile à comparer.
+  tva_nom         TEXT,
+  -- Pourquoi le contrôle a échoué, ou pourquoi un statut a été conservé.
+  tva_motif       TEXT,
+
+  -- Validation posée à la main par NBD quand le registre est muet. Elle
+  -- engage celui qui la pose, elle ne doit donc pas être anonyme.
+  tva_manuel_par  TEXT,
+  tva_manuel_le   TEXT,
+  tva_manuel_note TEXT,
   telephone       TEXT,
   adresse         TEXT,
   code_postal     TEXT,

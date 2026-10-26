@@ -1,0 +1,97 @@
+ÉTAPE 214c — FACTURER HORS TAXE QUAND LE REGISTRE EUROPÉEN SE TAIT
+===================================================================
+
+VOTRE QUESTION
+--------------
+« Imaginons que le système VIES soit saturé. Comment je peux contourner ce
+système pour qu'une personne qui a un numéro de TVA français valide ne soit
+pas bloquée et soit quand même facturée hors taxe ? »
+
+
+CE QUI EXISTAIT DÉJÀ
+--------------------
+Depuis l'étape 211, un client DÉJÀ vérifié garde son exonération quand le
+registre ne répond pas : la preuve de la semaine passée reste opposable.
+
+Il restait le cas que vous visez : le client dont le numéro n'a JAMAIS pu
+être vérifié, parce que le registre était muet au moment de l'inscription.
+Celui-là était facturé avec 21 % de TVA belge qu'il ne devait pas.
+
+
+LA RÉPONSE RETENUE, ET POURQUOI
+-------------------------------
+Le mauvais réflexe serait de croire le client sur parole. En cas de
+contrôle, c'est NBD qui porte le redressement : une facture en
+autoliquidation doit pouvoir être justifiée, pas seulement affirmée.
+
+Donc : vous vérifiez par un AUTRE chemin — le site de la Commission
+européenne, ou votre bureau de TVA — et vous enregistrez sur le site le
+NUMÉRO DE CONSULTATION obtenu. La preuve reste une vraie preuve. Seul le
+chemin pour l'obtenir change.
+
+NOUVELLE PAGE :   https://nishman.be/pro/tva/
+Réservée à votre compte, comme la page d'état.
+
+Elle liste vos comptes français et luxembourgeois, séparés en deux :
+« À traiter » (facturés avec TVA) et « Exonérés ». Pour chaque compte à
+traiter, un champ où coller le numéro de consultation, et une note
+facultative pour vous rappeler comment vous avez vérifié.
+
+Les comptes belges n'y figurent pas : une vente intérieure porte la TVA
+belge de toute façon, une validation manuelle n'y changerait rien. Le site
+refuse d'ailleurs d'en poser une sur un compte belge, et vous dit pourquoi.
+
+
+LES TROIS RÈGLES QUE J'AI POSÉES
+--------------------------------
+Elles décident de l'argent, donc elles sont écrites noir sur blanc et
+couvertes par 29 contrôles automatiques.
+
+1. Le registre CONFIRME plus tard → sa preuve remplace la vôtre.
+   Elle vaut mieux : elle vient de la source.
+
+2. Le registre reste MUET → votre validation est conservée.
+   Rien n'est réécrit, le client continue d'être facturé hors taxe.
+
+3. Le registre DÉMENT → il gagne, la TVA revient automatiquement.
+   Votre saisie palliait un silence, pas un démenti. Un numéro radié
+   entre-temps ne doit plus ouvrir aucun droit — sinon le redressement
+   serait pour vous. Le compte repasse en rouge sur la page, avec la
+   mention « le registre a démenti une validation manuelle ».
+
+Une validation manuelle est revérifiée automatiquement au bout de trois
+mois : assez long pour ne pas harceler le registre, assez court pour qu'un
+numéro radié finisse par être repris.
+
+Chaque validation garde QUI l'a posée et QUAND. Une validation manuelle
+engage celui qui la pose ; elle ne doit pas être anonyme. Vous pouvez la
+retirer à tout moment — en deux clics, pour éviter la fausse manœuvre. Un
+retrait ne vaut pas démenti : le compte repasse simplement en « jamais
+vérifié ».
+
+
+CE QUI DÉPEND DE VOUS
+---------------------
+Une seule chose : la base doit recevoir les trois nouvelles colonnes.
+
+  Cloudflare → Workers & Pages → nishman-site → Settings
+  ou bien : Storage & Databases → D1 → votre base → Console
+
+  Collez ceci, puis exécutez :
+
+      ALTER TABLE comptes ADD COLUMN tva_manuel_par TEXT;
+      ALTER TABLE comptes ADD COLUMN tva_manuel_le  TEXT;
+      ALTER TABLE comptes ADD COLUMN tva_manuel_note TEXT;
+
+Si vous ouvrez /pro/tva/ avant de l'avoir fait, la page vous le dira
+elle-même au lieu d'afficher une erreur incompréhensible.
+
+(Le fichier est aussi dans le dépôt : base/migration-214.sql)
+
+
+AU PASSAGE
+----------
+base/schema.sql était resté en arrière : il ne contenait pas les colonnes
+ajoutées aux étapes 211 et 214. Une base recréée à partir de ce fichier
+aurait été inutilisable. C'est corrigé — les colonnes y sont désormais
+toutes, documentées une par une.

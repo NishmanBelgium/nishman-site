@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>TVA intracommunautaire — NISHMAN</title>
+<meta name="robots" content="noindex, nofollow" />
+<!-- Page de gestion interne. Tout vient de /api/tva-manuel, qui refuse de
+     répondre à qui n'est pas connecté avec l'adresse de NBD. -->
+<style>
+  :root { --fond:#0a0a0a; --texte:#f5f5f5; --gris:#a3a3a3; --orange:#faa21b;
+          --vert:#22c55e; --rouge:#ef4444; --ambre:#f59e0b;
+          --carte:#161616; --bord:#262626; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fond); color:var(--texte); line-height:1.55;
+         font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+         padding:24px 16px 64px; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size:1.35rem; margin:0 0 4px; }
+  .sous { color:var(--gris); font-size:.9rem; margin:0 0 18px; }
+  .mode { border:1px solid var(--bord); background:var(--carte); border-radius:12px;
+          padding:14px 16px; margin:0 0 24px; font-size:.9rem; color:var(--gris); }
+  .mode b { color: var(--texte); }
+  .mode ol { margin:8px 0 0; padding-left:20px; } .mode li { margin-bottom:4px; }
+  .carte { border:1px solid var(--bord); background:var(--carte); border-radius:12px;
+           padding:14px 16px; margin:0 0 12px; }
+  .tete { display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; }
+  .pastille { width:10px; height:10px; border-radius:50%; flex:0 0 auto;
+              background:var(--gris); align-self:center; }
+  .pastille.bon{background:var(--vert)} .pastille.mauvais{background:var(--rouge)}
+  .pastille.manuel{background:var(--ambre)}
+  .societe { font-weight:600; }
+  .num { color:var(--gris); font-size:.88rem; font-variant-numeric:tabular-nums; }
+  .etat { color:var(--gris); font-size:.88rem; margin-top:5px; }
+  .trace { color:#6b6b6b; font-size:.78rem; margin-top:5px; }
+  form { margin-top:11px; display:flex; flex-wrap:wrap; gap:8px; align-items:flex-start; }
+  input { font:inherit; background:#0d0d0d; color:var(--texte);
+          border:1px solid var(--bord); border-radius:8px; padding:9px 11px;
+          min-width:0; flex:1 1 190px; }
+  input:focus { outline:2px solid var(--orange); outline-offset:1px; }
+  button { font:inherit; background:none; color:var(--orange); cursor:pointer;
+           border:1px solid var(--bord); border-radius:8px; padding:9px 15px;
+           flex:0 0 auto; }
+  button:hover { border-color:var(--orange); }
+  button.danger { color:var(--rouge); }
+  button[disabled] { opacity:.5; cursor:default; }
+  .msg { font-size:.86rem; margin-top:8px; }
+  .msg.ok { color:var(--vert); } .msg.ko { color:var(--rouge); }
+  h2 { font-size:.95rem; margin:28px 0 10px; color:var(--orange);
+       text-transform:uppercase; letter-spacing:.06em; }
+  a { color:var(--orange); }
+  .pied { margin-top:32px; color:#6b6b6b; font-size:.8rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>TVA intracommunautaire</h1>
+  <p class="sous">Comptes français et luxembourgeois. Les comptes belges n'y
+     figurent pas : la vente est intérieure et porte la TVA belge.</p>
+
+  <div class="mode">
+    <b>Quand le registre européen ne répond pas</b>, un client en règle serait
+    facturé avec 21 % de TVA qu'il ne doit pas. Vous pouvez vérifier son numéro
+    par un autre chemin et enregistrer ici la preuve obtenue :
+    <ol>
+      <li>Ouvrez le <a href="https://ec.europa.eu/taxation_customs/vies/"
+          target="_blank" rel="noopener">registre de la Commission européenne</a>
+          et vérifiez le numéro.</li>
+      <li>Relevez le <b>numéro de consultation</b> affiché après la vérification
+          (c'est lui qui fait preuve en cas de contrôle), en indiquant bien
+          notre propre numéro comme requérant.</li>
+      <li>Collez-le ci-dessous, en face du compte concerné.</li>
+    </ol>
+    Le site revérifiera tout seul au bout de trois mois. Si le registre finit
+    par démentir le numéro, la TVA revient automatiquement — et le compte
+    repasse en rouge ici.
+  </div>
+
+  <div id="sortie"><p class="sous">Chargement…</p></div>
+  <p class="pied">Page interne — <a href="/pro/etat/">état du site</a> ·
+     <a href="/">retour au site</a></p>
+</main>
+<script>
+(function () {
+  var sortie = document.getElementById("sortie");
+
+  var LIBELLE = {
+    valide:        "vérifié par le registre européen",
+    valide_manuel: "validé à la main par NBD",
+    valide_ancien: "validation récente conservée, registre momentanément muet",
+    invalide:      "le registre a démenti ce numéro",
+    indisponible:  "le registre n'a pas répondu",
+    jamais:        "jamais vérifié"
+  };
+
+  function echappe(t) {
+    return String(t == null ? "" : t)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+  function jour(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    return isNaN(d) ? "" : d.toLocaleDateString("fr-BE",
+      { day: "2-digit", month: "2-digit", year: "numeric" });
+  }
+  function classePastille(c) {
+    if (c.statut === "valide_manuel") return "manuel";
+    return c.exonere ? "bon" : "mauvais";
+  }
+
+  function carte(c) {
+    var id = "c" + String(c.email).replace(/[^a-z0-9]/gi, "");
+    var h = '<div class="carte" data-email="' + echappe(c.email) + '">'
+      + '<div class="tete"><span class="pastille ' + classePastille(c) + '"></span>'
+      + '<span class="societe">' + echappe(c.societe) + '</span>'
+      + '<span class="num">' + echappe(c.pays) + ' · ' + echappe(c.numero || "aucun numéro") + '</span></div>'
+      + '<div class="etat">' + echappe(LIBELLE[c.statut] || c.statut)
+      + (c.verifie_le ? ' — le ' + jour(c.verifie_le) : '')
+      + (c.exonere ? ' · <b>facturé hors taxe</b>' : ' · facturé avec TVA belge')
+      + '</div>';
+
+    if (c.motif) h += '<div class="trace">' + echappe(c.motif) + '</div>';
+    if (c.nom_registre) h += '<div class="trace">Registre : ' + echappe(c.nom_registre) + '</div>';
+
+    if (c.statut === "valide_manuel") {
+      h += '<div class="trace">Preuve ' + echappe(c.preuve)
+         + ' — posée par ' + echappe(c.manuel_par) + ' le ' + jour(c.manuel_le)
+         + (c.manuel_note ? ' · ' + echappe(c.manuel_note) : '') + '</div>'
+         + '<form data-action="retirer"><button type="submit" class="danger">'
+         + 'Retirer cette validation</button></form>';
+    } else if (!c.exonere && c.numero) {
+      h += '<form data-action="poser">'
+         + '<input name="consultation" placeholder="Numéro de consultation" '
+         + 'autocomplete="off" spellcheck="false" required />'
+         + '<input name="note" placeholder="Note (facultatif)" autocomplete="off" />'
+         + '<button type="submit">Valider hors taxe</button></form>';
+    }
+    return h + '<div class="msg" id="' + id + '"></div></div>';
+  }
+
+  function brancher() {
+    Array.prototype.forEach.call(document.querySelectorAll("form"), function (f) {
+      f.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var carte = f.closest(".carte");
+        var email = carte.getAttribute("data-email");
+        var msg = carte.querySelector(".msg");
+        var bouton = f.querySelector("button");
+        var retrait = f.getAttribute("data-action") === "retirer";
+
+        // Deux temps plutôt qu'une fenêtre de confirmation : un retrait
+        // remet la TVA sur les prochaines commandes du client.
+        if (retrait && bouton.getAttribute("data-confirme") !== "oui") {
+          bouton.setAttribute("data-confirme", "oui");
+          bouton.textContent = "Confirmer le retrait";
+          return;
+        }
+
+        var charge = retrait
+          ? { email: email, retirer: true }
+          : { email: email,
+              consultation: f.consultation.value.trim(),
+              note: f.note.value.trim() };
+
+        bouton.disabled = true;
+        msg.className = "msg"; msg.textContent = "Enregistrement…";
+
+        fetch("/api/tva-manuel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(charge)
+        })
+        .then(function (r) { return r.json().then(function (d) { return { st: r.status, d: d }; }); })
+        .then(function (rep) {
+          if (rep.d && rep.d.ok) {
+            msg.className = "msg ok";
+            msg.textContent = retrait
+              ? "Validation retirée. Ce client sera de nouveau facturé avec TVA."
+              : "Enregistré. Ce client est désormais facturé hors taxe.";
+            setTimeout(charger, 900);
+          } else {
+            bouton.disabled = false;
+            msg.className = "msg ko";
+            msg.textContent = (rep.d && rep.d.erreur) || "Enregistrement refusé.";
+          }
+        })
+        .catch(function () {
+          bouton.disabled = false;
+          msg.className = "msg ko";
+          msg.textContent = "Le site n'a pas répondu. Réessayez.";
+        });
+      });
+    });
+  }
+
+  function charger() {
+    fetch("/api/tva-manuel", { headers: { accept: "application/json" } })
+      .then(function (r) { return r.json().then(function (d) { return { st: r.status, d: d }; }); })
+      .then(function (rep) {
+        if (rep.d && rep.d.code === "migration") {
+          sortie.innerHTML = '<div class="mode"><b>Une étape manque côté base.</b><br>'
+            + echappe(rep.d.erreur) + '</div>';
+          return;
+        }
+        if (rep.st === 404 || !rep.d || !rep.d.ok) {
+          sortie.innerHTML = '<p class="sous">Cette page n\'est lisible qu\'en étant '
+            + 'connecté avec l\'adresse de NBD. <a href="/pro/connexion/">Se connecter</a>.</p>';
+          return;
+        }
+        var liste = rep.d.comptes || [];
+        if (!liste.length) {
+          sortie.innerHTML = '<p class="sous">Aucun compte français ou '
+            + 'luxembourgeois pour le moment.</p>';
+          return;
+        }
+        var aTraiter = liste.filter(function (c) { return !c.exonere; });
+        var ok = liste.filter(function (c) { return c.exonere; });
+        var h = "";
+        if (aTraiter.length) {
+          h += '<h2>À traiter — ' + aTraiter.length + '</h2>'
+             + aTraiter.map(carte).join("");
+        }
+        if (ok.length) {
+          h += '<h2>Exonérés — ' + ok.length + '</h2>' + ok.map(carte).join("");
+        }
+        sortie.innerHTML = h;
+        brancher();
+      })
+      .catch(function () {
+        sortie.innerHTML = '<p class="sous">Le site n\'a pas répondu. '
+          + 'Réessayez dans un instant.</p>';
+      });
+  }
+
+  charger();
+})();
+</script>
+</body>
+</html>
