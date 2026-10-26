@@ -6,6 +6,7 @@
    SIRET en France).
    ========================================================================== */
 
+import { controlerEtEnregistrer, ouvreDroitAExoneration } from "../_tva.js";
 import {
   json, erreur, hacher, ouvrirSession, cookieSession,
   emailValide, cleEmail, motDePasseValide,
@@ -63,9 +64,9 @@ export async function onRequestPost({ request, env }) {
   const empreinte = await hacher(mdp);
   const maintenant = new Date().toISOString();
 
-  // tva_valide reste à 0 : le numéro n'a pas été confronté à VIES. Il est
-  // enregistré tel quel et l'importateur le contrôle après coup. La colonne
-  // existe déjà pour le jour où cette vérification sera branchée.
+  // tva_valide est posé à 0 ici, puis la vérification VIES le relève juste
+  // après la création du compte. On ne la fait pas AVANT : une panne du
+  // registre européen ne doit jamais empêcher quelqu'un de s'inscrire.
   const res = await db.prepare(`
     INSERT INTO comptes
       (email, email_cle, salon, prenom, nom, pays, tva, siret,
@@ -79,6 +80,17 @@ export async function onRequestPost({ request, env }) {
   const compteId = res.meta.last_row_id;
   const jeton = await ouvrirSession(db, compteId);
 
+  // Le registre européen, interrogé une fois le compte créé. Un numéro
+  // français ou luxembourgeois confirmé ouvre l'autoliquidation dès la
+  // première commande, sans intervention. Une panne de VIES laisse
+  // simplement le compte en TVA belge, et le client pourra relancer la
+  // vérification depuis son espace.
+  let tva = { statut: "jamais", valide: false };
+  try {
+    tva = await controlerEtEnregistrer(db,
+      { id: compteId, tva: fiscal.tva, siret: fiscal.siret, pays }, env);
+  } catch (e) { /* l'inscription aboutit quoi qu'il arrive */ }
+
   // Le compte est créé et la session ouverte dans la foulée : lui redemander
   // son mot de passe juste après l'avoir choisi n'apporte rien.
   return json(
@@ -86,7 +98,10 @@ export async function onRequestPost({ request, env }) {
       ok: true,
       compte: {
         email, salon: societe, prenom, nom, pays,
-        tva: fiscal.tva, siret: fiscal.siret, tva_valide: 0,
+        tva: fiscal.tva, siret: fiscal.siret,
+        tva_valide: tva.valide ? 1 : 0,
+        tva_statut: tva.statut,
+        exonere: ouvreDroitAExoneration(pays, tva.statut),
       },
       // Signalé à l'inscrit sans bloquer : une clé de contrôle fausse est
       // presque toujours une faute de frappe, et vaut mieux d'être corrigée

@@ -13,6 +13,7 @@
 import { json, erreur, compteConnecte } from "../_commun.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
+import { controlerSiBesoin } from "../_tva.js";
 
 const PAYS_CONNUS = { BE: 1, FR: 1, LU: 1 };
 
@@ -32,7 +33,23 @@ export async function onRequestPost({ request, env }) {
   const compte = env.DB ? await compteConnecte(request, env.DB) : null;
 
   const pays = compte ? compte.pays : (PAYS_CONNUS[corps.pays] ? corps.pays : null);
-  const tvaValide = compte ? !!compte.tva_valide : false;
+
+  // Le contrôle VIES, refait ici quand il date — jamais à chaque appel. Le
+  // panier doit afficher le régime qui s'appliquera réellement : un numéro
+  // radié depuis le dernier contrôle ferait autrement apparaître un total
+  // hors taxe que la commande corrigerait à la hausse au dernier moment.
+  let tvaValide = false;
+  let tvaStatut = "";
+  if (compte) {
+    try {
+      const t = await controlerSiBesoin(env.DB, compte, env);
+      tvaValide = t.valide;
+      tvaStatut = t.statut;
+    } catch (e) {
+      tvaValide = !!compte.tva_valide;      // le registre muet ne dégrade rien
+      tvaStatut = compte.tva_statut || "";
+    }
+  }
 
   let produits, prix;
   try {
@@ -70,6 +87,7 @@ export async function onRequestPost({ request, env }) {
     // indicatif et la page doit le dire. Avec session, il fait foi.
     pays_certain: !!compte,
     pays: pays || "BE",
+    tva_statut: tvaStatut,
     ...resultat,
   });
 }

@@ -1,0 +1,81 @@
+ÉTAPE 211 — LE SITE VÉRIFIE LES NUMÉROS DE TVA
+==============================================
+
+!!! UNE ACTION AVANT LE DÉPÔT !!!
+---------------------------------
+Il faut ajouter quatre colonnes à la base AVANT de déposer ce lot.
+
+  Cloudflare -> Workers et Pages -> nishman-site -> onglet D1 (ou
+  Stockage) -> base nishman-comptes -> Console
+
+  Collez-y le contenu de base/migration-211.sql et exécutez.
+
+Sans cela, chaque commande échouera : le code écrira dans des colonnes
+qui n'existent pas encore.
+
+
+CE QUE ÇA FAIT
+--------------
+Le site interroge VIES, le registre européen des numéros de TVA.
+
+  • à l'inscription, juste après la création du compte
+  • avant chaque commande, si le dernier contrôle date de plus de 7 jours
+  • à la demande, par /api/tva (le bouton viendra à l'étape suivante)
+
+Un numéro français ou luxembourgeois confirmé par le registre ouvre
+l'autoliquidation : le site affiche hors taxe et transmet ce régime à
+Odoo. Tout le reste paie la TVA belge de 21 %, y compris le
+micro-entrepreneur français sans numéro intracommunautaire — qui garde
+bien l'accès aux prix professionnels.
+
+
+LE PRINCIPE : ÉCHOUER DU BON CÔTÉ
+---------------------------------
+Rien n'est exonéré sans un « valide » explicite du registre. Une panne,
+une réponse illisible, un champ absent : tout cela facture la TVA.
+Si vous exonérez à tort, c'est vous qui devez la TVA à l'État belge.
+
+Deux nuances :
+  • une panne de VIES ne bloque jamais une inscription ni une commande ;
+  • un client validé il y a peu garde son exonération si le registre ne
+    répond pas : la preuve de la semaine passée reste opposable.
+
+
+LA PREUVE
+---------
+Quand on interroge VIES en donnant notre propre numéro de TVA, le
+registre renvoie un NUMÉRO DE CONSULTATION. C'est la pièce à produire
+en cas de contrôle pour justifier une facture en autoliquidation. Il est
+désormais conservé sur le compte et transmis avec chaque commande.
+
+
+CE QUI RESTE À FAIRE
+--------------------
+1. Odoo doit facturer selon le régime que le site transmet. Le script
+   Google reçoit déjà l'information (vatRegime, viesProof) mais ne pose
+   pas encore de position fiscale. Il me faut pour cela les noms exacts
+   de vos positions fiscales dans Odoo.
+
+2. L'affichage du statut dans l'espace client, avec un bouton pour
+   relancer la vérification. Étape suivante.
+
+
+VÉRIFIÉ AVANT LIVRAISON
+-----------------------
+30 contrôles sur le client VIES (formats de numéro, pannes, réponses
+inattendues, péremption) et 19 sur le régime appliqué à la commande.
+Je n'ai pas pu joindre VIES depuis mon environnement : le premier essai
+réel sera le vôtre.
+
+
+FICHIERS
+--------
+  base/migration-211.sql          À EXÉCUTER EN PREMIER
+  functions/_vies.js              (nouveau) le client VIES
+  functions/_tva.js               (nouveau) quand vérifier, quoi enregistrer
+  functions/api/tva.js            (nouveau) vérification à la demande
+  functions/api/inscription.js    contrôle à la création du compte
+  functions/api/panier.js         le panier affiche le régime réel
+  functions/api/commander.js      le régime est arrêté au moment qui engage
+
+Branche : NishmanCloudflare

@@ -16,6 +16,7 @@
 import { json, erreur, compteConnecte, prolongerSiBesoin, texteValide, paysValide } from "../_commun.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
+import { controlerSiBesoin } from "../_tva.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 
@@ -60,7 +61,7 @@ function adresseLivraison(brut) {
  * Ce que le script Google attend. On garde exactement les clés qu'il lit
  * déjà : le script reste inchangé, c'est le chemin qui change.
  */
-function chargeUtile({ ref, compte, resultat, langue, livraison }) {
+function chargeUtile({ ref, compte, resultat, langue, livraison, tva }) {
   const pays = PAYS_NOM[compte.pays] || "Belgique";
   return {
     type: "order",
@@ -94,6 +95,14 @@ function chargeUtile({ ref, compte, resultat, langue, livraison }) {
     discountRate: resultat.promo ? "10" : "",
     discount: resultat.remise.toFixed(2),
     currency: "EUR",
+    // Le régime arrêté par le site. Odoo doit facturer ce que le client a lu,
+    // et non le redéduire de son côté avec d'autres règles.
+    vatRegime: resultat.regime,
+    vatRate: String(Math.round((resultat.taux_tva || 0) * 100)),
+    vatAmount: resultat.tva.toFixed(2),
+    grandTotal: resultat.total.toFixed(2),
+    viesStatus: (tva && tva.statut) || "",
+    viesProof: (tva && tva.preuve) || "",
     lines: resultat.lignes.map((l) => ({
       ean: l.ean,
       name: l.nom,
@@ -178,9 +187,16 @@ export async function onRequestPost({ request, env }) {
     return erreur("Tarifs momentanément indisponibles.", 503, "tarifs");
   }
 
+  // Le régime de TVA est arrêté ici, au moment qui engage. Le contrôle n'est
+  // relancé que s'il date : l'autoliquidation doit se justifier à la date de
+  // la vente, pas à celle de l'inscription.
+  let tva = { valide: !!compte.tva_valide, statut: compte.tva_statut || "", preuve: compte.tva_preuve || "" };
+  try { tva = await controlerSiBesoin(env.DB, compte, env); }
+  catch (e) { /* le registre muet ne doit pas faire perdre la commande */ }
+
   const resultat = calculer({
     selection, produits, prix,
-    pays: compte.pays, tvaValide: !!compte.tva_valide,
+    pays: compte.pays, tvaValide: tva.valide,
     mode, promo: corps.promo,
   });
 
@@ -192,7 +208,7 @@ export async function onRequestPost({ request, env }) {
 
   const ref = reference();
   const langue = ["fr", "en", "nl", "de", "tr"].includes(corps.langue) ? corps.langue : "fr";
-  const charge = chargeUtile({ ref, compte, resultat, langue, livraison });
+  const charge = chargeUtile({ ref, compte, resultat, langue, livraison, tva });
 
   let reponse;
   try {
