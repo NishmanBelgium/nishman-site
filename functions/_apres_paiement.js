@@ -1,0 +1,158 @@
+/* ==========================================================================
+   APRÈS PAIEMENT — la suite, reprise là où elle s'est arrêtée.
+
+   Confirmer la commande, émettre la facture, préparer l'expédition : trois
+   gestes qui doivent s'enchaîner tout seuls, et dont chacun peut échouer
+   pour une raison qui n'a rien à voir avec les deux autres. Odoo qui ne
+   répond pas, une facture déjà émise, un réseau qui coupe au mauvais
+   moment.
+
+   La mauvaise façon de traiter ça est d'écrire la suite d'un trait et
+   d'espérer : au premier incident, on ne sait plus ce qui a été fait. La
+   bonne est celle-ci — un état noté après chaque geste, et une reprise qui
+   repart de cet état.
+
+   Deux garanties tiennent l'ensemble :
+
+   1. Avant d'agir, on regarde ce qu'Odoo dit DÉJÀ. Une commande confirmée
+      ne se reconfirme pas, une facture existante ne se recrée pas. L'état
+      que nous notons est un raccourci ; la vérité reste chez Odoo. C'est
+      ce qui rend une reprise sans danger, même si notre note est fausse.
+
+   2. Un échec ne fait pas reculer l'étape atteinte. On s'arrête, on écrit
+      pourquoi, et la prochaine sollicitation — notification de Mollie,
+      consultation de la page de retour — reprendra au même endroit.
+   ========================================================================== */
+
+import { appel } from "./_odoo.js";
+import { noterEtape } from "./_paiements.js";
+
+/** Un petit journal, pour pouvoir raconter ce qui s'est passé. */
+function ligne(journal, quoi, ok, detail) {
+  journal.push({ geste: quoi, ok, detail });
+}
+
+/* --- Les gestes, un par un ---------------------------------------------- */
+
+/**
+ * La commande devient une commande client.
+ *
+ * On lit l'état avant d'agir : si Odoo la donne déjà confirmée — parce
+ * qu'une notification précédente a abouti, ou parce que NBD l'a confirmée
+ * à la main — il n'y a rien à faire, et c'est une réussite, pas un échec.
+ */
+async function confirmerCommande(env, orderId, journal) {
+  const lu = await appel(env, "sale.order", "read", [[orderId], ["state", "name"]], {});
+  if (!lu || !lu[0]) throw new Error("commande introuvable dans Odoo");
+  const etat = String(lu[0].state || "");
+
+  if (etat === "cancel") {
+    throw new Error("la commande a été annulée dans Odoo : rien ne sera facturé");
+  }
+  if (etat === "sale" || etat === "done") {
+    ligne(journal, "confirmation", true, "déjà confirmée dans Odoo");
+    return;
+  }
+  await appel(env, "sale.order", "action_confirm", [[orderId]], {});
+  ligne(journal, "confirmation", true, "commande " + (lu[0].name || orderId) + " confirmée");
+}
+
+/**
+ * La facture : créée si elle n'existe pas, comptabilisée si elle est encore
+ * en brouillon.
+ *
+ * Les deux moitiés sont séparées à dessein. Une facture créée mais non
+ * comptabilisée est le résultat normal d'une interruption entre les deux ;
+ * la reprise doit la retrouver et finir le travail, pas en créer une
+ * seconde.
+ */
+async function facturer(env, orderId, journal) {
+  const lu = await appel(env, "sale.order", "read", [[orderId], ["invoice_ids", "name"]], {});
+  if (!lu || !lu[0]) throw new Error("commande introuvable dans Odoo");
+
+  let factureIds = Array.isArray(lu[0].invoice_ids) ? lu[0].invoice_ids.slice() : [];
+
+  if (!factureIds.length) {
+    const cree = await appel(env, "sale.order", "_create_invoices", [[orderId]], {});
+    factureIds = Array.isArray(cree) ? cree : (cree ? [cree] : []);
+    if (!factureIds.length) throw new Error("Odoo n'a créé aucune facture");
+    ligne(journal, "création de la facture", true, factureIds.length + " facture(s) créée(s)");
+  } else {
+    ligne(journal, "création de la facture", true, "facture déjà existante");
+  }
+
+  const factures = await appel(env, "account.move", "read",
+    [factureIds, ["name", "state", "amount_total"]], {});
+
+  const aComptabiliser = (factures || []).filter((f) => String(f.state) === "draft").map((f) => f.id);
+  if (aComptabiliser.length) {
+    await appel(env, "account.move", "action_post", [aComptabiliser], {});
+    ligne(journal, "comptabilisation", true, aComptabiliser.length + " facture(s) comptabilisée(s)");
+  } else {
+    ligne(journal, "comptabilisation", true, "déjà comptabilisée");
+  }
+
+  const relu = await appel(env, "account.move", "read", [factureIds, ["name", "state"]], {});
+  const principale = (relu || [])[0] || {};
+  return { id: factureIds[0], nom: principale.name || "" };
+}
+
+/* --- L'enchaînement ------------------------------------------------------ */
+
+/**
+ * Avance aussi loin que possible, et s'arrête proprement au premier
+ * obstacle.
+ *
+ * @param p la ligne du registre des paiements
+ * @returns { etape, journal, fini, erreur }
+ */
+export async function poursuivre(env, db, p) {
+  const journal = [];
+
+  if (String(p.statut) !== "paye") {
+    return { etape: p.etape || "rien", journal, fini: false, erreur: null };
+  }
+
+  let etape = String(p.etape || "rien");
+  let factureId = p.facture_id || null;
+  let factureNom = p.facture_nom || "";
+
+  try {
+    if (etape === "rien") {
+      await confirmerCommande(env, p.odoo_order_id, journal);
+      etape = "confirmee";
+      await noterEtape(db, p.mollie_id, etape, { note: "Commande confirmée." });
+    }
+
+    if (etape === "confirmee") {
+      const f = await facturer(env, p.odoo_order_id, journal);
+      factureId = f.id; factureNom = f.nom;
+      etape = "facturee";
+      await noterEtape(db, p.mollie_id, etape, {
+        facture_id: factureId, facture_nom: factureNom,
+        note: "Facture " + (factureNom || factureId) + " comptabilisée.",
+      });
+    }
+
+    // L'étiquette d'expédition viendra se placer ici. Tant qu'elle n'est
+    // pas en service, une commande facturée est une commande finie du point
+    // de vue de cette chaîne : le bon de livraison attend NBD dans Odoo.
+    if (etape === "facturee") {
+      etape = "fini";
+      await noterEtape(db, p.mollie_id, etape, null);
+      ligne(journal, "expédition", true, "bon de livraison prêt dans Odoo, à préparer et étiqueter");
+    }
+
+    return { etape, journal, fini: etape === "fini", erreur: null };
+  } catch (e) {
+    const motif = String((e && e.message) || "erreur").slice(0, 240);
+    ligne(journal, "arrêt", false, motif);
+    try {
+      await noterEtape(db, p.mollie_id, etape, {
+        note: "Suite interrompue à l'étape « " + etape + " » : " + motif
+            + ". Elle reprendra d'elle-même à la prochaine sollicitation.",
+      });
+    } catch (e2) { /* le registre est indisponible ; l'essentiel est déjà dit */ }
+    return { etape, journal, fini: false, erreur: motif };
+  }
+}

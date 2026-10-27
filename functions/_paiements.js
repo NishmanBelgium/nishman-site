@@ -29,11 +29,49 @@ export async function preparerTable(db) {
       "devise TEXT NOT NULL DEFAULT 'EUR', " +
       "statut TEXT NOT NULL DEFAULT 'ouvert', " +
       "traite_le TEXT, " +
+      "etape TEXT NOT NULL DEFAULT 'rien', " +
+      "facture_id INTEGER, " +
+      "facture_nom TEXT, " +
       "note TEXT, " +
       "cree_le TEXT NOT NULL, " +
       "vu_le TEXT)"
   );
+  // Les colonnes ajoutées après coup, pour les bases créées avant elles.
+  // SQLite ne connaît pas « ADD COLUMN IF NOT EXISTS » : on tente, et
+  // l'échec signifie simplement que la colonne est déjà là.
+  for (const sql of [
+    "ALTER TABLE paiements ADD COLUMN etape TEXT NOT NULL DEFAULT 'rien'",
+    "ALTER TABLE paiements ADD COLUMN facture_id INTEGER",
+    "ALTER TABLE paiements ADD COLUMN facture_nom TEXT",
+  ]) {
+    try { await db.exec(sql); } catch (e) { /* colonne déjà présente */ }
+  }
   tablePrete = true;
+}
+
+/**
+ * Où en est la suite après paiement.
+ *
+ *   rien        le paiement n'est pas encore confirmé
+ *   confirmee   la commande est passée en commande client dans Odoo
+ *   facturee    la facture existe et est comptabilisée
+ *   fini        plus rien à faire
+ *
+ * L'ordre compte : chaque étape suppose la précédente. Reprendre une suite
+ * interrompue consiste à repartir de l'étape atteinte, pas du début.
+ */
+export const ETAPES = ["rien", "confirmee", "facturee", "fini"];
+
+export async function noterEtape(db, mollieId, etape, extra) {
+  await preparerTable(db);
+  const champs = ["etape = ?", "vu_le = ?"];
+  const vals = [etape, new Date().toISOString()];
+  if (extra && extra.facture_id) { champs.push("facture_id = ?"); vals.push(extra.facture_id); }
+  if (extra && extra.facture_nom) { champs.push("facture_nom = ?"); vals.push(extra.facture_nom); }
+  if (extra && extra.note !== undefined) { champs.push("note = ?"); vals.push(extra.note); }
+  vals.push(mollieId);
+  await db.prepare("UPDATE paiements SET " + champs.join(", ") + " WHERE mollie_id = ?")
+    .bind(...vals).run();
 }
 
 export async function enregistrer(db, p) {
@@ -68,26 +106,37 @@ export async function majStatut(db, mollieId, statut, note) {
 }
 
 /**
- * Marque le paiement comme traité, et ne le fait qu'une fois.
+ * Prend la main sur un paiement pour en traiter la suite, et une seule
+ * fois à la fois.
  *
- * La condition « traite_le IS NULL » est dans la requête elle-même, pas
- * dans un test préalable : deux notifications arrivées en même temps
- * liraient toutes les deux « pas encore traité » avant que l'une n'écrive.
- * Ici, la base tranche, et le nombre de lignes modifiées dit laquelle des
- * deux a gagné.
+ * La condition est dans la requête elle-même, pas dans un test préalable :
+ * deux notifications arrivées en même temps liraient toutes les deux
+ * « personne ne s'en occupe » avant que l'une n'écrive. Ici c'est la base
+ * qui tranche, et le nombre de lignes modifiées dit laquelle a gagné.
+ *
+ * La main se périme au bout de deux minutes. Sans cela, une fonction
+ * interrompue au mauvais moment — le réseau qui coupe, Cloudflare qui
+ * arrête l'exécution — laisserait le paiement verrouillé pour toujours, et
+ * la suite ne reprendrait jamais. Mieux vaut un verrou qui s'use qu'un
+ * verrou qui bloque.
  *
  * @returns true si c'est CET appel qui a pris la main.
  */
+const BAIL_MS = 2 * 60 * 1000;
+
 export async function prendreLaMain(db, mollieId) {
   await preparerTable(db);
+  const maintenant = new Date();
+  const perime = new Date(maintenant.getTime() - BAIL_MS).toISOString();
   const r = await db.prepare(
-    "UPDATE paiements SET traite_le = ? WHERE mollie_id = ? AND traite_le IS NULL"
-  ).bind(new Date().toISOString(), mollieId).run();
+    "UPDATE paiements SET traite_le = ? WHERE mollie_id = ? " +
+    "AND (traite_le IS NULL OR traite_le < ?)"
+  ).bind(maintenant.toISOString(), mollieId, perime).run();
   const change = r && r.meta ? (r.meta.changes || r.meta.rows_written || 0) : 0;
   return change > 0;
 }
 
-/** En cas d'échec après avoir pris la main : on rend la main. */
+/** Le travail est fini ou abandonné : on rend la main pour la reprise. */
 export async function rendreLaMain(db, mollieId) {
   await preparerTable(db);
   await db.prepare("UPDATE paiements SET traite_le = NULL WHERE mollie_id = ?")

@@ -14,8 +14,10 @@
    ========================================================================== */
 
 import { json, erreur, compteConnecte } from "../_commun.js";
+import { configure as configureOdoo } from "../_odoo.js";
 import { configureMollie, appelMollie } from "../_mollie.js";
-import { lireParRef, majStatut } from "../_paiements.js";
+import { lireParRef, lire, majStatut, prendreLaMain, rendreLaMain } from "../_paiements.js";
+import { poursuivre } from "../_apres_paiement.js";
 
 const LISIBLE = {
   ouvert: "en attente",
@@ -54,6 +56,24 @@ export async function onRequestGet({ request, env }) {
     } catch (e) { /* on répondra ce que dit le registre */ }
   }
 
+  // La reprise. Si la notification de Mollie s'est perdue, ou si la suite
+  // s'est arrêtée en chemin, c'est ici qu'elle repart — au moment même où
+  // le client regarde où en est sa commande. Une chaîne qui ne dépend pas
+  // d'un seul déclencheur est une chaîne qui finit par aboutir.
+  let etape = String(p.etape || "rien");
+  if (statut === "paye" && etape !== "fini" && configureOdoo(env)) {
+    let aLaMain = false;
+    try { aLaMain = await prendreLaMain(env.DB, p.mollie_id); } catch (e) {}
+    if (aLaMain) {
+      try {
+        const frais = await lire(env.DB, p.mollie_id);
+        const r = await poursuivre(env, env.DB, { ...(frais || p), statut: "paye" });
+        etape = r.etape;
+      } catch (e) { /* l'état renvoyé restera celui du registre */ }
+      finally { try { await rendreLaMain(env.DB, p.mollie_id); } catch (e2) {} }
+    }
+  }
+
   return json({
     ok: true,
     ref: p.ref,
@@ -62,8 +82,9 @@ export async function onRequestGet({ request, env }) {
     devise: p.devise,
     statut,
     statut_lisible: LISIBLE[statut] || statut,
-    // Le traitement (confirmation de la commande) a-t-il eu lieu ?
-    traite: !!p.traite_le,
+    etape,
+    // La suite est-elle allée jusqu'au bout ?
+    traite: etape === "fini",
   });
 }
 

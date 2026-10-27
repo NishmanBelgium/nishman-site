@@ -22,9 +22,10 @@
      par tout engorger.
    ========================================================================== */
 
-import { appel as appelOdoo, configure as configureOdoo } from "../_odoo.js";
+import { configure as configureOdoo } from "../_odoo.js";
 import { configureMollie, appelMollie } from "../_mollie.js";
 import { lire, majStatut, prendreLaMain, rendreLaMain } from "../_paiements.js";
+import { poursuivre } from "../_apres_paiement.js";
 
 const ETATS = {
   paid: "paye",
@@ -92,30 +93,25 @@ export async function onRequestPost({ request, env }) {
 
   try { await majStatut(env.DB, id, notre, null); } catch (e) {}
 
-  // 5) Payé : on confirme la commande. Une seule fois.
+  // 5) Payé : on enchaîne la suite — confirmation, facture, expédition.
+  //    Une seule exécution à la fois, et une reprise possible ensuite.
   if (etat !== "paid") return recu();
-  if (enregistre.traite_le) return recu();
+  if (String(enregistre.etape || "rien") === "fini") return recu();
   if (!configureOdoo(env)) return recu();
 
   let aLaMain = false;
   try { aLaMain = await prendreLaMain(env.DB, id); }
   catch (e) { return recu(); }
-  if (!aLaMain) return recu();   // une autre notification s'en occupe déjà
+  if (!aLaMain) return recu();   // une autre sollicitation s'en occupe déjà
 
   try {
-    await appelOdoo(env, "sale.order", "action_confirm", [[enregistre.odoo_order_id]], {});
-    await majStatut(env.DB, id, "paye",
-      "Paiement vérifié auprès de Mollie, commande " + (enregistre.odoo_nom || enregistre.odoo_order_id)
-      + " confirmée dans Odoo.");
+    const frais = await lire(env.DB, id);
+    await poursuivre(env, env.DB, frais || { ...enregistre, statut: "paye" });
   } catch (e) {
-    // On rend la main : la prochaine notification réessaiera, et si Mollie
-    // n'en envoie pas d'autre, le registre porte la trace de l'échec.
+    // poursuivre() écrit déjà ce qui s'est passé ; ici on ne fait que
+    // garantir qu'on rendra la main quoi qu'il arrive.
+  } finally {
     try { await rendreLaMain(env.DB, id); } catch (e2) {}
-    try {
-      await majStatut(env.DB, id, "paye",
-        "PAYÉ MAIS NON CONFIRMÉ DANS ODOO : " + String(e && e.message || "erreur").slice(0, 200)
-        + ". Commande " + (enregistre.odoo_nom || enregistre.odoo_order_id) + " à confirmer à la main.");
-    } catch (e2) {}
   }
 
   return recu();
