@@ -20,7 +20,7 @@ import { json, erreur, compteConnecte } from "../_commun.js";
 import { interrogerPortier, codePortier, adressePortier } from "../_portier.js";
 import { verifier as verifierTva } from "../_vies.js";
 import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "../_odoo.js";
-import { tableDePrix } from "../_tarifs.js";
+import { catalogue } from "../_tarifs.js";
 import { configureMollie, modeMollie, appelMollie } from "../_mollie.js";
 
 const ADMIN_DEFAUT = "contact@nishman.be";
@@ -141,23 +141,30 @@ async function etatMollie(env) {
 }
 
 /**
- * La correspondance entre les références tarifées du site et les fiches
+ * La correspondance entre les références VENDABLES du site et les fiches
  * produits d'Odoo, par code-barres.
  *
- * C'est le contrôle le plus utile avant de créer des commandes : une
- * référence qu'Odoo ne reconnaît pas ne peut pas devenir une ligne de
- * commande. Mieux vaut découvrir le trou ici, sur une page de diagnostic,
- * que sur la commande d'un client qui vient de payer.
+ * On compare le catalogue, pas la feuille de prix : une référence tarifée
+ * mais retirée du site ne sera jamais commandée, et la signaler ne ferait
+ * que du bruit. Ce qui compte, c'est que tout ce qu'un client peut mettre
+ * au panier puisse devenir une ligne de commande chez vous.
+ *
+ * La boutique grand public est un sous-ensemble du catalogue professionnel ;
+ * vérifier le catalogue couvre donc les deux.
  */
-async function etatProduits(env) {
+async function etatProduits(env, request) {
   if (!configureOdoo(env)) return { ok: false, detail: "Odoo n'est pas configuré : comparaison impossible." };
 
-  let prix;
-  try { prix = await tableDePrix(env); }
-  catch (e) { return { ok: false, detail: "Table de prix indisponible : " + String(e && e.message || "erreur") }; }
+  let produits;
+  try { produits = await catalogue(request); }
+  catch (e) { return { ok: false, detail: "Catalogue illisible : " + String(e && e.message || "erreur") }; }
 
-  const eans = Object.keys(prix || {}).map((e) => String(e).trim()).filter(Boolean);
-  if (!eans.length) return { ok: false, detail: "Aucun tarif reçu : rien à comparer." };
+  // Les coffrets et packs portent une référence interne (« NISH-PACK-… »)
+  // et non un EAN : ils ne sont pas censés avoir de code-barres Odoo.
+  const eans = (produits || [])
+    .map((p) => String((p && p.ean) || "").trim())
+    .filter((e) => /^\d{8,14}$/.test(e));
+  if (!eans.length) return { ok: false, detail: "Aucune référence à code-barres dans le catalogue." };
 
   let table;
   try { table = await produitsParEan(env, eans); }
@@ -174,7 +181,7 @@ async function etatProduits(env) {
     // cent, le problème est de nature, pas de détail.
     sans_correspondance: inconnus.slice(0, 10),
     detail: inconnus.length === 0
-      ? "Les " + eans.length + " références tarifées ont leur code-barres dans Odoo."
+      ? "Les " + eans.length + " références vendables ont leur code-barres dans Odoo."
       : reconnus + " référence(s) sur " + eans.length + " reconnues. "
         + inconnus.length + " n'ont pas de code-barres correspondant dans Odoo : "
         + "elles ne pourront pas devenir des lignes de commande.",
@@ -200,7 +207,7 @@ export async function onRequestGet({ request, env }) {
     etatVies(env).catch(impossible),
     etatOdoo(env).catch(impossible),
     etatMollie(env).catch(impossible),
-    etatProduits(env).catch(impossible),
+    etatProduits(env, request).catch(impossible),
   ]);
 
   const liaisons = {
