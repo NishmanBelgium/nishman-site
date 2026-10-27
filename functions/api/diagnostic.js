@@ -124,7 +124,7 @@ async function etatMollie(env) {
   }
 
   try {
-    const r = await appelMollie(env, "/methods?limit=50");
+    const r = await appelMollie(env, "/methods");
     const moyens = (r && r._embedded && Array.isArray(r._embedded.methods)) ? r._embedded.methods : [];
     const noms = moyens.map((m) => m && m.description).filter(Boolean);
     return { ...info, ok: true, moyens: noms,
