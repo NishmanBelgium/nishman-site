@@ -116,8 +116,18 @@ export async function onRequestGet({ request, env }) {
     // au support et au diagnostic ; la page de retour ne l'affiche pas au
     // client, elle compose son propre message à partir de l'état.
     note: p.note || "",
-    // La suite est-elle allée jusqu'au bout ?
-    traite: etape === "fini",
+    // Ce que le client attend, et ce que NBD doit encore finir, ne sont pas
+    // la même chose. Dès que la facture est comptabilisée, la commande du
+    // client est bouclée : son argent est encaissé, sa commande existe, sa
+    // facture est émise. Le lettrage et l'envoi de la facture sont nos
+    // affaires, et un lettrage en souffrance ne doit pas laisser un client
+    // devant un écran qui tourne.
+    //
+    // La chaîne, elle, continue : chaque sollicitation reprend là où elle
+    // s'était arrêtée, que cette page l'ait annoncée terminée ou non.
+    traite: ["facturee", "lettree", "envoyee", "fini"].indexOf(etape) >= 0,
+    // Pour NBD : l'étape réelle est renvoyée telle quelle juste au-dessus.
+    etape_finale: etape === "fini",
     // Le paiement est-il perdu sans retour ? La page garde alors le panier
     // et propose de recommencer, au lieu d'annoncer un échec définitif.
     perdu: statut === "annule" || statut === "expire" || statut === "echoue",

@@ -57,6 +57,7 @@ export async function preparerTable(db) {
  *   facturee    la facture existe et est comptabilisée
  *   lettree     le paiement est enregistré sur la facture — ou le lettrage
  *               a été écarté faute de journal configuré, ce qui est dit
+ *   envoyee     la facture est partie chez le client
  *   fini        plus rien à faire
  *
  * L'ordre compte : chaque étape suppose la précédente. Reprendre une suite
@@ -68,7 +69,7 @@ export async function preparerTable(db) {
  * comme « fini », mais pour l'autre issue, et la laisser hors de l'ordre
  * évite qu'une reprise ne la prenne pour une étape à dépasser.
  */
-export const ETAPES = ["rien", "confirmee", "facturee", "lettree", "fini"];
+export const ETAPES = ["rien", "confirmee", "facturee", "lettree", "envoyee", "fini"];
 
 export async function noterEtape(db, mollieId, etape, extra) {
   await preparerTable(db);

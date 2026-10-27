@@ -154,6 +154,72 @@ async function lettrer(env, factureIds, journalNom, journal) {
     + (etat ? " — état de paiement : " + etat : ""));
 }
 
+/**
+ * La facture part chez le client.
+ *
+ * Sans ce geste, le client paie, voit un écran de confirmation, et ne reçoit
+ * rien. Sa facture existe — dans Odoo, où il n'a pas accès. C'est le genre
+ * de trou qui ne casse aucun test et qui fait écrire tous les clients.
+ *
+ * C'est Odoo qui envoie, pas nous, et c'est volontaire : il a l'adresse, la
+ * langue du client, le modèle d'e-mail, le PDF et la trace de l'envoi dans
+ * le fil de la facture. Reconstruire tout ça ici donnerait un message moins
+ * bon, dans une seule langue, sans pièce jointe et sans trace.
+ *
+ * Deux verrous contre le double envoi : notre étape, et le drapeau d'Odoo
+ * lui-même — qui couvre aussi le cas où NBD a déjà envoyé la facture à la
+ * main depuis Odoo. Recevoir sa facture deux fois n'est pas grave, mais ça
+ * fait désordre, et le désordre se remarque.
+ */
+async function envoyerFacture(env, factureIds, journal) {
+  if (!factureIds || !factureIds.length) throw new Error("aucune facture à envoyer");
+
+  // Déjà parties ? Le champ n'existe pas sous toutes les versions d'Odoo :
+  // son absence ne doit pas arrêter la chaîne, elle nous prive seulement
+  // d'un garde-fou.
+  let aEnvoyer = factureIds.slice();
+  try {
+    const lu = await appel(env, "account.move", "read", [factureIds, ["is_move_sent"]], {});
+    const dejaParties = (lu || []).filter((f) => f.is_move_sent === true).map((f) => f.id);
+    aEnvoyer = factureIds.filter((id) => dejaParties.indexOf(id) < 0);
+    if (!aEnvoyer.length) {
+      ligne(journal, "envoi de la facture", true, "déjà envoyée par Odoo");
+      return;
+    }
+  } catch (e) { /* champ inconnu de cette version : on enverra */ }
+
+  // Le modèle d'e-mail de facture. On le demande par son identifiant
+  // officiel ; si cette version d'Odoo le nomme autrement, on prend le
+  // premier modèle rattaché aux factures.
+  let modele = null;
+  try {
+    const r = await appel(env, "ir.model.data", "check_object_reference",
+      ["account", "email_template_edi_invoice"], {});
+    if (Array.isArray(r) && r.length === 2) modele = r[1];
+  } catch (e) { /* on cherchera autrement */ }
+
+  if (!modele) {
+    const trouves = await appel(env, "mail.template", "search_read",
+      [[["model", "=", "account.move"]], ["id", "name"]], { limit: 1 });
+    if (trouves && trouves[0]) modele = trouves[0].id;
+  }
+  if (!modele) throw new Error("aucun modèle d'e-mail de facture dans Odoo");
+
+  for (const id of aEnvoyer) {
+    // force_send : l'e-mail part tout de suite, au lieu d'attendre le
+    // passage de la file d'Odoo. Un client qui vient de payer ne doit pas
+    // attendre un quart d'heure sa facture.
+    await appel(env, "mail.template", "send_mail", [modele, id], { force_send: true });
+    // On note l'envoi dans Odoo aussi : c'est ce drapeau qui empêchera un
+    // second envoi si notre registre se perd.
+    try { await appel(env, "account.move", "write", [[id], { is_move_sent: true }], {}); }
+    catch (e) { /* champ inconnu : notre étape fera seule le travail */ }
+  }
+
+  ligne(journal, "envoi de la facture", true,
+    aEnvoyer.length + " facture(s) envoyée(s) par Odoo au client");
+}
+
 /* --- Le paiement qui n'aboutit pas --------------------------------------- */
 
 /**
@@ -294,9 +360,19 @@ export async function poursuivre(env, db, p) {
       }
     }
 
+    if (etape === "lettree") {
+      const lu = await appel(env, "sale.order", "read", [[p.odoo_order_id], ["invoice_ids"]], {});
+      const factureIds = (lu && lu[0] && Array.isArray(lu[0].invoice_ids)) ? lu[0].invoice_ids : [];
+      await envoyerFacture(env, factureIds, journal);
+      etape = "envoyee";
+      await noterEtape(db, p.mollie_id, etape, {
+        note: "Facture " + (factureNom || factureId) + " envoyée au client.",
+      });
+    }
+
     // L'étiquette d'expédition viendra se placer ici. Tant qu'elle n'est
     // pas en service, le bon de livraison attend NBD dans Odoo.
-    if (etape === "lettree") {
+    if (etape === "envoyee") {
       etape = "fini";
       await noterEtape(db, p.mollie_id, etape, null);
       ligne(journal, "expédition", true, "bon de livraison prêt dans Odoo, à préparer et étiqueter");
