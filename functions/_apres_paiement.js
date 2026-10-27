@@ -73,8 +73,19 @@ async function facturer(env, orderId, journal) {
   let factureIds = Array.isArray(lu[0].invoice_ids) ? lu[0].invoice_ids.slice() : [];
 
   if (!factureIds.length) {
-    const cree = await appel(env, "sale.order", "_create_invoices", [[orderId]], {});
-    factureIds = Array.isArray(cree) ? cree : (cree ? [cree] : []);
+    // Odoo refuse qu'on appelle à distance une méthode dont le nom commence
+    // par un tiret bas — _create_invoices en fait partie. On passe donc par
+    // l'assistant de facturation, qui est le chemin prévu pour l'extérieur
+    // et qui traversera les mises à jour d'Odoo sans se casser.
+    const contexte = { active_model: "sale.order", active_id: orderId, active_ids: [orderId] };
+    const assistant = await appel(env, "sale.advance.payment.inv", "create",
+      [{ advance_payment_method: "delivered" }], { context: contexte });
+    if (!assistant) throw new Error("l'assistant de facturation n'a pas pu être ouvert");
+    await appel(env, "sale.advance.payment.inv", "create_invoices",
+      [[assistant]], { context: contexte });
+
+    const relu = await appel(env, "sale.order", "read", [[orderId], ["invoice_ids"]], {});
+    factureIds = (relu && relu[0] && Array.isArray(relu[0].invoice_ids)) ? relu[0].invoice_ids.slice() : [];
     if (!factureIds.length) throw new Error("Odoo n'a créé aucune facture");
     ligne(journal, "création de la facture", true, factureIds.length + " facture(s) créée(s)");
   } else {

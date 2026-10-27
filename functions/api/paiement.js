@@ -83,6 +83,10 @@ export async function onRequestGet({ request, env }) {
     statut,
     statut_lisible: LISIBLE[statut] || statut,
     etape,
+    facture: p.facture_nom || "",
+    // Ce que la chaîne a écrit en chemin : utile quand elle s'est arrêtée,
+    // et c'est la commande du client lui-même qui est décrite.
+    note: p.note || "",
     // La suite est-elle allée jusqu'au bout ?
     traite: etape === "fini",
   });
