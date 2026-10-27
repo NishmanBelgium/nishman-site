@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
-<link rel="stylesheet" href="/assets/css/boutique.css?v=205" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=219" />
 </head>
 <body>
 
@@ -29,6 +29,22 @@
     </button>
   </div>
 </header>
+
+<!-- Un bandeau, plus une fenêtre. Une fenêtre qui recouvre la page est un
+     motif de refus chez Google Merchant Center : « une fenêtre ne doit pas
+     masquer les informations importantes ». Le bandeau oriente sans rien
+     cacher, et se referme d'un clic. -->
+<aside class="porte" id="porte" hidden>
+  <div class="porte-in">
+    <p class="porte-txt">
+      <b>Vous cherchez des produits pour vous coiffer ?</b> Vous êtes au bon endroit.
+      <span class="porte-ou">Si c'est pour votre salon,</span>
+      <a class="porte-oui" href="/">voir les tarifs professionnels</a>.
+    </p>
+    <button class="porte-fermer" id="porte-fermer" aria-label="Masquer ce message">&times;</button>
+  </div>
+</aside>
+
 
 <main>
   <section class="wrap hero">
@@ -87,39 +103,12 @@
 </aside>
 
 <!-- fiche produit -->
-<section class="fiche" id="fiche" aria-label="Fiche produit">
-  <div class="fiche-in">
-    <button class="fiche-retour" id="fiche-retour">← Retour à la boutique</button>
-    <div class="fiche-grid">
-      <div class="fiche-img" id="fiche-img"></div>
-      <div>
-        <h1 id="fiche-nom"></h1>
-        <div class="fiche-vol" id="fiche-vol"></div>
-        <div class="fiche-prix" id="fiche-prix"></div>
-        <div class="fiche-tva">TVA comprise · Livraison offerte dès 49 €</div>
-        <p class="fiche-desc" id="fiche-desc"></p>
-        <button class="fiche-add" id="fiche-add">Ajouter au panier</button>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- La fiche produit vit désormais sur sa propre adresse (étape 218). -->
 
 <!-- fenêtre d'orientation : professionnel ou particulier -->
-<div class="porte" id="porte" hidden>
-  <div class="porte-carte" role="dialog" aria-modal="true" aria-labelledby="porte-titre">
-    <button class="porte-fermer" id="porte-fermer" aria-label="Fermer">&times;</button>
-    <img class="porte-logo" src="/assets/img/nishman.svg" alt="Nishman" />
-    <h2 id="porte-titre">Vous êtes professionnel ?</h2>
-    <p>Salons de coiffure, barbershops et revendeurs disposent d'un espace dédié :
-       catalogue complet, tarifs professionnels et demande de devis.</p>
-    <a class="porte-oui" href="/">Accéder à l'espace professionnel</a>
-    <button class="porte-non" id="porte-non">Continuer vers la boutique</button>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
-<script src="/assets/js/boutique.js?v=205"></script>
-<script src="/assets/js/porte.js?v=205"></script>
+<script src="/assets/js/boutique.js?v=219"></script>
+<script src="/assets/js/porte.js?v=219"></script>
 </body>
 </html>

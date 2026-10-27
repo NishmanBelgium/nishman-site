@@ -345,50 +345,30 @@ a { color: inherit; }
 }
 
 /* ── porte d'entrée : professionnel ou particulier ──────────────────────── */
+/* Bandeau d'orientation (étape 219). Il remplace une fenêtre qui recouvrait
+   la page : Google refuse une page d'arrivée dont une fenêtre masque le
+   produit. Posé sous la barre, dans le flux, il ne cache rien. */
 .porte {
-  position: fixed; inset: 0; z-index: 200;
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-  background: rgba(10, 10, 11, 0.55);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  opacity: 0; transition: opacity .22s var(--ease);
+  background: var(--bg-soft-2, #f4f1ea); border-bottom: 1px solid var(--line, #e6e0d2);
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity .24s ease, transform .24s ease;
 }
-.porte.on { opacity: 1; }
+.porte.on { opacity: 1; transform: none; }
 .porte[hidden] { display: none; }
-
-.porte-carte {
-  position: relative;
-  width: min(440px, 100%);
-  background: var(--bg);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 40px 34px 30px;
-  text-align: center;
-  transform: translateY(14px) scale(.97);
-  transition: transform .26s var(--ease);
+.porte-in {
+  max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 12px;
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
 }
-.porte.on .porte-carte { transform: translateY(0) scale(1); }
-
-.porte-logo { height: 34px; width: auto; margin-bottom: 22px; }
-
-.porte-carte h2 {
-  font-family: var(--font-display); font-weight: 700;
-  font-size: 23px; line-height: 1.2; letter-spacing: -0.02em;
-  margin: 0 0 10px;
+.porte-txt { margin: 0; font-size: 14px; line-height: 1.5; flex: 1 1 auto; min-width: 0; }
+.porte-ou { color: var(--ink-faint, #8a8070); }
+.porte-oui { color: inherit; font-weight: 700; text-decoration: underline; }
+.porte-fermer {
+  flex: 0 0 auto; border: 0; background: none; font-size: 22px; line-height: 1;
+  width: 34px; height: 34px; cursor: pointer; color: var(--ink-faint, #8a8070);
+  border-radius: 8px;
 }
-.porte-carte p {
-  font-size: 14.5px; line-height: 1.6; color: var(--ink-soft);
-  margin: 0 0 26px;
-}
-
-.porte-oui {
-  display: block; width: 100%;
-  background: var(--gradient); color: #fff;
-  font-size: 15px; font-weight: 700; text-decoration: none;
-  padding: 15px 20px; border-radius: 999px;
-  transition: filter .2s var(--ease);
-}
-.porte-oui:hover { filter: brightness(1.06); }
+.porte-fermer:hover { background: rgba(0,0,0,.05); }
+@media (max-width: 560px) { .porte-ou { display: block; } }
 
 .porte-non {
   display: block; width: 100%;

@@ -1,0 +1,113 @@
+ÉTAPE 219 — LE FLUX, LE PLAN DU SITE, ET LA PORTE ADOUCIE
+==========================================================
+
+Les trois chantiers qui restaient. La boutique est prête pour Google ;
+il ne manque plus que votre feu vert.
+
+
+1. LE FLUX PRODUITS
+-------------------
+        nishman.be/flux-google.xml
+
+C'est l'adresse à donner à Merchant Center. Il le relit chaque jour.
+
+Il est composé à partir du MÊME fichier que les fiches produit. C'est
+volontaire : un flux alimenté séparément finit toujours par annoncer un
+prix que la page n'affiche plus, et c'est le refus « prix incohérent ».
+Ici, changer un prix dans la boutique le change dans le flux, sans
+intervention.
+
+Chaque article porte ce que Google exige : identifiant, titre,
+description, adresse, image, disponibilité, prix TTC en euros, marque.
+Plus le code-barres, que Google utilise pour reconnaître le produit et
+le rapprocher des autres offres.
+
+
+UN CODE-BARRES FAUX, ET JE N'Y AI PAS TOUCHÉ
+---------------------------------------------
+Sur vos 127 références, 126 codes-barres sont valides. Un seul ne l'est
+pas :
+
+        CIRE DURE AZULÈNE     8691665066628
+
+Le dernier chiffre d'un EAN est un chiffre de contrôle, calculé à
+partir des douze autres. Ici il devrait être 7, et c'est un 8.
+
+Le plus probable est une faute de frappe à la saisie : toutes vos
+autres références de cette série commencent par 8681, celle-ci par
+8691. Et 8681665066628 est, lui, parfaitement valide.
+
+Je n'ai rien corrigé. Un code-barres est l'identité du produit, la
+vérité est sur l'emballage, et le changer entraînerait le nom du
+fichier image, l'adresse de la fiche et la clé du tarif pro. Prenez le
+flacon, lisez le code, dites-le-moi.
+
+En attendant, cet article part au flux SANS code-barres plutôt qu'avec
+un code faux : un identifiant invalide fait refuser l'article, une
+absence lui donne seulement moins de visibilité.
+
+
+2. LE PLAN DU SITE
+------------------
+        nishman.be/sitemap.xml
+
+robots.txt en annonçait un depuis le début, et il n'existait pas :
+Search Console signalait ce renvoi mort à chaque lecture.
+
+Il ne liste que ce qui est REELLEMENT indexable. Aujourd'hui, l'accueil
+seul. Dès que vous poserez INDEXER_BOUTIQUE, la boutique et les 127
+fiches s'y ajouteront toutes seules.
+
+
+3. LA PORTE D'ENTRÉE
+--------------------
+La fenêtre « Vous êtes professionnel ? » qui barrait l'écran est
+devenue un bandeau, sous l'en-tête, dans le flux de la page. Il
+n'arrête rien, ne verrouille plus le défilement, et se ferme d'un clic.
+
+Le ton a changé comme vous le souhaitiez — on ne demande plus au
+visiteur de se déclarer avant d'entrer :
+
+   « Vous cherchez des produits pour vous coiffer ? Vous êtes au bon
+     endroit. Si c'est pour votre salon, voir les tarifs
+     professionnels. »
+
+Google l'autorise explicitement : une fenêtre est acceptée « à
+condition qu'elle puisse être fermée et qu'elle ne bloque pas les
+détails du produit ». Un bandeau dans le flux ne bloque rien du tout.
+
+Les fiches produit, elles, n'en portent aucun — ce sont elles les
+pages d'arrivée de Google.
+
+
+MÉNAGE
+------
+L'ancienne fiche en fenêtre, devenue inatteignable à l'étape 218, est
+retirée : son code et sa coquille HTML sont partis.
+
+
+UN PIÈGE TROUVÉ EN CHEMIN
+--------------------------
+Presque TOUTES les pages du site portent « noindex » : boutique, CGV,
+contact, produits, conditions de vente, rétractation, France, liens.
+C'est correct tant que le site vit sur l'adresse de prévisualisation.
+Mais le jour où il prendra la place de l'ancien site, ces balises
+resteront, et le site entier demeurera invisible dans Google sans que
+rien ne le signale.
+
+À faire au moment du basculement, page par page. Je le note ici pour
+qu'on ne l'oublie pas.
+
+
+CONTRÔLES
+---------
+54 contrôles automatiques sur cette étape :
+    29 sur le flux — attributs obligatoires sur les 127 articles, format
+       des prix, correspondance exacte avec la boutique, longueur des
+       titres et descriptions, validité des codes-barres, et le XML
+       soumis à un vrai analyseur
+     9 sur le plan du site — réduit quand la boutique est fermée, 129
+       adresses sans doublon quand elle est ouverte
+    16 sur le bandeau — il ne recouvre rien, ne verrouille pas le
+       défilement, se ferme, se souvient, tient en 390 px, et la
+       grille reste entière derrière lui

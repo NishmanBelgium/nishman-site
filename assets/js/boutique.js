@@ -214,30 +214,8 @@
   $("#fermer-panier").addEventListener("click", function () { ouvrirPanier(false); });
   $("#voile").addEventListener("click", function () { ouvrirPanier(false); });
 
-  function ouvrirFiche(ean) {
-    var p = PRODUITS.filter(function (x) { return x.ean === ean; })[0];
-    if (!p) return;
-    $("#fiche-img").innerHTML = '<img src="/assets/img/products/' + echappe(p.image) +
-                                '" alt="' + echappe(p.nom) + '" />';
-    $("#fiche-nom").textContent = p.nom_court || p.nom;
-    $("#fiche-vol").textContent = p.volume;
-    $("#fiche-prix").textContent = euros(p.ttc);
-    $("#fiche-desc").textContent = texte(p, "desc");
-    $("#fiche-add").dataset.add = p.ean;
-    $("#fiche-add").disabled = !!p.bientot;
-    $("#fiche-add").textContent = p.bientot ? "Bientôt disponible" : "Ajouter au panier";
-    $("#fiche").classList.add("on");
-    document.body.style.overflow = "hidden";
-  }
-  function fermerFiche() {
-    $("#fiche").classList.remove("on");
-    document.body.style.overflow = "";
-  }
-  $("#fiche-retour").addEventListener("click", fermerFiche);
-  $("#fiche-add").addEventListener("click", function () {
-    ajouter(this.dataset.add, 1);
-    fermerFiche();
-  });
+  // La fiche produit a sa propre page depuis l'étape 218 : plus de fenêtre.
+
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { fermerFiche(); ouvrirPanier(false); }
   });
