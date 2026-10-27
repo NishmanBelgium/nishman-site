@@ -2864,3 +2864,77 @@ body.has-offre-barre .search-sticky {
 }
 .drawer .label-row.primary .row-sub { opacity: 0.8; }
 
+
+/* ==========================================================================
+   LES DEUX PORTES (étape 221)
+
+   L'accueil ouvrait sur un logo doré au milieu du noir, puis sur un
+   catalogue de gros : « 203 produits », « prix professionnels hors TVA ».
+   Un particulier n'avait aucune raison de penser qu'il pouvait acheter.
+
+   Les deux portes ne se ressemblent pas, et c'est voulu : la sombre mène
+   au comptoir professionnel, la claire a déjà l'allure de la boutique où
+   elle conduit. La forme renseigne avant que le texte soit lu. La porte
+   professionnelle est aussi la plus large — c'est le parcours par défaut.
+   ========================================================================== */
+
+.porte-sur {
+  margin: 14px 0 0; color: rgba(255,255,255,.62);
+  font-size: clamp(12px, 1.4vw, 14px); letter-spacing: .01em; text-align: center;
+}
+
+.portes {
+  display: grid; gap: 14px; width: min(980px, 92vw); margin: 30px auto 0;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 820px) {
+  .portes { grid-template-columns: 1.15fr .85fr; gap: 18px; }
+}
+
+.porte-carte {
+  position: relative; display: flex; align-items: center; gap: 18px;
+  padding: 20px 22px; border-radius: 18px; text-decoration: none;
+  overflow: hidden; isolation: isolate;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.porte-carte img {
+  width: 96px; height: 96px; object-fit: contain; flex: 0 0 auto;
+}
+.porte-txt { min-width: 0; }
+.porte-carte h2 {
+  font-family: "Space Grotesk", system-ui, sans-serif; font-weight: 700;
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem); margin: 0 0 4px; line-height: 1.1;
+}
+.porte-carte p { margin: 0 0 12px; font-size: .92rem; line-height: 1.45; }
+.porte-action {
+  display: inline-block; font-weight: 700; font-size: .9rem;
+  padding: 9px 16px; border-radius: 999px;
+}
+
+/* Le comptoir professionnel : sombre, cerclé d'orange. */
+.porte-pro {
+  background: #141210; border: 1px solid rgba(250,162,27,.38); color: #f4f1ea;
+}
+.porte-pro p { color: rgba(244,241,230,.68); }
+.porte-pro .porte-action { background: var(--gold, #faa21b); color: #16130c; }
+.porte-pro:hover { border-color: var(--gold, #faa21b); transform: translateY(-2px); }
+
+/* La boutique : claire, comme la page qu'elle ouvre. */
+.porte-client {
+  background: #f4f1ea; border: 1px solid #e3dccb; color: #1b1813;
+}
+.porte-client p { color: #6d6553; }
+.porte-client .porte-action { background: #1b1813; color: #f4f1ea; }
+.porte-client:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.28); }
+
+.porte-carte:focus-visible { outline: 2px solid var(--gold, #faa21b); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .porte-carte, .porte-carte:hover { transition: none; transform: none; }
+}
+
+/* Sous 420 px, l'image mange la place du texte : on la réduit. */
+@media (max-width: 420px) {
+  .porte-carte { gap: 14px; padding: 16px; }
+  .porte-carte img { width: 68px; height: 68px; }
+}

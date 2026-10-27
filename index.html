@@ -32,7 +32,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=205" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=221" />
 </head>
 <body class="catalog-body">
 
@@ -45,12 +45,31 @@
       <canvas class="intro-particles" id="intro-particles" aria-hidden="true"></canvas>
       <div class="intro-scene" id="intro-scene">
         <img class="intro-logo" src="/assets/img/logo-gold.png" alt="Nishman" />
-        <div class="intro-line" aria-hidden="true"><span></span></div>
+        <p class="porte-sur">Importateur officiel pour la Belgique, la France et le Luxembourg</p>
+
+        <!-- Deux portes, volontairement dissemblables : la sombre mène au
+             comptoir professionnel, la claire ressemble déjà à la boutique
+             où elle conduit. La forme dit où l'on va avant qu'on lise. -->
+        <div class="portes">
+          <a class="porte-carte porte-pro" href="#catalog-sheet" id="porte-pro">
+            <img src="/assets/img/products/NISH-PACK-BBX.webp" alt="" aria-hidden="true" />
+            <div class="porte-txt">
+              <h2>Pour mon salon</h2>
+              <p>Tarifs professionnels, vente au carton, facture et livraison.</p>
+              <span class="porte-action">Voir le catalogue</span>
+            </div>
+          </a>
+
+          <a class="porte-carte porte-client" href="/boutique/" id="porte-client">
+            <img src="/assets/img/products/8682035088455.webp" alt="" aria-hidden="true" />
+            <div class="porte-txt">
+              <h2>Pour moi</h2>
+              <p>Les produits que votre barbier utilise, livrés chez vous.</p>
+              <span class="porte-action">Entrer dans la boutique</span>
+            </div>
+          </a>
+        </div>
       </div>
-      <button class="intro-cue" id="intro-cue" aria-label="Découvrir la gamme">
-        <span class="cue-track"><span class="cue-dot"></span></span>
-        <span class="cue-text">Découvrir</span>
-      </button>
     </section>
   </div>
 
@@ -253,6 +272,7 @@
 
   <script src="/assets/js/config.js?v=205"></script>
   <script src="/assets/js/catalog.js?v=205"></script>
+  <script src="/assets/js/portes.js?v=221"></script>
   <script src="/assets/js/offre.js?v=205"></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 </body>
