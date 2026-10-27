@@ -76,6 +76,10 @@
     $("#grille").innerHTML = liste.map(function (p) {
       return '' +
         '<article class="carte' + (p.bientot ? " indispo" : "") + '" data-ean="' + p.ean + '">' +
+          // Un vrai lien, et non plus une fenêtre ouverte par JavaScript :
+          // c'est par lui que Google atteint les fiches, et c'est lui qu'on
+          // copie pour partager un produit.
+          '<a class="carte-lien" href="/boutique/' + echappe(p.slug || p.ean) + '/">' +
           '<div class="carte-img">' +
             (p.bientot ? '<span class="bientot">Bientôt</span>' : "") +
             '<img src="/assets/img/products/' + echappe(p.image) +
@@ -83,6 +87,7 @@
           '<div class="carte-fam">' + echappe(p.famille) + "</div>" +
           '<h3 class="carte-nom">' + echappe(p.nom_court || p.nom) + "</h3>" +
           '<div class="carte-vol">' + echappe(p.volume) + "</div>" +
+          "</a>" +
           '<div class="carte-bas">' +
             '<span class="prix">' + euros(p.ttc) + "</span>" +
             (p.bientot
@@ -102,8 +107,7 @@
       ajouter(add.dataset.add, 1);
       return;
     }
-    var carte = e.target.closest(".carte");
-    if (carte) { ouvrirFiche(carte.dataset.ean); return; }
+    // La carte est désormais un lien : le navigateur fait le travail.
   });
 
   // ── panier ──────────────────────────────────────────────────────────────

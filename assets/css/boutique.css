@@ -421,3 +421,10 @@ a { color: inherit; }
 
 /* Les pilules de navigation sont des boutons : pas de soulignement. */
 .pill, .logo { text-decoration: none; }
+
+/* La carte est un lien depuis l'étape 218 : c'est par là que Google atteint
+   les fiches produit, et c'est l'adresse qu'on partage. Le lien enveloppe
+   l'image et le nom, jamais le bouton d'ajout — un bouton dans un lien
+   n'est pas du HTML valide, et le clic deviendrait ambigu. */
+.carte-lien { display: flex; flex-direction: column; color: inherit; text-decoration: none; }
+.carte-lien:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 10px; }

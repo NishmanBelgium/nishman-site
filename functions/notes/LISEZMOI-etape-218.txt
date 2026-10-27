@@ -1,0 +1,77 @@
+ÉTAPE 218 — UNE ADRESSE PAR PRODUIT
+====================================
+
+Premier des quatre chantiers avant d'ouvrir la boutique à Google.
+Les trois autres : le flux, la porte d'entrée, le plan du site.
+
+
+CE QUI CHANGE
+-------------
+Chaque produit a désormais sa propre page, à sa propre adresse :
+
+    nishman.be/boutique/aqua-wax-01-gumgum-8682035088455/
+
+Elle est composée PAR LE SERVEUR, pas par le navigateur. C'est la
+différence qui compte pour Google : le prix se trouve dans la page
+livrée, pas ajouté après coup par du JavaScript. Un robot qui lit un
+prix et un client qui en voit un autre, c'est le motif de refus
+« prix incohérent », et il tombe automatiquement.
+
+Les cartes de la boutique sont devenues de vrais liens. Avant, cliquer
+ouvrait une fenêtre : rien à partager, rien à indexer. Maintenant on
+peut envoyer l'adresse d'un produit par message, et Google peut la
+suivre.
+
+L'adresse se termine par le code-barres. Si le nom du produit change
+un jour, l'ancienne adresse retrouve quand même la fiche et redirige
+proprement vers la nouvelle — les liens déjà partagés ne meurent pas.
+
+
+CE QUE GOOGLE Y TROUVE
+----------------------
+    le prix TTC écrit dans la page, marqué itemprop="price"
+    la devise, la disponibilité, l'état neuf
+    le code-barres EAN — Google s'en sert pour reconnaître le produit
+    la marque NISHMAN
+    une adresse canonique absolue, un titre et une description propres
+    l'image en absolu, pour le partage
+
+Et surtout, ce qu'il n'y trouve PAS : aucune fenêtre d'accueil qui
+masque le produit, et aucun prix professionnel. Le lien vers l'espace
+pro est en bas de page, en petit — Google l'autorise à condition qu'il
+reste visuellement secondaire.
+
+
+L'INDEXATION RESTE FERMÉE
+--------------------------
+Les fiches portent encore « noindex, nofollow ». C'est volontaire : un
+compte Merchant refusé se rattrape beaucoup plus difficilement qu'il ne
+s'ouvre, et il manque encore le flux et la porte d'entrée.
+
+Quand tout sera prêt, l'ouverture tient en une variable Cloudflare,
+sans toucher au code :
+
+    Nom    : INDEXER_BOUTIQUE
+    Valeur : oui
+    Type   : Text
+
+Puis un redéploiement. Pour refermer, il suffit de retirer la variable.
+
+
+CONTRÔLES
+---------
+27 contrôles automatiques, dont le rendu des 127 fiches une par une :
+toutes portent le bon prix au centime, toutes portent une description,
+l'interrupteur d'indexation ouvre et ferme sans rien changer d'autre,
+une adresse périmée redirige en 301 et un produit inconnu renvoie à la
+boutique en 302.
+
+
+RESTE À FAIRE
+-------------
+    le flux produits pour Merchant Center
+    la porte d'entrée pro/particulier, adoucie et non bloquante
+    le plan du site (sitemap) avec les 127 adresses
+    du ménage : l'ancienne fenêtre produit est devenue inatteignable,
+      son code dort encore dans boutique.js — je l'enlèverai en même
+      temps que la porte d'entrée, pour ne pas multiplier les risques
