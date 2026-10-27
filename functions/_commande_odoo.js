@@ -206,8 +206,18 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
   if (nomPosition) {
     const fp = await parNomInsensible(env, "account.fiscal.position", nomPosition);
     if (!fp) {
+      // Dire ce qu'on cherchait ne suffit pas : il faut dire ce qu'Odoo
+      // propose. Sans cela, on reste devant une liste qui contient
+      // visiblement le bon nom et une erreur qui jure le contraire.
+      let disponibles = [];
+      try {
+        const toutes = await appel(env, "account.fiscal.position", "search_read",
+          [[], ["id", "name"]], { limit: 50 });
+        disponibles = (toutes || []).map((f) => f.name);
+      } catch (e) { disponibles = ["lecture impossible : " + String(e && e.message).slice(0, 120)]; }
       throw echec("position_introuvable",
-        "La position fiscale n'a pas été trouvée dans Odoo.", nomPosition);
+        "La position fiscale n'a pas été trouvée dans Odoo.",
+        { cherchee: nomPosition, vues_par_le_site: disponibles });
     }
     positionId = fp.id;
   }
