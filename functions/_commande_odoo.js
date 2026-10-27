@@ -27,7 +27,7 @@
    ========================================================================== */
 
 import { appel, produitsParEan, partenaireParEmail, partenaireParTva } from "./_odoo.js";
-import { positionFiscale } from "./_fiscal.js";
+import { positionFiscale, nomsPossibles } from "./_fiscal.js";
 
 /* --- Noms réglables ------------------------------------------------------
    Odoo compare les noms caractère par caractère ; NBD les renomme parfois.
@@ -204,7 +204,11 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
   const nomPosition = positionFiscale(resultat.regime, env);
   let positionId = null;
   if (nomPosition) {
-    const fp = await parNomInsensible(env, "account.fiscal.position", nomPosition);
+    let fp = null;
+    for (const candidat of nomsPossibles(resultat.regime, env)) {
+      fp = await parNomInsensible(env, "account.fiscal.position", candidat);
+      if (fp) break;
+    }
     if (!fp) {
       // Dire ce qu'on cherchait ne suffit pas : il faut dire ce qu'Odoo
       // propose. Sans cela, on reste devant une liste qui contient
@@ -217,7 +221,7 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
       } catch (e) { disponibles = ["lecture impossible : " + String(e && e.message).slice(0, 120)]; }
       throw echec("position_introuvable",
         "La position fiscale n'a pas été trouvée dans Odoo.",
-        { cherchee: nomPosition, vues_par_le_site: disponibles });
+        { cherchees: nomsPossibles(resultat.regime, env), vues_par_le_site: disponibles });
     }
     positionId = fp.id;
   }

@@ -30,3 +30,38 @@ export function positionFiscale(regime, env) {
   const nom = reglages[String(regime || "")];
   return nom ? String(nom).trim() : "";
 }
+
+/* --------------------------------------------------------------------------
+   Le piège de la traduction.
+
+   Le nom d'une position fiscale est un champ traduit. Odoo affiche
+   « National » à l'écran français de NBD, mais stocke « Domestic » : c'est
+   le modèle comptable belge installé en anglais, traduit à l'affichage.
+   Une recherche par nom depuis l'extérieur ne voit que la valeur stockée.
+
+   D'où cette table d'équivalences. On essaie d'abord le nom réglé — celui
+   que NBD voit et qu'elle renommera peut-être un jour — puis les variantes
+   connues. Chercher deux noms coûte une requête ; se tromper de position
+   fiscale coûte une TVA mal facturée.
+   -------------------------------------------------------------------------- */
+
+const EQUIVALENCES = {
+  national: ["National", "Domestic"],
+  intracom: ["Intracommunautaire", "Intra-Community"],
+  intracom_sans_tva: ["UE B2C", "EU B2C"],
+};
+
+/** Les noms à essayer pour ce régime, le réglage d'abord, sans doublon. */
+export function nomsPossibles(regime, env) {
+  const cle = String(regime || "");
+  const noms = [positionFiscale(cle, env), ...(EQUIVALENCES[cle] || [])]
+    .map((n) => String(n || "").trim())
+    .filter(Boolean);
+  const vus = new Set();
+  return noms.filter((n) => {
+    const k = n.toLowerCase();
+    if (vus.has(k)) return false;
+    vus.add(k);
+    return true;
+  });
+}
