@@ -72,8 +72,12 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Enregistrement…",
     valid_note: "Votre commande est enregistrée chez nous et vous recevez le devis correspondant par e-mail. Aucun paiement n'est prélevé à cette étape.",
 
-    pay_titre: "Paiement en ligne",
-    pay_texte: "Le paiement par carte et Bancontact arrive prochainement. En attendant, validez votre commande ci-dessous : vous recevrez un devis à confirmer, payable par virement.",
+    pay_cta: "Payer maintenant",
+    pay_note: "Carte bancaire, Bancontact ou virement instantané. Votre facture est émise dès le paiement reçu.",
+    pay_ou: "ou",
+    pay_envoi: "Ouverture du paiement…",
+    valid_cta_alt: "Recevoir un devis à payer par virement",
+    valid_note_alt: "Vous recevez le devis par e-mail et payez par virement. La commande est préparée à réception du paiement.",
 
     fini_titre: "Commande enregistrée",
     fini_texte: (ref, email) =>
@@ -81,6 +85,21 @@ window.NISHMAN_CMD_LANGUES = {
     fini_partiel: "Un détail de votre commande demande une vérification de notre part : nous vous recontactons avant confirmation.",
     fini_compte: "Voir mes commandes",
     fini_catalogue: "Retour au catalogue",
+
+    ret_attente_titre: "Nous vérifions votre paiement",
+    ret_attente_texte: "Quelques secondes : nous interrogeons votre banque. Ne fermez pas cette page.",
+    ret_ok_titre: "Paiement reçu",
+    ret_ok_texte: (devis, facture) => "Commande " + devis + (facture ? " — facture " + facture : "") + ". Vous la recevez par e-mail.",
+    ret_ok_expedition: "Nous préparons votre colis. Vous recevrez le numéro de suivi dès l'expédition.",
+    ret_encours_texte: "Votre paiement est enregistré. Nous finalisons votre commande…",
+    ret_lent_texte: "Votre paiement est bien reçu. La confirmation de commande vous parvient par e-mail dans quelques minutes.",
+    ret_perdu_titre: "Paiement non abouti",
+    ret_perdu_texte: "Rien ne vous a été débité. Votre panier est conservé : vous pouvez reprendre votre commande.",
+    ret_reprendre: "Reprendre ma commande",
+    ret_inconnu_titre: "Paiement introuvable",
+    ret_inconnu_texte: "Nous ne retrouvons pas ce paiement sur votre compte. S'il a été débité, contactez-nous : nous le rattachons à votre commande.",
+    ret_incertain_titre: "Confirmation en attente",
+    ret_incertain_texte: "Nous n'avons pas encore reçu la confirmation de votre banque. Elle peut prendre quelques minutes. Ne payez pas une seconde fois : nous vous écrivons dès qu'elle arrive.",
 
     // Messages d'erreur du serveur, par code
     erreurs: {
@@ -167,8 +186,12 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Saving…",
     valid_note: "Your order is recorded with us and you receive the matching quotation by e-mail. No payment is taken at this stage.",
 
-    pay_titre: "Online payment",
-    pay_texte: "Card and Bancontact payment are coming soon. In the meantime, confirm your order below: you will receive a quotation to approve, payable by bank transfer.",
+    pay_cta: "Pay now",
+    pay_note: "Card, Bancontact or instant transfer. Your invoice is issued as soon as the payment arrives.",
+    pay_ou: "or",
+    pay_envoi: "Opening payment…",
+    valid_cta_alt: "Receive a quotation payable by transfer",
+    valid_note_alt: "You receive the quotation by e-mail and pay by bank transfer. The order is prepared once the payment arrives.",
 
     fini_titre: "Order recorded",
     fini_texte: (ref, email) =>
@@ -176,6 +199,21 @@ window.NISHMAN_CMD_LANGUES = {
     fini_partiel: "One detail of your order needs checking on our side. We will contact you before confirming.",
     fini_compte: "View my orders",
     fini_catalogue: "Back to catalogue",
+
+    ret_attente_titre: "Checking your payment",
+    ret_attente_texte: "A few seconds: we are asking your bank. Please do not close this page.",
+    ret_ok_titre: "Payment received",
+    ret_ok_texte: (devis, facture) => "Order " + devis + (facture ? " — invoice " + facture : "") + ". It is on its way to your inbox.",
+    ret_ok_expedition: "We are preparing your parcel. You will receive the tracking number as soon as it ships.",
+    ret_encours_texte: "Your payment is recorded. We are finalising your order…",
+    ret_lent_texte: "Your payment has arrived. The order confirmation reaches you by e-mail within a few minutes.",
+    ret_perdu_titre: "Payment not completed",
+    ret_perdu_texte: "Nothing was charged. Your basket is saved — you can pick your order up where you left it.",
+    ret_reprendre: "Resume my order",
+    ret_inconnu_titre: "Payment not found",
+    ret_inconnu_texte: "We cannot find this payment on your account. If you were charged, contact us and we will attach it to your order.",
+    ret_incertain_titre: "Confirmation pending",
+    ret_incertain_texte: "We have not yet received confirmation from your bank. It can take a few minutes. Please do not pay a second time — we will write to you as soon as it arrives.",
 
     erreurs: {
       session: "Your session has expired. Please sign in again — your basket is saved.",
@@ -261,8 +299,12 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Bezig met opslaan…",
     valid_note: "Uw bestelling wordt bij ons geregistreerd en u ontvangt de bijbehorende offerte per e-mail. In deze stap wordt niets afgeschreven.",
 
-    pay_titre: "Online betalen",
-    pay_texte: "Betalen met kaart en Bancontact komt binnenkort. Bevestig intussen uw bestelling hieronder: u ontvangt een offerte ter goedkeuring, betaalbaar via overschrijving.",
+    pay_cta: "Nu betalen",
+    pay_note: "Kaart, Bancontact of directe overschrijving. Uw factuur wordt opgemaakt zodra de betaling binnen is.",
+    pay_ou: "of",
+    pay_envoi: "Betaling wordt geopend…",
+    valid_cta_alt: "Een offerte ontvangen, betaalbaar via overschrijving",
+    valid_note_alt: "U ontvangt de offerte per e-mail en betaalt via overschrijving. De bestelling wordt klaargemaakt zodra de betaling binnen is.",
 
     fini_titre: "Bestelling geregistreerd",
     fini_texte: (ref, email) =>
@@ -270,6 +312,21 @@ window.NISHMAN_CMD_LANGUES = {
     fini_partiel: "Eén detail van uw bestelling vraagt een controle van onze kant. Wij nemen contact op voor de bevestiging.",
     fini_compte: "Mijn bestellingen bekijken",
     fini_catalogue: "Terug naar de catalogus",
+
+    ret_attente_titre: "Wij controleren uw betaling",
+    ret_attente_texte: "Enkele seconden: wij bevragen uw bank. Sluit deze pagina niet.",
+    ret_ok_titre: "Betaling ontvangen",
+    ret_ok_texte: (devis, facture) => "Bestelling " + devis + (facture ? " — factuur " + facture : "") + ". U ontvangt ze per e-mail.",
+    ret_ok_expedition: "Wij maken uw pakket klaar. U ontvangt het trackingnummer zodra het verzonden is.",
+    ret_encours_texte: "Uw betaling is geregistreerd. Wij ronden uw bestelling af…",
+    ret_lent_texte: "Uw betaling is goed ontvangen. De orderbevestiging bereikt u binnen enkele minuten per e-mail.",
+    ret_perdu_titre: "Betaling niet voltooid",
+    ret_perdu_texte: "Er is niets afgeschreven. Uw winkelwagen is bewaard: u kunt uw bestelling hervatten.",
+    ret_reprendre: "Mijn bestelling hervatten",
+    ret_inconnu_titre: "Betaling niet gevonden",
+    ret_inconnu_texte: "Wij vinden deze betaling niet op uw account. Werd u toch afgeschreven, neem dan contact met ons op: wij koppelen ze aan uw bestelling.",
+    ret_incertain_titre: "Bevestiging in afwachting",
+    ret_incertain_texte: "Wij hebben nog geen bevestiging van uw bank ontvangen. Dat kan enkele minuten duren. Betaal niet een tweede keer — wij schrijven u zodra ze binnen is.",
 
     erreurs: {
       session: "Uw sessie is verlopen. Meld u opnieuw aan — uw mandje blijft bewaard.",
@@ -355,8 +412,12 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Wird gespeichert…",
     valid_note: "Ihre Bestellung wird bei uns erfasst und Sie erhalten das zugehörige Angebot per E-Mail. In diesem Schritt wird nichts abgebucht.",
 
-    pay_titre: "Online-Zahlung",
-    pay_texte: "Zahlung per Karte und Bancontact folgt in Kürze. Bestätigen Sie Ihre Bestellung bis dahin unten: Sie erhalten ein Angebot zur Freigabe, zahlbar per Überweisung.",
+    pay_cta: "Jetzt bezahlen",
+    pay_note: "Karte, Bancontact oder Sofortüberweisung. Ihre Rechnung wird erstellt, sobald die Zahlung eingeht.",
+    pay_ou: "oder",
+    pay_envoi: "Zahlung wird geöffnet…",
+    valid_cta_alt: "Angebot erhalten, zahlbar per Überweisung",
+    valid_note_alt: "Sie erhalten das Angebot per E-Mail und zahlen per Überweisung. Die Bestellung wird nach Zahlungseingang vorbereitet.",
 
     fini_titre: "Bestellung erfasst",
     fini_texte: (ref, email) =>
@@ -364,6 +425,21 @@ window.NISHMAN_CMD_LANGUES = {
     fini_partiel: "Ein Detail Ihrer Bestellung muss von uns geprüft werden. Wir melden uns vor der Bestätigung.",
     fini_compte: "Meine Bestellungen ansehen",
     fini_catalogue: "Zurück zum Katalog",
+
+    ret_attente_titre: "Wir prüfen Ihre Zahlung",
+    ret_attente_texte: "Einen Moment: wir fragen bei Ihrer Bank nach. Bitte schließen Sie diese Seite nicht.",
+    ret_ok_titre: "Zahlung eingegangen",
+    ret_ok_texte: (devis, facture) => "Bestellung " + devis + (facture ? " — Rechnung " + facture : "") + ". Sie erhalten sie per E-Mail.",
+    ret_ok_expedition: "Wir stellen Ihr Paket zusammen. Die Sendungsnummer erhalten Sie beim Versand.",
+    ret_encours_texte: "Ihre Zahlung ist erfasst. Wir stellen Ihre Bestellung fertig…",
+    ret_lent_texte: "Ihre Zahlung ist eingegangen. Die Bestellbestätigung erreicht Sie in wenigen Minuten per E-Mail.",
+    ret_perdu_titre: "Zahlung nicht abgeschlossen",
+    ret_perdu_texte: "Es wurde nichts abgebucht. Ihr Warenkorb bleibt erhalten: Sie können Ihre Bestellung fortsetzen.",
+    ret_reprendre: "Bestellung fortsetzen",
+    ret_inconnu_titre: "Zahlung nicht gefunden",
+    ret_inconnu_texte: "Wir finden diese Zahlung nicht in Ihrem Konto. Falls doch abgebucht wurde, melden Sie sich bei uns: wir ordnen sie Ihrer Bestellung zu.",
+    ret_incertain_titre: "Bestätigung ausstehend",
+    ret_incertain_texte: "Wir haben noch keine Bestätigung Ihrer Bank erhalten. Das kann einige Minuten dauern. Bitte zahlen Sie nicht erneut — wir schreiben Ihnen, sobald sie eintrifft.",
 
     erreurs: {
       session: "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an — Ihr Warenkorb bleibt erhalten.",
@@ -449,8 +525,12 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Kaydediliyor…",
     valid_note: "Sipari\u015finiz taraf\u0131m\u0131zca kaydedilir ve ilgili teklifi e-posta ile al\u0131rs\u0131n\u0131z. Bu a\u015famada hi\u00e7bir \u00f6deme al\u0131nmaz.",
 
-    pay_titre: "\u00c7evrimi\u00e7i \u00f6deme",
-    pay_texte: "Kart ve Bancontact ile \u00f6deme \u00e7ok yak\u0131nda. O zamana kadar sipari\u015finizi a\u015fa\u011f\u0131dan onaylay\u0131n: havale ile \u00f6denebilen bir teklif alacaks\u0131n\u0131z.",
+    pay_cta: "\u015eimdi \u00f6de",
+    pay_note: "Kart, Bancontact veya an\u0131nda havale. \u00d6deme ula\u015ft\u0131\u011f\u0131 anda faturan\u0131z d\u00fczenlenir.",
+    pay_ou: "veya",
+    pay_envoi: "\u00d6deme a\u00e7\u0131l\u0131yor\u2026",
+    valid_cta_alt: "Havale ile \u00f6denecek teklif al",
+    valid_note_alt: "Teklifi e-posta ile al\u0131r ve havale ile \u00f6dersiniz. Sipari\u015f, \u00f6deme ula\u015ft\u0131\u011f\u0131nda haz\u0131rlan\u0131r.",
 
     fini_titre: "Sipari\u015f kaydedildi",
     fini_texte: (ref, email) =>
@@ -458,6 +538,21 @@ window.NISHMAN_CMD_LANGUES = {
     fini_partiel: "Sipari\u015finizin bir ayr\u0131nt\u0131s\u0131 taraf\u0131m\u0131zdan kontrol edilmeli. Onaydan \u00f6nce sizinle ileti\u015fime ge\u00e7ece\u011fiz.",
     fini_compte: "Sipari\u015flerimi g\u00f6r",
     fini_catalogue: "Katalo\u011fa d\u00f6n",
+
+    ret_attente_titre: "\u00d6demenizi do\u011fruluyoruz",
+    ret_attente_texte: "Birka\u00e7 saniye: bankan\u0131za soruyoruz. L\u00fctfen bu sayfay\u0131 kapatmay\u0131n.",
+    ret_ok_titre: "\u00d6deme al\u0131nd\u0131",
+    ret_ok_texte: (devis, facture) => "Sipari\u015f " + devis + (facture ? " \u2014 fatura " + facture : "") + ". E-posta ile size ula\u015f\u0131r.",
+    ret_ok_expedition: "Kolinizi haz\u0131rl\u0131yoruz. Kargoya verildi\u011finde takip numaras\u0131n\u0131 alacaks\u0131n\u0131z.",
+    ret_encours_texte: "\u00d6demeniz kaydedildi. Sipari\u015finizi tamaml\u0131yoruz\u2026",
+    ret_lent_texte: "\u00d6demeniz al\u0131nd\u0131. Sipari\u015f onay\u0131 birka\u00e7 dakika i\u00e7inde e-posta ile size ula\u015f\u0131r.",
+    ret_perdu_titre: "\u00d6deme tamamlanmad\u0131",
+    ret_perdu_texte: "Hesab\u0131n\u0131zdan hi\u00e7bir tutar \u00e7ekilmedi. Sepetiniz sakland\u0131: sipari\u015finize kald\u0131\u011f\u0131 yerden devam edebilirsiniz.",
+    ret_reprendre: "Sipari\u015fime devam et",
+    ret_inconnu_titre: "\u00d6deme bulunamad\u0131",
+    ret_inconnu_texte: "Bu \u00f6demeyi hesab\u0131n\u0131zda bulam\u0131yoruz. Tutar \u00e7ekildiyse bize yaz\u0131n: sipari\u015finizle e\u015fle\u015ftiririz.",
+    ret_incertain_titre: "Onay bekleniyor",
+    ret_incertain_texte: "Bankan\u0131zdan hen\u00fcz onay almad\u0131k. Bu birka\u00e7 dakika s\u00fcrebilir. L\u00fctfen ikinci kez \u00f6deme yapmay\u0131n \u2014 onay geldi\u011finde size yazaca\u011f\u0131z.",
 
     erreurs: {
       session: "Oturumunuz sona erdi. L\u00fctfen yeniden giri\u015f yap\u0131n — sepetiniz saklan\u0131yor.",

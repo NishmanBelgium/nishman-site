@@ -14,6 +14,8 @@ import { json, erreur, compteConnecte } from "../_commun.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
+import { configure as configureOdoo } from "../_odoo.js";
+import { configureMollie, paiementsAutorises } from "../_mollie.js";
 
 const PAYS_CONNUS = { BE: 1, FR: 1, LU: 1 };
 
@@ -87,6 +89,13 @@ export async function onRequestPost({ request, env }) {
     // indicatif et la page doit le dire. Avec session, il fait foi.
     pays_certain: !!compte,
     pays: pays || "BE",
+    // Le bouton « payer » ne doit apparaître que si toute la chaîne derrière
+    // lui peut effectivement tourner : Mollie pour encaisser, Odoo pour
+    // enregistrer la commande avant d'encaisser. Une seule des deux
+    // manquante, et le client repart sur le devis par virement — qui, lui,
+    // fonctionne. Un bouton de paiement qui échoue au clic coûte plus cher
+    // qu'un bouton absent.
+    paiement_en_ligne: configureMollie(env) && paiementsAutorises(env) && configureOdoo(env),
     tva_statut: tvaStatut,
     ...resultat,
   });

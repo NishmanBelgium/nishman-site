@@ -14,11 +14,11 @@
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&family=Baloo+2:wght@600;700;800&display=swap"
     rel="stylesheet"
   />
-  <link rel="manifest" href="/manifest.json?v=209" />
+  <link rel="manifest" href="/manifest.json?v=242" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=209" />
-  <link rel="stylesheet" href="/assets/css/quote.css?v=209" />
-  <link rel="stylesheet" href="/assets/css/commander.css?v=209" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=242" />
+  <link rel="stylesheet" href="/assets/css/quote.css?v=242" />
+  <link rel="stylesheet" href="/assets/css/commander.css?v=242" />
 </head>
 <body class="quote-body">
 
@@ -183,25 +183,43 @@
           </span>
         </label>
 
-        <!-- Paiement en ligne : la place est faite, le prestataire n'est pas
-             choisi. Rien de cliquable tant que ce n'est pas décidé. -->
-        <div class="cmd-paiement-attente" id="cmd-paiement-attente">
-          <p class="cmd-paiement-titre" data-t="pay_titre">Paiement en ligne</p>
-          <p class="cmd-paiement-txt" data-t="pay_texte">
-            Le paiement par carte et Bancontact arrive prochainement. En attendant,
-            validez votre commande ci-dessous : vous recevrez un devis à confirmer,
-            payable par virement.
+        <!-- Paiement en ligne. Le bloc ne s'affiche que si la chaîne derrière
+             lui est réellement en service : c'est /api/panier qui le dit, pas
+             cette page. Sinon, seul le devis par virement reste proposé. -->
+        <div class="cmd-pay" id="cmd-pay" hidden>
+          <button class="quote-cta" id="cmd-payer" data-t="pay_cta">Payer maintenant</button>
+          <p class="quote-note" data-t="pay_note">
+            Carte bancaire, Bancontact ou virement instantané. Votre facture est
+            émise dès le paiement reçu.
           </p>
+          <p class="cmd-pay-ou"><span data-t="pay_ou">ou</span></p>
         </div>
 
         <button class="quote-cta" id="cmd-envoyer" data-t="valid_cta">Valider ma commande</button>
         <p class="quote-error" id="cmd-erreur" hidden></p>
-        <p class="quote-note" data-t="valid_note">
+        <p class="quote-note" id="cmd-valid-note" data-t="valid_note">
           Votre commande est enregistrée chez nous et vous recevez le devis
           correspondant par e-mail. Aucun paiement n'est prélevé à cette étape.
         </p>
       </section>
     </div>
+
+    <!-- ===================== RETOUR DE PAIEMENT =====================
+         Le client revient de chez sa banque. On ne lui annonce rien avant
+         d'avoir demandé l'état réel au serveur : le navigateur ne sait pas
+         si le paiement a abouti, et la page de redirection de Mollie n'est
+         pas une preuve. -->
+    <section class="quote-card quote-done" id="cmd-retour" hidden>
+      <div class="done-check cmd-retour-icone" id="cmd-retour-icone" aria-hidden="true">&#8230;</div>
+      <h1 class="quote-title" id="cmd-retour-titre">—</h1>
+      <p class="quote-lead" id="cmd-retour-texte">—</p>
+      <p class="cmd-info" id="cmd-retour-detail" hidden></p>
+      <button class="quote-cta" id="cmd-retour-reprendre" hidden data-t="ret_reprendre">Reprendre ma commande</button>
+      <div class="quote-actions-row" id="cmd-retour-actions" hidden>
+        <a class="quote-alt" href="/pro/compte/" data-t="fini_compte">Voir mes commandes</a>
+        <a class="quote-alt" href="/produits/" data-t="fini_catalogue">Retour au catalogue</a>
+      </div>
+    </section>
 
     <!-- Confirmation -->
     <section class="quote-card quote-done" id="cmd-fini" hidden>
@@ -217,8 +235,8 @@
 
   </main>
 
-  <script src="/assets/js/config.js?v=209"></script>
-  <script src="/assets/js/commander-langues.js?v=209"></script>
-  <script src="/assets/js/commander.js?v=209"></script>
+  <script src="/assets/js/config.js?v=242"></script>
+  <script src="/assets/js/commander-langues.js?v=242"></script>
+  <script src="/assets/js/commander.js?v=242"></script>
 </body>
 </html>

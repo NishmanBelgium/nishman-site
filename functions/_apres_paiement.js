@@ -154,6 +154,86 @@ async function lettrer(env, factureIds, journalNom, journal) {
     + (etat ? " — état de paiement : " + etat : ""));
 }
 
+/* --- Le paiement qui n'aboutit pas --------------------------------------- */
+
+/**
+ * Le client a renoncé, ou sa banque a refusé. Le devis créé juste avant le
+ * paiement n'a plus d'objet : on le retire.
+ *
+ * Sans ce geste, chaque panier abandonné laisserait un brouillon dans Odoo.
+ * Au bout d'un mois, les devis réels seraient noyés dans les tentatives, et
+ * NBD ne saurait plus lesquels relancer. Ce n'est pas une question de place,
+ * c'est une question de lisibilité du carnet de commandes.
+ *
+ * Deux conditions, et les deux sont nécessaires :
+ *
+ *   — l'état doit être « brouillon ». Une commande confirmée ne se supprime
+ *     pas : si NBD l'a confirmée à la main entre-temps, c'est qu'elle a
+ *     décidé de la traiter, et cette décision passe avant la nôtre.
+ *   — aucune facture ne doit y être rattachée. Supprimer une commande
+ *     facturée laisserait une facture sans origine.
+ *
+ * Et dans tous les cas, on ne lève pas d'erreur : un ménage qui échoue ne
+ * doit pas faire échouer la réponse au client. On dit ce qu'on a fait, ou
+ * pourquoi on ne l'a pas fait.
+ *
+ * @returns { fait, motif }
+ */
+export async function nettoyerBrouillon(env, orderId) {
+  if (!orderId) return { fait: false, motif: "aucune commande à retirer" };
+
+  let lu;
+  try {
+    lu = await appel(env, "sale.order", "read", [[orderId], ["state", "name", "invoice_ids"]], {});
+  } catch (e) {
+    return { fait: false, motif: "Odoo n'a pas répondu" };
+  }
+  if (!lu || !lu[0]) return { fait: false, motif: "commande déjà absente" };
+
+  const etat = String(lu[0].state || "");
+  const factures = Array.isArray(lu[0].invoice_ids) ? lu[0].invoice_ids : [];
+  const nom = lu[0].name || orderId;
+
+  if (etat !== "draft" && etat !== "sent") {
+    return { fait: false, motif: "la commande " + nom + " n'est plus un brouillon (" + etat + ")" };
+  }
+  if (factures.length) {
+    return { fait: false, motif: "la commande " + nom + " porte déjà une facture" };
+  }
+
+  try {
+    await appel(env, "sale.order", "unlink", [[orderId]], {});
+  } catch (e) {
+    // Odoo peut refuser la suppression pour une raison qui lui appartient.
+    // On annule alors, ce qui atteint le même but : sortir la commande du
+    // carnet sans effacer sa trace.
+    try {
+      await appel(env, "sale.order", "action_cancel", [[orderId]], {});
+      return { fait: true, motif: "commande " + nom + " annulée (suppression refusée)" };
+    } catch (e2) {
+      return { fait: false, motif: "la commande " + nom + " n'a pu être ni supprimée ni annulée" };
+    }
+  }
+  return { fait: true, motif: "devis " + nom + " retiré" };
+}
+
+/**
+ * Appelée quand un paiement est définitivement perdu — annulé, expiré,
+ * échoué. Elle fait le ménage et écrit ce qu'il faut dans le registre, une
+ * seule fois : le passage par l'étape « abandon » empêche de recommencer à
+ * chaque notification.
+ */
+export async function abandonner(env, db, p, statut) {
+  if (String(p.etape || "rien") === "abandon") return;
+
+  const r = await nettoyerBrouillon(env, p.odoo_order_id);
+  const dit = { annule: "annulé", expire: "expiré", echoue: "échoué" }[statut] || statut;
+
+  await noterEtape(db, p.mollie_id, "abandon", {
+    note: "Paiement " + dit + " : " + r.motif + ".",
+  });
+}
+
 /* --- L'enchaînement ------------------------------------------------------ */
 
 /**

@@ -178,28 +178,41 @@
 .cmd-promo-row input { flex: 1 1 auto; min-width: 0; }
 .cmd-promo-row .quote-alt { flex: 0 0 auto; white-space: nowrap; }
 
-/* --- Paiement, en attente de décision -------------------------------- */
+/* --- Paiement en ligne ----------------------------------------------- */
 
-.cmd-paiement-attente {
-  margin: 16px 0;
-  padding: 15px 17px;
-  border-radius: var(--radius-sm, 12px);
-  border: 1px dashed rgba(0, 0, 0, 0.26);
-  background: rgba(0, 0, 0, 0.025);
-}
+.cmd-pay { margin-top: 4px; }
 
-.cmd-paiement-titre {
-  margin: 0 0 5px;
-  font-weight: 700;
-  font-size: 14.5px;
-}
-
-.cmd-paiement-txt {
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.6;
+/* Le « ou » entre les deux issues. Une ligne qui traverse, coupée par le
+   mot : la seconde option reste visible sans concurrencer la première. */
+.cmd-pay-ou {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 14px;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--ink-soft, #5a5a5a);
 }
+
+.cmd-pay-ou::before,
+.cmd-pay-ou::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* --- Retour de paiement ---------------------------------------------- */
+
+/* La pastille reprend celle de la confirmation, mais son contenu change
+   avec l'issue : une coche, des points de suspension, un point
+   d'exclamation. La couleur suit. */
+.cmd-retour-icone { font-weight: 700; }
+.cmd-retour-icone.attente { background: rgba(0, 0, 0, 0.08); color: var(--ink-soft, #5a5a5a); }
+.cmd-retour-icone.souci   { background: rgba(190, 50, 40, 0.10); color: #a8322a; }
+
+#cmd-retour-reprendre { margin-top: 6px; }
 
 /* --- Téléphone ------------------------------------------------------- */
 

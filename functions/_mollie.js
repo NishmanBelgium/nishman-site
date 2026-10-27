@@ -28,6 +28,32 @@ export function modeMollie(env) {
 }
 
 /**
+ * Le cran d'arrêt.
+ *
+ * Une clé « live_ » suffit techniquement à encaisser. Elle ne suffit pas
+ * ici : il faut en plus que PAIEMENTS_REELS soit posé à « oui » chez
+ * Cloudflare. Tant qu'il ne l'est pas, le site refuse d'ouvrir un paiement
+ * réel et le bouton ne s'affiche même pas.
+ *
+ * Pourquoi cette double condition. Une clé se colle en trois secondes, et
+ * on colle parfois la mauvaise — la clé de production au lieu de la clé de
+ * test, parce que les deux se ressemblent et qu'on les a toutes les deux
+ * sous les yeux. Avec une seule condition, cette erreur-là débite un vrai
+ * client. Avec deux, elle ne fait rien du tout : il faut avoir écrit « oui »
+ * quelque part, et on n'écrit pas « oui » par inadvertance.
+ *
+ * C'est aussi ce qui rend l'ouverture des paiements réels datable et
+ * réversible : un geste, un seul, qu'on peut défaire d'un geste.
+ */
+export function paiementsAutorises(env) {
+  const mode = modeMollie(env);
+  if (mode === "test") return true;
+  if (mode !== "reel") return false;
+  const feu = String((env && env.PAIEMENTS_REELS) || "").trim().toLowerCase();
+  return feu === "oui" || feu === "yes" || feu === "true" || feu === "1";
+}
+
+/**
  * Un appel à Mollie. Renvoie les données, ou lève une erreur portant le
  * statut HTTP — c'est ce statut qui distingue « clé refusée » (401) de
  * « Mollie est en panne » (5xx), et les deux n'appellent pas la même

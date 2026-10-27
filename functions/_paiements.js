@@ -61,6 +61,12 @@ export async function preparerTable(db) {
  *
  * L'ordre compte : chaque étape suppose la précédente. Reprendre une suite
  * interrompue consiste à repartir de l'étape atteinte, pas du début.
+ *
+ * Il existe une étape de plus, « abandon », qui ne figure pas dans cette
+ * liste parce qu'elle n'est pas sur le chemin : c'est celle d'un paiement
+ * annulé, expiré ou refusé, dont le devis a été retiré. Elle est terminale
+ * comme « fini », mais pour l'autre issue, et la laisser hors de l'ordre
+ * évite qu'une reprise ne la prenne pour une étape à dépasser.
  */
 export const ETAPES = ["rien", "confirmee", "facturee", "lettree", "fini"];
 

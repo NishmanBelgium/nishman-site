@@ -73,6 +73,9 @@
   let dernier = null;       // le dernier calcul rendu par le serveur
   let promoAppliquee = "";
   let envoiEnCours = false;
+  // Quand le paiement en ligne est disponible, le devis par virement passe
+  // au second plan : il reste offert, mais ce n'est plus l'issue par défaut.
+  let modeDevisSecondaire = false;
 
   function mode() {
     const choisi = document.querySelector('input[name="cmd-mode"]:checked');
@@ -248,17 +251,9 @@
 
   /* --- L'envoi -------------------------------------------------------- */
 
-  async function envoyer() {
-    if (envoiEnCours) return;
-    afficherErreur("");
-
-    const err = t("erreurs") || {};
-
-    if (!$("cmd-cgv") || !$("cmd-cgv").checked) { afficherErreur(err.cgv); return; }
-
+  /** Ce que les deux issues — devis et paiement — envoient au serveur. */
+  function corpsCommande() {
     const enLivraison = mode() === "livraison";
-    const identique = enLivraison && memeAdresse();
-
     const corps = {
       selection: panier,
       mode: mode(),
@@ -267,13 +262,90 @@
       cgv: true,
     };
     if (enLivraison) {
-      if (identique) corps.livraison_identique = true;
+      if (memeAdresse()) corps.livraison_identique = true;
       else corps.livraison = adresseSaisie();
     }
+    return corps;
+  }
 
-    envoiEnCours = true;
-    const btn = $("cmd-envoyer");
-    if (btn) { btn.disabled = true; btn.textContent = t("valid_envoi"); }
+  /** Les deux boutons se tiennent par la main : l'un travaille, l'autre attend. */
+  function verrouiller(oui, lequel, libelle) {
+    envoiEnCours = oui;
+    [["cmd-envoyer", "valid_cta"], ["cmd-payer", "pay_cta"]].forEach(([id, cle]) => {
+      const b = $(id);
+      if (!b) return;
+      b.disabled = oui;
+      if (id === lequel) b.textContent = oui ? libelle : t(cle);
+      else if (!oui) b.textContent = modeDevisSecondaire && id === "cmd-envoyer"
+        ? t("valid_cta_alt") : t(cle);
+    });
+  }
+
+  /**
+   * Payer maintenant.
+   *
+   * Le panier n'est PAS vidé ici. Le client part chez sa banque et peut
+   * renoncer : s'il revient les mains vides, il doit retrouver sa sélection
+   * plutôt qu'un panier effacé par une commande qu'il n'a pas passée. C'est
+   * la page de retour qui le videra, et seulement sur un paiement reçu.
+   */
+  async function payer() {
+    if (envoiEnCours) return;
+    afficherErreur("");
+
+    const err = t("erreurs") || {};
+    if (!$("cmd-cgv") || !$("cmd-cgv").checked) { afficherErreur(err.cgv); return; }
+
+    verrouiller(true, "cmd-payer", t("pay_envoi"));
+
+    let d = null;
+    try {
+      const r = await fetch("/api/payer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(corpsCommande()),
+      });
+      d = await r.json();
+    } catch (e) { d = null; }
+
+    if (!d) { verrouiller(false); afficherErreur(err.reseau); return; }
+
+    if (d.ok !== true || !d.paiement_url) {
+      verrouiller(false);
+      const code = d.code || d.motif || "";
+      afficherErreur(err[code] || d.message || d.erreur || err.refus);
+      if (code === "session") renvoyerVersConnexion();
+      return;
+    }
+
+    // Le bouton reste verrouillé : on quitte la page. Le déverrouiller
+    // laisserait un instant où un second clic créerait un second paiement.
+    window.location.href = d.paiement_url;
+  }
+
+  function renvoyerVersConnexion(retour) {
+    const cible = retour || "/commander/";
+    const lien = $("cmd-vers-connexion");
+    if (lien) lien.href = "/pro/connexion/?retour=" + encodeURIComponent(cible);
+    const inscr = $("cmd-vers-inscription");
+    if (inscr) inscr.href = "/pro/connexion/?mode=inscription&retour=" + encodeURIComponent(cible);
+    montrer("cmd-tunnel", false);
+    montrer("cmd-retour", false);
+    montrer("cmd-connexion", true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function envoyer() {
+    if (envoiEnCours) return;
+    afficherErreur("");
+
+    const err = t("erreurs") || {};
+
+    if (!$("cmd-cgv") || !$("cmd-cgv").checked) { afficherErreur(err.cgv); return; }
+
+    const corps = corpsCommande();
+
+    verrouiller(true, "cmd-envoyer", t("valid_envoi"));
 
     let d = null;
     try {
@@ -287,8 +359,7 @@
       d = null;
     }
 
-    envoiEnCours = false;
-    if (btn) { btn.disabled = false; btn.textContent = t("valid_cta"); }
+    verrouiller(false);
 
     if (!d) { afficherErreur(err.reseau); return; }
 
@@ -298,13 +369,7 @@
       const code = d.code || d.motif || "";
       afficherErreur(err[code] || d.message || d.erreur || err.refus);
       // Session perdue en route : le panier reste, on renvoie se connecter.
-      if (code === "session") {
-        const lien = $("cmd-vers-connexion");
-        if (lien) lien.href = "/pro/connexion/?retour=" + encodeURIComponent("/commander/");
-        montrer("cmd-tunnel", false);
-        montrer("cmd-connexion", true);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+      if (code === "session") renvoyerVersConnexion();
       return;
     }
 
@@ -320,6 +385,157 @@
     montrer("cmd-tunnel", false);
     montrer("cmd-fini", true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /* --- Le retour de chez la banque ------------------------------------ */
+
+  /* Le rythme des relances, en millisecondes. Serré au début — la chaîne
+     aboutit souvent en deux ou trois secondes — puis de plus en plus
+     espacé : au-delà d'une minute, ce n'est plus une question d'attente,
+     c'est qu'il se passe autre chose, et insister n'y changera rien.
+
+     Chaque appel n'est pas qu'une lecture : le serveur y reprend la suite
+     si elle s'est arrêtée. Regarder où en est sa commande la fait donc
+     avancer, ce qui est exactement ce qu'on veut d'une page de retour. */
+  const RELANCES = [1200, 1800, 2500, 3000, 4000, 5000, 6000, 8000, 10000];
+
+  function dormir(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+  function peindreRetour({ icone, classe, titre, texte, detail, reprendre, actions }) {
+    const ic = $("cmd-retour-icone");
+    if (ic) {
+      ic.innerHTML = icone;
+      ic.className = "done-check cmd-retour-icone" + (classe ? " " + classe : "");
+    }
+    const ti = $("cmd-retour-titre");
+    if (ti) ti.textContent = titre || "";
+    const tx = $("cmd-retour-texte");
+    if (tx) tx.textContent = texte || "";
+
+    const de = $("cmd-retour-detail");
+    if (de) { de.textContent = detail || ""; de.hidden = !detail; }
+
+    montrer("cmd-retour-reprendre", !!reprendre);
+    montrer("cmd-retour-actions", !!actions);
+    montrer("cmd-retour", true);
+  }
+
+  /**
+   * Suit un paiement jusqu'à ce qu'on sache quoi en dire.
+   *
+   * Règle de conduite : on n'annonce JAMAIS un encaissement que le serveur
+   * n'a pas confirmé. La page de redirection de Mollie n'est pas une preuve
+   * de paiement — le client peut y arriver après avoir renoncé — et le
+   * navigateur n'a aucun moyen de savoir. Tant que le serveur dit « en
+   * attente », la page dit « en attente ».
+   *
+   * Et dans ce cas-là, elle ne propose pas de recommencer. Un paiement en
+   * cours d'acheminement qu'on repaie, c'est un client débité deux fois pour
+   * une seule commande : le pire résultat possible. On préfère un client qui
+   * attend un instant à un client remboursé la semaine suivante.
+   */
+  async function suivreRetour(ref) {
+    montrer("cmd-attente", false);
+
+    peindreRetour({
+      icone: "&#8230;", classe: "attente",
+      titre: t("ret_attente_titre"),
+      texte: t("ret_attente_texte"),
+    });
+
+    for (let essai = 0; essai <= RELANCES.length; essai++) {
+      if (essai > 0) await dormir(RELANCES[essai - 1]);
+
+      let d = null, statutHttp = 0;
+      try {
+        const r = await fetch("/api/paiement?ref=" + encodeURIComponent(ref)
+                              + "&t=" + Date.now(), { cache: "no-store" });
+        statutHttp = r.status;
+        d = await r.json();
+      } catch (e) { d = null; }
+
+      // Session expirée pendant le détour par la banque. Le paiement, lui,
+      // a peut-être abouti : on ne touche pas au panier et on fait
+      // reconnecter en gardant la référence, pour reprendre ce suivi-ci.
+      if (statutHttp === 401) {
+        renvoyerVersConnexion("/commander/?retour=" + encodeURIComponent(ref));
+        return;
+      }
+
+      if (statutHttp === 404) {
+        peindreRetour({
+          icone: "!", classe: "souci",
+          titre: t("ret_inconnu_titre"),
+          texte: t("ret_inconnu_texte"),
+          actions: true,
+        });
+        return;
+      }
+
+      if (!d || d.ok !== true) continue;   // panne passagère : on relance
+
+      // Payé et traité : c'est fini, et on peut le dire sans réserve.
+      if (d.traite === true) {
+        viderPanier();
+        peindreRetour({
+          icone: "&#10003;",
+          titre: t("ret_ok_titre"),
+          texte: t("ret_ok_texte")(d.devis || d.ref, d.facture || ""),
+          detail: t("ret_ok_expedition"),
+          actions: true,
+        });
+        return;
+      }
+
+      // Perdu : annulé, expiré ou refusé. Le panier est intact, le devis a
+      // été retiré côté Odoo, et la commande peut être reprise telle quelle.
+      if (d.perdu === true) {
+        peindreRetour({
+          icone: "!", classe: "souci",
+          titre: t("ret_perdu_titre"),
+          texte: t("ret_perdu_texte"),
+          reprendre: Object.keys(panier).length > 0,
+          actions: true,
+        });
+        return;
+      }
+
+      // Payé, la suite n'est pas terminée. On vide le panier — l'argent est
+      // encaissé, la commande existe — et on continue à suivre.
+      if (d.statut === "paye") {
+        viderPanier();
+        peindreRetour({
+          icone: "&#10003;",
+          titre: t("ret_ok_titre"),
+          texte: t("ret_encours_texte"),
+        });
+      }
+    }
+
+    // Les relances sont épuisées. Deux issues, et aucune n'est un échec.
+    let dernierEtat = null;
+    try {
+      const r = await fetch("/api/paiement?ref=" + encodeURIComponent(ref)
+                            + "&t=" + Date.now(), { cache: "no-store" });
+      dernierEtat = await r.json();
+    } catch (e) { /* on tranchera sans */ }
+
+    if (dernierEtat && dernierEtat.statut === "paye") {
+      viderPanier();
+      peindreRetour({
+        icone: "&#10003;",
+        titre: t("ret_ok_titre"),
+        texte: t("ret_lent_texte"),
+        actions: true,
+      });
+    } else {
+      peindreRetour({
+        icone: "&#8230;", classe: "attente",
+        titre: t("ret_incertain_titre"),
+        texte: t("ret_incertain_texte"),
+        actions: true,
+      });
+    }
   }
 
   /* --- Le code promo -------------------------------------------------- */
@@ -372,11 +588,49 @@
 
     const envoi = $("cmd-envoyer");
     if (envoi) envoi.addEventListener("click", envoyer);
+
+    const pay = $("cmd-payer");
+    if (pay) pay.addEventListener("click", payer);
+  }
+
+  /**
+   * Met en place les deux issues selon ce que le serveur dit savoir faire.
+   *
+   * Le bouton de paiement n'existe que si /api/panier annonce la chaîne en
+   * service. Une page qui propose de payer et échoue au clic est pire
+   * qu'une page qui ne le propose pas : le client a déjà décidé d'acheter
+   * quand il découvre la panne.
+   */
+  function installerPaiement(d) {
+    modeDevisSecondaire = d && d.paiement_en_ligne === true;
+    montrer("cmd-pay", modeDevisSecondaire);
+    if (!modeDevisSecondaire) return;
+
+    const devis = $("cmd-envoyer");
+    if (devis) {
+      devis.className = "quote-alt cmd-devis-alt";
+      devis.textContent = t("valid_cta_alt");
+    }
+    const note = $("cmd-valid-note");
+    if (note) note.textContent = t("valid_note_alt");
   }
 
   async function demarrer() {
     appliquerLangue();
     panier = lirePanier();
+
+    // Retour de chez la banque. Ce cas passe avant tout le reste : le
+    // panier n'y est pas le sujet, et le tunnel n'a rien à faire là.
+    const refRetour = String(new URLSearchParams(window.location.search).get("retour") || "").trim();
+    if (refRetour) {
+      montrer("cmd-attente", false);
+      await suivreRetour(refRetour);
+      const reprendre = $("cmd-retour-reprendre");
+      if (reprendre) {
+        reprendre.addEventListener("click", () => { window.location.href = "/commander/"; });
+      }
+      return;
+    }
 
     if (!Object.keys(panier).length) {
       montrer("cmd-attente", false);
@@ -403,6 +657,7 @@
     if (!d.lignes || !d.lignes.length) { montrer("cmd-vide", true); return; }
 
     rendre(d);
+    installerPaiement(d);
     montrer("cmd-tunnel", true);
     brancher();
   }

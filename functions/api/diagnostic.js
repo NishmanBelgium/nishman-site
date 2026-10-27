@@ -21,7 +21,7 @@ import { interrogerPortier, codePortier, adressePortier } from "../_portier.js";
 import { verifier as verifierTva } from "../_vies.js";
 import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "../_odoo.js";
 import { catalogue } from "../_tarifs.js";
-import { configureMollie, modeMollie, appelMollie } from "../_mollie.js";
+import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { configureSendcloud, compteSendcloud } from "../_sendcloud.js";
 
 const ADMIN_DEFAUT = "contact@nishman.be";
@@ -117,7 +117,8 @@ async function etatMollie(env) {
              detail: "La clé Mollie (MOLLIE_KEY) n'est pas renseignée chez Cloudflare." };
   }
 
-  const info = { mode, longueur: cle.length, espaces_autour: brut !== cle };
+  const info = { mode, longueur: cle.length, espaces_autour: brut !== cle,
+                 paiements_reels_autorises: paiementsAutorises(env) && mode === "reel" };
 
   if (mode === "inconnu") {
     return { ...info, ok: false,
@@ -129,9 +130,21 @@ async function etatMollie(env) {
     const r = await appelMollie(env, "/methods");
     const moyens = (r && r._embedded && Array.isArray(r._embedded.methods)) ? r._embedded.methods : [];
     const noms = moyens.map((m) => m && m.description).filter(Boolean);
-    return { ...info, ok: true, moyens: noms,
+
+    // Une clé réelle sans feu vert : Mollie répond, mais le site refusera
+    // d'ouvrir un paiement. Le dire ici évite de chercher ailleurs pourquoi
+    // le bouton n'apparaît pas.
+    const bloque = mode === "reel" && !paiementsAutorises(env);
+    return { ...info, ok: !bloque, moyens: noms,
              detail: "Mollie accepte la clé. " + moyens.length + " moyen(s) de paiement actif(s)"
-                   + (noms.length ? " : " + noms.join(", ") : "") + "." };
+                   + (noms.length ? " : " + noms.join(", ") : "") + "."
+                   + (bloque
+                      ? " MAIS les paiements réels ne sont pas autorisés : la variable "
+                        + "PAIEMENTS_REELS n'est pas à « oui » chez Cloudflare. Le bouton "
+                        + "« Payer maintenant » ne s'affiche pas, et le devis par virement "
+                        + "reste proposé. C'est le cran d'arrêt voulu : tant qu'il est en "
+                        + "place, aucune erreur de clé ne peut débiter un client."
+                      : "") };
   } catch (e) {
     if (e && e.statut === 401) {
       return { ...info, ok: false, detail: "Mollie refuse cette clé. Vérifiez qu'elle a été copiée en entier." };
@@ -268,7 +281,13 @@ export async function onRequestGet({ request, env }) {
   // mais elle déplace de l'argent. Tant que la chaîne n'est pas éprouvée de
   // bout en bout, elle n'a rien à faire là.
   const alertes = [];
-  if (mollie.ok && mollie.mode === "reel") {
+  if (mollie.mode === "reel" && !mollie.paiements_reels_autorises) {
+    alertes.push("La clé Mollie installée est la clé RÉELLE, mais PAIEMENTS_REELS n'est pas à "
+      + "« oui » : le site n'encaissera rien. Si c'est voulu, remettez la clé de test. Si vous "
+      + "ouvrez vraiment les paiements, posez PAIEMENTS_REELS = oui chez Cloudflare et "
+      + "redéployez — et faites d'abord un achat réel de votre côté pour vérifier toute la chaîne.");
+  }
+  if (mollie.ok && mollie.mode === "reel" && mollie.paiements_reels_autorises) {
     alertes.push("La clé Mollie installée est la clé RÉELLE : tout paiement déclenché depuis le site "
                + "débitera vraiment le client. Tant que la chaîne n'a pas été éprouvée, "
                + "remplacez-la par la clé de test (préfixe « test_ »).");

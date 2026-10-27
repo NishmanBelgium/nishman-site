@@ -21,7 +21,7 @@ import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
 import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
 import { creerCommandeOdoo } from "../_commande_odoo.js";
-import { configureMollie, modeMollie, appelMollie } from "../_mollie.js";
+import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { enregistrer } from "../_paiements.js";
 
 /** Référence lisible, fabriquée ici : le navigateur n'en choisit pas. */
@@ -62,6 +62,9 @@ export async function onRequestPost({ request, env }) {
   if (!env.DB) return erreur("Service indisponible.", 503, "indisponible");
   if (!configureOdoo(env)) return erreur("Service de commande indisponible.", 503, "odoo");
   if (!configureMollie(env)) return erreur("Le paiement en ligne n'est pas disponible.", 503, "mollie");
+  // Clé de production sans feu vert explicite : on n'encaisse rien. Le
+  // client repart sur le devis par virement, qui lui fonctionne.
+  if (!paiementsAutorises(env)) return erreur("Le paiement en ligne n'est pas disponible.", 503, "mollie");
 
   const compte = await compteConnecte(request, env.DB);
   if (!compte) return erreur("Connectez-vous pour commander.", 401, "session");

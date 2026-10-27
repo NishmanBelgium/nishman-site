@@ -25,7 +25,7 @@
 import { configure as configureOdoo } from "../_odoo.js";
 import { configureMollie, appelMollie } from "../_mollie.js";
 import { lire, majStatut, prendreLaMain, rendreLaMain } from "../_paiements.js";
-import { poursuivre } from "../_apres_paiement.js";
+import { poursuivre, abandonner } from "../_apres_paiement.js";
 
 const ETATS = {
   paid: "paye",
@@ -93,7 +93,21 @@ export async function onRequestPost({ request, env }) {
 
   try { await majStatut(env.DB, id, notre, null); } catch (e) {}
 
-  // 5) Payé : on enchaîne la suite — confirmation, facture, expédition.
+  // 5) Perdu pour de bon : on retire le devis créé avant le paiement. Le
+  //    verrou sert ici aussi — Mollie notifie l'annulation plusieurs fois,
+  //    et le ménage ne doit se faire qu'une.
+  if (notre === "annule" || notre === "expire" || notre === "echoue") {
+    if (!configureOdoo(env)) return recu();
+    let main = false;
+    try { main = await prendreLaMain(env.DB, id); } catch (e) { return recu(); }
+    if (!main) return recu();
+    try { await abandonner(env, env.DB, enregistre, notre); }
+    catch (e) { /* le devis restera, ce n'est pas bloquant */ }
+    finally { try { await rendreLaMain(env.DB, id); } catch (e2) {} }
+    return recu();
+  }
+
+  // 6) Payé : on enchaîne la suite — confirmation, facture, expédition.
   //    Une seule exécution à la fois, et une reprise possible ensuite.
   if (etat !== "paid") return recu();
   if (String(enregistre.etape || "rien") === "fini") return recu();

@@ -19,6 +19,7 @@ import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { creerCommandeOdoo } from "../_commande_odoo.js";
+import { nettoyerBrouillon } from "../_apres_paiement.js";
 
 const ADMIN_DEFAUT = "contact@nishman.be";
 
@@ -99,15 +100,43 @@ export async function onRequestGet({ request, env }) {
       : "écart de " + commande.ecart + " € entre notre calcul et celui d'Odoo");
 
   // 5) Le ménage. C'est la partie qu'on ne saute jamais.
+  //
+  //    Et on le fait par la même fonction que celle qui nettoie un paiement
+  //    abandonné : ce banc d'essai vérifie donc aussi, à chaque passage, que
+  //    le site sait retirer un devis sans paiement. C'est du code qui ne
+  //    tourne normalement que sur un panier abandonné — autrement dit, du
+  //    code que personne ne regarde jamais tourner. Autant qu'il soit
+  //    exercé ici, sur un devis qui n'intéresse personne.
   let supprime = false;
   try {
-    await appelOdoo(env, "sale.order", "unlink", [[commande.id]], {});
-    supprime = true;
-    noter("suppression du devis d'essai", true, "aucune trace laissée dans Odoo");
+    const r = await nettoyerBrouillon(env, commande.id);
+    supprime = r.fait;
+    if (r.fait) noter("retrait du devis d'essai", true, r.motif + " — aucune trace laissée dans Odoo");
+    else {
+      noter("retrait du devis d'essai", false,
+        "LE DEVIS " + (commande.nom || commande.id) + " EST RESTÉ DANS ODOO, à supprimer à la main : " + r.motif);
+    }
   } catch (e) {
-    noter("suppression du devis d'essai", false,
+    noter("retrait du devis d'essai", false,
       "LE DEVIS " + (commande.nom || commande.id) + " EST RESTÉ DANS ODOO, à supprimer à la main : "
       + String(e && e.message));
+  }
+
+  // On vérifie que la suppression a bien eu lieu, au lieu de la croire : un
+  // appel Odoo qui ne lève pas d'erreur n'est pas une preuve d'effet.
+  if (supprime) {
+    try {
+      const reste = await appelOdoo(env, "sale.order", "search_count", [[["id", "=", commande.id]]], {});
+      if (Number(reste) > 0) {
+        noter("vérification du retrait", false,
+          "LE DEVIS " + (commande.nom || commande.id) + " EST ENCORE DANS ODOO malgré la suppression annoncée");
+        supprime = false;
+      } else {
+        noter("vérification du retrait", true, "Odoo ne connaît plus cette commande");
+      }
+    } catch (e) {
+      noter("vérification du retrait", false, "impossible de vérifier : " + String(e && e.message));
+    }
   }
 
   const tout = etapes.every((e) => e.ok);

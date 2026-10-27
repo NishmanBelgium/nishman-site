@@ -17,7 +17,7 @@ import { json, erreur, compteConnecte } from "../_commun.js";
 import { configure as configureOdoo } from "../_odoo.js";
 import { configureMollie, appelMollie } from "../_mollie.js";
 import { lireParRef, lire, majStatut, prendreLaMain, rendreLaMain } from "../_paiements.js";
-import { poursuivre } from "../_apres_paiement.js";
+import { poursuivre, abandonner } from "../_apres_paiement.js";
 
 const LISIBLE = {
   ouvert: "en attente",
@@ -83,6 +83,25 @@ export async function onRequestGet({ request, env }) {
     }
   }
 
+  // L'autre issue. Le client est revenu sans avoir payé — il a fermé la
+  // page de sa banque, ou elle a refusé. Le devis créé juste avant le
+  // paiement est retiré ici, au moment où l'on apprend l'abandon, et pas
+  // seulement si Mollie prend la peine de nous le notifier.
+  if ((statut === "annule" || statut === "expire" || statut === "echoue")
+      && String(p.etape || "rien") !== "abandon" && configureOdoo(env)) {
+    let main = false;
+    try { main = await prendreLaMain(env.DB, p.mollie_id); } catch (e) {}
+    if (main) {
+      try { await abandonner(env, env.DB, p, statut); }
+      catch (e) { /* le client n'a pas à en entendre parler */ }
+      finally { try { await rendreLaMain(env.DB, p.mollie_id); } catch (e2) {} }
+      try {
+        const apres = await lire(env.DB, p.mollie_id);
+        if (apres) { p = apres; etape = String(p.etape || etape); }
+      } catch (e) {}
+    }
+  }
+
   return json({
     ok: true,
     ref: p.ref,
@@ -93,11 +112,15 @@ export async function onRequestGet({ request, env }) {
     statut_lisible: LISIBLE[statut] || statut,
     etape,
     facture: p.facture_nom || "",
-    // Ce que la chaîne a écrit en chemin : utile quand elle s'est arrêtée,
-    // et c'est la commande du client lui-même qui est décrite.
+    // Ce que la chaîne a écrit en chemin. C'est un texte technique, destiné
+    // au support et au diagnostic ; la page de retour ne l'affiche pas au
+    // client, elle compose son propre message à partir de l'état.
     note: p.note || "",
     // La suite est-elle allée jusqu'au bout ?
     traite: etape === "fini",
+    // Le paiement est-il perdu sans retour ? La page garde alors le panier
+    // et propose de recommencer, au lieu d'annoncer un échec définitif.
+    perdu: statut === "annule" || statut === "expire" || statut === "echoue",
   });
 }
 
