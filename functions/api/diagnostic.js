@@ -19,7 +19,8 @@
 import { json, erreur, compteConnecte } from "../_commun.js";
 import { interrogerPortier, codePortier, adressePortier } from "../_portier.js";
 import { verifier as verifierTva } from "../_vies.js";
-import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
+import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "../_odoo.js";
+import { tableDePrix } from "../_tarifs.js";
 import { configureMollie, modeMollie, appelMollie } from "../_mollie.js";
 
 const ADMIN_DEFAUT = "contact@nishman.be";
@@ -139,6 +140,47 @@ async function etatMollie(env) {
   }
 }
 
+/**
+ * La correspondance entre les références tarifées du site et les fiches
+ * produits d'Odoo, par code-barres.
+ *
+ * C'est le contrôle le plus utile avant de créer des commandes : une
+ * référence qu'Odoo ne reconnaît pas ne peut pas devenir une ligne de
+ * commande. Mieux vaut découvrir le trou ici, sur une page de diagnostic,
+ * que sur la commande d'un client qui vient de payer.
+ */
+async function etatProduits(env) {
+  if (!configureOdoo(env)) return { ok: false, detail: "Odoo n'est pas configuré : comparaison impossible." };
+
+  let prix;
+  try { prix = await tableDePrix(env); }
+  catch (e) { return { ok: false, detail: "Table de prix indisponible : " + String(e && e.message || "erreur") }; }
+
+  const eans = Object.keys(prix || {}).map((e) => String(e).trim()).filter(Boolean);
+  if (!eans.length) return { ok: false, detail: "Aucun tarif reçu : rien à comparer." };
+
+  let table;
+  try { table = await produitsParEan(env, eans); }
+  catch (e) { return { ok: false, detail: "Odoo n'a pas répondu : " + String(e && e.message || "erreur").slice(0, 200) }; }
+
+  const inconnus = eans.filter((e) => !table[e]);
+  const reconnus = eans.length - inconnus.length;
+
+  return {
+    ok: inconnus.length === 0,
+    total: eans.length,
+    reconnus,
+    // Les dix premières manquantes suffisent à comprendre : s'il y en a
+    // cent, le problème est de nature, pas de détail.
+    sans_correspondance: inconnus.slice(0, 10),
+    detail: inconnus.length === 0
+      ? "Les " + eans.length + " références tarifées ont leur code-barres dans Odoo."
+      : reconnus + " référence(s) sur " + eans.length + " reconnues. "
+        + inconnus.length + " n'ont pas de code-barres correspondant dans Odoo : "
+        + "elles ne pourront pas devenir des lignes de commande.",
+  };
+}
+
 export async function onRequestGet({ request, env }) {
   const compte = env.DB ? await compteConnecte(request, env.DB) : null;
   // EMAIL_ADMIN accepte plusieurs adresses séparées par des virgules :
@@ -152,12 +194,13 @@ export async function onRequestGet({ request, env }) {
 
   const impossible = (e) => ({ ok: false, detail: "Contrôle impossible : " + (e && e.message) });
 
-  const [base, portier, vies, odoo, mollie] = await Promise.all([
+  const [base, portier, vies, odoo, mollie, produits] = await Promise.all([
     etatBase(env.DB),
     etatPortier(env).catch(impossible),
     etatVies(env).catch(impossible),
     etatOdoo(env).catch(impossible),
     etatMollie(env).catch(impossible),
+    etatProduits(env).catch(impossible),
   ]);
 
   const liaisons = {
@@ -166,6 +209,7 @@ export async function onRequestGet({ request, env }) {
     registre_tva: vies,
     odoo_direct: odoo,
     mollie: mollie,
+    produits_odoo: produits,
   };
 
   // Ce que la panne empêche concrètement, dit en clair.
@@ -178,6 +222,7 @@ export async function onRequestGet({ request, env }) {
   if (!vies.ok) consequences.push("Les nouveaux clients FR et LU sont facturés avec TVA au lieu de l'exonération.");
   if (!odoo.ok) consequences.push("Le site ne peut pas créer de commande directement dans Odoo.");
   if (!mollie.ok) consequences.push("Aucun paiement en ligne ne peut être encaissé.");
+  if (!produits.ok) consequences.push("Certaines références ne pourront pas être portées sur une commande Odoo.");
 
   // Un avertissement, pas une panne : la clé réelle fonctionne parfaitement,
   // mais elle déplace de l'argent. Tant que la chaîne n'est pas éprouvée de
@@ -189,14 +234,14 @@ export async function onRequestGet({ request, env }) {
                + "remplacez-la par la clé de test (préfixe « test_ »).");
   }
 
-  const tout = base.ok && portier.ok && vies.ok && odoo.ok && mollie.ok;
+  const tout = base.ok && portier.ok && vies.ok && odoo.ok && mollie.ok && produits.ok;
 
   return json({
     ok: true,
     tout_va_bien: tout,
     resume: tout
-      ? "Les cinq liaisons du site répondent normalement."
-      : "Une liaison au moins ne répond pas. Voir le détail ci-dessous.",
+      ? "Les six contrôles du site répondent normalement."
+      : "Un contrôle au moins ne passe pas. Voir le détail ci-dessous.",
     liaisons: liaisons,
     consequences: consequences,
     alertes: alertes,

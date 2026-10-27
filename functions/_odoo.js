@@ -120,6 +120,31 @@ export async function codesBarres(env, produitIds) {
   return table;
 }
 
+// La correspondance inverse : d'un code EAN du site vers la fiche produit
+// d'Odoo. C'est la fondation de la création de commande — une ligne sans
+// produit identifié n'existe pas pour Odoo, et une commande à laquelle il
+// manque une ligne est pire qu'une commande refusée.
+//
+// Interrogé par paquets : une liste de deux cents codes dans un seul domaine
+// finit par se faire refuser, et le jour où le catalogue doublera, personne
+// ne se souviendra pourquoi.
+export async function produitsParEan(env, eans) {
+  const codes = [...new Set((eans || []).map((e) => String(e || "").trim()).filter(Boolean))];
+  if (!codes.length) return {};
+
+  const table = {};
+  const PAQUET = 100;
+  for (let i = 0; i < codes.length; i += PAQUET) {
+    const lot = codes.slice(i, i + PAQUET);
+    const r = await appel(env, "product.product", "search_read",
+      [[["barcode", "in", lot]], ["id", "barcode", "name"]], { limit: lot.length });
+    for (const p of r || []) {
+      if (p && p.barcode) table[String(p.barcode).trim()] = { id: p.id, nom: p.name };
+    }
+  }
+  return table;
+}
+
 export async function facturesDuClient(env, partnerId, limite = 50) {
   return appel(env, "account.move", "search_read",
     [[["partner_id", "=", partnerId], ["move_type", "=", "out_invoice"]],
