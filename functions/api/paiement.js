@@ -67,10 +67,19 @@ export async function onRequestGet({ request, env }) {
     if (aLaMain) {
       try {
         const frais = await lire(env.DB, p.mollie_id);
-        const r = await poursuivre(env, env.DB, { ...(frais || p), statut: "paye" });
-        etape = r.etape;
+        await poursuivre(env, env.DB, { ...(frais || p), statut: "paye" });
       } catch (e) { /* l'état renvoyé restera celui du registre */ }
       finally { try { await rendreLaMain(env.DB, p.mollie_id); } catch (e2) {} }
+
+      // On relit APRÈS avoir avancé. Sans cela, la réponse décrit l'état
+      // d'avant : l'étape atteinte serait juste, mais la facture et la note
+      // dateraient de la tentative précédente — et on lirait « interrompue »
+      // sur une chaîne qui vient d'aboutir.
+      try {
+        const apres = await lire(env.DB, p.mollie_id);
+        if (apres) p = apres;
+        etape = String(p.etape || etape);
+      } catch (e) { /* on gardera ce qu'on a */ }
     }
   }
 
