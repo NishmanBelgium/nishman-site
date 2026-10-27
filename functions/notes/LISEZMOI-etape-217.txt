@@ -1,0 +1,76 @@
+ÉTAPE 217 — LA BOUTIQUE GRAND PUBLIC, SELON VOS CHOIX
+======================================================
+
+Vos arbitrages du fichier Excel sont appliqués.
+
+    77 références  →  127 au public
+    54 ouvertes, 4 retirées, 45 prix modifiés
+    83 références restent réservées aux professionnels
+
+
+CE QUE VOUS AVEZ DÉCIDÉ, ET CE QUE ÇA DIT
+------------------------------------------
+Vous avez ouvert surtout des familles qu'un particulier achète seul :
+crème et bien-être (13), gels et mousses (11), coloration (8),
+shampoings (7). Et vous avez laissé fermé ce qui ne se vend qu'à un
+professionnel : 14 des 21 références de coloration technique, 14 des 19
+consommables, 10 des 11 articles de rasage.
+
+Vous avez aussi RETIRÉ quatre pommades qui étaient en ligne :
+    FIBRE CREAM POMADE F1      était à 13,90 €
+    FIBRE PASTE POMADE F2      était à 13,90 €
+    POMADE W10                 était à 11,90 €
+    POMADE W11                 était à 13,90 €
+
+Et vous avez revu 45 prix. Deux mouvements nets :
+    la gamme Aqua Wax monte de 8,90 à 9,90 € (11 références)
+    les wax mates et crèmes descendent de 2 € environ (13,90 → 11,90)
+
+
+CE QUE J'AI VÉRIFIÉ SUR VOS PRIX
+---------------------------------
+Aucune vente à perte. Aucun prix public en dessous du prix pro — un
+barbier ne peut donc pas acheter moins cher en se faisant passer pour un
+particulier, ce qui aurait abîmé votre réseau.
+
+Votre grille a maintenant deux étages, et c'est cohérent :
+    coiffage et soin     coefficient ×4 à ×5    (84 références)
+    coffrets, fibres,
+    consommables         coefficient ×2 à ×3    (10 références)
+C'est la logique habituelle du commerce : on serre la marge sur ce dont
+le client connaît le prix ailleurs, on la tient sur ce qui est à vous.
+
+Cinq références descendent sous 45 % de marge sur le prix de vente HT.
+Elles restent toutes bénéficiaires :
+    APPLICATEUR FIBRES           10,00 €  →  3,26 € de marge  (40 %)
+    COFFRET SOIN BARBE           35,00 €  → 11,93 € de marge  (41 %)
+    COFFRET GOLD                 35,00 €  → 11,93 € de marge  (41 %)
+    COFFRET YELLOW               35,00 €  → 11,93 € de marge  (41 %)
+    NETTOYANT TONDEUSE 5en1      18,90 €  →  6,62 € de marge  (42 %)
+
+Un détail à votre main : quatre prix finissent en ,00 (35,00 et 10,00)
+alors que les 123 autres finissent en ,90. Dites-le-moi si vous voulez
+les aligner — 34,90 et 9,90.
+
+
+NOMS COURTS DES NOUVELLES RÉFÉRENCES
+-------------------------------------
+Le nom complet du fournisseur est souvent illisible en boutique
+(« HAIR BUILDING KERATIN FIBER - DARK BROWN »). J'ai donc écrit un nom
+court pour chacune des 54 nouvelles, en français quand ça parlait mieux :
+FIBRES KÉRATINE BRUN FONCÉ, COFFRET SOIN BARBE, MASQUE PEEL-OFF NOIR,
+TONIQUE CAPILLAIRE, SPATULES (100)…
+
+Ce sont des choix, pas des vérités. Dites-moi ceux qui vous déplaisent.
+
+Les descriptions des 54 nouvelles références existaient déjà dans le
+catalogue, dans les cinq langues : rien n'a été inventé.
+
+
+CONTRÔLES
+---------
+Dix contrôles automatiques : 127 références sans doublon, toutes les
+images présentes sur le serveur, tous les champs remplis, les cinq
+langues partout, et surtout — les prix de la boutique sont exactement
+ceux de votre fichier, aucune référence marquée N n'a été publiée, et
+aucune référence marquée O n'a été oubliée.
