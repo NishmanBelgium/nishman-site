@@ -34,15 +34,19 @@ export function onRequestGet({ request }) {
   let hote = "";
   try { hote = new URL(request.url).hostname.toLowerCase(); } catch (e) {}
 
-  // Adresse de prévisualisation : rien ne doit être indexé. Ce sont les
-  // mêmes pages que le site réel, et deux adresses pour un même contenu
-  // valent mieux que rien dans aucune.
-  const previsualisation = hote.endsWith(".pages.dev") || hote === "localhost";
+  // On raisonne à l'envers depuis le 27 octobre : seul le site public est
+  // indexable, tout le reste ne l'est pas. La règle précédente listait les
+  // adresses à bloquer, et laissait donc passer celles qu'on n'avait pas
+  // prévues — à commencer par nouveau.nishman.be, le sous-domaine d'essai
+  // posé sur le vrai domaine. Deux adresses pour le même contenu, et
+  // Google choisit lui-même laquelle compter.
+  const PUBLIC = ["nishman.be", "www.nishman.be"];
+  const previsualisation = PUBLIC.indexOf(hote) === -1;
 
   if (previsualisation) {
     return texte([
-      "# Adresse de prévisualisation — ne pas indexer.",
-      "# Le site public est servi sur nishman.be.",
+      "# Adresse de travail — ne pas indexer.",
+      "# Le site public est servi sur https://nishman.be",
       "User-agent: *",
       "Disallow: /",
     ]);
