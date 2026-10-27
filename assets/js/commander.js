@@ -335,7 +335,12 @@
     if (!msg) return;
     if (!saisi) { msg.hidden = true; return; }
     msg.hidden = false;
-    msg.textContent = d.promo ? t("promo_ok")(d.promo) : t("promo_non");
+    // Trois réponses possibles, et la deuxième n'est pas un refus du code :
+    // c'est une commande trop petite pour y avoir droit. Le dire évite au
+    // client de croire que son code est mauvais.
+    if (d.promo) msg.textContent = t("promo_ok")(d.promo);
+    else if (d.promo_refusee) msg.textContent = t("promo_trop_petit")(d.promo_refusee, d.promo_minimum);
+    else msg.textContent = t("promo_non");
   }
 
   /* --- Mise en route -------------------------------------------------- */

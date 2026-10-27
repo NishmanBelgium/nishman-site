@@ -61,6 +61,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Appliquer",
     promo_ok: (code) => "Code " + code + " appliqué.",
     promo_non: "Ce code n'est pas reconnu.",
+    promo_trop_petit: (code, mini) => "Le code " + code + " s'applique à partir de "
+      + mini.toFixed(2).replace(".", ",") + " € HT de commande.",
 
     ecartees: (n) => n + " article(s) de votre panier ne sont plus disponibles et ont été retirés.",
 
@@ -154,6 +156,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Apply",
     promo_ok: (code) => "Code " + code + " applied.",
     promo_non: "This code is not recognised.",
+    promo_trop_petit: (code, mini) => "Code " + code + " applies from "
+      + mini.toFixed(2) + " EUR excl. VAT upwards.",
 
     ecartees: (n) => n + " item(s) in your basket are no longer available and have been removed.",
 
@@ -246,6 +250,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Toepassen",
     promo_ok: (code) => "Code " + code + " toegepast.",
     promo_non: "Deze code wordt niet herkend.",
+    promo_trop_petit: (code, mini) => "Code " + code + " geldt vanaf "
+      + mini.toFixed(2).replace(".", ",") + " EUR excl. btw.",
 
     ecartees: (n) => n + " artikel(en) in uw mandje zijn niet meer beschikbaar en werden verwijderd.",
 
@@ -338,6 +344,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Anwenden",
     promo_ok: (code) => "Code " + code + " angewendet.",
     promo_non: "Dieser Code wird nicht erkannt.",
+    promo_trop_petit: (code, mini) => "Code " + code + " gilt ab "
+      + mini.toFixed(2).replace(".", ",") + " EUR netto.",
 
     ecartees: (n) => n + " Artikel in Ihrem Warenkorb sind nicht mehr verfügbar und wurden entfernt.",
 
@@ -430,6 +438,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Uygula",
     promo_ok: (code) => code + " kodu uyguland\u0131.",
     promo_non: "Bu kod tan\u0131nm\u0131yor.",
+    promo_trop_petit: (code, mini) => code + " kodu "
+      + mini.toFixed(2) + " EUR (KDV hariç) üzeri siparişlerde geçerlidir.",
 
     ecartees: (n) => "Sepetinizdeki " + n + " \u00fcr\u00fcn art\u0131k mevcut de\u011fil ve kald\u0131r\u0131ld\u0131.",
 

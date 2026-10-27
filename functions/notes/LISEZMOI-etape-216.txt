@@ -1,0 +1,67 @@
+ÉTAPE 216 — LES DÉCISIONS APPLIQUÉES
+=====================================
+
+Vos réponses du 27 octobre, et ce que j'en ai fait.
+
+
+1. FIRST10 : SEULEMENT AU-DESSUS DU SEUIL — FAIT
+------------------------------------------------
+La remise de 10 % ne s'applique plus qu'aux commandes qui atteignent le
+franco de port, REMISE DÉDUITE.
+
+Ce détail compte. J'aurais pu juger la commande sur son montant avant
+remise, c'était plus simple à expliquer. Mais Odoo, lui, ne connaît que le
+montant après remise : une commande belge de 320 € remisée tombe à 288 €,
+le site aurait offert le port et le mode de livraison Odoo l'aurait
+facturé. C'est précisément la divergence de barème qui vous avait déjà fait
+remonter des alertes en octobre. En jugeant sur le montant remisé, les deux
+comptent pareil — vérifié sur 2 400 montants, aucune divergence.
+
+En pratique, le code devient utilisable à partir de :
+    333,33 € HT pour la Belgique   (seuil de 300 €)
+    555,56 € HT pour la France et le Luxembourg   (seuil de 500 €)
+
+Et le client ne reçoit plus « ce code n'est pas reconnu » quand sa commande
+est simplement trop petite : il lit le montant à partir duquel le code
+s'applique, dans sa langue. Les cinq langues sont faites.
+
+
+2. PAIEMENT : MOLLIE — EN ATTENTE DE VOUS
+------------------------------------------
+Rien n'est câblé, rien n'est activé. L'ouverture du compte Mollie passe par
+vous ; dites-moi quand c'est fait et je branche le tunnel de paiement
+derrière la commande.
+
+
+3. DEVIS SANS COMPTE : NON — RIEN À FAIRE
+------------------------------------------
+Le site se comporte déjà ainsi depuis l'étape 202.
+
+
+4. POSITIONS FISCALES — MOITIÉ FAIT
+------------------------------------
+Vos trois noms sont désormais dans le site :
+
+    client belge                      National
+    FR/LU, numéro vérifié             Intracommunautaire
+    FR/LU, sans numéro valide         UE B2C
+
+Le site les envoie dans chaque demande, sous le champ « fiscalPosition ».
+Il reste à ce que le script Google les pose sur la commande Odoo : le bloc
+à coller est dans AJOUT-216-position-fiscale.txt, et je peux le coller
+moi-même si vous ouvrez l'éditeur de script dans Chrome.
+
+
+5. PRIX PUBLICS — EN ATTENTE DE VOTRE ARBITRAGE
+------------------------------------------------
+Vos 210 prix publics sont enregistrés et m'attendent. Je ne les publie pas :
+vous avez demandé à discuter d'abord de ce qu'on montre au visiteur non
+connecté, et c'est cette décision qui commande tout le reste.
+
+
+CONTRÔLES
+---------
+24 contrôles automatiques sur cette étape, tous passés : la règle FIRST10
+sur les trois pays, les cas limites autour du seuil, la correspondance
+régime → position fiscale, et le balayage de 2 400 montants cherchant une
+divergence de port entre le site et Odoo.

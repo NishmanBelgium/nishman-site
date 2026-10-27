@@ -17,6 +17,7 @@ import { json, erreur, compteConnecte, prolongerSiBesoin, texteValide, paysValid
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
+import { positionFiscale } from "../_fiscal.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 
@@ -98,6 +99,8 @@ function chargeUtile({ ref, compte, resultat, langue, livraison, tva }) {
     // Le régime arrêté par le site. Odoo doit facturer ce que le client a lu,
     // et non le redéduire de son côté avec d'autres règles.
     vatRegime: resultat.regime,
+    // Le nom exact de la position fiscale à poser sur le devis Odoo.
+    fiscalPosition: positionFiscale(resultat.regime, env),
     vatRate: String(Math.round((resultat.taux_tva || 0) * 100)),
     vatAmount: resultat.tva.toFixed(2),
     grandTotal: resultat.total.toFixed(2),

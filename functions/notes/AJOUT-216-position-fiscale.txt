@@ -1,0 +1,70 @@
+AJOUT 216 — POSER LA POSITION FISCALE SUR LE DEVIS ODOO
+=======================================================
+
+Le site envoie désormais, dans chaque demande, un champ « fiscalPosition »
+qui vaut selon le client :
+
+    National             client belge, TVA belge 21 %
+    Intracommunautaire   FR/LU avec numéro vérifié : autoliquidation
+    UE B2C               FR/LU sans numéro valide : TVA belge
+
+Il reste à ce que le script pose cette position sur la commande Odoo.
+
+
+1. LE CHERCHEUR — à coller à la fin du script, avec les autres fonctions
+   -----------------------------------------------------------------------
+   Il retrouve la fiche en ignorant la casse, comme pour les modes de
+   livraison : Odoo compare caractère par caractère, et « National » ne
+   trouvait pas « NATIONAL ».
+
+function positionFiscale_(nom) {
+  var voulu = String(nom || "").trim();
+  if (!voulu) return null;
+  var toutes = odooCall("account.fiscal.position", "search_read",
+    [[], ["id", "name"]], { limit: 80 });
+  for (var i = 0; i < toutes.length; i++) {
+    if (memeNom_(toutes[i].name, voulu)) return toutes[i].id;
+  }
+  try {
+    alerter("Position fiscale introuvable", { demandee: voulu },
+      "Le site a demande la position fiscale \"" + voulu + "\", absente d'Odoo. "
+      + "Le devis est cree sans position : verifiez-la avant de facturer.");
+  } catch (err) {}
+  return null;
+}
+
+
+2. L'APPEL — une ligne, là où le script compose la commande
+   -----------------------------------------------------------------------
+   Cherchez l'endroit où le script prépare les valeurs de la commande, juste
+   avant le create("sale.order", ...). Les valeurs y sont rassemblées dans un
+   objet qui contient déjà partner_id. Ajoutez-y ces deux lignes :
+
+  var pf_ = positionFiscale_(d.fiscalPosition);
+  if (pf_) valeurs.fiscal_position_id = pf_;
+
+   Si l'objet ne s'appelle pas « valeurs » chez vous, remplacez ce mot par
+   son nom — c'est celui qui est passé à create("sale.order", ...).
+
+
+POURQUOI CE DÉTOUR
+------------------
+Odoo sait déduire une position fiscale tout seul, à partir du pays et du
+numéro de TVA du client. Le problème est qu'il la déduit avec SES règles,
+pendant que le site facture avec les siennes. Deux raisonnements
+indépendants tombent d'accord sur les cas courants et divergent sur les cas
+limites — exactement ce qui s'était produit avec les frais de port.
+
+Le site tranche, Odoo applique. Une seule décision, un seul endroit.
+
+
+SI VOUS RENOMMEZ UNE POSITION DANS ODOO
+---------------------------------------
+Pas besoin de toucher au code. Trois variables Cloudflare, facultatives,
+remplacent les noms par défaut :
+
+    FP_NATIONAL   (défaut : National)
+    FP_INTRACOM   (défaut : Intracommunautaire)
+    FP_UE_B2C     (défaut : UE B2C)
+
+Elles sont de type Text, pas Secret : ce ne sont pas des secrets.

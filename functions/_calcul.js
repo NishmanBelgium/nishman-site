@@ -101,9 +101,23 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
 
   const sousTotal = sou(lignes.reduce((s, l) => s + l.total, 0));
 
-  const promoOk = sousTotal > 0 &&
+  // FIRST10 ne s'applique qu'aux commandes qui atteignent le franco de port,
+  // REMISE DÉDUITE. Deux raisons de le juger sur le montant remisé plutôt que
+  // sur le sous-total : c'est la règle demandée (pas de remise sur les
+  // petites commandes), et c'est le seul montant qu'Odoo connaisse. Juger
+  // avant remise créerait des commandes où le site offre le port et où le
+  // mode de livraison Odoo le facture — exactement la divergence de barème
+  // qui avait déjà fait remonter des alertes.
+  const codeDonne = sousTotal > 0 &&
     String(promo || "").trim().toUpperCase() === PROMO.code;
-  const remise = promoOk ? sou(sousTotal * PROMO.taux) : 0;
+  const remiseEventuelle = codeDonne ? sou(sousTotal * PROMO.taux) : 0;
+  const seuilPays = (PORT[pays] || PORT.BE).seuil;
+  const promoOk = codeDonne && sou(sousTotal - remiseEventuelle) >= seuilPays;
+  const remise = promoOk ? remiseEventuelle : 0;
+
+  // Le minimum de commande à partir duquel le code devient utilisable, pour
+  // pouvoir le dire au client au lieu de refuser sans expliquer.
+  const promoMinimum = sou(seuilPays / (1 - PROMO.taux));
 
   const marchandise = sou(sousTotal - remise);
 
@@ -119,6 +133,9 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
     lignes, ignorees,
     sous_total: sousTotal,
     promo: promoOk ? PROMO.code : "",
+    // Le code a été donné mais écarté : la page doit pouvoir dire pourquoi.
+    promo_refusee: codeDonne && !promoOk ? PROMO.code : "",
+    promo_minimum: promoMinimum,
     remise,
     marchandise,
     port, port_seuil: seuil, port_manque: manque,
