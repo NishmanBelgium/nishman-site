@@ -197,7 +197,13 @@ export async function onRequestGet({ request, params, env }) {
   return new Response(page(trouve.produit, base, indexable), {
     headers: {
       "content-type": "text/html; charset=utf-8",
-      "cache-control": "public, max-age=300, s-maxage=3600",
+      // Un prix doit correspondre au flux Google au centime près : une page
+      // gardée une heure en cache afficherait l'ancien prix après une
+      // modification, et c'est exactement le motif de refus qu'on cherche à
+      // éviter. Le navigateur revérifie à chaque visite, le cache de
+      // Cloudflare ne garde la page qu'une minute, et peut servir une version
+      // d'au plus dix minutes pendant qu'il la rafraîchit.
+      "cache-control": "public, max-age=0, s-maxage=60, stale-while-revalidate=600",
     },
   });
 }
