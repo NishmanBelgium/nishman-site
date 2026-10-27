@@ -108,6 +108,52 @@ async function facturer(env, orderId, journal) {
   return { id: factureIds[0], nom: principale.name || "" };
 }
 
+/**
+ * Le lettrage : dire à la comptabilité que cette facture est payée.
+ *
+ * Sans lui, Mollie a encaissé et Odoo affiche encore « montant dû ». Les
+ * relances partent vers des clients qui ont payé, et le compte client ne
+ * veut plus rien dire.
+ *
+ * Le journal n'a PAS de valeur par défaut, et c'est délibéré. Mollie ne
+ * verse pas à l'unité : il regroupe plusieurs paiements et vire le total
+ * quelques jours plus tard. Lettrer directement sur le journal bancaire
+ * ferait apparaître deux fois le même argent — une fois à l'encaissement,
+ * une fois au virement — et le rapprochement bancaire deviendrait
+ * ingérable.
+ *
+ * Le bon montage est un journal dédié à Mollie, qui sert de compte
+ * d'attente : les encaissements y entrent un par un, le virement de Mollie
+ * les en sort en bloc. C'est un choix comptable, il revient à NBD, et tant
+ * qu'il n'est pas fait la chaîne s'arrête ici sans rien casser.
+ */
+async function lettrer(env, factureIds, journalNom, journal) {
+  const cible = String(journalNom || "").trim().toLowerCase();
+  const trouves = await appel(env, "account.journal", "search_read",
+    [[["type", "in", ["bank", "cash"]]], ["id", "name", "type"]], { limit: 50 });
+
+  const j = (trouves || []).find((x) => String(x.name || "").trim().toLowerCase() === cible);
+  if (!j) {
+    throw new Error("le journal « " + journalNom + " » n'existe pas parmi les journaux "
+      + "de banque et de caisse : " + (trouves || []).map((x) => x.name).join(", "));
+  }
+
+  const contexte = { active_model: "account.move", active_ids: factureIds };
+  const assistant = await appel(env, "account.payment.register", "create",
+    [{ journal_id: j.id }], { context: contexte });
+  if (!assistant) throw new Error("l'assistant d'enregistrement de paiement n'a pas pu être ouvert");
+
+  await appel(env, "account.payment.register", "action_create_payments",
+    [[assistant]], { context: contexte });
+
+  const relu = await appel(env, "account.move", "read",
+    [factureIds, ["name", "payment_state", "amount_residual"]], {});
+  const etat = (relu && relu[0]) ? String(relu[0].payment_state || "") : "";
+  ligne(journal, "lettrage", true,
+    "paiement enregistré sur « " + j.name + " »"
+    + (etat ? " — état de paiement : " + etat : ""));
+}
+
 /* --- L'enchaînement ------------------------------------------------------ */
 
 /**
@@ -145,10 +191,32 @@ export async function poursuivre(env, db, p) {
       });
     }
 
-    // L'étiquette d'expédition viendra se placer ici. Tant qu'elle n'est
-    // pas en service, une commande facturée est une commande finie du point
-    // de vue de cette chaîne : le bon de livraison attend NBD dans Odoo.
     if (etape === "facturee") {
+      const journalNom = String((env && env.JOURNAL_MOLLIE) || "").trim();
+      if (journalNom) {
+        const lu = await appel(env, "sale.order", "read", [[p.odoo_order_id], ["invoice_ids"]], {});
+        const factureIds = (lu && lu[0] && Array.isArray(lu[0].invoice_ids)) ? lu[0].invoice_ids : [];
+        if (!factureIds.length) throw new Error("aucune facture à lettrer");
+        await lettrer(env, factureIds, journalNom, journal);
+        etape = "lettree";
+        await noterEtape(db, p.mollie_id, etape, {
+          note: "Facture " + (factureNom || factureId) + " lettrée sur « " + journalNom + " ».",
+        });
+      } else {
+        // Pas de journal choisi : la facture reste ouverte, et on le dit.
+        etape = "lettree";
+        await noterEtape(db, p.mollie_id, etape, {
+          note: "Facture " + (factureNom || factureId) + " comptabilisée. "
+              + "Lettrage non effectué : aucun journal Mollie n'est configuré (JOURNAL_MOLLIE).",
+        });
+        ligne(journal, "lettrage", true,
+          "ignoré : aucun journal Mollie configuré, la facture reste à lettrer");
+      }
+    }
+
+    // L'étiquette d'expédition viendra se placer ici. Tant qu'elle n'est
+    // pas en service, le bon de livraison attend NBD dans Odoo.
+    if (etape === "lettree") {
       etape = "fini";
       await noterEtape(db, p.mollie_id, etape, null);
       ligne(journal, "expédition", true, "bon de livraison prêt dans Odoo, à préparer et étiqueter");

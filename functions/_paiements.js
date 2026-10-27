@@ -55,12 +55,14 @@ export async function preparerTable(db) {
  *   rien        le paiement n'est pas encore confirmé
  *   confirmee   la commande est passée en commande client dans Odoo
  *   facturee    la facture existe et est comptabilisée
+ *   lettree     le paiement est enregistré sur la facture — ou le lettrage
+ *               a été écarté faute de journal configuré, ce qui est dit
  *   fini        plus rien à faire
  *
  * L'ordre compte : chaque étape suppose la précédente. Reprendre une suite
  * interrompue consiste à repartir de l'étape atteinte, pas du début.
  */
-export const ETAPES = ["rien", "confirmee", "facturee", "fini"];
+export const ETAPES = ["rien", "confirmee", "facturee", "lettree", "fini"];
 
 export async function noterEtape(db, mollieId, etape, extra) {
   await preparerTable(db);
