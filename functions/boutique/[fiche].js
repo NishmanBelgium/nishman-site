@@ -99,19 +99,23 @@ function page(p, base, indexable) {
 </header>
 
 <main class="fiche-page" itemscope itemtype="https://schema.org/Product">
-  <meta itemprop="gtin13" content="${echapper(p.ean)}" />
-  <meta itemprop="sku" content="${echapper(p.ean)}" />
-  <meta itemprop="category" content="${echapper(p.famille || "")}" />
-  <div itemprop="brand" itemscope itemtype="https://schema.org/Brand">
-    <meta itemprop="name" content="NISHMAN" />
-  </div>
-
   <div class="fiche-visuel">
     <img itemprop="image" src="/assets/img/products/${echapper(p.image)}"
          alt="${echapper(p.nom)}" width="900" height="900" />
   </div>
 
   <div>
+    <!-- Les données que Google lit sans qu'elles s'affichent. Elles vivent
+         DANS la colonne de texte : posées entre les deux colonnes, le bloc
+         « marque » comptait comme une case de la grille et décalait la mise
+         en page d'un cran. -->
+    <meta itemprop="gtin13" content="${echapper(p.ean)}" />
+    <meta itemprop="sku" content="${echapper(p.ean)}" />
+    <meta itemprop="category" content="${echapper(p.famille || "")}" />
+    <div itemprop="brand" itemscope itemtype="https://schema.org/Brand" hidden>
+      <meta itemprop="name" content="NISHMAN" />
+    </div>
+
     <a class="fiche-retour" href="/boutique/">← Toute la boutique</a>
     <div class="fiche-fam">${echapper(p.famille || "")}</div>
     <h1 class="fiche-titre" itemprop="name">${echapper(nom)}</h1>
