@@ -200,6 +200,11 @@ export async function onRequestGet({ request, env }) {
     liaisons: liaisons,
     consequences: consequences,
     alertes: alertes,
+    // Les NOMS des variables que ce déploiement reçoit réellement. Jamais
+    // les valeurs. Quand une variable est bien posée chez Cloudflare mais
+    // que le site jure ne pas la voir, c'est la seule façon de trancher
+    // entre « mal nommée », « mauvais environnement » et « pas déployée ».
+    variables_vues: Object.keys(env || {}).sort(),
     adresse_du_script: adressePortier(env).replace(/\/[^/]{12,}\/exec$/, "/…/exec"),
     date: new Date().toISOString(),
   });
