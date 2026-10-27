@@ -62,7 +62,7 @@ function adresseLivraison(brut) {
  * Ce que le script Google attend. On garde exactement les clés qu'il lit
  * déjà : le script reste inchangé, c'est le chemin qui change.
  */
-function chargeUtile({ ref, compte, resultat, langue, livraison, tva }) {
+function chargeUtile({ ref, compte, resultat, langue, livraison, tva, env }) {
   const pays = PAYS_NOM[compte.pays] || "Belgique";
   return {
     type: "order",
@@ -211,7 +211,7 @@ export async function onRequestPost({ request, env }) {
 
   const ref = reference();
   const langue = ["fr", "en", "nl", "de", "tr"].includes(corps.langue) ? corps.langue : "fr";
-  const charge = chargeUtile({ ref, compte, resultat, langue, livraison, tva });
+  const charge = chargeUtile({ ref, compte, resultat, langue, livraison, tva, env });
 
   let reponse;
   try {
