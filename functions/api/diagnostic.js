@@ -22,6 +22,7 @@ import { verifier as verifierTva } from "../_vies.js";
 import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "../_odoo.js";
 import { catalogue } from "../_tarifs.js";
 import { configureMollie, modeMollie, appelMollie } from "../_mollie.js";
+import { configureSendcloud, compteSendcloud } from "../_sendcloud.js";
 
 const ADMIN_DEFAUT = "contact@nishman.be";
 
@@ -188,6 +189,35 @@ async function etatProduits(env, request) {
   };
 }
 
+/**
+ * SendCloud. Le site ira chercher les étiquettes lui-même, le connecteur
+ * d'Odoo s'étant montré inutilisable sur les envois à plusieurs colis. Ce
+ * contrôle lit le compte : aucune étiquette n'est créée, rien n'est
+ * facturé.
+ */
+async function etatSendcloud(env) {
+  if (!configureSendcloud(env)) {
+    return { ok: false, configure: false,
+             detail: "Les clés SendCloud (SENDCLOUD_PUBLIC et SENDCLOUD_SECRET) ne sont pas "
+                   + "renseignées chez Cloudflare. Les étiquettes resteront à créer à la main." };
+  }
+  try {
+    const u = await compteSendcloud(env);
+    const nom = (u && (u.company_name || u.username)) || "compte inconnu";
+    return { ok: true, configure: true, compte: nom,
+             detail: "SendCloud accepte les clés — compte « " + nom + " »." };
+  } catch (e) {
+    if (e && e.statut === 401) {
+      return { ok: false, configure: true,
+               detail: "SendCloud refuse ces clés. Vérifiez qu'elles ont été copiées en entier "
+                     + "et qu'il s'agit bien de la clé publique et de la clé secrète." };
+    }
+    return { ok: false, configure: true,
+             detail: "SendCloud n'a pas pu être interrogé : "
+                   + String(e && e.message || "erreur").slice(0, 200) };
+  }
+}
+
 export async function onRequestGet({ request, env }) {
   const compte = env.DB ? await compteConnecte(request, env.DB) : null;
   // EMAIL_ADMIN accepte plusieurs adresses séparées par des virgules :
@@ -201,13 +231,14 @@ export async function onRequestGet({ request, env }) {
 
   const impossible = (e) => ({ ok: false, detail: "Contrôle impossible : " + (e && e.message) });
 
-  const [base, portier, vies, odoo, mollie, produits] = await Promise.all([
+  const [base, portier, vies, odoo, mollie, produits, sendcloud] = await Promise.all([
     etatBase(env.DB),
     etatPortier(env).catch(impossible),
     etatVies(env).catch(impossible),
     etatOdoo(env).catch(impossible),
     etatMollie(env).catch(impossible),
     etatProduits(env, request).catch(impossible),
+    etatSendcloud(env).catch(impossible),
   ]);
 
   const liaisons = {
@@ -217,6 +248,7 @@ export async function onRequestGet({ request, env }) {
     odoo_direct: odoo,
     mollie: mollie,
     produits_odoo: produits,
+    sendcloud: sendcloud,
   };
 
   // Ce que la panne empêche concrètement, dit en clair.
@@ -230,6 +262,7 @@ export async function onRequestGet({ request, env }) {
   if (!odoo.ok) consequences.push("Le site ne peut pas créer de commande directement dans Odoo.");
   if (!mollie.ok) consequences.push("Aucun paiement en ligne ne peut être encaissé.");
   if (!produits.ok) consequences.push("Certaines références ne pourront pas être portées sur une commande Odoo.");
+  if (!sendcloud.ok) consequences.push("Les étiquettes d'expédition devront être créées à la main.");
 
   // Un avertissement, pas une panne : la clé réelle fonctionne parfaitement,
   // mais elle déplace de l'argent. Tant que la chaîne n'est pas éprouvée de
@@ -241,13 +274,13 @@ export async function onRequestGet({ request, env }) {
                + "remplacez-la par la clé de test (préfixe « test_ »).");
   }
 
-  const tout = base.ok && portier.ok && vies.ok && odoo.ok && mollie.ok && produits.ok;
+  const tout = base.ok && portier.ok && vies.ok && odoo.ok && mollie.ok && produits.ok && sendcloud.ok;
 
   return json({
     ok: true,
     tout_va_bien: tout,
     resume: tout
-      ? "Les six contrôles du site répondent normalement."
+      ? "Les sept contrôles du site répondent normalement."
       : "Un contrôle au moins ne passe pas. Voir le détail ci-dessous.",
     liaisons: liaisons,
     consequences: consequences,
