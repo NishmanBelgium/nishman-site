@@ -51,8 +51,30 @@
     return;
   }
 
+  // « ?pro » : on vient de cliquer « Espace professionnel » depuis la
+  // boutique. C'est une intention explicite, elle remplace le choix retenu.
+  if (location.search.indexOf("pro") !== -1) {
+    retenir("salon");
+    if (document.readyState === "complete") versCatalogue(false);
+    else window.addEventListener("load", function () { versCatalogue(false); });
+    return;
+  }
+
+  // Le piège qu'il fallait désamorcer : un visiteur qui avait choisi la
+  // boutique cliquait « Espace professionnel », arrivait ici, et se faisait
+  // renvoyer à la boutique. Boucle sans issue.
+  //
+  // La règle : on ne redirige QUE quelqu'un qui arrive d'ailleurs. Venir
+  // d'une autre page du site est une navigation voulue, et une navigation
+  // voulue ne se corrige pas.
+  var interne = false;
+  try {
+    interne = !!document.referrer &&
+      new URL(document.referrer).host === location.host;
+  } catch (e) {}
+
   var choix = lire();
-  if (choix === "client") { location.replace("/boutique/"); return; }
+  if (choix === "client" && !interne) { location.replace("/boutique/"); return; }
   if (choix === "salon") {
     // Sans animation : on n'a pas choisi, on revient chez soi.
     if (document.readyState === "complete") versCatalogue(false);
