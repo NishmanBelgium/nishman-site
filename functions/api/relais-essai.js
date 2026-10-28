@@ -79,7 +79,12 @@ export async function onRequestGet({ request, env }) {
 
   const url = new URL(request.url);
   const pays = String(url.searchParams.get("pays") || "BE").toUpperCase();
-  const lieu = SONDAGE[pays] || SONDAGE.BE;
+  const defaut = SONDAGE[pays] || SONDAGE.BE;
+  // Un code postal au choix : la recherche de points relais dépend
+  // entièrement du lieu, et un code postal mal choisi fait conclure à tort
+  // qu'un pays n'est pas desservi.
+  const cpDemande = String(url.searchParams.get("cp") || "").trim();
+  const lieu = cpDemande ? { cp: cpDemande, ville: "code postal demandé" } : defaut;
 
   const sorties = {};
 
