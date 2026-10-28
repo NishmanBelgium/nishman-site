@@ -174,6 +174,7 @@ function page(p, base, indexable) {
   });
 })();
 </script>
+<script src="/assets/js/mesure.js?v=278" defer></script>
 </body>
 </html>`;
 }
