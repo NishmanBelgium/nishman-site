@@ -149,16 +149,44 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref }) {
       "Certaines références n'existent pas dans Odoo.", manquants);
   }
 
+  // LA TAXE « TOUTES TAXES COMPRISES ».
+  //
+  // Les prix de la boutique sont TTC, et c'est le prix affiché qui engage.
+  // Si on transmettait le hors-taxe, Odoo le multiplierait par la quantité
+  // puis ajouterait 21 % : quatre articles à 7,90 € deviendraient 31,61 €
+  // au lieu de 31,60 €, parce qu'avec une base hors taxe au centime,
+  // 31,60 € n'est pas un montant atteignable.
+  //
+  // On lui donne donc le prix TTC avec une taxe déclarée « toutes taxes
+  // comprises » : Odoo fait la division lui-même et retombe exactement sur
+  // notre total. La taxe est une copie de « 21% Ventes » — mêmes grilles de
+  // déclaration (03/54, 49/64) — avec la seule case « Inclus dans le prix »
+  // changée. Les ventes professionnelles, elles, continuent en hors taxe.
+  // Recherche sur le nom exact : « 21% TTC » contient un %, qui serait un
+  // joker dans une recherche « ilike ».
+  const nomTaxe = String((env && env.TAXE_TTC) || "21% TTC").trim();
+  const trouvees = await appel(env, "account.tax", "search_read",
+    [[["name", "=", nomTaxe], ["type_tax_use", "=", "sale"]], ["id", "name"]],
+    { limit: 2 });
+  const taxe = (trouvees && trouvees.length === 1) ? trouvees[0] : null;
+  if (!taxe) {
+    throw echec("taxe_introuvable",
+      "La taxe « " + nomTaxe + " » n'existe pas dans Odoo. Sans elle, le total "
+      + "facturé ne correspondrait pas au prix affiché.", nomTaxe);
+  }
+  const taxes = [[6, 0, [taxe.id]]];
+
   const lignes = resultat.lignes.map((l) => [0, 0, {
     product_id: produits[l.ean].id,
     product_uom_qty: l.quantite,
-    price_unit: l.prix_unitaire_ht,
+    price_unit: l.prix_unitaire,
+    tax_id: taxes,
   }]);
 
   // Le port emprunte le produit du mode de livraison du pays, pour tomber
   // dans le même compte comptable que les ports saisis à la main.
   let carrierId = null;
-  if (resultat.port_ht > 0) {
+  if (resultat.port > 0) {
     const mode = await parNomInsensible(env, "delivery.carrier",
       nomLivraison(client.pays, env), ["id", "name", "product_id"]);
     if (!mode) {
@@ -174,7 +202,8 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref }) {
     lignes.push([0, 0, {
       product_id: produitPort,
       product_uom_qty: 1,
-      price_unit: resultat.port_ht,
+      price_unit: resultat.port,
+      tax_id: taxes,
     }]);
   }
 

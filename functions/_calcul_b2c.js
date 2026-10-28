@@ -50,22 +50,27 @@ function sou(n) { return Math.round(Number(n) * 100) / 100; }
 
 /* --- La question des centimes -------------------------------------------
  *
- * Les prix de la boutique sont TTC : 9,90 € le wax. Odoo, lui, raisonne en
- * hors taxe et ajoute la TVA ligne par ligne. Les deux chemins ne tombent
- * pas toujours sur le même centime.
+ * Les prix de la boutique sont TTC : 7,90 € le wax. C'est le prix affiché,
+ * et en vente au consommateur c'est celui-là qui engage : quatre wax
+ * doivent coûter 31,60 €, pas un centime de plus.
  *
- * Trois wax : 3 × 9,90 = 29,70 € en partant du TTC. Odoo prend 9,90 / 1,21
- * = 8,18 € hors taxe, multiplie par trois (24,54 €), applique 21 %
- * (5,15 €) et obtient 29,69 €. Un centime d'écart.
+ * Pendant un temps, ce fichier a calculé à l'envers — hors taxe d'abord,
+ * arrondi au centime, TVA ensuite — pour imiter Odoo et que la facture se
+ * solde sans résidu. C'était un bon réflexe appliqué au mauvais endroit :
+ * 7,90 / 1,21 = 6,53 €, puis 6,53 × 4 = 26,12 €, puis +21 % = 31,61 €. Un
+ * centime de trop, et la mesure sur tout le catalogue donnait 26 % des cas
+ * facturés au-dessus du prix affiché.
  *
- * Ce centime n'est pas un détail. Si le client paie 29,70 € et que la
- * facture Odoo dit 29,69 €, le lettrage laisse un résidu et la facture
- * reste éternellement « partiellement payée ». Multiplié par les
- * commandes, c'est un carnet de clients impossible à lire.
+ * Le problème n'était pas l'arrondi mais le sens du calcul. Avec une base
+ * hors taxe à deux décimales, 31,60 € n'existe tout simplement pas : les
+ * seuls montants atteignables sont 31,59 et 31,61. Aucun arrondi ne crée
+ * un nombre qui n'existe pas.
  *
- * On calcule donc comme Odoo, et pas comme un panier : hors taxe d'abord,
- * arrondi à chaque ligne, TVA ensuite. Le client voit 29,69 €, paie
- * 29,69 €, et la facture se solde au centime.
+ * On part donc du TTC, qui est la vérité commerciale, et on en déduit le
+ * hors-taxe. Pour qu'Odoo tombe sur le même chiffre, la commande lui
+ * transmet le prix TTC avec la taxe « 21% TTC » (toutes taxes comprises) :
+ * Odoo fait alors la même division que nous, et la facture se solde au
+ * centime — ce que l'ancienne méthode cherchait, obtenu dans le bon sens.
  */
 function htDepuisTtc(ttc, taux) { return sou(Number(ttc) / (1 + taux)); }
 
@@ -102,10 +107,9 @@ export function calculerB2C({ selection, produits, pays }) {
     const affiche = Number(p.ttc);
     if (!(affiche > 0)) { ignorees.push(ean); continue; }
 
-    // Le hors-taxe de la ligne est ce qui partira dans Odoo. Tout le reste
-    // en découle, y compris le prix unitaire réaffiché au client.
-    const puHt = htDepuisTtc(affiche, taux);
-    const totalHt = sou(puHt * q);
+    // Le prix affiché est le prix dû. Le total de la ligne est sa simple
+    // multiplication, et c'est lui qui partira dans Odoo.
+    const totalLigne = sou(affiche * q);
 
     lignes.push({
       ean,
@@ -114,16 +118,19 @@ export function calculerB2C({ selection, produits, pays }) {
       image: p.image || "",
       volume: p.volume || "",
       quantite: q,
-      prix_unitaire_ht: puHt,
-      prix_unitaire: sou(puHt * (1 + taux)),
-      total_ht: totalHt,
-      total: sou(totalHt * (1 + taux)),
+      // Le hors-taxe ne sert plus qu'à l'affichage et aux exports : Odoo le
+      // recalcule lui-même à partir du TTC, avec la taxe « toutes taxes
+      // comprises ». On le donne quand même, au même arrondi.
+      prix_unitaire_ht: htDepuisTtc(affiche, taux),
+      prix_unitaire: affiche,
+      total_ht: htDepuisTtc(totalLigne, taux),
+      total: totalLigne,
     });
     n++;
   }
 
-  const sousTotalHt = sou(lignes.reduce((s, l) => s + l.total_ht, 0));
-  const sousTotal = sou(sousTotalHt * (1 + taux));
+  const sousTotal = sou(lignes.reduce((s, l) => s + l.total, 0));
+  const sousTotalHt = htDepuisTtc(sousTotal, taux);
 
   // Le franco se juge sur le montant que le client voit, c'est-à-dire le
   // TTC de la marchandise : « livraison offerte dès 29,90 € » doit vouloir
@@ -137,16 +144,20 @@ export function calculerB2C({ selection, produits, pays }) {
   const manque = (sousTotal > 0 && sousTotal < REGLES.franco)
     ? sou(REGLES.franco - sousTotal) : 0;
 
-  const baseHt = sou(sousTotalHt + portHt);
-  const tva = sou(baseHt * taux);
-  const total = sou(baseHt + tva);
+  // Le total est la somme de ce que le client a lu : marchandise affichée
+  // plus port affiché. Le hors-taxe et la TVA en découlent, et la TVA est
+  // prise comme la différence pour que les trois chiffres se recomposent
+  // exactement — jamais 31,59 + 6,64 = 42,23 au lieu de 31,60.
+  const total = sou(sousTotal + portTtc);
+  const baseHt = htDepuisTtc(total, taux);
+  const tva = sou(total - baseHt);
 
   return {
     lignes,
     ignorees,
     sous_total_ht: sousTotalHt,
     sous_total: sousTotal,
-    port: sou(portHt * (1 + taux)),
+    port: portTtc,
     port_ht: portHt,
     port_affiche: portTtc,
     port_offert: offert && sousTotal > 0,
