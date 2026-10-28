@@ -125,7 +125,7 @@ export async function onRequestGet({ request, env }) {
     //
     // La chaîne, elle, continue : chaque sollicitation reprend là où elle
     // s'était arrêtée, que cette page l'ait annoncée terminée ou non.
-    traite: ["facturee", "lettree", "envoyee", "fini"].indexOf(etape) >= 0,
+    traite: ["facturee", "lettree", "envoyee", "expediee", "fini"].indexOf(etape) >= 0,
     // Pour NBD : l'étape réelle est renvoyée telle quelle juste au-dessus.
     etape_finale: etape === "fini",
     // Le paiement est-il perdu sans retour ? La page garde alors le panier

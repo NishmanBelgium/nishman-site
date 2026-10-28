@@ -106,7 +106,7 @@ export async function onRequestGet({ request, env }) {
     // commande existe. Le lettrage et l'envoi de la preuve d'achat sont nos
     // affaires, et un retard de notre côté ne doit pas lui laisser un écran
     // qui tourne.
-    traite: ["facturee", "lettree", "envoyee", "fini"].indexOf(etape) >= 0,
+    traite: ["facturee", "lettree", "envoyee", "expediee", "fini"].indexOf(etape) >= 0,
     perdu: statut === "annule" || statut === "expire" || statut === "echoue",
   });
 }

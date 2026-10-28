@@ -43,6 +43,8 @@ export async function preparerTable(db) {
     "ALTER TABLE paiements ADD COLUMN etape TEXT NOT NULL DEFAULT 'rien'",
     "ALTER TABLE paiements ADD COLUMN facture_id INTEGER",
     "ALTER TABLE paiements ADD COLUMN facture_nom TEXT",
+    "ALTER TABLE paiements ADD COLUMN relais_id INTEGER",
+    "ALTER TABLE paiements ADD COLUMN suivi TEXT",
   ]) {
     try { await db.exec(sql); } catch (e) { /* colonne déjà présente */ }
   }
@@ -58,6 +60,7 @@ export async function preparerTable(db) {
  *   lettree     le paiement est enregistré sur la facture — ou le lettrage
  *               a été écarté faute de journal configuré, ce qui est dit
  *   envoyee     la facture est partie chez le client
+ *   expediee    l'étiquette est créée et le suivi est dans Odoo
  *   fini        plus rien à faire
  *
  * L'ordre compte : chaque étape suppose la précédente. Reprendre une suite
@@ -69,7 +72,7 @@ export async function preparerTable(db) {
  * comme « fini », mais pour l'autre issue, et la laisser hors de l'ordre
  * évite qu'une reprise ne la prenne pour une étape à dépasser.
  */
-export const ETAPES = ["rien", "confirmee", "facturee", "lettree", "envoyee", "fini"];
+export const ETAPES = ["rien", "confirmee", "facturee", "lettree", "envoyee", "expediee", "fini"];
 
 export async function noterEtape(db, mollieId, etape, extra) {
   await preparerTable(db);
@@ -77,6 +80,7 @@ export async function noterEtape(db, mollieId, etape, extra) {
   const vals = [etape, new Date().toISOString()];
   if (extra && extra.facture_id) { champs.push("facture_id = ?"); vals.push(extra.facture_id); }
   if (extra && extra.facture_nom) { champs.push("facture_nom = ?"); vals.push(extra.facture_nom); }
+  if (extra && extra.suivi) { champs.push("suivi = ?"); vals.push(extra.suivi); }
   if (extra && extra.note !== undefined) { champs.push("note = ?"); vals.push(extra.note); }
   vals.push(mollieId);
   await db.prepare("UPDATE paiements SET " + champs.join(", ") + " WHERE mollie_id = ?")
@@ -88,10 +92,11 @@ export async function enregistrer(db, p) {
   const maintenant = new Date().toISOString();
   await db.prepare(
     "INSERT INTO paiements (mollie_id, ref, compte_id, odoo_order_id, odoo_nom, " +
-    "montant, devise, statut, cree_le, vu_le) VALUES (?, ?, ?, ?, ?, ?, ?, 'ouvert', ?, ?)"
+    "montant, devise, statut, relais_id, cree_le, vu_le) " +
+    "VALUES (?, ?, ?, ?, ?, ?, ?, 'ouvert', ?, ?, ?)"
   ).bind(
     p.mollie_id, p.ref, p.compte_id, p.odoo_order_id, p.odoo_nom || null,
-    p.montant, p.devise || "EUR", maintenant, maintenant
+    p.montant, p.devise || "EUR", p.relais_id || null, maintenant, maintenant
   ).run();
 }
 

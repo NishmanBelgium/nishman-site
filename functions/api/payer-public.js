@@ -215,6 +215,7 @@ export async function onRequestPost({ request, env }) {
       odoo_nom: commande.nom || "",
       montant: valeur,
       devise: "EUR",
+      relais_id: relais.id,
     });
   } catch (e) {
     return json({

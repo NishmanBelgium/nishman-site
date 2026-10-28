@@ -155,6 +155,50 @@ async function etatMollie(env) {
 }
 
 /**
+ * Le poids des produits dans Odoo.
+ *
+ * Il décide de la tranche tarifaire du transporteur, donc du prix payé et
+ * de l'acceptation du colis au centre de tri. Un poids absent n'empêche pas
+ * d'expédier — le site approxime — mais une approximation systématique finit
+ * par coûter une tranche de trop sur chaque envoi.
+ */
+async function etatPoids(env, request) {
+  if (!configureOdoo(env)) {
+    return { ok: false, detail: "Odoo n'est pas configuré : poids non vérifiables." };
+  }
+  let produits;
+  try { produits = await catalogue(request); }
+  catch (e) { return { ok: false, detail: "Catalogue illisible." }; }
+  const codes = [...new Set((produits || [])
+    .map((p) => String((p && p.ean) || "").trim())
+    .filter((e) => /^\d{8,14}$/.test(e)))];
+  if (!codes.length) return { ok: true, detail: "Aucune référence à vérifier." };
+
+  let avec = 0, sans = [];
+  const PAQUET = 100;
+  for (let i = 0; i < codes.length; i += PAQUET) {
+    const lot = codes.slice(i, i + PAQUET);
+    const r = await appelOdoo(env, "product.product", "search_read",
+      [[["barcode", "in", lot]], ["barcode", "name", "weight"]], { limit: lot.length });
+    for (const p of r || []) {
+      if (Number(p.weight) > 0) avec++;
+      else sans.push(p.name);
+    }
+  }
+  const total = avec + sans.length;
+  return {
+    ok: sans.length === 0,
+    renseignes: avec, total,
+    sans_poids: sans.slice(0, 12),
+    detail: sans.length === 0
+      ? "Les " + total + " références ont un poids dans Odoo."
+      : avec + " références sur " + total + " ont un poids. Les " + sans.length
+        + " autres partiront avec un poids approximé à 250 g la pièce, ce qui peut "
+        + "faire payer une tranche de transport de trop.",
+  };
+}
+
+/**
  * La correspondance entre les références VENDABLES du site et les fiches
  * produits d'Odoo, par code-barres.
  *
@@ -244,7 +288,7 @@ export async function onRequestGet({ request, env }) {
 
   const impossible = (e) => ({ ok: false, detail: "Contrôle impossible : " + (e && e.message) });
 
-  const [base, portier, vies, odoo, mollie, produits, sendcloud] = await Promise.all([
+  const [base, portier, vies, odoo, mollie, produits, sendcloud, poids] = await Promise.all([
     etatBase(env.DB),
     etatPortier(env).catch(impossible),
     etatVies(env).catch(impossible),
@@ -252,6 +296,7 @@ export async function onRequestGet({ request, env }) {
     etatMollie(env).catch(impossible),
     etatProduits(env, request).catch(impossible),
     etatSendcloud(env).catch(impossible),
+    etatPoids(env, request).catch(impossible),
   ]);
 
   const liaisons = {
@@ -262,6 +307,7 @@ export async function onRequestGet({ request, env }) {
     mollie: mollie,
     produits_odoo: produits,
     sendcloud: sendcloud,
+    poids_produits: poids,
   };
 
   // Ce que la panne empêche concrètement, dit en clair.
@@ -276,6 +322,10 @@ export async function onRequestGet({ request, env }) {
   if (!mollie.ok) consequences.push("Aucun paiement en ligne ne peut être encaissé.");
   if (!produits.ok) consequences.push("Certaines références ne pourront pas être portées sur une commande Odoo.");
   if (!sendcloud.ok) consequences.push("Les étiquettes d'expédition devront être créées à la main.");
+  if (!poids.ok && poids.total) {
+    consequences.push("Certains colis partiront avec un poids approximé : le transporteur "
+      + "peut facturer une tranche de plus que nécessaire.");
+  }
 
   // Un avertissement, pas une panne : la clé réelle fonctionne parfaitement,
   // mais elle déplace de l'argent. Tant que la chaîne n'est pas éprouvée de
@@ -299,7 +349,7 @@ export async function onRequestGet({ request, env }) {
     ok: true,
     tout_va_bien: tout,
     resume: tout
-      ? "Les sept contrôles du site répondent normalement."
+      ? "Les sept contrôles du site répondent normalement." + (poids.ok ? "" : " Un point d\u0027attention tout de même : " + poids.detail)
       : "Un contrôle au moins ne passe pas. Voir le détail ci-dessous.",
     liaisons: liaisons,
     consequences: consequences,

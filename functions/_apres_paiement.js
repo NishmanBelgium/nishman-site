@@ -26,6 +26,8 @@
 
 import { appel } from "./_odoo.js";
 import { noterEtape } from "./_paiements.js";
+import { configureSendcloud, pointRelais } from "./_sendcloud.js";
+import { poidsCommande, creerEtiquetteRelais, noterSuiviDansOdoo } from "./_etiquette.js";
 
 /** Un petit journal, pour pouvoir raconter ce qui s'est passé. */
 function ligne(journal, quoi, ok, detail) {
@@ -220,6 +222,103 @@ async function envoyerFacture(env, factureIds, journal) {
     aEnvoyer.length + " facture(s) envoyée(s) par Odoo au client");
 }
 
+/**
+ * L'étiquette, vers le point relais que le client a choisi.
+ *
+ * Ce geste ne concerne que les commandes de la boutique : un professionnel
+ * est livré à son salon, souvent en plusieurs colis, et c'est NBD qui
+ * décide de la répartition. Une commande sans point relais passe donc tout
+ * droit, en le disant.
+ *
+ * Et c'est le seul maillon de la chaîne dont l'échec ne doit RIEN bloquer.
+ * À ce stade, le client a payé, sa commande existe, sa facture est émise et
+ * partie. Si l'étiquette ne se crée pas — SendCloud indisponible, poids
+ * hors tranche, transporteur qui ne dessert plus ce point — il reste un bon
+ * de livraison dans Odoo et deux minutes de travail à la main. Bloquer la
+ * chaîne là-dessus ferait réessayer indéfiniment un geste qui coûte de
+ * l'argent à chaque tentative.
+ */
+async function expedier(env, p, journal) {
+  const relaisId = Number(p.relais_id || 0);
+  if (!relaisId) {
+    ligne(journal, "expédition", true,
+      "commande sans point relais : bon de livraison à préparer et étiqueter dans Odoo");
+    return null;
+  }
+  if (!configureSendcloud(env)) {
+    ligne(journal, "expédition", true,
+      "SendCloud n'est pas configuré : étiquette à créer à la main");
+    return null;
+  }
+
+  // Déjà expédiée ? Odoo fait foi, comme pour le reste de la chaîne.
+  const bons = await appel(env, "stock.picking", "search_read",
+    [[["sale_id", "=", p.odoo_order_id], ["state", "not in", ["cancel"]]],
+     ["id", "name", "carrier_tracking_ref"]], { limit: 5 });
+  const dejaSuivi = (bons || []).find((b) => b.carrier_tracking_ref);
+  if (dejaSuivi) {
+    ligne(journal, "expédition", true,
+      "déjà expédiée — suivi " + dejaSuivi.carrier_tracking_ref);
+    return dejaSuivi.carrier_tracking_ref;
+  }
+
+  const point = await pointRelais(env, relaisId);
+  if (!point || !point.id) throw new Error("point relais " + relaisId + " introuvable");
+
+  const poids = await poidsCommande(env, p.odoo_order_id);
+
+  // Le destinataire du colis est le CLIENT, pas le point relais : c'est
+  // to_service_point qui dévie la livraison. Mettre l'adresse du relais ici
+  // ferait un colis adressé à un commerce, sans nom de destinataire — et
+  // personne ne pourrait le réclamer.
+  const lu = await appel(env, "sale.order", "read",
+    [[p.odoo_order_id], ["partner_id", "name"]], {});
+  const partnerId = (lu && lu[0] && Array.isArray(lu[0].partner_id)) ? lu[0].partner_id[0] : null;
+  if (!partnerId) throw new Error("commande sans client");
+
+  const fiches = await appel(env, "res.partner", "read",
+    [[partnerId], ["name", "street", "street2", "zip", "city", "email", "phone", "country_id"]], {});
+  const c = (fiches && fiches[0]) || {};
+
+  const rue = String(c.street || "").trim();
+  const m = rue.match(/^(.*?)[\s,]+(\d+[A-Za-z]?(?:[\/-]\d+)?)$/);
+
+  const etiquette = await creerEtiquetteRelais(env, {
+    destinataire: {
+      nom: c.name || "",
+      adresse: m ? m[1] : rue,
+      numero: m ? m[2] : "n/a",
+      code_postal: c.zip || "",
+      ville: c.city || "",
+      email: c.email || "",
+      telephone: c.phone || "",
+    },
+    relais: { id: point.id, post_number: point.post_number || "" },
+    poidsKg: poids.kg,
+    reference: p.ref,
+    pays: String(point.country || "BE").toUpperCase(),
+  });
+
+  const detail = "Étiquette créée par le site.\n"
+    + "Transporteur : " + etiquette.transporteur + " — " + etiquette.methode + "\n"
+    + "Point relais : " + (point.name || "") + ", "
+    + [point.street, point.house_number].filter(Boolean).join(" ") + ", "
+    + [point.postal_code, point.city].filter(Boolean).join(" ") + "\n"
+    + "Poids déclaré : " + poids.kg + " kg (" + poids.detail + ")\n"
+    + "Coût transport : " + (etiquette.prix !== null ? etiquette.prix + " €" : "—") + "\n"
+    + "Suivi : " + etiquette.suivi;
+
+  const dansOdoo = await noterSuiviDansOdoo(env, p.odoo_order_id, etiquette.suivi, detail);
+
+  ligne(journal, "expédition", true,
+    "étiquette " + etiquette.transporteur + " créée, suivi " + etiquette.suivi
+    + " (" + poids.kg + " kg"
+    + (poids.estime ? ", poids partiellement estimé" : "") + ")"
+    + (dansOdoo.ok ? " — noté sur " + dansOdoo.bon : " — NON noté dans Odoo : " + dansOdoo.motif));
+
+  return etiquette.suivi;
+}
+
 /* --- Le paiement qui n'aboutit pas --------------------------------------- */
 
 /**
@@ -370,12 +469,25 @@ export async function poursuivre(env, db, p) {
       });
     }
 
-    // L'étiquette d'expédition viendra se placer ici. Tant qu'elle n'est
-    // pas en service, le bon de livraison attend NBD dans Odoo.
     if (etape === "envoyee") {
+      // Le seul maillon dont l'échec n'arrête pas la chaîne : voir
+      // expedier(). On note ce qui s'est passé et on continue.
+      let suivi = null;
+      let souci = null;
+      try { suivi = await expedier(env, p, journal); }
+      catch (e) { souci = String((e && e.message) || "erreur").slice(0, 200); }
+
+      etape = "expediee";
+      await noterEtape(db, p.mollie_id, etape, souci
+        ? { note: "Commande payée et facturée. ÉTIQUETTE NON CRÉÉE : " + souci
+                + ". Le bon de livraison attend dans Odoo." }
+        : (suivi ? { suivi, note: "Colis étiqueté, suivi " + suivi + "." } : null));
+      if (souci) ligne(journal, "expédition", false, souci);
+    }
+
+    if (etape === "expediee") {
       etape = "fini";
       await noterEtape(db, p.mollie_id, etape, null);
-      ligne(journal, "expédition", true, "bon de livraison prêt dans Odoo, à préparer et étiqueter");
     }
 
     return { etape, journal, fini: etape === "fini", erreur: null };
