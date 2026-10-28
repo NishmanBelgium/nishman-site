@@ -606,9 +606,17 @@
     montrer("cmd-pay", modeDevisSecondaire);
     if (!modeDevisSecondaire) return;
 
+    // Le devis cesse d'être un bouton : il devient un lien discret, sous
+    // la note. Deux pastilles de même taille séparées par un « OU »
+    // donnaient à croire qu'il fallait choisir entre deux manières
+    // d'acheter, alors que l'une est le chemin normal et l'autre une
+    // facilité pour les salons qui paient par virement.
+    const ou = document.querySelector(".cmd-pay-ou");
+    if (ou) ou.hidden = true;
+
     const devis = $("cmd-envoyer");
     if (devis) {
-      devis.className = "quote-alt cmd-devis-alt";
+      devis.className = "cmd-devis-lien";
       devis.textContent = t("valid_cta_alt");
     }
     const note = $("cmd-valid-note");

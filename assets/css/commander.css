@@ -238,3 +238,26 @@
 }
 .quote-legal a { color: #8a8a8a; text-decoration: underline; text-underline-offset: 2px; }
 .quote-legal a:hover { color: #111; }
+
+/* Le devis n'est plus une pastille pleine largeur à côté du bouton de
+   paiement. Deux boutons de même taille séparés par un « OU » donnaient à
+   croire qu'il fallait choisir entre deux manières d'acheter, alors que
+   l'une est le chemin normal et l'autre une facilité pour les salons qui
+   paient par virement. */
+.cmd-devis-lien {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.cmd-devis-lien:hover { color: var(--ink); }
