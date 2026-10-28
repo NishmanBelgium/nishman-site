@@ -201,6 +201,38 @@ export async function creerEtiquetteRelais(env, { destinataire, relais, poidsKg,
  * où en est sa commande n'obtient rien. C'est exactement l'état dans lequel
  * le connecteur laissait les commandes du 27 — « numéro de suivi : False ».
  */
+/* Le transporteur à inscrire sur le bon de livraison.
+ *
+ * Un seul, pour toutes les commandes de la boutique : « Point relais ».
+ * Ce n'est pas un raccourci, c'est la vérité commerciale — le client
+ * achète une livraison en point relais à 4,95 €, et c'est ce mode-là que
+ * le bon doit porter. Lequel de bpost, DPD ou Mondial Relay la réalise
+ * dépend du commerce qu'il a choisi, et NBD a demandé que le travail
+ * interne ne change pas d'un transporteur à l'autre.
+ *
+ * Le réseau réel n'est pas perdu pour autant : il est écrit dans le fil
+ * de discussion du bon, juste en dessous, avec le coût et le suivi.
+ *
+ * On cherche par nom plutôt que par identifiant : un identifiant en dur
+ * se tait le jour où la fiche change, un nom introuvable se signale. */
+const TRANSPORTEUR_DEFAUT = "Point relais";
+let transporteurCache = null;
+
+async function transporteurRelais(env) {
+  if (transporteurCache !== null) return transporteurCache;
+  const voulu = String((env && env.ODOO_TRANSPORTEUR_RELAIS) || TRANSPORTEUR_DEFAUT).trim();
+  try {
+    const r = await appel(env, "delivery.carrier", "search_read",
+      [[["name", "=ilike", voulu]], ["id", "name"]], { limit: 2 });
+    // Deux transporteurs du même nom : on n'en choisit aucun plutôt que
+    // d'en désigner un au hasard.
+    transporteurCache = (r && r.length === 1) ? r[0].id : 0;
+  } catch (e) {
+    transporteurCache = 0;
+  }
+  return transporteurCache;
+}
+
 export async function noterSuiviDansOdoo(env, orderId, suivi, detail) {
   const bons = await appel(env, "stock.picking", "search_read",
     [[["sale_id", "=", orderId], ["state", "not in", ["cancel"]]], ["id", "name", "state"]],
@@ -208,11 +240,22 @@ export async function noterSuiviDansOdoo(env, orderId, suivi, detail) {
   if (!bons || !bons.length) return { ok: false, motif: "aucun bon de livraison" };
 
   const cible = bons[0];
+  const champs = { carrier_tracking_ref: suivi };
+  const transporteur = await transporteurRelais(env);
+  if (transporteur) champs.carrier_id = transporteur;
+
   try {
-    await appel(env, "stock.picking", "write",
-      [[cible.id], { carrier_tracking_ref: suivi }], {});
+    await appel(env, "stock.picking", "write", [[cible.id], champs], {});
   } catch (e) {
-    return { ok: false, motif: "écriture refusée : " + String(e && e.message).slice(0, 160) };
+    /* Le transporteur est un confort, le suivi ne l'est pas : si Odoo
+     * refuse l'écriture groupée — fiche archivée, règle de validation —
+     * on réessaie avec le seul champ qui compte vraiment. */
+    try {
+      await appel(env, "stock.picking", "write",
+        [[cible.id], { carrier_tracking_ref: suivi }], {});
+    } catch (e2) {
+      return { ok: false, motif: "écriture refusée : " + String(e2 && e2.message).slice(0, 160) };
+    }
   }
 
   // Et une trace lisible dans le fil de discussion, pour NBD.
