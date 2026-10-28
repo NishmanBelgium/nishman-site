@@ -3142,3 +3142,90 @@ body.catalog-body { background: #0E0E0E; }
   color: var(--ink-soft);
 }
 .catalog-sheet .price-locked:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ==========================================================================
+   LA SÉLECTION PROFESSIONNELLE — un panneau latéral, comme la boutique.
+
+   Elle montait du bas, centrée, arrondie : un format de téléphone posé sur
+   un écran d'ordinateur. Le panier grand public glisse depuis la droite et
+   fonctionne beaucoup mieux — on garde le catalogue sous les yeux pendant
+   qu'on ajuste sa sélection, au lieu de le recouvrir.
+
+   Les menus de catégories et de langue, eux, restent des feuilles qui
+   montent : ce sont des choix fugaces, pas un plan de travail.
+
+   Le tiroir vit hors de la feuille catalogue : il n'héritait donc pas de
+   la palette sombre et arrivait en blanc au milieu du noir.
+   ========================================================================== */
+
+#drawer-overlay {
+  align-items: stretch;
+  justify-content: flex-end;
+  background: rgba(10, 10, 10, 0.62);
+}
+
+#drawer-overlay .drawer {
+  --bg: #171717;
+  --bg-soft: #0E0E0E;
+  --ink: #F7F6F2;
+  --ink-soft: #A8A49A;
+  --ink-faint: #76736C;
+  --line: rgba(247, 246, 242, 0.12);
+
+  background: #141414;
+  color: var(--ink);
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  width: min(440px, 100%);
+  max-width: none;
+  max-height: none;
+  height: 100%;
+  padding: 24px 22px 32px;
+  animation: drawer-droite 0.3s cubic-bezier(.2, 0, 0, 1) both;
+}
+
+@keyframes drawer-droite {
+  from { transform: translateX(100%); }
+  to   { transform: none; }
+}
+
+#drawer-overlay .drawer-title {
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 82%;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+#drawer-overlay .drawer-close,
+#drawer-overlay .drawer-clear { color: var(--ink-soft); }
+#drawer-overlay .drawer-close:hover,
+#drawer-overlay .drawer-clear:hover { color: var(--ink); }
+
+#drawer-overlay .drawer-item { border-color: var(--line); }
+#drawer-overlay .drawer-item-name { color: var(--ink); }
+#drawer-overlay .drawer-item-kind { color: var(--ink-faint); }
+#drawer-overlay .drawer-empty { color: var(--ink-soft); }
+
+#drawer-overlay .drawer-total {
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+}
+#drawer-overlay .drawer-total strong { color: var(--gold); }
+
+#drawer-overlay .drawer-stepper {
+  background: #0A0A0A;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+#drawer-overlay .drawer-stepper button { color: var(--ink-soft); }
+#drawer-overlay .drawer-stepper button:hover { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  #drawer-overlay .drawer { animation: none; }
+}
+
+@media (max-width: 560px) {
+  #drawer-overlay .drawer { width: 100%; border-left: 0; }
+}
