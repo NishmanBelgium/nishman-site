@@ -180,7 +180,7 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref }) {
     product_id: produits[l.ean].id,
     product_uom_qty: l.quantite,
     price_unit: l.prix_unitaire,
-    tax_id: taxes,
+    tax_ids: taxes,
   }]);
 
   // Le port emprunte le produit du mode de livraison du pays, pour tomber
@@ -203,7 +203,7 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref }) {
       product_id: produitPort,
       product_uom_qty: 1,
       price_unit: resultat.port,
-      tax_id: taxes,
+      tax_ids: taxes,
     }]);
   }
 
