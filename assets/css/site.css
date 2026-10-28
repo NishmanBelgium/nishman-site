@@ -3125,3 +3125,20 @@ body.catalog-body { background: #0E0E0E; }
 @media (max-width: 760px) {
   .famille-titre { margin-top: 40px; gap: 10px; border-top-width: 2px; }
 }
+
+/* Le gabarit d'attente du prix était un dégradé clair, pensé pour une page
+   blanche : sur le catalogue sombre, il laissait quatre barres lumineuses
+   là où le regard cherche un montant. Il s'assombrit, et le bouton
+   « prix sur demande » devient carré comme le reste. */
+.catalog-sheet .product-price.price-attente {
+  border-radius: 2px;
+  background: linear-gradient(90deg, #1C1C1C 25%, #262626 50%, #1C1C1C 75%);
+  background-size: 240% 100%;
+}
+.catalog-sheet .price-locked {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--ink-soft);
+}
+.catalog-sheet .price-locked:hover { border-color: var(--gold); color: var(--gold); }
