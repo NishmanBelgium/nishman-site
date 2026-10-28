@@ -2872,19 +2872,24 @@ body.catalog-body { background: #0E0E0E; }
 .porte-carte:hover { border-color: #ED9B24; }
 .porte-carte:focus-visible { outline: 2px solid #ED9B24; outline-offset: 3px; }
 
+/* Les packshots ont un vrai fond transparent. On peut donc les poser
+   directement sur le noir, sans le panneau clair qu'imposait le mode de
+   fusion « multiply » — il perçait la page de deux rectangles blancs qui
+   étaient les seuls objets lumineux de l'écran. Un léger creux plus sombre
+   que la carte suffit à cadrer le produit. */
 .porte-img {
   display: grid;
   place-items: center;
-  background: #FAF8F2;
+  background: #0E0E0E;
+  border: 1px solid rgba(247, 246, 242, 0.07);
   border-radius: 2px;
-  padding: 20px;
+  padding: 24px;
   margin-bottom: 20px;
-  min-height: 168px;
+  min-height: 176px;
 }
 .porte-img img {
-  max-height: 128px;
+  max-height: 136px;
   width: auto;
-  mix-blend-mode: multiply;
 }
 
 .porte-txt { display: block; }
