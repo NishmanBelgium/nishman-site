@@ -33,7 +33,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=292" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=293" />
   <!-- Qui édite ce site, pour les moteurs. Le siège social, pas le
        dépôt : c'est l'identité légale de l'entreprise qu'un moteur
        rapproche de la Banque-Carrefour, pas son adresse de travail. -->
@@ -85,38 +85,53 @@
        ÉCRAN D'ACCUEIL — noir, logo orange, cinématique de chargement.
        Au scroll, le catalogue monte en feuille blanche 3D par-dessus.
        ====================================================================== -->
-  <div class="intro-track" id="intro-track">
-    <section class="intro" id="intro">
-      <canvas class="intro-particles" id="intro-particles" aria-hidden="true"></canvas>
-      <div class="intro-scene" id="intro-scene">
-        <img class="intro-logo" src="/assets/img/logo-gold.png" alt="Nishman" />
-        <p class="porte-sur">Importateur officiel pour la Belgique, la France et le Luxembourg</p>
+  <!-- L'ACCUEIL. Il a une seule chose à faire : envoyer un salon vers le
+       catalogue professionnel et un particulier vers la boutique. Tout ce
+       qui ne sert pas à ça a été retiré — le logotype géant qui écrasait la
+       page, les particules sur fond noir, et le défilement détourné qui
+       faisait glisser la feuille catalogue par-dessus deux hauteurs
+       d'écran. Une page d'entrée qui se bat avec la molette n'est pas
+       professionnelle, elle est fatigante.
 
-        <!-- Deux portes, volontairement dissemblables : la sombre mène au
-             comptoir professionnel, la claire ressemble déjà à la boutique
-             où elle conduit. La forme dit où l'on va avant qu'on lise. -->
+       Reste du blanc cassé, une phrase qui dit qui nous sommes, et deux
+       chemins de même poids. -->
+    <section class="accueil" id="intro">
+      <div class="accueil-in">
+        <img class="accueil-logo" src="/assets/img/nishman.svg" alt="Nishman"
+             width="188" height="100" />
+        <h2 class="accueil-titre">Les produits NISHMAN,<br />importés officiellement.</h2>
+        <p class="accueil-sur">Distributeur exclusif pour la Belgique, la France
+          et le Luxembourg. Les mêmes formules que celles utilisées en salon.</p>
+
         <div class="portes">
           <a class="porte-carte porte-pro" href="#catalog-sheet" id="porte-pro">
-            <img src="/assets/img/products/8682035088158.webp" alt="" aria-hidden="true" />
-            <div class="porte-txt">
-              <h2>Pour mon salon</h2>
-              <p>Tarifs professionnels, vente au carton, facture et livraison.</p>
+            <span class="porte-img">
+              <img src="/assets/img/products/8682035088158.webp" alt="" aria-hidden="true"
+                   width="200" height="200" />
+            </span>
+            <span class="porte-txt">
+              <span class="porte-titre">Pour mon salon</span>
+              <span class="porte-ligne">Tarifs professionnels, vente au carton,
+                facture et livraison.</span>
               <span class="porte-action">Voir le catalogue</span>
-            </div>
+            </span>
           </a>
 
           <a class="porte-carte porte-client" href="/boutique/" id="porte-client">
-            <img src="/assets/img/products/8684736674883.webp" alt="" aria-hidden="true" />
-            <div class="porte-txt">
-              <h2>Pour moi</h2>
-              <p>Les produits que votre barbier utilise, livrés chez vous.</p>
-              <span class="porte-action">Entrer dans la boutique</span>
-            </div>
+            <span class="porte-img">
+              <img src="/assets/img/products/8684736674883.webp" alt="" aria-hidden="true"
+                   width="200" height="200" />
+            </span>
+            <span class="porte-txt">
+              <span class="porte-titre">Pour moi</span>
+              <span class="porte-ligne">Les produits que votre barbier utilise,
+                livrés chez vous.</span>
+              <span class="porte-action porte-action-discret">Entrer dans la boutique</span>
+            </span>
           </a>
         </div>
       </div>
     </section>
-  </div>
 
   <div class="catalog-sheet" id="catalog-sheet">
   <div class="catalog-shell">
@@ -351,7 +366,7 @@
   <script src="/assets/js/catalog.js?v=205"></script>
   <script src="/assets/js/portes.js?v=222"></script>
   <script src="/assets/js/offre.js?v=205"></script>
-  <script src="/assets/js/ruban-pro.js?v=292" defer></script>
+  <script src="/assets/js/ruban-pro.js?v=293" defer></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 <script src="/assets/js/mesure.js?v=278" defer></script>
 </body>

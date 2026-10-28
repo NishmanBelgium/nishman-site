@@ -1039,156 +1039,14 @@ body.catalog-body::before { display: none; }
 @media (prefers-reduced-motion: reduce) {
 }
 
-/* ==========================================================================
-   ÉCRAN D'ACCUEIL — noir, logo orange, cinématique de chargement,
-   puis feuille catalogue qui monte en 3D par-dessus au scroll.
-   ========================================================================== */
-
-body.catalog-body { background: #0a0a0a; }
-html {
-  background: #0a0a0a;
-  /* Surtout PAS d'overflow-x ici : combiné à celui du body, cela crée deux
-     conteneurs de défilement imbriqués et fige le scroll sur Safari iOS. */
-}
-
-/* La piste fait 2 écrans : le 1er pour l'accueil, le 2e pour la transition. */
-.intro-track {
-  height: 200vh;
-  height: 200svh;
-  position: relative;
-  z-index: 0;
-}
-
-.intro {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100dvh;
-  background: #0a0a0a;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1100px;
-}
-
-.intro-particles {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-/* ---------- Cinématique du logo ---------- */
-
-.intro-scene {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  will-change: transform, opacity;
-  transform-style: preserve-3d;
-}
-
-.intro-logo {
-  width: clamp(220px, 38vw, 380px);
-  clip-path: inset(0 100% 0 0);
-  animation: logo-reveal 1.5s var(--ease) 0.35s forwards;
-}
-
-@keyframes logo-reveal {
-  from { clip-path: inset(0 100% 0 0); opacity: 0.6; }
-  to   { clip-path: inset(0 -8% 0 0); opacity: 1; }
-}
-
-/* Ligne de chargement : se remplit avec le logo, puis s'efface. */
-.intro-line {
-  width: min(240px, 46vw);
-  height: 2px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.10);
-  overflow: hidden;
-  animation: line-out 0.5s ease 2s forwards;
-}
-
-.intro-line span {
-  display: block;
-  height: 100%;
-  width: 0;
-  background: var(--gradient);
-  border-radius: inherit;
-  animation: line-fill 1.5s var(--ease) 0.35s forwards;
-}
-
-@keyframes line-fill { to { width: 100%; } }
-@keyframes line-out  { to { opacity: 0; transform: scaleX(0.6); } }
-
-/* ---------- Invitation au scroll ---------- */
-
-.intro-cue {
-  position: absolute;
-  bottom: 34px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  opacity: 0;
-  animation: cue-in 0.8s ease 2.3s forwards;
-}
-
-@keyframes cue-in { to { opacity: 1; } }
-
-.cue-track {
-  width: 2px;
-  height: 44px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
-  overflow: hidden;
-  display: block;
-}
-
-.cue-dot {
-  display: block;
-  width: 100%;
-  height: 12px;
-  border-radius: 999px;
-  background: var(--gold);
-  animation: cue-drop 1.7s var(--ease) infinite;
-}
-
-@keyframes cue-drop {
-  0%   { transform: translateY(-14px); opacity: 0; }
-  30%  { opacity: 1; }
-  100% { transform: translateY(46px); opacity: 0; }
-}
-
-.cue-text {
-  font-family: var(--font-body);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
-  transition: color 0.2s ease;
-}
-
-.intro-cue:hover .cue-text { color: var(--gold); }
+/* L'écran d'accueil et les portes sont désormais en bas de ce fichier. */
 
 /* ---------- Feuille catalogue : monte en 3D par-dessus le noir ---------- */
 
 .catalog-sheet {
   position: relative;
   z-index: 2;
-  margin-top: -100vh;   /* valeur de repli ; le script la fixe en pixels */
+  margin-top: 0;         /* plus de superposition : l'accueil et le catalogue s'empilent */
   background: var(--bg);
   border-radius: 34px 34px 0 0;
   box-shadow: 0 -30px 80px -20px rgba(0, 0, 0, 0.65);
@@ -1207,10 +1065,6 @@ html {
 .search-sticky { border-radius: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro-logo { animation: none; clip-path: inset(0 -8% 0 0); }
-  .intro-line, .intro-line span, .cue-dot, .intro-cue { animation: none; }
-  .intro-cue { opacity: 1; }
-  .intro-track { height: 100vh; }
   .catalog-sheet { margin-top: 0; }
 }
 
@@ -1292,7 +1146,6 @@ button, .label-row, .cat-cell, .product-card { touch-action: manipulation; }
   .catalog-shell { padding-left: 14px; padding-right: 14px; }
   .search-sticky { margin: 0 -14px; padding-left: 14px; padding-right: 14px; }
   .cat-btn { padding: 12px 13px; font-size: 12.5px; }
-  .intro-logo { width: clamp(190px, 58vw, 300px); }
 }
 
 /* Grand écran : la grille respire, les tiroirs restent centrés et lisibles */
@@ -2138,7 +1991,6 @@ img { max-width: 100%; height: auto; }
   .price-locked { font-size: 10px; padding: 7px 8px; }
   .sel-chip { font-size: 10.5px; padding: 7px 8px; }
   .product-footer { gap: 6px; }
-  .intro-logo { width: clamp(170px, 56vw, 260px); }
 }
 
 /* ---------- Barre flottante et retour haut : jamais superposés ---------- */
@@ -2854,73 +2706,6 @@ body.has-offre-barre .search-sticky {
    catalogue de gros : « 203 produits », « prix professionnels hors TVA ».
    Un particulier n'avait aucune raison de penser qu'il pouvait acheter.
 
-   Les deux portes ne se ressemblent pas, et c'est voulu : la sombre mène
-   au comptoir professionnel, la claire a déjà l'allure de la boutique où
-   elle conduit. La forme renseigne avant que le texte soit lu. La porte
-   professionnelle est aussi la plus large — c'est le parcours par défaut.
-   ========================================================================== */
-
-.porte-sur {
-  margin: 14px 0 0; color: rgba(255,255,255,.62);
-  font-size: clamp(12px, 1.4vw, 14px); letter-spacing: .01em; text-align: center;
-}
-
-.portes {
-  display: grid; gap: 14px; width: min(980px, 92vw); margin: 30px auto 0;
-  grid-template-columns: 1fr;
-}
-@media (min-width: 820px) {
-  .portes { grid-template-columns: 1.15fr .85fr; gap: 18px; }
-}
-
-.porte-carte {
-  position: relative; display: flex; align-items: center; gap: 18px;
-  padding: 20px 22px; border-radius: 18px; text-decoration: none;
-  overflow: hidden; isolation: isolate;
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-}
-.porte-carte img {
-  width: 96px; height: 96px; object-fit: contain; flex: 0 0 auto;
-}
-.porte-txt { min-width: 0; }
-.porte-carte h2 {
-  font-family: "Space Grotesk", system-ui, sans-serif; font-weight: 700;
-  font-size: clamp(1.15rem, 2.4vw, 1.5rem); margin: 0 0 4px; line-height: 1.1;
-}
-.porte-carte p { margin: 0 0 12px; font-size: .92rem; line-height: 1.45; }
-.porte-action {
-  display: inline-block; font-weight: 700; font-size: .9rem;
-  padding: 9px 16px; border-radius: 999px;
-}
-
-/* Le comptoir professionnel : sombre, cerclé d'orange. */
-.porte-pro {
-  background: #141210; border: 1px solid rgba(250,162,27,.38); color: #f4f1ea;
-}
-.porte-pro p { color: rgba(244,241,230,.68); }
-.porte-pro .porte-action { background: var(--gold, #faa21b); color: #16130c; }
-.porte-pro:hover { border-color: var(--gold, #faa21b); transform: translateY(-2px); }
-
-/* La boutique : claire, comme la page qu'elle ouvre. */
-.porte-client {
-  background: #f4f1ea; border: 1px solid #e3dccb; color: #1b1813;
-}
-.porte-client p { color: #6d6553; }
-.porte-client .porte-action { background: #1b1813; color: #f4f1ea; }
-.porte-client:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.28); }
-
-.porte-carte:focus-visible { outline: 2px solid var(--gold, #faa21b); outline-offset: 3px; }
-
-@media (prefers-reduced-motion: reduce) {
-  .porte-carte, .porte-carte:hover { transition: none; transform: none; }
-}
-
-/* Sous 420 px, l'image mange la place du texte : on la réduit. */
-@media (max-width: 420px) {
-  .porte-carte { gap: 14px; padding: 16px; }
-  .porte-carte img { width: 68px; height: 68px; }
-}
-
 /* Un titre lu par les moteurs et les lecteurs d'écran, invisible à
    l'œil. Utilisé là où le titre de la page est une image — le logo —
    ou un libellé graphique qui ne peut pas porter de balise h1.
@@ -3004,4 +2789,161 @@ body.has-offre-barre .search-sticky {
   .ruban-pro-lot { flex-wrap: wrap; padding: 9px 14px; gap: 4px 0; }
   .rp-item { white-space: normal; padding: 0 14px; }
   .rp-item:first-child { padding-left: 0; }
+}
+
+/* ==========================================================================
+   ÉCRAN D'ACCUEIL — deux chemins, et rien d'autre.
+
+   Ce qui a été retiré, et pourquoi. Le logotype occupait jusqu'à 380 px de
+   large sur fond noir : il annonçait la marque à quelqu'un qui venait déjà
+   de la chercher, et repoussait les deux seuls liens utiles sous la ligne
+   de flottaison. Les particules coûtaient la part la plus lourde du site
+   pour un effet que personne ne regarde deux fois. Et la feuille catalogue
+   remontait par-dessus deux hauteurs d'écran au défilement : une page
+   d'entrée qui se bat avec la molette n'est pas professionnelle, elle est
+   fatigante.
+
+   Ce qui reste : du blanc cassé, une phrase qui dit qui nous sommes, et
+   deux portes de même poids. Les produits apportent la couleur, ici comme
+   sur la boutique.
+   ========================================================================== */
+
+body.catalog-body { background: #F7F6F2; }
+
+.accueil {
+  background: #F7F6F2;
+  padding: clamp(48px, 8vw, 96px) 20px clamp(40px, 6vw, 72px);
+}
+.accueil-in {
+  max-width: 1080px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.accueil-logo {
+  height: clamp(42px, 6vw, 58px);
+  width: auto;
+  margin: 0 auto clamp(24px, 4vw, 40px);
+}
+
+.accueil-titre {
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 82%;
+  font-weight: 800;
+  font-size: clamp(1.75rem, 4vw, 2.9rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: #101010;
+  margin: 0 0 var(--e4, 16px);
+}
+
+.accueil-sur {
+  max-width: 56ch;
+  margin: 0 auto clamp(32px, 5vw, 52px);
+  color: #666;
+  font-size: clamp(0.95rem, 1.5vw, 1.0625rem);
+  line-height: 1.6;
+}
+
+/* ---------- Les deux portes ---------- */
+
+.portes {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+  text-align: left;
+}
+@media (min-width: 760px) { .portes { grid-template-columns: 1fr 1fr; } }
+
+.porte-carte {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #E8E6E1;
+  border-radius: 16px;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 180ms cubic-bezier(.2,0,0,1),
+              box-shadow 180ms cubic-bezier(.2,0,0,1);
+}
+.porte-carte:hover {
+  border-color: #101010;
+  box-shadow: 0 2px 8px -2px rgba(16, 16, 16, 0.10);
+}
+.porte-carte:focus-visible { outline: 2px solid #ED9B24; outline-offset: 3px; }
+
+.porte-img {
+  display: grid;
+  place-items: center;
+  background: #FAFAF8;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  min-height: 168px;
+}
+.porte-img img {
+  max-height: 128px;
+  width: auto;
+  mix-blend-mode: multiply;
+}
+
+.porte-txt { display: block; }
+
+.porte-titre {
+  display: block;
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 86%;
+  font-weight: 700;
+  font-size: 1.3rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #101010;
+  margin-bottom: 6px;
+}
+.porte-ligne {
+  display: block;
+  color: #666;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.porte-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 24px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: #ED9B24;
+  color: #101010;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  transition: background 180ms cubic-bezier(.2,0,0,1);
+}
+.porte-carte:hover .porte-action { background: #C9841F; }
+
+/* La boutique grand public est le second chemin : même poids visuel, mais
+   un seul bouton plein par écran — sinon aucun des deux ne ressort. */
+.porte-action-discret {
+  background: transparent;
+  border-color: #D8D5CE;
+  color: #101010;
+}
+.porte-carte:hover .porte-action-discret {
+  background: transparent;
+  border-color: #101010;
+}
+
+@media (max-width: 420px) {
+  .porte-carte { padding: 16px; }
+  .porte-img { min-height: 140px; padding: 16px; margin-bottom: 16px; }
+  .porte-img img { max-height: 104px; }
+  .porte-action { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .porte-carte, .porte-action { transition: none; }
 }
