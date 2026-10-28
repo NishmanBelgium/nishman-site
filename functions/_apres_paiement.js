@@ -28,6 +28,7 @@ import { appel } from "./_odoo.js";
 import { noterEtape } from "./_paiements.js";
 import { configureSendcloud, pointRelais } from "./_sendcloud.js";
 import { poidsCommande, creerEtiquetteRelais, noterSuiviDansOdoo } from "./_etiquette.js";
+import { envoyerConfirmation } from "./_confirmation.js";
 
 /** Un petit journal, pour pouvoir raconter ce qui s'est passé. */
 function ligne(journal, quoi, ok, detail) {
@@ -487,9 +488,21 @@ export async function poursuivre(env, db, p) {
       const lu = await appel(env, "sale.order", "read", [[p.odoo_order_id], ["invoice_ids"]], {});
       const factureIds = (lu && lu[0] && Array.isArray(lu[0].invoice_ids)) ? lu[0].invoice_ids : [];
       await envoyerFacture(env, factureIds, journal);
+
+      // La facture dit un montant ; elle ne dit pas des droits. Un
+      // consommateur doit recevoir en plus la confirmation du contrat,
+      // conditions et formulaire de rétractation compris. Seules les
+      // commandes de la boutique sont concernées : p.client n'est posé
+      // que par la caisse grand public.
+      let conf = "";
+      if (p.client) {
+        await envoyerConfirmation(env, p, journal);
+        conf = " Confirmation consommateur envoyée.";
+      }
+
       etape = "envoyee";
       await noterEtape(db, p.mollie_id, etape, {
-        note: "Facture " + (factureNom || factureId) + " envoyée au client.",
+        note: "Facture " + (factureNom || factureId) + " envoyée au client." + conf,
       });
     }
 
