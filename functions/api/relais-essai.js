@@ -45,9 +45,36 @@ async function sansCasser(nom, promesse) {
   }
 }
 
+/* Les villes par lesquelles on juge la couverture d'un pays.
+ *
+ * Un seul code postal ne dit rien : interroger Luxembourg-Ville et en
+ * conclure que le pays n'est pas desservi est exactement l'erreur que
+ * cette liste existe pour empêcher. On balaie les principales communes,
+ * et chaque transporteur séparément — l'API ne rend pas la même chose
+ * selon qu'on le nomme ou non. */
+const COUVERTURE = {
+  LU: [
+    ["1111", "Luxembourg-Ville"], ["4001", "Esch-sur-Alzette"],
+    ["4501", "Differdange"], ["3501", "Dudelange"],
+    ["9001", "Ettelbruck"], ["9201", "Diekirch"],
+    ["6401", "Echternach"], ["5401", "Remich"],
+    ["8001", "Strassen"], ["9501", "Wiltz"],
+  ],
+  BE: [["7130", "Binche"], ["1000", "Bruxelles"], ["4000", "Liège"],
+       ["9000", "Gand"], ["8500", "Courtrai"]],
+  FR: [["59000", "Lille"], ["75001", "Paris"], ["13001", "Marseille"],
+       ["33000", "Bordeaux"], ["67000", "Strasbourg"]],
+};
+
+const TRANSPORTEURS = ["bpost", "dpd", "mondial_relay"];
+
 /** Les points relais près d'un code postal, vus depuis le serveur. */
-async function pointsPres(env, pays, cp) {
-  const q = "?country=" + encodeURIComponent(pays) + "&postal_code=" + encodeURIComponent(cp);
+async function pointsPres(env, pays, cp, transporteur, rayon) {
+  let q = "?country=" + encodeURIComponent(pays) + "&postal_code=" + encodeURIComponent(cp);
+  // Nommer le transporteur change la réponse : sans lui, l'API ne rend
+  // qu'une partie du réseau.
+  if (transporteur) q += "&carrier=" + encodeURIComponent(transporteur);
+  if (rayon) q += "&radius=" + encodeURIComponent(rayon);
   const r = await fetch("https://servicepoints.sendcloud.sc/api/v2/service-points" + q, {
     headers: {
       authorization: "Basic " + btoa(
@@ -86,6 +113,64 @@ export async function onRequestGet({ request, env }) {
   const cpDemande = String(url.searchParams.get("cp") || "").trim();
   const lieu = cpDemande ? { cp: cpDemande, ville: "code postal demandé" } : defaut;
 
+  /* Mode couverture : combien de points relais existent réellement dans
+   * un pays, et chez qui.
+   *
+   * On balaie plusieurs communes et chaque transporteur séparément, puis
+   * on dédoublonne par identifiant. C'est la seule mesure honnête : un
+   * sondage sur une ville et sans transporteur nommé sous-estime
+   * massivement le réseau. */
+  const couverture = String(url.searchParams.get("couverture") || "").toUpperCase();
+  if (couverture) {
+    const villes = COUVERTURE[couverture];
+    if (!villes) return erreur("Pays inconnu pour la couverture.", 400, "pays");
+
+    const rayon = Number(url.searchParams.get("rayon")) || 20000;
+    const vus = new Map();
+    const parVille = [];
+    const soucis = [];
+
+    for (const [cp, nomVille] of villes) {
+      const ici = new Set();
+      for (const t of TRANSPORTEURS) {
+        try {
+          for (const x of await pointsPres(env, couverture, cp, t, rayon)) {
+            if (!x || !x.id) continue;
+            ici.add(x.id);
+            if (!vus.has(x.id)) {
+              vus.set(x.id, {
+                id: x.id, nom: x.name, transporteur: x.carrier || t,
+                ville: [x.postal_code, x.city].filter(Boolean).join(" "),
+              });
+            }
+          }
+        } catch (e) {
+          soucis.push(nomVille + " / " + t + " : " + String(e && e.message).slice(0, 120));
+        }
+      }
+      parVille.push({ ville: nomVille, cp, points: ici.size });
+    }
+
+    const tous = [...vus.values()];
+    const parTransporteur = {};
+    for (const x of tous) parTransporteur[x.transporteur] = (parTransporteur[x.transporteur] || 0) + 1;
+
+    return json({
+      ok: true,
+      pays: couverture,
+      rayon_metres: rayon,
+      communes_sondées: villes.length,
+      points_distincts: tous.length,
+      par_transporteur: parTransporteur,
+      par_ville: parVille.sort((a, b) => b.points - a.points),
+      exemples: tous.slice(0, 15),
+      soucis,
+      note: "Points relais distincts trouvés en interrogeant chaque transporteur "
+          + "séparément autour de chaque commune. Lecture seule, rien n'est créé.",
+      date: new Date().toISOString(),
+    });
+  }
+
   const sorties = {};
 
   // 1) Le compte.
@@ -116,7 +201,7 @@ export async function onRequestGet({ request, env }) {
   }
 
   // 3) Un point relais réel, cherché depuis le serveur.
-  const p = await sansCasser("points", pointsPres(env, pays, lieu.cp));
+  const p = await sansCasser("points", pointsPres(env, pays, lieu.cp, null, 20000));
   if (p.ok) {
     const liste = p.donnees || [];
     sorties.points_relais = {
