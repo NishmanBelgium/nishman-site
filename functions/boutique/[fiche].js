@@ -176,7 +176,32 @@ function page(p, base, indexable) {
 </html>`;
 }
 
+/* Les adresses de /boutique/ qui ne sont PAS des fiches produit.
+ *
+ * Cette fonction répond à tout ce qui ressemble à /boutique/quelque-chose/,
+ * y compris aux vraies pages posées à côté d'elle. Chez Cloudflare, une
+ * fonction passe avant un fichier statique : /boutique/commander/ tombait
+ * donc ici, ne correspondait à aucun produit, et repartait vers la
+ * boutique. Le tunnel de commande était inatteignable, et rien dans son
+ * code ne pouvait le laisser deviner.
+ *
+ * On rend donc la main au fichier statique pour ces adresses-là. Toute
+ * page ajoutée plus tard sous /boutique/ devra figurer dans cette liste —
+ * c'est le prix d'une fonction qui attrape un chemin entier.
+ */
+const PAGES_RESERVEES = new Set(["commander"]);
+
 export async function onRequestGet({ request, params, env }) {
+  const demande = String(params.fiche || "").toLowerCase();
+  if (PAGES_RESERVEES.has(demande)) {
+    // env.ASSETS sert le fichier statique correspondant. S'il manquait, on
+    // préfère un 404 franc à une redirection silencieuse vers la boutique :
+    // une page qui disparaît sans rien dire est le défaut qu'on vient de
+    // corriger.
+    if (env && env.ASSETS) return env.ASSETS.fetch(request);
+    return new Response("Page introuvable.", { status: 404 });
+  }
+
   const base = origine(request);
   let trouve;
   try { trouve = await parSlug(request, params.fiche); }
