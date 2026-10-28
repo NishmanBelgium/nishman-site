@@ -1,62 +1,63 @@
 /* ==========================================================================
-   ROBOTS.TXT — servi selon le domaine qui le demande.
+   ROBOTS.TXT — servi, pas déposé.
 
-   Le site vit aujourd'hui sur une adresse de prévisualisation
-   (nishman-site.pages.dev) pendant que nishman.be sert encore l'ancien
-   site. Un fichier figé poserait un piège : écrit pour la prévisualisation,
-   il bloquerait le vrai site le jour de la bascule ; écrit pour le vrai
-   site, il laisserait Google indexer la prévisualisation et créer des pages
-   dupliquées.
+   Un fichier statique dirait la même chose à tout le monde. Or le site
+   vit à deux adresses : nishman.be, qui doit être référencé, et l'adresse
+   de préproduction, qui ne doit jamais l'être. Un jour où l'autre,
+   quelqu'un publie un lien vers la préproduction, Google le suit, et le
+   site se retrouve indexé deux fois — ce que Google traite comme du
+   contenu dupliqué et qu'il faut ensuite des mois à défaire.
 
-   On répond donc selon l'hôte appelé. Le jour où nishman.be pointera sur
-   cette branche, ce fichier fera ce qu'il faut sans qu'on y touche.
+   D'où cette règle, qui ne dépend d'aucune variable à ne pas oublier :
+   seul le domaine public s'ouvre aux robots. Tout le reste se ferme.
    ========================================================================== */
 
-// Les espaces qui n'ont aucune raison d'être explorés, quel que soit
-// l'hôte : comptes, tunnel, documents personnels.
-const PRIVE = [
+/* Les domaines qui ont le droit d'être référencés. Tout autre hôte —
+   préproduction, adresse .pages.dev, prévisualisation d'une branche —
+   est fermé. */
+const PUBLICS = new Set(["nishman.be", "www.nishman.be"]);
+
+/* Ce qui n'a rien à faire dans un moteur de recherche : les espaces
+   personnels, les tunnels de commande et les points d'entrée techniques.
+   Une page de caisse indexée, c'est un visiteur qui arrive panier vide
+   sur un formulaire qu'il n'a pas demandé. */
+const INTERDITS = [
   "/pro/",
-  "/commander/",
   "/devis/",
+  "/commander/",
+  "/boutique/commander/",
   "/api/",
 ];
 
-function texte(lignes) {
-  return new Response(lignes.join("\n") + "\n", {
+export async function onRequestGet({ request }) {
+  const hote = new URL(request.url).hostname.toLowerCase();
+  const ouvert = PUBLICS.has(hote);
+
+  let corps;
+  if (!ouvert) {
+    corps = "# Adresse de préproduction : rien à indexer ici.\n"
+          + "# Le site public est https://nishman.be/\n"
+          + "User-agent: *\n"
+          + "Disallow: /\n";
+  } else {
+    corps = "# nishman.be — NBD Distribution SRL\n"
+          + "# Importateur officiel NISHMAN pour la Belgique, la France et le Luxembourg.\n"
+          + "\n"
+          + "User-agent: *\n"
+          + INTERDITS.map((c) => "Disallow: " + c + "\n").join("")
+          + "Allow: /\n"
+          + "\n"
+          + "Sitemap: https://nishman.be/sitemap.xml\n";
+  }
+
+  return new Response(corps, {
     headers: {
       "content-type": "text/plain; charset=utf-8",
-      "cache-control": "public, max-age=3600",
+      "cache-control": "public, max-age=0, s-maxage=300",
     },
   });
 }
 
-export function onRequestGet({ request }) {
-  let hote = "";
-  try { hote = new URL(request.url).hostname.toLowerCase(); } catch (e) {}
-
-  // On raisonne à l'envers depuis le 27 octobre : seul le site public est
-  // indexable, tout le reste ne l'est pas. La règle précédente listait les
-  // adresses à bloquer, et laissait donc passer celles qu'on n'avait pas
-  // prévues — à commencer par nouveau.nishman.be, le sous-domaine d'essai
-  // posé sur le vrai domaine. Deux adresses pour le même contenu, et
-  // Google choisit lui-même laquelle compter.
-  const PUBLIC = ["nishman.be", "www.nishman.be"];
-  const previsualisation = PUBLIC.indexOf(hote) === -1;
-
-  if (previsualisation) {
-    return texte([
-      "# Adresse de travail — ne pas indexer.",
-      "# Le site public est servi sur https://nishman.be",
-      "User-agent: *",
-      "Disallow: /",
-    ]);
-  }
-
-  return texte([
-    "# NBD Distribution SRL — nishman.be",
-    "User-agent: *",
-    ...PRIVE.map((c) => "Disallow: " + c),
-    "",
-    "Sitemap: https://" + hote + "/sitemap.xml",
-  ]);
+export async function onRequest() {
+  return new Response("Méthode non autorisée.", { status: 405 });
 }
