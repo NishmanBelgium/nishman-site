@@ -156,18 +156,21 @@ régie publicitaire. C'est pourquoi aucun bandeau de consentement ne vous est im
 n'y a rien à consentir.</p>
 
 <p>Le site utilise uniquement des éléments techniques, strictement nécessaires à son
-fonctionnement et dispensés de consentement :</p>
+fonctionnement et dispensés de consentement. Les voici tous, sans exception :</p>
 
 <table>
-  <tr><th>Élément</th><th>À quoi il sert</th><th>Durée</th></tr>
-  <tr><td><code>nishman-panier</code></td><td>Retenir le contenu de votre panier d'une page à l'autre</td><td>Stockage de votre navigateur, jusqu'à effacement</td></tr>
-  <tr><td><code>nishman-lang</code></td><td>Retenir la langue que vous avez choisie</td><td>Stockage de votre navigateur, jusqu'à effacement</td></tr>
-  <tr><td>Cookie de session professionnelle</td><td>Vous garder connecté à l'espace professionnel</td><td>Cookie sécurisé, inaccessible aux scripts, expiré après la période de connexion</td></tr>
+  <tr><th>Élément</th><th>À quoi il sert</th><th>Où et combien de temps</th></tr>
+  <tr><td><code>nishman-panier</code></td><td>Retenir le contenu de votre panier d'une page à l'autre</td><td>Mémoire de l'onglet — effacé dès que vous fermez l'onglet</td></tr>
+  <tr><td><code>nishman-lang</code></td><td>Retenir la langue que vous avez choisie</td><td>Stockage du navigateur, jusqu'à effacement</td></tr>
+  <tr><td><code>nishman-bienvenue</code>, <code>nishman-avis</code>, <code>offre-mcb</code>, <code>nishman-porte</code></td><td>Se souvenir qu'un message d'accueil ou une annonce vous a déjà été montré, pour ne pas vous le réafficher</td><td>Stockage du navigateur ou de l'onglet</td></tr>
+  <tr><td><code>nishman_selection_v1</code>, <code>nishman-client</code></td><td>Espace professionnel : retenir la sélection en cours et les coordonnées saisies dans le formulaire de commande, pour ne pas les retaper</td><td>Stockage du navigateur, jusqu'à effacement</td></tr>
+  <tr><td>Cookie de session professionnelle</td><td>Vous garder connecté à l'espace professionnel</td><td>Cookie sécurisé, inaccessible aux scripts, expiré à la fin de la période de connexion</td></tr>
 </table>
 
-<p>Ces éléments restent sur votre appareil. Vous pouvez les effacer à tout moment depuis
-les réglages de votre navigateur ; vous perdrez alors simplement votre panier et votre
-choix de langue.</p>
+<p>Tout cela reste sur votre appareil et ne nous est jamais transmis automatiquement :
+nous ne lisons ces éléments à aucun moment depuis nos serveurs. Vous pouvez les effacer
+quand vous le souhaitez depuis les réglages de votre navigateur ; vous perdrez alors
+simplement votre panier, votre langue et, côté professionnel, votre sélection en cours.</p>
 
 <p>Le choix du point relais fait appel à un module de Sendcloud, qui affiche la carte des
 commerces proches du code postal que vous saisissez. Ce module reçoit ce code postal, et
