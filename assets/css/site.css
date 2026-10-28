@@ -2956,3 +2956,172 @@ body.catalog-body { background: #0E0E0E; }
 @media (prefers-reduced-motion: reduce) {
   .porte-carte, .porte-action { transition: none; }
 }
+
+/* ==========================================================================
+   CATALOGUE PROFESSIONNEL — noir, orange, et assumé.
+
+   LE PARTI PRIS. Un catalogue de 201 références est un outil de travail,
+   pas une vitrine : la grille reste dense et disciplinée. Toute l'audace
+   part dans les intertitres de famille, traités comme les chapitres d'une
+   affiche de métier — capitales condensées massives, filet orange, nombre
+   de références posé en regard. C'est ce qui rend la profondeur du
+   catalogue lisible, et la profondeur est précisément ce qui distingue un
+   importateur d'un revendeur.
+
+   L'ORANGE PORTE LE PRIX. Sur un site grand public, l'orange signale ce
+   sur quoi on clique. Ici, le visiteur est un salon qui vient chercher un
+   tarif : c'est le prix qui mérite la couleur, avec le bouton d'ajout.
+   Rien d'autre ne la prend.
+
+   COMMENT C'EST FAIT. Le catalogue consommait déjà des variables pour ses
+   couleurs. On les redéfinit sur la feuille plutôt que de réécrire
+   cinquante règles — chaque composant suit, sans exception et sans
+   surcharge empilée.
+   ========================================================================== */
+
+.catalog-sheet {
+  --bg: #171717;
+  --bg-soft: #0E0E0E;
+  --bg-soft-2: #202020;
+  --ink: #F7F6F2;
+  --ink-soft: #A8A49A;
+  --ink-faint: #76736C;
+  --line: rgba(247, 246, 242, 0.12);
+  --line-strong: rgba(247, 246, 242, 0.24);
+
+  background: #101010;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--ink);
+}
+
+/* ---------- La barre de recherche ---------- */
+
+.catalog-sheet .search-sticky {
+  background: rgba(16, 16, 16, 0.86);
+  border-bottom: 1px solid var(--line);
+}
+.catalog-sheet .search-input {
+  background: #0A0A0A;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--ink);
+}
+.catalog-sheet .search-input::placeholder { color: var(--ink-faint); }
+.catalog-sheet .search-input:focus { border-color: var(--gold); }
+
+.catalog-sheet .cat-btn,
+.catalog-sheet .lang-btn,
+.catalog-sheet .pro-access,
+.catalog-sheet .mon-compte {
+  background: #0A0A0A;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--ink);
+}
+.catalog-sheet .cat-btn:hover,
+.catalog-sheet .lang-btn:hover,
+.catalog-sheet .pro-access:hover,
+.catalog-sheet .mon-compte:hover { border-color: var(--ink); }
+
+.catalog-sheet .sticky-brand img { filter: invert(1) brightness(1.08); }
+
+/* ---------- Les chapitres ---------- */
+
+.famille-titre {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin: 56px 0 4px;
+  padding-top: 18px;
+  border-top: 3px solid var(--gold);
+
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 72%;
+  font-weight: 900;
+  font-size: clamp(1.6rem, 4.4vw, 2.75rem);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+/* Le premier chapitre ne repousse pas la grille : il la commence. */
+.famille-titre:first-child { margin-top: 18px; }
+
+.famille-compte {
+  font-size: 0.9rem;
+  font-stretch: 100%;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin-left: auto;
+  align-self: center;
+}
+
+/* ---------- Les cartes ---------- */
+
+.catalog-sheet .product-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+.catalog-sheet .product-card:hover {
+  border-color: var(--gold);
+  box-shadow: none;
+  transform: none;
+}
+
+.catalog-sheet .product-image-wrap {
+  background: #0A0A0A;
+  border-radius: 0;
+}
+
+.catalog-sheet .product-cat { color: var(--gold-deep); }
+
+.catalog-sheet .product-name {
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 84%;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* Le prix prend l'orange : c'est ce que le salon vient chercher. */
+.catalog-sheet .product-price {
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 86%;
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--gold);
+}
+.catalog-sheet .product-price .vat-note { color: var(--ink-faint); }
+
+/* Le bouton d'ajout devient carré, comme tout le reste. */
+.catalog-sheet .add-btn {
+  background: var(--gold);
+  color: #0A0A0A;
+  border-radius: 2px;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  box-shadow: none;
+}
+.catalog-sheet .add-btn:hover { background: var(--gold-deep); }
+
+.catalog-sheet .sel-chip {
+  background: var(--gold);
+  color: #0A0A0A;
+  border: 0;
+  border-radius: 2px;
+  font-weight: 800;
+}
+
+.catalog-sheet .result-count { color: var(--ink-faint); }
+.catalog-sheet .no-results { color: var(--ink-soft); }
+
+@media (max-width: 760px) {
+  .famille-titre { margin-top: 40px; gap: 10px; border-top-width: 2px; }
+}

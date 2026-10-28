@@ -718,12 +718,11 @@
       return;
     }
 
-    grid.innerHTML = filtered
-      .map((p) => {
-        const q = selection[p.ean] || { u: 0, b: 0 };
-        const inSel = q.u > 0 || q.b > 0;
-        const summary = [q.u ? q.u + " u" : "", q.b ? q.b + " ct" : ""].filter(Boolean).join(" + ");
-        return `
+    function carte(p) {
+      const q = selection[p.ean] || { u: 0, b: 0 };
+      const inSel = q.u > 0 || q.b > 0;
+      const summary = [q.u ? q.u + " u" : "", q.b ? q.b + " ct" : ""].filter(Boolean).join(" + ");
+      return `
           <div class="product-card" data-open="${p.ean}" role="button" tabindex="0">
             <div class="product-image-wrap">
               <img src="${productImageSrc(p)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" width="900" height="900" />
@@ -747,8 +746,38 @@
             </div>
           </div>
         `;
-      })
-      .join("");
+    }
+
+    // DÉCOUPAGE PAR FAMILLE. Deux cents références d'affilée forment un mur
+    // qu'on parcourt sans jamais savoir où l'on en est. Des intertitres
+    // rendent la profondeur du catalogue lisible — et c'est la profondeur
+    // qui distingue un importateur d'un revendeur.
+    //
+    // On ne découpe que quand il y a quelque chose à découper : si une
+    // famille est déjà sélectionnée, le titre répéterait le filtre ; et si
+    // une recherche est en cours, les résultats sont classés par pertinence,
+    // un ordre que des sections casseraient.
+    const parFamilles = activeCategory === "Tous" && !searchTerm.trim();
+
+    if (!parFamilles) {
+      grid.innerHTML = filtered.map(carte).join("");
+    } else {
+      const ordre = [];
+      const paquets = new Map();
+      for (const p of filtered) {
+        const c = p.category || "—";
+        if (!paquets.has(c)) { paquets.set(c, []); ordre.push(c); }
+        paquets.get(c).push(p);
+      }
+      grid.innerHTML = ordre
+        .map((c) => {
+          const lot = paquets.get(c);
+          return `<h2 class="famille-titre">${escapeHtml(catLabel(c))}`
+            + `<span class="famille-compte">${lot.length}</span></h2>`
+            + lot.map(carte).join("");
+        })
+        .join("");
+    }
 
     grid.querySelectorAll("[data-action='access']").forEach((btn) => {
       btn.addEventListener("click", (e) => {
