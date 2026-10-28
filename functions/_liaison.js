@@ -11,7 +11,12 @@
    seul critère mérite d'être vue passer.
    ========================================================================== */
 
-import { partenaireParEmail, partenaireParTva } from "./_odoo.js";
+import { partenaireParEmail } from "./_odoo.js";
+
+function memeEntreprise(tvaFiche, tvaCompte) {
+  const n = (v) => String(v || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase().replace(/^[A-Z]{2}/, "");
+  return !!n(tvaCompte) && n(tvaFiche) === n(tvaCompte);
+}
 import { codePortier, adressePortier } from "./_portier.js";
 
 
@@ -22,14 +27,16 @@ import { codePortier, adressePortier } from "./_portier.js";
 export async function rapprocher(env, compte) {
   // L'e-mail d'abord : c'est le critère le plus personnel, et le seul qui
   // désigne quelqu'un plutôt qu'une entreprise.
-  let fiche = await partenaireParEmail(env, compte.email);
-  let critere = "email";
-
-  if (!fiche && compte.tva) {
-    fiche = await partenaireParTva(env, compte.tva);
-    critere = "tva";
-  }
+  //
+  // Le numéro de TVA seul ne rattache plus rien : il est public, et
+  // l'inscription ne le vérifie pas. Il suffisait de s'inscrire avec celui
+  // d'un salon pour lire ses commandes et ses remises négociées. L'e-mail
+  // reste le critère, à condition que la fiche ne porte pas un autre
+  // numéro de TVA que le compte.
+  const fiche = await partenaireParEmail(env, compte.email);
+  const critere = "email";
   if (!fiche) return null;
+  if (fiche.vat && !memeEntreprise(fiche.vat, compte.tva)) return null;
 
   await env.DB.prepare("UPDATE comptes SET odoo_partner_id = ? WHERE id = ?")
     .bind(fiche.id, compte.id).run();

@@ -5,10 +5,37 @@
 
 /* --- Réponses ----------------------------------------------------------- */
 
+/* --- En-têtes de sécurité des réponses produites ici ------------------------
+ *
+ * Cloudflare Pages n'applique PAS le fichier _headers aux réponses des
+ * Functions : vérifié en production le 28 octobre, /api/* et les fiches
+ * produit partaient sans HSTS, sans politique de contenu et sans
+ * X-Frame-Options, alors que les pages statiques les portaient. Les
+ * fonctions les posent donc elles-mêmes, avec les mêmes valeurs. */
+export const ENTETES_SECURITE = {
+  "strict-transport-security": "max-age=63072000; includeSubDomains",
+  "x-content-type-options": "nosniff",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "x-frame-options": "DENY",
+  "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
+};
+
+/* La politique de contenu des pages, identique à celle de _headers. */
+export const CSP_PAGE = "default-src 'self'; script-src 'self' 'unsafe-inline' https://embed.sendcloud.sc; "
+  + "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; "
+  + "img-src 'self' data: https:; connect-src 'self' https://servicepoints.sendcloud.sc https://embed.sendcloud.sc https://panel.sendcloud.sc; "
+  + "frame-src https://embed.sendcloud.sc https://servicepoints.sendcloud.sc; form-action 'self'; "
+  + "frame-ancestors 'none'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests";
+
 export function json(donnees, statut = 200, entetes = {}) {
   return new Response(JSON.stringify(donnees), {
     status: statut,
     headers: {
+      ...ENTETES_SECURITE,
+      // Une réponse d'API n'est jamais une page : rien à y charger, rien à
+      // y encadrer, rien à indexer.
+      "content-security-policy": "default-src 'none'; frame-ancestors 'none'",
+      "x-robots-tag": "noindex, nofollow",
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
       ...entetes,
@@ -144,6 +171,7 @@ export async function compteConnecte(requete, db) {
   const ligne = await db.prepare(`
     SELECT c.id, c.email, c.salon, c.prenom, c.nom, c.pays,
            c.tva, c.siret, c.tva_valide, c.tva_verifiee_le, c.etat,
+           c.tva_statut, c.tva_preuve, c.tva_nom, c.tva_motif,
            c.telephone, c.adresse, c.code_postal, c.ville,
            c.odoo_partner_id, c.cree_le, s.jeton, s.expire_le
       FROM sessions s
@@ -264,8 +292,12 @@ export async function noterTentative(db, emailCle) {
    * rien n'empêchait d'écrire des mégaoctets par requête dans la base. */
   await db.prepare("INSERT INTO tentatives (email_cle, quand) VALUES (?, ?)")
     .bind(String(emailCle).slice(0, 120), new Date().toISOString()).run();
-  // Ménage opportuniste : on ne garde pas d'historique au-delà de la fenêtre.
-  const vieux = new Date(Date.now() - FENETRE_MINUTES * 60000).toISOString();
+  // Ménage opportuniste. On n'efface que ce qui est plus vieux que la plus
+  // longue fenêtre en usage (une heure pour les inscriptions et les
+  // commandes) : effacer au-delà du quart d'heure de la connexion
+  // remettait à zéro tous les autres compteurs à chaque essai raté, et la
+  // limite « par heure » ne durait en réalité que quinze minutes.
+  const vieux = new Date(Date.now() - 24 * 60 * 60000).toISOString();
   await db.prepare("DELETE FROM tentatives WHERE quand < ?").bind(vieux).run();
 }
 
@@ -445,6 +477,27 @@ export async function creerLienReinit(db, compteId) {
    ========================================================================== */
 
 const ADMIN_DEFAUT = "contact@nishman.be";
+
+/**
+ * Vrai si la requête ne vient pas d'un autre site.
+ *
+ * Les gestes d'administration déclenchés par une simple adresse (renvoyer
+ * une confirmation, refaire une étiquette payante, créer un journal) ne
+ * doivent pas pouvoir être déclenchés par une page tierce ou un lien piégé
+ * ouvert dans une messagerie web pendant que la session est ouverte. Le
+ * navigateur le dit dans Sec-Fetch-Site : « same-origin » depuis nos pages,
+ * « none » quand l'adresse est tapée ou vient d'un favori, « cross-site »
+ * ou « same-site » quand un autre site l'a provoquée — seuls ces deux
+ * derniers cas sont refusés.
+ */
+export function origineSure(requete) {
+  const site = String(requete.headers.get("sec-fetch-site") || "").toLowerCase();
+  if (site) return site === "same-origin" || site === "none";
+  const source = requete.headers.get("origin") || requete.headers.get("referer") || "";
+  if (!source) return true;
+  try { return new URL(source).host === new URL(requete.url).host; }
+  catch (e) { return false; }
+}
 
 /** Les adresses d'administration, normalisées. */
 export function adressesAdmin(env) {

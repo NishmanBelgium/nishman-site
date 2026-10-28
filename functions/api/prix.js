@@ -12,7 +12,7 @@
    ========================================================================== */
 
 import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
-import { interrogerPortier } from "../_portier.js";
+import { donneesPortier } from "../_tarifs.js";
 
 export async function onRequestGet({ request, env }) {
   if (!env.DB) return json({ ok: false, raison: "base" });
@@ -26,11 +26,13 @@ export async function onRequestGet({ request, env }) {
   // « portier » = le script n'a pas répondu ; « code » = il a répondu et a
   // refusé le code interne. Les deux donnaient le même mot avant le 214,
   // ce qui rendait la panne du 26 octobre indéchiffrable depuis la page.
-  const appel = await interrogerPortier(env, "action=unlock&callback=p");
-  if (appel.etat !== "ok") return json({ ok: false, raison: appel.etat });
-
-  const data = appel.donnees;
-  if (!data.prices) return json({ ok: false, raison: "portier" });
+  // Les mêmes prix que le panier et la commande, gardés une minute.
+  let data;
+  try { data = await donneesPortier(env); }
+  catch (e) {
+    const m = String((e && e.message) || "");
+    return json({ ok: false, raison: m.indexOf("code") >= 0 ? "code" : "portier" });
+  }
 
   // Le nom affiché est celui du compte, pas celui rattaché au code interne :
   // c'est le client qui regarde ses prix, pas NBD. Un visiteur anonyme n'a

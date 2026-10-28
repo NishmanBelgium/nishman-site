@@ -40,9 +40,14 @@
   // la connexion. On n'accepte qu'un chemin de ce site — « //ailleurs.com »
   // ressemble à un chemin mais mène dehors.
   function retourSur() {
+    // On laisse le navigateur résoudre l'adresse, puis on vérifie qu'elle
+    // reste chez nous : « /\ailleurs.com » ou « /%09/ailleurs.com »
+    // passaient le filtre précédent et menaient sur un autre site.
     try {
       var r = new URLSearchParams(location.search).get("retour") || "";
-      if (/^\/(?!\/)/.test(r)) return r;
+      if (!r || r.charAt(0) !== "/") return "";
+      var u = new URL(r, location.origin);
+      if (u.origin === location.origin) return u.pathname + u.search + u.hash;
     } catch (x) {}
     return "";
   }

@@ -22,7 +22,7 @@
    Réservé au compte de NBD.
    ========================================================================== */
 
-import { json, erreur, compteAdmin } from "../_commun.js";
+import { json, erreur, compteAdmin, origineSure } from "../_commun.js";
 import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
 
 const NOM = "Mollie";
@@ -39,6 +39,9 @@ export async function onRequestGet({ request, env }) {
   if (!configureOdoo(env)) return erreur("Odoo n'est pas configuré.", 503, "odoo");
 
   const creer = String(new URL(request.url).searchParams.get("creer") || "") === "oui";
+  if (creer && !origineSure(request)) {
+    return erreur("Ouvrez cette adresse directement, pas depuis un lien extérieur.", 403, "origine");
+  }
 
   // 1) Ce qui existe déjà. On regarde avant d'agir, toujours.
   let journaux;

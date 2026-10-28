@@ -16,7 +16,7 @@
    note laissée par la chaîne, et le numéro de suivi quand il existe.
    ========================================================================== */
 
-import { json, erreur, compteAdmin } from "../_commun.js";
+import { json, erreur, compteAdmin, origineSure } from "../_commun.js";
 import { preparerTable, ETAPES, lireParRef, noterEtape,
          prendreLaMain, rendreLaMain, lire } from "../_paiements.js";
 import { poursuivre } from "../_apres_paiement.js";
@@ -66,6 +66,12 @@ export async function onRequestGet({ request, env }) {
    * rétractation. Un client qui l'a supprimée a le droit de la
    * redemander, et NBD doit pouvoir prouver qu'elle est partie. On force
    * l'envoi : ici, c'est voulu. */
+  // Les deux gestes qui suivent agissent (un courriel, une étiquette
+  // payante) : ils ne partent pas sur un lien venu d'un autre site.
+  if ((renvoyer || retenter) && !origineSure(request)) {
+    return erreur("Ouvrez cette adresse directement, pas depuis un lien extérieur.", 403, "origine");
+  }
+
   if (renvoyer) {
     const p = await lireParRef(env.DB, renvoyer, 0);
     if (!p) return erreur("Commande introuvable.", 404, "inconnue");

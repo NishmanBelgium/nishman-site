@@ -88,6 +88,8 @@ function lireClient(brut) {
   if (!texteValide(c.adresse, 4, 200)) throw new Error("adresse");
   if (!texteValide(c.code_postal, 3, 12)) throw new Error("code_postal");
   if (!texteValide(c.ville, 2, 80)) throw new Error("ville");
+  // Facultatif, mais borné : il part dans Odoo, dans la base et chez SendCloud.
+  if (c.telephone.length > 30) throw new Error("telephone");
   if (!paysValideB2C(c.pays)) throw new Error("pays");
 
   const forme = CODES_POSTAUX[c.pays];

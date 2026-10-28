@@ -14,7 +14,7 @@
    Réservé au compte de NBD, en lecture pour tout le monde d'autre.
    ========================================================================== */
 
-import { json, erreur, compteAdmin } from "../_commun.js";
+import { json, erreur, compteAdmin, origineSure } from "../_commun.js";
 import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
@@ -25,6 +25,9 @@ import { nettoyerBrouillon } from "../_apres_paiement.js";
 export async function onRequestGet({ request, env }) {
   const compte = await compteAdmin(request, env);
   if (!compte) return erreur("Page réservée.", 404, "reservee");
+  if (!origineSure(request)) {
+    return erreur("Ouvrez cette adresse directement, pas depuis un lien extérieur.", 403, "origine");
+  }
 
   if (!configureOdoo(env)) return erreur("Odoo n'est pas configuré.", 503, "odoo");
 

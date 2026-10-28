@@ -13,6 +13,7 @@
    ========================================================================== */
 
 import { parSlug, echapper, euros, origine } from "../_boutique.js";
+import { ENTETES_SECURITE, CSP_PAGE } from "../_commun.js";
 
 const DESCRIPTION_MAX = 155;
 
@@ -221,6 +222,9 @@ export async function onRequestGet({ request, params, env }) {
 
   return new Response(page(trouve.produit, base, indexable), {
     headers: {
+      // _headers ne s'applique pas aux pages produites par une fonction.
+      ...ENTETES_SECURITE,
+      "content-security-policy": CSP_PAGE,
       "content-type": "text/html; charset=utf-8",
       // Un prix doit correspondre au flux Google au centime près : une page
       // gardée une heure en cache afficherait l'ancien prix après une

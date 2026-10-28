@@ -23,8 +23,18 @@ export async function catalogue(request) {
   return cacheCatalogue;
 }
 
-export async function tableDePrix(env) {
-  if (cachePrix && Date.now() < cachePrixExpire) return cachePrix;
+let cacheLimites = null;
+
+/**
+ * Les prix ET les limites de stock, tels que le portier les rend, gardés
+ * une minute. /api/prix interrogeait le script Google à chaque visite :
+ * un robot qui boucle sur cette adresse anonyme épuisait les quotas du
+ * script, et coupait du même coup les prix, les devis et les e-mails.
+ */
+export async function donneesPortier(env) {
+  if (cachePrix && Date.now() < cachePrixExpire) {
+    return { prices: cachePrix, limits: cacheLimites };
+  }
 
   const appel = await interrogerPortier(env, "action=unlock&callback=p");
   if (appel.etat === "code") throw new Error("code interne refusé");
@@ -34,8 +44,13 @@ export async function tableDePrix(env) {
   if (!d.prices) throw new Error("portier sans prix");
 
   cachePrix = d.prices;
+  cacheLimites = d.limits || null;
   cachePrixExpire = Date.now() + PRIX_DUREE_MS;
-  return cachePrix;
+  return { prices: cachePrix, limits: cacheLimites };
+}
+
+export async function tableDePrix(env) {
+  return (await donneesPortier(env)).prices;
 }
 
 export { PORTIER_DEFAUT };

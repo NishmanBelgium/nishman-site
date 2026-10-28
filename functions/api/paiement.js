@@ -16,7 +16,7 @@
 import { json, erreur, compteConnecte } from "../_commun.js";
 import { configure as configureOdoo } from "../_odoo.js";
 import { configureMollie, appelMollie } from "../_mollie.js";
-import { lireParRef, lire, majStatut, prendreLaMain, rendreLaMain } from "../_paiements.js";
+import { lireParRef, lire, majStatut, prendreLaMain, rendreLaMain, montantConcorde } from "../_paiements.js";
 import { poursuivre, abandonner } from "../_apres_paiement.js";
 
 const LISIBLE = {
@@ -48,11 +48,21 @@ export async function onRequestGet({ request, env }) {
     try {
       const m = await appelMollie(env, "/payments/" + encodeURIComponent(p.mollie_id));
       const etat = String((m && m.status) || "");
-      if (etat === "paid") statut = "paye";
+      // Payé, mais pas le montant demandé : rien ne se déclenche, comme
+      // dans la notification. Le registre garde la trace de l'écart.
+      const divergent = etat === "paid" && !montantConcorde(m, p);
+      if (etat === "paid" && !divergent) statut = "paye";
       else if (etat === "canceled") statut = "annule";
       else if (etat === "expired") statut = "expire";
       else if (etat === "failed") statut = "echoue";
-      if (statut !== p.statut) { try { await majStatut(env.DB, p.mollie_id, statut, null); } catch (e2) {} }
+      if (divergent) {
+        try {
+          await majStatut(env.DB, p.mollie_id, "ouvert",
+            "MONTANT DIVERGENT : annoncé " + p.montant + " " + (p.devise || "EUR")
+            + ", encaissé " + String((m.amount && m.amount.value) || "") + " "
+            + String((m.amount && m.amount.currency) || "") + ". Rien n'a été déclenché.");
+        } catch (e2) {}
+      } else if (statut !== p.statut) { try { await majStatut(env.DB, p.mollie_id, statut, null); } catch (e2) {} }
     } catch (e) { /* on répondra ce que dit le registre */ }
   }
 

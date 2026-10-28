@@ -102,6 +102,19 @@ export async function enregistrer(db, p) {
   ).run();
 }
 
+/**
+ * Le paiement relu chez Mollie est-il bien celui que nous avons demandé ?
+ * Montant ET devise, tels qu'enregistrés à la création. La notification
+ * faisait déjà ce contrôle ; les pages de suivi, qui relisent Mollie elles
+ * aussi et peuvent déclencher la facture, ne le faisaient pas.
+ */
+export function montantConcorde(paiement, enregistre) {
+  const a = paiement && paiement.amount;
+  if (!a || !enregistre) return false;
+  return String(a.value || "") === String(enregistre.montant)
+      && String(a.currency || "") === String(enregistre.devise || "EUR");
+}
+
 export async function lire(db, mollieId) {
   await preparerTable(db);
   return db.prepare("SELECT * FROM paiements WHERE mollie_id = ?").bind(mollieId).first();

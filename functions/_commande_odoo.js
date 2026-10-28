@@ -87,6 +87,14 @@ export async function paysId(env, code) {
 
 /* --- Le client ----------------------------------------------------------- */
 
+/** Deux numéros de TVA désignent-ils la même entreprise ? Une fiche sans
+ *  numéro ne contredit rien. */
+function memeTva(tvaFiche, tvaCompte) {
+  const n = (v) => String(v || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase().replace(/^[A-Z]{2}/, "");
+  const a = n(tvaFiche), b = n(tvaCompte);
+  return !a || (!!b && a === b);
+}
+
 /**
  * La fiche client dans Odoo : retrouvée, ou créée.
  *
@@ -99,16 +107,30 @@ export async function paysId(env, code) {
  * client.
  */
 export async function trouverOuCreerPartenaire(env, compte) {
-  const identifiant = compte.tva || compte.siret || "";
-
-  let fiche = null;
-  if (identifiant) {
-    try { fiche = await partenaireParTva(env, identifiant); } catch (e) { /* on tentera l'e-mail */ }
+  // 0) Le compte est déjà rattaché à une fiche : c'est elle, et elle seule.
+  if (compte.odoo_partner_id) {
+    let nomLie = "";
+    try {
+      const l = await appel(env, "res.partner", "read", [[compte.odoo_partner_id], ["name"]], {});
+      nomLie = (l && l[0] && l[0].name) || "";
+    } catch (e) { /* le nom n'est qu'un libellé */ }
+    return { id: compte.odoo_partner_id, cree: false, nom: nomLie };
   }
-  if (!fiche && compte.email) {
+
+  // 1) Sinon, l'adresse e-mail — à condition que la fiche ne porte pas un
+  //    AUTRE numéro de TVA. Le numéro de TVA seul ne suffit plus : il est
+  //    public, et l'inscription ne le vérifie pas. Le retrouver par lui
+  //    revenait à laisser n'importe qui commander, et se faire facturer,
+  //    au nom d'un salon existant. Une fiche en double est un désagrément
+  //    que NBD fusionne en deux clics ; une commande au nom d'autrui est un
+  //    litige.
+  let fiche = null;
+  if (compte.email) {
     try { fiche = await partenaireParEmail(env, compte.email); } catch (e) { /* on créera */ }
   }
-  if (fiche && fiche.id) return { id: fiche.id, cree: false, nom: fiche.name || "" };
+  if (fiche && fiche.id && memeTva(fiche.vat, compte.tva)) {
+    return { id: fiche.id, cree: false, nom: fiche.name || "" };
+  }
 
   const nom = String(compte.salon || "").trim()
     || [compte.prenom, compte.nom].filter(Boolean).join(" ").trim()
@@ -252,6 +274,15 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
       montantOdoo = relu[0].amount_untaxed;
       const notre = Math.round((resultat.marchandise + resultat.port) * 100) / 100;
       ecart = Math.round((montantOdoo - notre) * 100) / 100;
+      // Le TTC aussi : c'est lui que Mollie débite. Un HT juste avec une
+      // TVA différente (position fiscale mal appliquée) donnerait une
+      // facture qui ne se solde jamais. Odoo arrondit la taxe globalement,
+      // comme _calcul.js : les deux doivent tomber au centime.
+      const ttcOdoo = Number(relu[0].amount_total);
+      const ttcNotre = Math.round(Number(resultat.total) * 100) / 100;
+      if (ecart === 0 && Number.isFinite(ttcOdoo) && Number.isFinite(ttcNotre)) {
+        ecart = Math.round((ttcOdoo - ttcNotre) * 100) / 100;
+      }
     }
   } catch (e) { /* la commande existe ; la relecture est un contrôle, pas une condition */ }
 
