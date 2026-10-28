@@ -294,3 +294,8 @@
 }
 .bc-legal a { color: #8a8a8a; text-decoration: underline; text-underline-offset: 2px; }
 .bc-legal a:hover { color: #111; }
+
+/* Le navigateur masque [hidden] par une règle plus faible que n'importe
+   quelle classe : .bc-relais-choisi (display:flex) restait donc visible,
+   vide, avant tout choix de point relais. */
+[hidden] { display: none !important; }

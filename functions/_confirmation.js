@@ -193,7 +193,8 @@ export function courriel({ commande, lignes, relais, client, conditions, retract
 
     + '<hr style="border:0;border-top:1px solid #e6e6e6;margin:30px 0 0;" />'
     + '<p style="font:400 11px/1.7 Arial,Helvetica,sans-serif;color:#999;margin:16px 0 0;">'
-    + 'NBD DISTRIBUTION SRL — Avenue Léopold III 21, 7133 Binche, Belgique<br />'
+    + 'NBD DISTRIBUTION SRL — siège social : Rue de la Poire d\'Or 26, 7033 Mons — '
+    + 'siège d\'exploitation : Avenue Léopold III 21, 7134 Binche, Belgique<br />'
     + 'TVA BE 0817.750.283 — contact@nishman.be — +32 489 97 00 87<br />'
     + 'Importateur officiel NISHMAN pour la Belgique, la France et le Luxembourg.</p>'
 
@@ -279,6 +280,11 @@ export async function envoyerConfirmation(env, p, journal, options) {
 
   const mailId = await appel(env, "mail.mail", "create", [{
     subject: "Confirmation de votre commande " + commande.name + " — NISHMAN",
+    // L'expéditeur est la marque, jamais une personne de l'équipe : sans
+    // ces deux champs, Odoo signe du nom de l'utilisateur de l'API et la
+    // réponse du client part dans Odoo plutôt que dans la boîte qu'on lit.
+    email_from: '"Nishman" <contact@nishman.be>',
+    reply_to: '"Nishman" <contact@nishman.be>',
     body_html: corps,
     email_to: destinataire,
     // On garde la trace de l'envoi : c'est la preuve que la confirmation
