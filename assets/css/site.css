@@ -2783,25 +2783,7 @@ body.has-offre-barre .search-sticky {
 /* ── bandeau de faits sous l'en-tête (étape 205) ────────────────────────
    Une ligne, des faits séparés par des points. Sobre par construction :
    c'est une mention de confiance, pas une bannière promotionnelle. */
-.ban-faits {
-  margin: 2px 0 16px;
-  font-size: 12.5px; line-height: 1.7; color: var(--ink-soft);
-}
-.ban-fait { white-space: nowrap; }
-.ban-fait + .ban-fait::before {
-  content: "·";
-  margin: 0 9px;
-  color: var(--ink-faint);
-}
-.ban-fait-cle { color: var(--ink); font-weight: 700; }
 
-/* Sur téléphone, les mentions se coupent en milieu de phrase si on les
-   garde insécables : on les laisse respirer. */
-@media (max-width: 760px) {
-  .ban-faits { font-size: 12px; line-height: 1.75; margin-bottom: 12px; }
-  .ban-fait { white-space: normal; }
-  .ban-fait + .ban-fait::before { margin: 0 7px; }
-}
 
 /* ── « Qui vous livre » (étape 205) ─────────────────────────────────────
    Après le catalogue, pas avant : le visiteur vient pour les produits.
@@ -2950,4 +2932,76 @@ body.has-offre-barre .search-sticky {
   margin: -1px; padding: 0; border: 0;
   overflow: hidden; white-space: nowrap;
   clip: rect(0 0 0 0); clip-path: inset(50%);
+}
+
+/* ==========================================================================
+   BANDEAU PROFESSIONNEL — cinq mentions qui défilent.
+
+   Elles tenaient sur deux lignes serrées, séparées par des points médians.
+   Personne ne lisait. Le défilement rend chaque mention lisible à son tour
+   et rapproche le bandeau de celui de la boutique, qui fonctionne bien.
+
+   Il s'arrête dès qu'on le survole ou qu'on l'atteint au clavier : un texte
+   qui bouge sous la main est un texte qu'on ne peut pas lire. Et si le
+   système demande moins d'animations, rien ne bouge du tout — la copie
+   disparaît et les mentions reviennent à la ligne.
+   ========================================================================== */
+
+.ruban-pro {
+  background: var(--noir, #101010);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin: 2px 0 18px;
+}
+
+.ruban-pro-piste {
+  display: flex;
+  width: max-content;
+  animation: ruban-defile 48s linear infinite;
+}
+.ruban-pro:hover .ruban-pro-piste,
+.ruban-pro:focus-within .ruban-pro-piste { animation-play-state: paused; }
+
+@keyframes ruban-defile { to { transform: translateX(-50%); } }
+
+.ruban-pro-lot {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: 11px 0;
+}
+
+.rp-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 22px;
+  white-space: nowrap;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: rgba(247, 246, 242, 0.66);
+}
+/* Une séparation discrète, à la place des points médians. */
+.rp-item + .rp-item { border-left: 1px solid rgba(247, 246, 242, 0.14); }
+
+.rp-cle { color: #F7F6F2; font-weight: 700; }
+
+.rp-drapeau {
+  width: 18px; height: 12px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+  box-shadow: 0 0 0 1px rgba(247, 246, 242, 0.18);
+}
+
+@media (max-width: 760px) {
+  .rp-item { font-size: 12px; padding: 0 16px; }
+  .ruban-pro { margin-bottom: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ruban-pro-piste { animation: none; width: auto; }
+  #ruban-pro-copie { display: none; }
+  .ruban-pro-lot { flex-wrap: wrap; padding: 9px 14px; gap: 4px 0; }
+  .rp-item { white-space: normal; padding: 0 14px; }
+  .rp-item:first-child { padding-left: 0; }
 }
