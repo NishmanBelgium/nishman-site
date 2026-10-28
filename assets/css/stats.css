@@ -1,0 +1,180 @@
+/* ==========================================================================
+   CHIFFRES DU SITE — mise en page.
+
+   Une page de direction se lit debout, en trente secondes : les six
+   chiffres d'abord, les courbes ensuite, le détail pour qui creuse.
+   ========================================================================== */
+
+.st-main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 20px 80px;
+}
+
+.st-attente, .st-refus {
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--ink-soft);
+  font: 400 15px/1.6 var(--font-body);
+}
+.st-refus h1 { font: 700 24px/1.3 var(--font-display); color: var(--ink); margin: 0 0 8px; }
+.st-cta {
+  display: inline-block; margin-top: 18px; padding: 12px 24px;
+  background: var(--ink); color: #fff; border-radius: 999px;
+  font: 700 14px/1 var(--font-body); text-decoration: none;
+}
+
+/* --- Tête ---------------------------------------------------------------- */
+
+.st-tete {
+  display: flex; flex-wrap: wrap; gap: 18px;
+  align-items: flex-end; justify-content: space-between;
+  margin: 0 0 26px;
+}
+.st-sur {
+  margin: 0 0 4px; font: 700 11px/1.2 var(--font-body);
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint);
+}
+.st-tete h1 { margin: 0; font: 700 30px/1.15 var(--font-display); color: var(--ink); }
+.st-periode { margin: 6px 0 0; font: 400 13px/1.5 var(--font-body); color: var(--ink-soft); }
+
+/* Les filtres, sur une seule ligne au-dessus de tout : ils commandent la
+   page entière. */
+.st-filtres { display: flex; gap: 6px; }
+.st-filtres button {
+  padding: 9px 16px; border: 1px solid var(--line-strong); background: #fff;
+  border-radius: 999px; cursor: pointer;
+  font: 600 13px/1 var(--font-body); color: var(--ink-soft);
+  transition: all .18s var(--ease);
+}
+.st-filtres button:hover { border-color: var(--ink); color: var(--ink); }
+.st-filtres button[aria-pressed="true"] {
+  background: var(--ink); border-color: var(--ink); color: #fff;
+}
+
+/* --- Les cartes ---------------------------------------------------------- */
+
+.st-cartes {
+  display: grid; gap: 12px; margin: 0 0 28px;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+}
+.st-carte {
+  padding: 16px 18px 14px;
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: #fff;
+}
+.st-carte-titre {
+  margin: 0 0 8px; font: 600 12px/1.3 var(--font-body); color: var(--ink-soft);
+}
+.st-carte-valeur {
+  margin: 0; font: 700 25px/1.1 var(--font-display); color: var(--ink);
+  letter-spacing: -.01em;
+}
+.st-carte-evo {
+  margin: 8px 0 0; font: 600 12px/1.3 var(--font-body);
+}
+.st-carte-evo span { font-weight: 400; color: var(--ink-faint); }
+.st-hausse { color: #1a8a4a; }
+.st-baisse { color: #b4342a; }
+.st-plat { color: var(--ink-faint); }
+
+/* --- Les graphiques ------------------------------------------------------ */
+
+.st-bloc {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: #fff; padding: 18px 18px 10px; margin: 0 0 18px;
+}
+.st-bloc-tete {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  align-items: center; justify-content: space-between; margin: 0 0 6px;
+}
+.st-bloc h2 { margin: 0; font: 700 15px/1.3 var(--font-display); color: var(--ink); }
+
+/* La légende est toujours là dès qu'il y a deux séries : l'identité ne
+   doit jamais reposer sur la seule couleur. */
+.st-legende { display: flex; gap: 14px; }
+.st-cle {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 600 12px/1 var(--font-body); color: var(--ink-soft);
+}
+.st-cle i { width: 10px; height: 10px; border-radius: 3px; display: block; }
+
+.st-graph svg { width: 100%; height: auto; display: block; }
+.st-zone:hover { fill: rgba(10, 10, 10, .035); }
+.st-barre { transition: opacity .15s var(--ease); }
+.st-barre:hover { opacity: .78; }
+
+.st-vide {
+  margin: 10px 0 14px; font: 400 13px/1.6 var(--font-body); color: var(--ink-faint);
+}
+
+/* --- Commandes à reprendre ----------------------------------------------- */
+
+.st-souffrance {
+  border: 1px solid rgba(180, 52, 42, .28); border-radius: var(--radius-md);
+  background: #fdf7f6; padding: 18px; margin: 0 0 18px;
+}
+.st-souffrance h2 { margin: 0 0 4px; font: 700 15px/1.3 var(--font-display); color: #8c2a22; }
+.st-lead { margin: 0 0 12px; font: 400 13px/1.6 var(--font-body); color: var(--ink-soft); }
+.st-bloquee { padding: 10px 0; border-top: 1px solid rgba(180, 52, 42, .16); }
+.st-bloquee-ref { margin: 0; font: 700 13px/1.4 var(--font-body); color: var(--ink); }
+.st-bloquee-ref span { font-weight: 400; color: var(--ink-soft); }
+.st-bloquee-note { margin: 3px 0 0; font: 400 12.5px/1.6 var(--font-body); color: var(--ink-soft); }
+
+/* --- Les tableaux -------------------------------------------------------- */
+
+.st-tableaux {
+  display: grid; gap: 18px; margin: 0 0 24px;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+}
+.st-tableau {
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: #fff; padding: 18px;
+}
+.st-tableau h2 { margin: 0 0 12px; font: 700 15px/1.3 var(--font-display); color: var(--ink); }
+
+.st-table { width: 100%; border-collapse: collapse; }
+.st-table th {
+  text-align: left; padding: 0 8px 8px 0;
+  font: 600 11.5px/1.3 var(--font-body); color: var(--ink-faint);
+  text-transform: uppercase; letter-spacing: .05em;
+  border-bottom: 1px solid var(--line);
+}
+.st-table td {
+  padding: 9px 8px 9px 0; border-bottom: 1px solid var(--line);
+  font: 400 13px/1.45 var(--font-body); color: var(--ink);
+  word-break: break-word;
+}
+.st-table tr:last-child td { border-bottom: 0; }
+.st-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* La part se lit d'un coup d'œil : une barre discrète derrière le
+   pourcentage, pas un second tableau. */
+.st-part { position: relative; width: 128px; }
+.st-part span {
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  height: 6px; border-radius: 3px; background: rgba(31, 111, 178, .22);
+  /* La barre s'arrête avant le pourcentage : à 71 %, les deux se
+     chevauchaient et le chiffre devenait illisible. */
+  max-width: 76px;
+}
+.st-part em { padding-left: 84px; }
+.st-part em {
+  position: relative; display: block; text-align: right;
+  font: 600 12px/1.45 var(--font-body); font-style: normal; color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.st-note {
+  margin: 26px 0 0; font: 400 12.5px/1.75 var(--font-body); color: var(--ink-faint);
+  max-width: 760px;
+}
+
+@media (max-width: 640px) {
+  .st-main { padding: 20px 16px 60px; }
+  .st-tete h1 { font-size: 25px; }
+  .st-filtres { width: 100%; }
+  .st-filtres button { flex: 1; }
+  .st-cartes { grid-template-columns: repeat(2, 1fr); }
+  .st-carte-valeur { font-size: 21px; }
+}
