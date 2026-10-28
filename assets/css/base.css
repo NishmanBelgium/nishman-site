@@ -101,6 +101,44 @@
   --ombre-flottante: 0 20px 48px -24px rgba(16, 16, 16, 0.35);
 
   --transition: 180ms cubic-bezier(0.2, 0, 0, 1);
+
+  /* --- Anciens noms, le temps de la transition -------------------------
+     Six feuilles (compte, commander, legal, quote, stats, boutique-
+     commander) ne déclarent aucune variable : elles consommaient celles
+     que boutique.css publiait. Les renommer d'un coup aurait vidé leurs
+     contours et leurs couleurs — c'est arrivé, la page de connexion
+     professionnelle s'est retrouvée sans champs visibles.
+
+     Ces alias les raccordent au nouveau vocabulaire. Les valeurs de
+     rayon gardent volontairement leurs anciennes mesures : les y
+     raccorder maintenant changerait l'allure de pages qu'on n'a pas
+     encore reprises. Chaque ligne disparaîtra quand la page qui s'en
+     sert passera au nouveau système. */
+
+  --bg: var(--blanc);
+  --bg-soft: var(--craie);
+  --bg-soft-2: var(--gris);
+  --ink: var(--encre);
+  --ink-soft: var(--encre-douce);
+  --ink-faint: var(--encre-pale);
+  --gold: var(--orange);
+  --gold-deep: var(--orange-fonce);
+  --gradient: var(--orange);
+  --gradient-soft: rgba(237, 155, 36, 0.08);
+  --line: var(--filet);
+  --line-strong: rgba(16, 16, 16, 0.16);
+  --trait: var(--filet);
+  --vert: #1a8a4a;
+  --whatsapp: #25d366;
+  --shadow-sm: var(--ombre-levee);
+  --shadow-md: var(--ombre-flottante);
+  --shadow-lg: var(--ombre-flottante);
+  --font-display: var(--titre);
+  --font-body: var(--texte);
+  --radius-lg: 26px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* --- Remise à zéro mesurée ------------------------------------------- */
