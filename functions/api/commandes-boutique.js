@@ -21,6 +21,7 @@ import { preparerTable, ETAPES, lireParRef, noterEtape,
          prendreLaMain, rendreLaMain, lire } from "../_paiements.js";
 import { poursuivre } from "../_apres_paiement.js";
 import { configure as configureOdoo } from "../_odoo.js";
+import { envoyerConfirmation } from "../_confirmation.js";
 
 const ADMIN_DEFAUT = "contact@nishman.be";
 
@@ -48,6 +49,7 @@ export async function onRequestGet({ request, env }) {
   const combien = Math.min(50, Math.max(1, Number(url.searchParams.get("n")) || 15));
   const ref = String(url.searchParams.get("ref") || "").trim();
   const retenter = String(url.searchParams.get("retenter") || "").trim();
+  const renvoyer = String(url.searchParams.get("confirmation") || "").trim();
 
   try { await preparerTable(env.DB); }
   catch (e) { return erreur("Registre indisponible.", 503, "registre"); }
@@ -61,6 +63,33 @@ export async function onRequestGet({ request, env }) {
    * elles vérifient toutes l'état réel dans Odoo avant d'agir, donc une
    * facture déjà émise ne sera pas émise deux fois.
    */
+
+  /* Renvoyer la confirmation consommateur.
+   *
+   * Celle qui porte les conditions de vente et le formulaire de
+   * rétractation. Un client qui l'a supprimée a le droit de la
+   * redemander, et NBD doit pouvoir prouver qu'elle est partie. On force
+   * l'envoi : ici, c'est voulu. */
+  if (renvoyer) {
+    const p = await lireParRef(env.DB, renvoyer, 0);
+    if (!p) return erreur("Commande introuvable.", 404, "inconnue");
+    if (!p.client) {
+      return json({ ok: false, message: "Cette commande n'est pas une commande de la boutique : "
+        + "la confirmation consommateur ne la concerne pas." });
+    }
+    if (!configureOdoo(env)) return erreur("Odoo n'est pas configuré.", 503, "odoo");
+
+    const journal = [];
+    try {
+      await envoyerConfirmation(env, p, journal, { forcer: true });
+    } catch (e) {
+      return json({ ok: false, journal,
+        message: "La confirmation n'a pas pu être envoyée : " + String(e && e.message).slice(0, 240) });
+    }
+    return json({ ok: true, journal,
+      message: "Confirmation renvoyée : conditions de vente et formulaire de rétractation inclus." });
+  }
+
   if (retenter) {
     const p = await lireParRef(env.DB, retenter, 0);
     if (!p) return erreur("Commande introuvable.", 404, "inconnue");

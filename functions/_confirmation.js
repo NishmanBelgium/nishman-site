@@ -208,10 +208,13 @@ export function courriel({ commande, lignes, relais, client, conditions, retract
  * Le garde-fou n'est pas notre registre mais le fil de discussion de la
  * commande dans Odoo : il survit à la perte de notre base, et NBD le voit.
  */
-export async function envoyerConfirmation(env, p, journal) {
+export async function envoyerConfirmation(env, p, journal, options) {
   const orderId = p.odoo_order_id;
+  // Un renvoi demandé à la main est délibéré : le client a perdu son
+  // courriel, et il a le droit de le redemander.
+  const forcer = !!(options && options.forcer);
 
-  const deja = await appel(env, "mail.message", "search_count",
+  const deja = forcer ? 0 : await appel(env, "mail.message", "search_count",
     [[["model", "=", "sale.order"], ["res_id", "=", orderId],
       ["body", "like", "%" + MARQUEUR + "%"]]], {});
   if (deja) {
