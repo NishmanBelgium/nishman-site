@@ -2,7 +2,7 @@
    CONNEXION — ouverture d'une session.
    ========================================================================== */
 
-import {
+import { emailValide, freinerIp,
   json, erreur, verifier, ouvrirSession, cookieSession,
   cleEmail, tropDeTentatives, noterTentative, effacerTentatives,
   EMPREINTE_FACTICE,
@@ -16,10 +16,34 @@ export async function onRequestPost({ request, env }) {
   try { corps = await request.json(); }
   catch (e) { return erreur("Requête illisible.", 400, "illisible"); }
 
-  const cle = cleEmail(corps.email || "");
+  const email = String(corps.email || "").trim();
+  const cle = cleEmail(email);
   const mdp = String(corps.motdepasse || "");
 
   if (!cle || !mdp) return erreur("Adresse e-mail et mot de passe requis.", 400, "identifiants_requis");
+
+  /* L'adresse est validée AVANT tout calcul.
+   *
+   * La vérification d'un mot de passe coûte cent mille tours de PBKDF2,
+   * et elle avait lieu même pour une adresse inexistante — c'est voulu,
+   * pour que le temps de réponse ne trahisse pas qui est client. Mais
+   * sans contrôle de forme préalable, n'importe qui pouvait faire brûler
+   * ce calcul en boucle avec « aaaa » et épuiser le budget du site.
+   * Une adresse mal formée n'appartient à personne : on sort tout de
+   * suite, et le message reste le même pour ne rien apprendre. */
+  if (!emailValide(email) || mdp.length > 200) {
+    return erreur("Adresse e-mail ou mot de passe incorrect.", 401, "identifiants_faux");
+  }
+
+  /* Deux compteurs, pas un.
+   *
+   * Par adresse, il ralentissait qui s'acharne sur un compte. Mais rien
+   * n'empêchait d'essayer le même mot de passe courant sur mille
+   * adresses différentes : chacune repartait de zéro. Le compteur par IP
+   * borne le robot plutôt que la victime. */
+  if (await freinerIp(db, request, "connexion", 40, 15)) {
+    return erreur("Trop de tentatives. Réessayez dans un quart d'heure.", 429, "trop_tentatives");
+  }
 
   if (await tropDeTentatives(db, cle)) {
     return erreur(

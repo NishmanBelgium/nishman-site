@@ -41,14 +41,39 @@ function entree(url, priorite, frequence, date) {
     + "  </url>\n";
 }
 
-export async function onRequestGet({ request }) {
+export async function onRequestGet({ request, env }) {
   const base = origine(request);
+  const indexable = String((env && env.INDEXER_BOUTIQUE) || "").trim().toLowerCase() === "oui";
   const aujourdhui = new Date().toISOString().slice(0, 10);
 
   let corps = '<?xml version="1.0" encoding="UTF-8"?>\n'
     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
+  /* Une adresse ne figure au plan que si elle est réellement indexable.
+   *
+   * Règle héritée de la version précédente de ce fichier, et qu'il a
+   * fallu réapprendre : lister une page porteuse de « noindex » n'avance
+   * à rien et fait remonter semaine après semaine un avertissement
+   * « page exclue par noindex » dans Search Console. Tant que les pages
+   * portent la balise, le plan se limite à l'accueil.
+   *
+   * Interrupteur unique côté Cloudflare : INDEXER_BOUTIQUE = oui, le
+   * même qui ouvre les fiches produit. Un seul geste le jour de la
+   * bascule, au lieu de deux dont on oublierait le second. */
+  corps += entree(base + "/", 1.0, "weekly", aujourdhui);
+
+  if (!indexable) {
+    corps += "</urlset>\n";
+    return new Response(corps, {
+      headers: {
+        "content-type": "application/xml; charset=utf-8",
+        "cache-control": "public, max-age=0, s-maxage=900",
+      },
+    });
+  }
+
   for (const [chemin, priorite, frequence] of PAGES) {
+    if (chemin === "/") continue;
     corps += entree(base + chemin, priorite, frequence, aujourdhui);
   }
 

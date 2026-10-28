@@ -1,0 +1,55 @@
+# ==========================================================================
+# EN-TÊTES DE SÉCURITÉ
+#
+# Le site n'en envoyait aucun. Ce n'est pas une faille en soi : c'est
+# l'absence du second rideau qui limite les dégâts quand la première
+# défense cède. Les fiches produit sont composées par le serveur et leurs
+# valeurs sont échappées une par une — mais si une seule interpolation
+# échappait un jour à la règle, rien n'arrêterait le script injecté.
+#
+# Les choix ci-dessous suivent ce que le site charge réellement, relevé
+# dans les pages plutôt que recopié d'un modèle : les polices de Google,
+# le sélecteur de points relais de Sendcloud, et rien d'autre.
+# ==========================================================================
+
+/*
+  # Le navigateur refuse de revenir en HTTP, même si on lui présente un
+  # lien http://. Deux ans, ce qui permet l'inscription sur la liste de
+  # préchargement des navigateurs le jour où on le voudra.
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
+
+  # Un fichier servi en text/plain ne sera pas interprété comme du script
+  # parce que son contenu y ressemble.
+  X-Content-Type-Options: nosniff
+
+  # Le site ne s'affiche dans le cadre de personne. C'est ce qui empêche
+  # d'habiller la page de connexion professionnelle d'un faux décor pour
+  # récolter des mots de passe.
+  X-Frame-Options: DENY
+
+  # L'adresse complète ne fuit pas vers les sites tiers — une référence de
+  # commande dans une URL n'a pas à voyager dans un en-tête Referer.
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Aucune page n'a besoin de la caméra, du micro ni de la position. On le
+  # dit, plutôt que de laisser la question ouverte.
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+
+  # La politique de contenu.
+  #
+  # script-src garde 'unsafe-inline' : une quinzaine de pages portent
+  # encore leur script dans le HTML, et un fichier statique ne peut pas
+  # recevoir le nonce qui permettrait de s'en passer. C'est le point à
+  # resserrer ensuite, en sortant ces scripts dans des fichiers.
+  #
+  # frame-ancestors double X-Frame-Options pour les navigateurs qui ne
+  # lisent plus que celui-ci ; base-uri 'none' empêche de détourner toutes
+  # les adresses relatives de la page en injectant une balise <base>.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://embed.sendcloud.sc; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://servicepoints.sendcloud.sc https://embed.sendcloud.sc https://panel.sendcloud.sc; frame-src https://embed.sendcloud.sc; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests
+
+# Les réponses de l'API ne sont jamais des pages : rien à y charger, rien
+# à y encadrer, et surtout rien à garder en cache.
+/api/*
+  Cache-Control: no-store
+  Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+  X-Robots-Tag: noindex, nofollow

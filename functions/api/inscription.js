@@ -7,7 +7,7 @@
    ========================================================================== */
 
 import { controlerEtEnregistrer, ouvreDroitAExoneration } from "../_tva.js";
-import { estAdresseAdmin,
+import { freinerIp, estAdresseAdmin,
   json, erreur, hacher, ouvrirSession, cookieSession,
   emailValide, cleEmail, motDePasseValide,
   paysValide, identifiantFiscal, texteValide,
@@ -16,6 +16,18 @@ import { estAdresseAdmin,
 export async function onRequestPost({ request, env }) {
   const db = env.DB;
   if (!db) return erreur("La base de données n'est pas branchée.", 500, "base_absente");
+
+  /* Un robot ne crée pas mille comptes.
+   *
+   * Rien ne freinait l'inscription : ni plafond, ni vérification
+   * d'adresse. Or chaque inscription ouvre une session valide, écrit une
+   * ligne en base et déclenche un appel VIES sortant. C'est ce qui
+   * rendait les autres défauts atteignables par un inconnu, et c'est
+   * aussi, tout seul, de quoi remplir la base. */
+  if (await freinerIp(db, request, "inscription", 5, 60)) {
+    return erreur("Trop d'inscriptions depuis cette connexion. Réessayez plus tard.",
+                  429, "trop_tentatives");
+  }
 
   let corps;
   try { corps = await request.json(); }

@@ -19,7 +19,7 @@
    Sans ça, un identifiant bricolé enverrait le colis n'importe où.
    ========================================================================== */
 
-import { json, erreur, texteValide } from "../_commun.js";
+import { freinerIp, json, erreur, texteValide } from "../_commun.js";
 import { catalogue } from "../_boutique.js";
 import { calculerB2C, paysValideB2C } from "../_calcul_b2c.js";
 import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
@@ -104,6 +104,23 @@ export async function onRequestPost({ request, env }) {
   catch (e) { return erreur("Requête illisible.", 400, "illisible"); }
 
   if (!env.DB) return erreur("Service indisponible.", 503, "indisponible");
+
+  /* Une commande anonyme écrit dans la comptabilité de NBD.
+   *
+   * Chaque appel qui aboutit crée dans Odoo une fiche client, une adresse
+   * de livraison et un devis, interroge Sendcloud et ouvre un paiement
+   * Mollie. Rien ne l'empêchait de recommencer indéfiniment : avec une
+   * adresse différente à chaque tour, on remplissait le carnet d'adresses
+   * d'Odoo jusqu'à le rendre inexploitable. Les devis d'un paiement
+   * abandonné sont nettoyés, les fiches non.
+   *
+   * Dix commandes par heure et par connexion : un client qui se trompe et
+   * recommence n'est jamais gêné, un robot s'arrête ici plutôt que dans
+   * votre comptabilité. */
+  if (await freinerIp(env.DB, request, "commande", 10, 60)) {
+    return erreur("Trop de commandes depuis cette connexion. Réessayez plus tard.",
+                  429, "trop_tentatives");
+  }
   if (!configureOdoo(env)) return erreur("Service de commande indisponible.", 503, "odoo");
   if (!configureMollie(env) || !paiementsAutorises(env)) {
     return erreur("Le paiement en ligne n'est pas disponible.", 503, "mollie");

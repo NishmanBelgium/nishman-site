@@ -47,7 +47,7 @@ export async function onRequestGet({ request }) {
           + INTERDITS.map((c) => "Disallow: " + c + "\n").join("")
           + "Allow: /\n"
           + "\n"
-          + "Sitemap: https://nishman.be/sitemap.xml\n";
+          + "Sitemap: https://" + hote + "/sitemap.xml\n";
   }
 
   return new Response(corps, {

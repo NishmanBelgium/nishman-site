@@ -232,24 +232,68 @@ export function motDePasseValide(mdp) {
 const MAX_TENTATIVES = 8;
 const FENETRE_MINUTES = 15;
 
-export async function tropDeTentatives(db, emailCle) {
-  const depuis = new Date(Date.now() - FENETRE_MINUTES * 60000).toISOString();
+/* La table des tentatives sert de compteur générique.
+ *
+ * Elle était indexée sur la seule adresse e-mail : huit essais par
+ * adresse et par quart d'heure, mais un nombre illimité d'adresses. Une
+ * attaque qui essaie un mot de passe courant sur mille comptes n'était
+ * donc pas ralentie du tout, et une inscription en boucle pas davantage.
+ *
+ * La clé est maintenant libre : on compte aussi par adresse IP, ce qui
+ * borne le robot plutôt que la victime. Le plafond et la fenêtre sont
+ * réglables, parce qu'une connexion et une commande n'appellent pas la
+ * même sévérité. */
+
+/** L'adresse du demandeur, telle que Cloudflare la donne. */
+export function adresseIp(requete) {
+  return String(requete.headers.get("CF-Connecting-IP")
+    || requete.headers.get("X-Forwarded-For")
+    || "").split(",")[0].trim().slice(0, 64) || "inconnue";
+}
+
+export async function tropDeTentatives(db, cle, max = MAX_TENTATIVES, minutes = FENETRE_MINUTES) {
+  const depuis = new Date(Date.now() - minutes * 60000).toISOString();
   const r = await db.prepare(
     "SELECT COUNT(*) AS n FROM tentatives WHERE email_cle = ? AND quand > ?"
-  ).bind(emailCle, depuis).first();
-  return (r?.n || 0) >= MAX_TENTATIVES;
+  ).bind(String(cle).slice(0, 120), depuis).first();
+  return (r?.n || 0) >= max;
 }
 
 export async function noterTentative(db, emailCle) {
+  /* Bornée : cette valeur vient parfois directement du formulaire, et
+   * rien n'empêchait d'écrire des mégaoctets par requête dans la base. */
   await db.prepare("INSERT INTO tentatives (email_cle, quand) VALUES (?, ?)")
-    .bind(emailCle, new Date().toISOString()).run();
+    .bind(String(emailCle).slice(0, 120), new Date().toISOString()).run();
   // Ménage opportuniste : on ne garde pas d'historique au-delà de la fenêtre.
   const vieux = new Date(Date.now() - FENETRE_MINUTES * 60000).toISOString();
   await db.prepare("DELETE FROM tentatives WHERE quand < ?").bind(vieux).run();
 }
 
 export async function effacerTentatives(db, emailCle) {
-  await db.prepare("DELETE FROM tentatives WHERE email_cle = ?").bind(emailCle).run();
+  await db.prepare("DELETE FROM tentatives WHERE email_cle = ?")
+    .bind(String(emailCle).slice(0, 120)).run();
+}
+
+/**
+ * Freine une adresse IP sur un geste donné.
+ *
+ * Rend vrai si la limite est atteinte — l'appelant répond alors sans
+ * rien faire de coûteux. L'appel note la tentative au passage : on
+ * compte ce qui est demandé, pas ce qui réussit, sinon il suffirait
+ * d'échouer pour ne jamais être compté.
+ */
+export async function freinerIp(db, requete, geste, max, minutes) {
+  if (!db) return false;
+  const cle = "ip:" + geste + ":" + adresseIp(requete);
+  try {
+    if (await tropDeTentatives(db, cle, max, minutes)) return true;
+    await noterTentative(db, cle);
+  } catch (e) {
+    /* Le freinage est une protection, pas une condition de
+     * fonctionnement : si la base bronche, on laisse passer plutôt que
+     * de fermer la boutique. */
+  }
+  return false;
 }
 
 /* --- Identité de l'entreprise ------------------------------------------- */
