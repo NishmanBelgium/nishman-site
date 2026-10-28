@@ -16,7 +16,7 @@
    repérer un copier-coller malheureux sans révéler la valeur.
    ========================================================================== */
 
-import { json, erreur, compteConnecte } from "../_commun.js";
+import { json, erreur, compteAdmin } from "../_commun.js";
 import { interrogerPortier, codePortier, adressePortier } from "../_portier.js";
 import { verifier as verifierTva } from "../_vies.js";
 import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "../_odoo.js";
@@ -24,7 +24,6 @@ import { catalogue } from "../_tarifs.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { configureSendcloud, compteSendcloud } from "../_sendcloud.js";
 
-const ADMIN_DEFAUT = "contact@nishman.be";
 
 function etatBase(db) {
   if (!db) return { ok: false, detail: "La base D1 n'est pas reliée à ce déploiement." };
@@ -276,15 +275,8 @@ async function etatSendcloud(env) {
 }
 
 export async function onRequestGet({ request, env }) {
-  const compte = env.DB ? await compteConnecte(request, env.DB) : null;
-  // EMAIL_ADMIN accepte plusieurs adresses séparées par des virgules :
-  // vous pouvez vous ajouter une seconde adresse sans toucher au code.
-  const admins = String(env.EMAIL_ADMIN || ADMIN_DEFAUT)
-    .split(",").map((a) => a.trim().toLowerCase()).filter(Boolean);
-  const moi = String((compte && compte.email) || "").trim().toLowerCase();
-  if (!moi || admins.indexOf(moi) === -1) {
-    return erreur("Page réservée.", 404, "reservee");
-  }
+  const compte = await compteAdmin(request, env);
+  if (!compte) return erreur("Page réservée.", 404, "reservee");
 
   const impossible = (e) => ({ ok: false, detail: "Contrôle impossible : " + (e && e.message) });
 

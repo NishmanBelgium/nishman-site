@@ -18,26 +18,18 @@
    traiter ; en écriture, elle pose ou retire une validation manuelle.
    ========================================================================== */
 
-import { json, erreur, compteConnecte, texteValide } from "../_commun.js";
+import { json, erreur, compteAdmin, texteValide } from "../_commun.js";
 
-const ADMIN_DEFAUT = "contact@nishman.be";
 
 // Le numéro de consultation VIES ressemble à « WAPIAAAAXnAO0Hv0 » : des
 // lettres et des chiffres. On reste tolérant — le format n'est pas publié
 // comme stable — mais on refuse ce qui n'en a visiblement pas l'air.
 const CONSULTATION = /^[A-Za-z0-9_-]{6,64}$/;
 
-function estAdmin(env, compte) {
-  const admins = String(env.EMAIL_ADMIN || ADMIN_DEFAUT)
-    .split(",").map((a) => a.trim().toLowerCase()).filter(Boolean);
-  const moi = String((compte && compte.email) || "").trim().toLowerCase();
-  return !!moi && admins.indexOf(moi) !== -1;
-}
-
 async function gardien({ request, env }) {
   if (!env.DB) return { refus: erreur("Service indisponible.", 503, "indisponible") };
-  const compte = await compteConnecte(request, env.DB);
-  if (!estAdmin(env, compte)) return { refus: erreur("Page réservée.", 404, "reservee") };
+  const compte = await compteAdmin(request, env);
+  if (!compte) return { refus: erreur("Page réservée.", 404, "reservee") };
   return { compte: compte };
 }
 

@@ -17,10 +17,9 @@
    Réservé au compte de NBD.
    ========================================================================== */
 
-import { erreur, compteConnecte } from "../_commun.js";
+import { erreur, compteAdmin } from "../_commun.js";
 import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
 
-const ADMIN_DEFAUT = "contact@nishman.be";
 /* 250 et pas 400 : la réponse voyage par le navigateur, qui tronque au-delà
    d'une cinquantaine de milliers de caractères. Une page qu'on ne peut pas
    lire en entier ne sert à rien. */
@@ -35,11 +34,8 @@ function csv(v) {
 }
 
 export async function onRequestGet({ request, env }) {
-  const compte = env.DB ? await compteConnecte(request, env.DB) : null;
-  const admins = String(env.EMAIL_ADMIN || ADMIN_DEFAUT)
-    .split(",").map((a) => a.trim().toLowerCase()).filter(Boolean);
-  const moi = String((compte && compte.email) || "").trim().toLowerCase();
-  if (!moi || admins.indexOf(moi) === -1) return erreur("Page réservée.", 404, "reservee");
+  const compte = await compteAdmin(request, env);
+  if (!compte) return erreur("Page réservée.", 404, "reservee");
   if (!configureOdoo(env)) return erreur("Odoo n'est pas configuré.", 503, "odoo");
 
   const url = new URL(request.url);

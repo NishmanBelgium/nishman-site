@@ -7,7 +7,7 @@
    ========================================================================== */
 
 import { controlerEtEnregistrer, ouvreDroitAExoneration } from "../_tva.js";
-import {
+import { estAdresseAdmin,
   json, erreur, hacher, ouvrirSession, cookieSession,
   emailValide, cleEmail, motDePasseValide,
   paysValide, identifiantFiscal, texteValide,
@@ -52,6 +52,20 @@ export async function onRequestPost({ request, env }) {
   if (!emailValide(email)) return erreur("Cette adresse e-mail n'est pas valide.", 400, "email_invalide");
   if (!motDePasseValide(mdp))
     return erreur("Le mot de passe doit faire au moins 8 caractères.", 400, "mdp_court");
+
+  /* Une adresse d'administration ne s'inscrit pas.
+   *
+   * L'inscription ne vérifie pas qu'on possède l'adresse qu'on déclare —
+   * aucun lien de confirmation n'est envoyé. Tant qu'il en est ainsi,
+   * laisser créer un compte sur l'adresse de NBD reviendrait à distribuer
+   * les clés : les pages réservées reconnaissent l'administratrice à son
+   * adresse, et rien d'autre.
+   *
+   * Même message que pour une adresse déjà prise : qui tâtonne n'apprend
+   * rien, là où « réservée » confirmerait la cible. */
+  if (estAdresseAdmin(env, email)) {
+    return erreur("Un compte existe déjà avec cette adresse.", 409, "email_pris");
+  }
 
   const cle = cleEmail(email);
 

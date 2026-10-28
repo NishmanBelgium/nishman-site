@@ -189,10 +189,32 @@ export async function fermerSession(db, jeton) {
 
 /* --- Validation --------------------------------------------------------- */
 
+/* Les caractères admis dans une adresse, par liste blanche.
+ *
+ * L'expression précédente n'excluait que l'arobase et les espaces. Elle
+ * laissait donc passer « %@%.be » — et le pourcentage est un joker dans
+ * la recherche Odoo. Une adresse pareille rattachait le compte à la fiche
+ * d'un vrai client, dont on lisait ensuite les commandes et les remises.
+ *
+ * On énumère donc ce qui est permis au lieu d'énumérer ce qui est
+ * interdit : une liste blanche ne laisse pas passer ce qu'on n'avait pas
+ * prévu. Les caractères retenus couvrent tout ce qu'on rencontre
+ * réellement, pourcentage et souligné exclus.
+ *
+ * Le filtrage des jokers est refait dans _odoo.js, indépendamment : une
+ * défense qui tient à une seule vérification tombe avec elle. */
+/* Le souligné reste admis : « jean_dupont@gmail.com » est une adresse
+ * courante, et la refuser fermerait la porte à de vrais clients. C'est un
+ * joker Odoo lui aussi, mais il ne remplace qu'un caractère, et
+ * l'échappement de _odoo.js le neutralise. Le pourcentage, qui remplace
+ * n'importe quelle suite, n'a lui aucun usage légitime ici. */
+const EMAIL = /^[A-Za-z0-9!#$&'*+\/=?^_`{|}~.-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+$/;
+
 export function emailValide(email) {
   return typeof email === "string"
     && email.length <= 254
-    && /^[^@\s]+@[^@\s.]+\.[^@\s]{2,}$/.test(email);
+    && EMAIL.test(email)
+    && !email.includes("..");
 }
 
 export function cleEmail(email) {
@@ -351,4 +373,58 @@ export async function creerLienReinit(db, compteId) {
           maintenant.toISOString(), fin.toISOString()).run();
 
   return jeton;
+}
+
+/* ==========================================================================
+   LA PORTE D'ADMINISTRATION
+
+   Sept pages réservées répétaient les mêmes quatre lignes : lire le compte
+   connecté, découper EMAIL_ADMIN, comparer. Sept copies, c'est sept
+   endroits à corriger le jour où le contrôle doit changer — et ce jour est
+   arrivé.
+
+   Le défaut n'était pas la comparaison mais ce qu'elle comparait. Une
+   adresse e-mail servait d'identité de confiance alors qu'elle
+   s'obtenait : l'inscription ne vérifie aucune adresse, et un compte
+   pouvait changer la sienne pour n'importe laquelle. Il suffisait de
+   s'inscrire avec une adresse jetable puis de la remplacer par celle de
+   l'administratrice, si elle n'était pas déjà prise.
+
+   La correction tient en deux gestes qui vont ensemble :
+
+   1. ici, une seule porte, pour n'avoir qu'un endroit à durcir ;
+   2. dans inscription.js et email.js, l'interdiction de prendre une
+      adresse d'administration. L'adresse cesse d'être acquérable, donc
+      elle redevient une identité.
+
+   L'un sans l'autre ne vaut rien.
+   ========================================================================== */
+
+const ADMIN_DEFAUT = "contact@nishman.be";
+
+/** Les adresses d'administration, normalisées. */
+export function adressesAdmin(env) {
+  return String((env && env.EMAIL_ADMIN) || ADMIN_DEFAUT)
+    .split(",")
+    .map((a) => cleEmail(a.trim()))
+    .filter(Boolean);
+}
+
+/** Vrai si cette adresse est une adresse d'administration. */
+export function estAdresseAdmin(env, email) {
+  const cle = cleEmail(String(email || "").trim());
+  return !!cle && adressesAdmin(env).indexOf(cle) !== -1;
+}
+
+/**
+ * Le compte connecté, s'il est administrateur. Sinon null.
+ *
+ * Les pages réservées répondent 404 et non 403 : dire « interdit », c'est
+ * confirmer que la page existe.
+ */
+export async function compteAdmin(request, env) {
+  if (!env || !env.DB) return null;
+  const compte = await compteConnecte(request, env.DB);
+  if (!compte || !compte.email) return null;
+  return estAdresseAdmin(env, compte.email) ? compte : null;
 }

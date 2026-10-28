@@ -4,7 +4,7 @@
    de la changer, et on refuse une adresse déjà prise.
    ========================================================================== */
 
-import {
+import { estAdresseAdmin,
   json, erreur, compteConnecte, verifier,
   emailValide, cleEmail,
 } from "../_commun.js";
@@ -29,6 +29,19 @@ export async function onRequestPost({ request, env }) {
     .bind(compte.id).first();
   if (!ligne || !(await verifier(mdp, ligne.mot_de_passe)))
     return erreur("Mot de passe incorrect.", 403, "mdp_faux");
+
+  /* Une adresse d'administration ne se prend pas.
+   *
+   * Sans cette ligne, le contrôle des pages réservées ne vaut rien :
+   * elles reconnaissent l'administratrice à son adresse, et cette page
+   * permettait justement d'en changer. S'inscrire avec une adresse
+   * jetable puis basculer sur celle de NBD suffisait à tout ouvrir.
+   *
+   * Le message reste vague à dessein : « déjà utilisée » n'apprend rien
+   * à qui tâtonne, là où « réservée » confirmerait la cible. */
+  if (estAdresseAdmin(env, email)) {
+    return erreur("Cette adresse est déjà utilisée par un autre compte.", 409, "email_pris");
+  }
 
   const cle = cleEmail(email);
   if (cle === cleEmail(compte.email)) return erreur("C'est déjà votre adresse.", 400, "email_identique");

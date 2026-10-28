@@ -16,14 +16,13 @@
    note laissée par la chaîne, et le numéro de suivi quand il existe.
    ========================================================================== */
 
-import { json, erreur, compteConnecte } from "../_commun.js";
+import { json, erreur, compteAdmin } from "../_commun.js";
 import { preparerTable, ETAPES, lireParRef, noterEtape,
          prendreLaMain, rendreLaMain, lire } from "../_paiements.js";
 import { poursuivre } from "../_apres_paiement.js";
 import { configure as configureOdoo } from "../_odoo.js";
 import { envoyerConfirmation } from "../_confirmation.js";
 
-const ADMIN_DEFAUT = "contact@nishman.be";
 
 /* Ce que chaque étape veut dire, en français et sans jargon. */
 const SENS = {
@@ -38,11 +37,8 @@ const SENS = {
 };
 
 export async function onRequestGet({ request, env }) {
-  const compte = env.DB ? await compteConnecte(request, env.DB) : null;
-  const admins = String(env.EMAIL_ADMIN || ADMIN_DEFAUT)
-    .split(",").map((a) => a.trim().toLowerCase()).filter(Boolean);
-  const moi = String((compte && compte.email) || "").trim().toLowerCase();
-  if (!moi || admins.indexOf(moi) === -1) return erreur("Page réservée.", 404, "reservee");
+  const compte = await compteAdmin(request, env);
+  if (!compte) return erreur("Page réservée.", 404, "reservee");
   if (!env.DB) return erreur("Base indisponible.", 503, "base");
 
   const url = new URL(request.url);

@@ -48,10 +48,31 @@ export async function appel(env, modele, methode, args, kwargs) {
 
 // Retrouve la fiche client par e-mail. Odoo reste la source de vérité :
 // le site ne recopie pas les clients, il pointe vers eux.
+/* Les jokers d'Odoo, neutralisés.
+ *
+ * « =ilike » transmet le motif tel quel à la base : % y remplace
+ * n'importe quelle suite de caractères, _ un seul. Une inscription avec
+ * l'adresse « %@%.be » rattachait donc le compte à la première fiche
+ * client venue, dont on lisait ensuite les commandes, les prix et les
+ * remises négociées.
+ *
+ * L'adresse est validée en amont, mais on échappe ici aussi : une
+ * défense qui tient à une seule vérification tombe avec elle, et ce
+ * module peut être appelé depuis un chemin qui n'a pas validé. */
+function sansJoker(motif) {
+  return String(motif || "").replace(/([\\%_])/g, "\\$1");
+}
+
 export async function partenaireParEmail(env, email) {
+  const propre = sansJoker(email);
+  if (!propre) return null;
+  /* Deux fiches pour la même adresse : on ne rapproche rien, comme pour
+   * la TVA. Mieux vaut un historique vide qu'un client qui lit les
+   * commandes d'un autre. */
   const r = await appel(env, "res.partner", "search_read",
-    [[["email", "=ilike", email]], ["id", "name", "vat"]], { limit: 1 });
-  return r && r[0] ? r[0] : null;
+    [[["email", "=ilike", propre]], ["id", "name", "vat"]], { limit: 2 });
+  if (!r || r.length !== 1) return null;
+  return r[0];
 }
 
 // Retrouve la fiche client par son numéro de TVA. Odoo n'impose aucun
@@ -73,7 +94,7 @@ export async function partenaireParTva(env, tva) {
 
   if (!r || !r.length) {
     r = await appel(env, "res.partner", "search_read",
-      [[["vat", "ilike", sansPays]], ["id", "name", "vat", "email"]], { limit: 3 });
+      [[["vat", "ilike", sansJoker(sansPays)]], ["id", "name", "vat", "email"]], { limit: 3 });
   }
   if (!r || r.length !== 1) return null;
   return r[0];

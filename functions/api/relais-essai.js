@@ -24,10 +24,9 @@
    Réservé au compte de NBD.
    ========================================================================== */
 
-import { json, erreur, compteConnecte } from "../_commun.js";
+import { json, erreur, compteAdmin } from "../_commun.js";
 import { configureSendcloud, appelSendcloud, compteSendcloud } from "../_sendcloud.js";
 
-const ADMIN_DEFAUT = "contact@nishman.be";
 
 /* Un code postal par pays, au cœur de la zone de vente, pour que la
    recherche de points relais ait toutes les chances d'aboutir. */
@@ -94,11 +93,8 @@ async function pointsPres(env, pays, cp, transporteur, rayon) {
 }
 
 export async function onRequestGet({ request, env }) {
-  const compte = env.DB ? await compteConnecte(request, env.DB) : null;
-  const admins = String(env.EMAIL_ADMIN || ADMIN_DEFAUT)
-    .split(",").map((a) => a.trim().toLowerCase()).filter(Boolean);
-  const moi = String((compte && compte.email) || "").trim().toLowerCase();
-  if (!moi || admins.indexOf(moi) === -1) return erreur("Page réservée.", 404, "reservee");
+  const compte = await compteAdmin(request, env);
+  if (!compte) return erreur("Page réservée.", 404, "reservee");
 
   if (!configureSendcloud(env)) {
     return erreur("Les clés SendCloud ne sont pas configurées.", 503, "sendcloud");
