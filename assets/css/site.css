@@ -2808,10 +2808,10 @@ body.has-offre-barre .search-sticky {
    sur la boutique.
    ========================================================================== */
 
-body.catalog-body { background: #FBFAF5; }
+body.catalog-body { background: #0E0E0E; }
 
 .accueil {
-  background: #FBFAF5;
+  background: #0E0E0E;
   padding: clamp(48px, 8vw, 96px) 20px clamp(40px, 6vw, 72px);
 }
 .accueil-in {
@@ -2821,6 +2821,7 @@ body.catalog-body { background: #FBFAF5; }
 }
 
 .accueil-logo {
+  filter: invert(1) brightness(1.08);
   height: clamp(42px, 6vw, 58px);
   width: auto;
   margin: 0 auto clamp(24px, 4vw, 40px);
@@ -2834,14 +2835,14 @@ body.catalog-body { background: #FBFAF5; }
   line-height: 0.98;
   letter-spacing: 0.005em;
   text-transform: uppercase;
-  color: #101010;
+  color: #F7F6F2;
   margin: 0 0 var(--e4, 16px);
 }
 
 .accueil-sur {
   max-width: 56ch;
   margin: 0 auto clamp(32px, 5vw, 52px);
-  color: #666;
+  color: #9A968C;
   font-size: clamp(0.95rem, 1.5vw, 1.0625rem);
   line-height: 1.6;
 }
@@ -2859,8 +2860,8 @@ body.catalog-body { background: #FBFAF5; }
 .porte-carte {
   display: flex;
   flex-direction: column;
-  background: #fff;
-  border: 1px solid #E8E6E1;
+  background: #171717;
+  border: 1px solid rgba(247,246,242,.12);
   border-radius: 2px;
   padding: 22px;
   text-decoration: none;
@@ -2868,16 +2869,13 @@ body.catalog-body { background: #FBFAF5; }
   transition: border-color 180ms cubic-bezier(.2,0,0,1),
               box-shadow 180ms cubic-bezier(.2,0,0,1);
 }
-.porte-carte:hover {
-  border-color: #101010;
-  box-shadow: 0 2px 8px -2px rgba(16, 16, 16, 0.10);
-}
+.porte-carte:hover { border-color: #ED9B24; }
 .porte-carte:focus-visible { outline: 2px solid #ED9B24; outline-offset: 3px; }
 
 .porte-img {
   display: grid;
   place-items: center;
-  background: #F4F2EB;
+  background: #FAF8F2;
   border-radius: 2px;
   padding: 20px;
   margin-bottom: 20px;
@@ -2900,12 +2898,12 @@ body.catalog-body { background: #FBFAF5; }
   line-height: 1.1;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: #101010;
+  color: #F7F6F2;
   margin-bottom: 8px;
 }
 .porte-ligne {
   display: block;
-  color: #666;
+  color: #9A968C;
   font-size: 0.9375rem;
   line-height: 1.5;
   margin-bottom: 18px;
@@ -2935,12 +2933,12 @@ body.catalog-body { background: #FBFAF5; }
    un seul bouton plein par écran — sinon aucun des deux ne ressort. */
 .porte-action-discret {
   background: transparent;
-  border-color: #D8D5CE;
-  color: #101010;
+  border-color: rgba(247,246,242,.26);
+  color: #F7F6F2;
 }
 .porte-carte:hover .porte-action-discret {
   background: transparent;
-  border-color: #101010;
+  border-color: #F7F6F2;
 }
 
 @media (max-width: 420px) {
