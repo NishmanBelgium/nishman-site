@@ -126,27 +126,38 @@ export async function onRequestGet({ request, env }) {
     if (!villes) return erreur("Pays inconnu pour la couverture.", 400, "pays");
 
     const rayon = Number(url.searchParams.get("rayon")) || 20000;
+    /* Un transporteur n'est nommé que si on le demande explicitement.
+     * Nommer un code que SendCloud ne reconnaît pas ne provoque pas
+     * d'erreur : l'API rend une liste vide, ce qui se lit comme « pays
+     * non desservi » alors que la question était mal posée. Sans
+     * transporteur, l'API rend le réseau du compte, tous transporteurs
+     * confondus — c'est ce qu'on veut mesurer. */
+    const choisi = String(url.searchParams.get("transporteur") || "").trim() || null;
+    /* Cloudflare limite le nombre d'appels sortants d'une seule exécution.
+     * On borne donc le balayage, quitte à le refaire en deux fois. */
+    const depuis = Math.max(0, Number(url.searchParams.get("depuis")) || 0);
+    const combien = Math.min(12, Number(url.searchParams.get("combien")) || 12);
+    const tranche = villes.slice(depuis, depuis + combien);
+
     const vus = new Map();
     const parVille = [];
     const soucis = [];
 
-    for (const [cp, nomVille] of villes) {
+    for (const [cp, nomVille] of tranche) {
       const ici = new Set();
-      for (const t of TRANSPORTEURS) {
-        try {
-          for (const x of await pointsPres(env, couverture, cp, t, rayon)) {
-            if (!x || !x.id) continue;
-            ici.add(x.id);
-            if (!vus.has(x.id)) {
-              vus.set(x.id, {
-                id: x.id, nom: x.name, transporteur: x.carrier || t,
-                ville: [x.postal_code, x.city].filter(Boolean).join(" "),
-              });
-            }
+      try {
+        for (const x of await pointsPres(env, couverture, cp, choisi, rayon)) {
+          if (!x || !x.id) continue;
+          ici.add(x.id);
+          if (!vus.has(x.id)) {
+            vus.set(x.id, {
+              id: x.id, nom: x.name, transporteur: x.carrier || "?",
+              ville: [x.postal_code, x.city].filter(Boolean).join(" "),
+            });
           }
-        } catch (e) {
-          soucis.push(nomVille + " / " + t + " : " + String(e && e.message).slice(0, 120));
         }
+      } catch (e) {
+        soucis.push(nomVille + " : " + String(e && e.message).slice(0, 140));
       }
       parVille.push({ ville: nomVille, cp, points: ici.size });
     }
@@ -159,7 +170,9 @@ export async function onRequestGet({ request, env }) {
       ok: true,
       pays: couverture,
       rayon_metres: rayon,
-      communes_sondées: villes.length,
+      transporteur_demandé: choisi || "(tous)",
+      communes_sondées: tranche.length,
+      communes_restantes: Math.max(0, villes.length - (depuis + tranche.length)),
       points_distincts: tous.length,
       par_transporteur: parTransporteur,
       par_ville: parVille.sort((a, b) => b.points - a.points),
