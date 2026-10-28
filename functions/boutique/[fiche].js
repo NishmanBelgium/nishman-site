@@ -2,10 +2,10 @@
    FICHE PRODUIT — une adresse par référence, rendue par le serveur.
 
    Google Shopping demande une page d'arrivée par article, et sur cette page
-   le prix TTC particulier doit être le plus visible, repérable par le
-   balisage itemprop="price". Un prix pro peut y figurer, à condition d'être
-   visuellement secondaire — c'est ce que fait le lien discret vers l'espace
-   professionnel, en bas de la fiche.
+   le prix TTC particulier doit être le plus visible, et déclaré dans les
+   données structurées de l'en-tête. Un prix pro peut y figurer, à condition
+   d'être visuellement secondaire — c'est ce que fait le lien discret vers
+   l'espace professionnel, en bas de la fiche.
 
    Pas de fenêtre d'accueil ici : une fenêtre qui masque le produit est un
    motif de refus. Le choix professionnel / particulier reste à la porte
@@ -17,6 +17,94 @@ import { ENTETES_SECURITE, CSP_PAGE } from "../_commun.js";
 import { REGLES } from "../_calcul_b2c.js";
 
 const DESCRIPTION_MAX = 155;
+
+/* Les données structurées, en JSON-LD.
+ *
+ * La fiche portait déjà un balisage itemprop, correct mais limité : on ne
+ * peut pas y loger proprement une politique de retour ou des frais de port
+ * sans alourdir le HTML visible. Et surtout, deux descriptions du même
+ * produit sur une même page — l'une en itemprop, l'autre en JSON-LD —
+ * risquent d'être lues comme deux produits. Une seule source, donc, et
+ * c'est celle que Google préfère.
+ *
+ * Ce qui a été ajouté au passage, et qui manquait :
+ *
+ * - priceValidUntil, sans quoi Google signale le prix comme périmé. Fixé
+ *   à quatre-vingt-dix jours, recalculé à chaque rendu plutôt qu'écrit en
+ *   dur : une date gelée finit toujours par passer.
+ * - la politique de retour. Quatorze jours, frais de renvoi à la charge
+ *   du client : c'est ce que disent les conditions de vente, et c'est ce
+ *   que le balisage doit dire aussi.
+ * - les frais de port. On annonce le tarif payant, pas la gratuité au-delà
+ *   de 29,90 € : il n'existe pas de propriété fiable pour exprimer un
+ *   seuil, et il vaut mieux sous-promettre que l'inverse.
+ * - le fil d'Ariane, qui fait apparaître « nishman.be › Boutique › produit »
+ *   sous le résultat au lieu de l'adresse brute.
+ */
+function donneesStructurees(p, base, url, image, nom, desc, dispo) {
+  const dans90 = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
+
+  const produit = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: nom,
+    description: resume(desc),
+    image: [image],
+    sku: p.ean,
+    gtin13: p.ean,
+    brand: { "@type": "Brand", name: "NISHMAN" },
+    offers: {
+      "@type": "Offer",
+      url: url,
+      price: Number(p.ttc).toFixed(2),
+      priceCurrency: "EUR",
+      priceValidUntil: dans90,
+      availability: "https://schema.org/" + dispo,
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@type": "Organization", name: "NBD Distribution SRL" },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: REGLES.pays,
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 14,
+        returnMethod: "https://schema.org/ReturnByMail",
+        returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
+      },
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: {
+          "@type": "MonetaryAmount",
+          value: Number(REGLES.port).toFixed(2),
+          currency: "EUR",
+        },
+        shippingDestination: REGLES.pays.map((pays) => ({
+          "@type": "DefinedRegion", addressCountry: pays,
+        })),
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 2, unitCode: "DAY" },
+          transitTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 5, unitCode: "DAY" },
+        },
+      },
+    },
+  };
+  if (p.famille) produit.category = p.famille;
+
+  const fil = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Boutique", item: base + "/boutique/" },
+      { "@type": "ListItem", position: 2, name: nom, item: url },
+    ],
+  };
+
+  /* Le chevron fermant doit être neutralisé : « </script> » dans une
+     valeur refermerait la balise et le reste de la fiche deviendrait du
+     texte. On échappe tous les chevrons ouvrants, ce qui règle la
+     question une fois pour toutes. */
+  return JSON.stringify([produit, fil]).replace(/</g, "\\u003c");
+}
 
 function resume(texte) {
   const t = String(texte || "").replace(/\s+/g, " ").trim();
@@ -52,6 +140,7 @@ function page(p, base, indexable) {
 <meta property="og:url" content="${echapper(url)}" />
 <meta property="product:price:amount" content="${Number(p.ttc).toFixed(2)}" />
 <meta property="product:price:currency" content="EUR" />
+<script type="application/ld+json">${donneesStructurees(p, base, url, image, nom, desc, dispo)}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet"
@@ -100,35 +189,26 @@ function page(p, base, indexable) {
   </div>
 </header>
 
-<main class="fiche-page" itemscope itemtype="https://schema.org/Product">
+<main class="fiche-page">
   <div class="fiche-visuel">
-    <img itemprop="image" src="/assets/img/products/${echapper(p.image)}"
+    <img src="/assets/img/products/${echapper(p.image)}"
          alt="${echapper(p.nom)}" width="900" height="900" />
   </div>
 
   <div>
-    <!-- Les données que Google lit sans qu'elles s'affichent. Elles vivent
-         DANS la colonne de texte : posées entre les deux colonnes, le bloc
-         « marque » comptait comme une case de la grille et décalait la mise
-         en page d'un cran. -->
-    <meta itemprop="gtin13" content="${echapper(p.ean)}" />
-    <meta itemprop="sku" content="${echapper(p.ean)}" />
-    <meta itemprop="category" content="${echapper(p.famille || "")}" />
-    <div itemprop="brand" itemscope itemtype="https://schema.org/Brand" hidden>
-      <meta itemprop="name" content="NISHMAN" />
-    </div>
+    <!-- Les données que Google lit sont désormais en JSON-LD, dans
+         l'en-tête. Elles y sont complètes — politique de retour, frais de
+         port, fil d'Ariane — là où le balisage itemprop obligeait à les
+         faire entrer dans le HTML visible, au prix de blocs cachés qui
+         décalaient la mise en page. -->
 
     <a class="fiche-retour" href="/boutique/">← Toute la boutique</a>
     <div class="fiche-fam">${echapper(p.famille || "")}</div>
-    <h1 class="fiche-titre" itemprop="name">${echapper(nom)}</h1>
+    <h1 class="fiche-titre">${echapper(nom)}</h1>
     <div class="fiche-volume">${echapper(p.volume || "")}</div>
 
-    <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-      <meta itemprop="priceCurrency" content="EUR" />
-      <meta itemprop="url" content="${echapper(url)}" />
-      <link itemprop="availability" href="https://schema.org/${dispo}" />
-      <link itemprop="itemCondition" href="https://schema.org/NewCondition" />
-      <div class="fiche-prix" itemprop="price" content="${Number(p.ttc).toFixed(2)}">${euros(p.ttc)}</div>
+    <div>
+      <div class="fiche-prix">${euros(p.ttc)}</div>
       <div class="fiche-prix-note">Prix particulier, TVA comprise</div>
     </div>
 
@@ -144,7 +224,7 @@ function page(p, base, indexable) {
       <span class="fiche-dispo" id="ajout-msg" hidden>Ajouté au panier.</span>
     </div>`}
 
-    <div class="fiche-texte" itemprop="description">${echapper(desc)}</div>
+    <div class="fiche-texte">${echapper(desc)}</div>
 
     <p class="fiche-pro">Vous êtes coiffeur ou barbier ?
       <a href="/?pro">Voir les tarifs professionnels</a> — vente au carton,
