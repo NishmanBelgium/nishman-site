@@ -125,7 +125,11 @@ export async function onRequestGet({ request, env }) {
     const villes = COUVERTURE[couverture];
     if (!villes) return erreur("Pays inconnu pour la couverture.", 400, "pays");
 
-    const rayon = Number(url.searchParams.get("rayon")) || 20000;
+    /* Le rayon n'est PAS envoyé par défaut. Avec un code postal, SendCloud
+     * le refuse en silence — il rend une liste vide au lieu d'une erreur,
+     * et on conclut à tort que le pays n'est pas desservi. On le garde
+     * demandable pour pouvoir le vérifier, jamais imposé. */
+    const rayon = Number(url.searchParams.get("rayon")) || 0;
     /* Un transporteur n'est nommé que si on le demande explicitement.
      * Nommer un code que SendCloud ne reconnaît pas ne provoque pas
      * d'erreur : l'API rend une liste vide, ce qui se lit comme « pays
@@ -181,6 +185,31 @@ export async function onRequestGet({ request, env }) {
       note: "Points relais distincts trouvés en interrogeant chaque transporteur "
           + "séparément autour de chaque commune. Lecture seule, rien n'est créé.",
       date: new Date().toISOString(),
+    });
+  }
+
+  /* Voir la réponse de SendCloud telle quelle.
+   *
+   * Une liste vide peut vouloir dire trois choses : pas de point relais,
+   * paramètre refusé, ou compte sans ce transporteur. Les distinguer en
+   * devinant coûte un déploiement par hypothèse. */
+  if (url.searchParams.get("brut")) {
+    const q = String(url.searchParams.get("brut"));
+    const r = await fetch("https://servicepoints.sendcloud.sc/api/v2/service-points?" + q, {
+      headers: {
+        authorization: "Basic " + btoa(
+          String(env.SENDCLOUD_PUBLIC || "").trim() + ":" + String(env.SENDCLOUD_SECRET || "").trim()),
+        accept: "application/json",
+      },
+    });
+    const t = await r.text();
+    let n = null;
+    try { const d = JSON.parse(t); n = Array.isArray(d) ? d.length : (d && d.results ? d.results.length : null); }
+    catch (e) {}
+    return json({
+      ok: true, requête: q, statut: r.status, nombre: n,
+      reponse: t.slice(0, 2500),
+      note: "Réponse brute de SendCloud, lecture seule.",
     });
   }
 
