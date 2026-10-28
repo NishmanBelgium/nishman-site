@@ -179,7 +179,15 @@ export async function appelSendcloud3(env, chemin, options) {
     // appris qu'il fallait passer en v3.
     let motif = "HTTP " + r.status;
     if (donnees && Array.isArray(donnees.errors) && donnees.errors.length) {
-      motif = donnees.errors.map((e) => e.detail || e.title || e.code).filter(Boolean).join(" | ");
+      // « Field required » tout seul ne sert à rien : c'est l'endroit qui
+      // compte. La v3 le range dans source.pointer ou dans un champ voisin,
+      // et on le reprend tel quel plutôt que de deviner lequel.
+      motif = donnees.errors.map((e) => {
+        const ou = (e.source && (e.source.pointer || e.source.parameter))
+                 || e.pointer || e.field || e.parameter || "";
+        const quoi = e.detail || e.title || e.code || "erreur";
+        return ou ? quoi + " [" + ou + "]" : quoi;
+      }).filter(Boolean).join(" | ");
     } else if (donnees && (donnees.detail || donnees.message)) {
       motif = donnees.detail || donnees.message;
     } else if (texte) {
