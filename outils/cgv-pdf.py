@@ -31,7 +31,10 @@ LANGUE = "fr"
 # Le pied de page légal. Une seule définition : si le siège change, il ne
 # change qu'ici (et dans cgv.js, d'où vient le corps du texte).
 SOCIETE = "NBD Distribution SRL"
-SIEGE = "Avenue Léopold III 21, 7133 Binche, Belgique"
+# Le siège social est à Mons ; Binche est le siège d'exploitation. La
+# Banque-Carrefour fait foi, et le pied de page d'un contrat nomme le
+# siège social.
+SIEGE = "Rue de la Poire d'Or 26, 7033 Mons, Belgique"
 TVA = "TVA BE 0817.750.283"
 COURRIEL = "contact@nishman.be"
 
