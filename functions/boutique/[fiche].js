@@ -14,6 +14,7 @@
 
 import { parSlug, echapper, euros, origine } from "../_boutique.js";
 import { ENTETES_SECURITE, CSP_PAGE } from "../_commun.js";
+import { REGLES } from "../_calcul_b2c.js";
 
 const DESCRIPTION_MAX = 155;
 
@@ -87,7 +88,7 @@ function page(p, base, indexable) {
 <body>
 
 <div class="ruban">
-  Livraison offerte dès <b>49 €</b> · Expédition sous 2 jours ouvrables · Belgique, France, Luxembourg
+  Livraison offerte dès <b>${euros(REGLES.franco)}</b> · Expédition sous 2 jours ouvrables · Belgique, France, Luxembourg
 </div>
 
 <header class="bar">
