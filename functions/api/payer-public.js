@@ -58,6 +58,18 @@ function montantMollie(n) {
 
 const EMAIL = /^[^@\s]+@[^@\s.]+\.[^@\s]{2,}$/;
 
+/* Le format du code postal, par pays.
+ *
+ * Il était vérifié en longueur seulement — « bbn » passait. SendCloud le
+ * refusait tout au bout de la chaîne, après le paiement, quand le client
+ * était déjà parti et ne pouvait plus rien corriger. Un format faux doit
+ * être refusé devant le client, pendant qu'il a encore son clavier. */
+const CODES_POSTAUX = {
+  BE: /^[1-9]\d{3}$/,
+  LU: /^L?-?\d{4}$/i,
+  FR: /^\d{5}$/,
+};
+
 /** Les coordonnées du client, vérifiées une à une. */
 function lireClient(brut) {
   const c = {
@@ -77,6 +89,12 @@ function lireClient(brut) {
   if (!texteValide(c.code_postal, 3, 12)) throw new Error("code_postal");
   if (!texteValide(c.ville, 2, 80)) throw new Error("ville");
   if (!paysValideB2C(c.pays)) throw new Error("pays");
+
+  const forme = CODES_POSTAUX[c.pays];
+  const cp = c.code_postal.replace(/\s+/g, "").toUpperCase();
+  if (forme && !forme.test(cp)) throw new Error("code_postal_format");
+  c.code_postal = cp.replace(/^L-?/, "");   // le Luxembourg s'écrit L-1611 ou 1611
+
   return c;
 }
 
@@ -216,6 +234,11 @@ export async function onRequestPost({ request, env }) {
       montant: valeur,
       devise: "EUR",
       relais_id: relais.id,
+      // L'adresse saisie au moment de la commande. C'est elle qui ira sur
+      // le colis, et pas celle de la fiche Odoo : quand un client a déjà
+      // commandé il y a six mois, sa fiche porte l'adresse d'alors, et le
+      // colis partirait là-bas.
+      client,
     });
   } catch (e) {
     return json({

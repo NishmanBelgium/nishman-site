@@ -199,6 +199,8 @@
     nom: "Indiquez votre nom.",
     adresse: "Indiquez votre rue et votre numéro.",
     code_postal: "Indiquez votre code postal.",
+    code_postal_format: "Ce code postal ne correspond pas au pays choisi. "
+      + "Quatre chiffres en Belgique et au Luxembourg, cinq en France.",
     ville: "Indiquez votre ville.",
     pays: "Nous livrons en Belgique, en France et au Luxembourg.",
     cgv: "Acceptez les conditions de vente pour continuer.",

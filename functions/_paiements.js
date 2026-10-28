@@ -45,6 +45,7 @@ export async function preparerTable(db) {
     "ALTER TABLE paiements ADD COLUMN facture_nom TEXT",
     "ALTER TABLE paiements ADD COLUMN relais_id INTEGER",
     "ALTER TABLE paiements ADD COLUMN suivi TEXT",
+    "ALTER TABLE paiements ADD COLUMN client TEXT",
   ]) {
     try { await db.exec(sql); } catch (e) { /* colonne déjà présente */ }
   }
@@ -92,11 +93,12 @@ export async function enregistrer(db, p) {
   const maintenant = new Date().toISOString();
   await db.prepare(
     "INSERT INTO paiements (mollie_id, ref, compte_id, odoo_order_id, odoo_nom, " +
-    "montant, devise, statut, relais_id, cree_le, vu_le) " +
-    "VALUES (?, ?, ?, ?, ?, ?, ?, 'ouvert', ?, ?, ?)"
+    "montant, devise, statut, relais_id, client, cree_le, vu_le) " +
+    "VALUES (?, ?, ?, ?, ?, ?, ?, 'ouvert', ?, ?, ?, ?)"
   ).bind(
     p.mollie_id, p.ref, p.compte_id, p.odoo_order_id, p.odoo_nom || null,
-    p.montant, p.devise || "EUR", p.relais_id || null, maintenant, maintenant
+    p.montant, p.devise || "EUR", p.relais_id || null,
+    p.client ? JSON.stringify(p.client) : null, maintenant, maintenant
   ).run();
 }
 

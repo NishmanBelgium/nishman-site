@@ -271,14 +271,38 @@ async function expedier(env, p, journal) {
   // to_service_point qui dévie la livraison. Mettre l'adresse du relais ici
   // ferait un colis adressé à un commerce, sans nom de destinataire — et
   // personne ne pourrait le réclamer.
-  const lu = await appel(env, "sale.order", "read",
-    [[p.odoo_order_id], ["partner_id", "name"]], {});
-  const partnerId = (lu && lu[0] && Array.isArray(lu[0].partner_id)) ? lu[0].partner_id[0] : null;
-  if (!partnerId) throw new Error("commande sans client");
+  //
+  // Et c'est l'adresse SAISIE À LA COMMANDE qui fait foi, pas celle de la
+  // fiche Odoo. Un client qui a déjà commandé il y a six mois garde dans
+  // Odoo l'adresse d'alors ; le colis partirait là-bas, alors qu'il vient
+  // d'en taper une autre. On ne retombe sur la fiche que si la commande
+  // est antérieure à cet enregistrement.
+  let c = null;
+  if (p.client) {
+    try {
+      const saisi = typeof p.client === "string" ? JSON.parse(p.client) : p.client;
+      if (saisi && saisi.code_postal) {
+        c = {
+          name: [saisi.prenom, saisi.nom].filter(Boolean).join(" ").trim(),
+          street: saisi.adresse || "",
+          zip: saisi.code_postal || "",
+          city: saisi.ville || "",
+          email: saisi.email || "",
+          phone: saisi.telephone || "",
+        };
+      }
+    } catch (e) { /* on retombera sur la fiche Odoo */ }
+  }
 
-  const fiches = await appel(env, "res.partner", "read",
-    [[partnerId], ["name", "street", "street2", "zip", "city", "email", "phone", "country_id"]], {});
-  const c = (fiches && fiches[0]) || {};
+  if (!c) {
+    const lu = await appel(env, "sale.order", "read",
+      [[p.odoo_order_id], ["partner_id", "name"]], {});
+    const partnerId = (lu && lu[0] && Array.isArray(lu[0].partner_id)) ? lu[0].partner_id[0] : null;
+    if (!partnerId) throw new Error("commande sans client");
+    const fiches = await appel(env, "res.partner", "read",
+      [[partnerId], ["name", "street", "street2", "zip", "city", "email", "phone"]], {});
+    c = (fiches && fiches[0]) || {};
+  }
 
   const rue = String(c.street || "").trim();
   const m = rue.match(/^(.*?)[\s,]+(\d+[A-Za-z]?(?:[\/-]\d+)?)$/);
