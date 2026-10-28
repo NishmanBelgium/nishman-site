@@ -27,7 +27,8 @@
    ========================================================================== */
 
 import { appel } from "./_odoo.js";
-import { appelSendcloud, configureSendcloud } from "./_sendcloud.js";
+import { configureSendcloud, adresseExpediteur, optionsVersPointRelais,
+         annoncerEnvoi, suiviDansReponse } from "./_sendcloud.js";
 
 /* Poids d'emballage : le carton, le calage, le ruban. Sous-déclarer fait
    refuser le colis au centre de tri, sur-déclarer fait payer la tranche
@@ -95,68 +96,56 @@ export async function poidsCommande(env, orderId) {
 }
 
 /**
- * La méthode d'expédition la moins chère qui accepte ce poids vers ce point
- * relais précis.
+ * L'option d'expédition retenue parmi celles que SendCloud propose pour ce
+ * point relais et ce poids.
  *
- * La liste est demandée POUR LE POINT, pas pour le pays : c'est le point
- * relais qui détermine le transporteur, et le transporteur qui détermine
- * ce qui est possible. Une méthode prise dans la liste du point est
- * compatible avec lui par construction — c'est ce qui rend l'étiquette sûre
- * sans avoir à deviner.
+ * Toutes celles qu'il renvoie sont compatibles avec la destination : c'est
+ * SendCloud qui l'affirme, pas nous. Il ne reste qu'à choisir, et le choix
+ * doit être reproductible — deux colis identiques ne doivent pas partir par
+ * deux options différentes, sans quoi une facture transporteur devient
+ * impossible à justifier.
  */
-export async function choisirMethode(env, pays, pointId, poidsKg) {
-  const d = await appelSendcloud(env,
-    "/shipping_methods?to_country=" + encodeURIComponent(String(pays).toUpperCase())
-    + "&service_point_id=" + encodeURIComponent(pointId));
-
-  const toutes = (d && Array.isArray(d.shipping_methods)) ? d.shipping_methods : [];
-  if (!toutes.length) throw new Error("aucune méthode d'expédition vers ce point relais");
-  return meilleureMethode(toutes, poidsKg);
-}
-
-/**
- * Le choix proprement dit, séparé de l'appel réseau pour pouvoir être
- * éprouvé sur de vraies listes sans rien demander à SendCloud.
- *
- * Les tranches de poids de SendCloud se chevauchent d'un gramme — 0,251 à
- * 0,501, puis 0,501 à 1,001 — donc la comparaison est stricte d'un côté et
- * large de l'autre, sans quoi un colis pile sur la borne tomberait dans
- * deux tranches ou dans aucune.
- */
-export function meilleureMethode(brutes, poidsKg) {
-  const valables = (brutes || [])
-    .map((m) => ({
-      id: m.id, nom: m.name, transporteur: m.carrier,
-      min: Number(m.min_weight), max: Number(m.max_weight),
-      prix: (Array.isArray(m.countries) && m.countries[0]) ? Number(m.countries[0].price) : null,
-    }))
-    .filter((m) => Number.isFinite(m.min) && Number.isFinite(m.max)
-                && poidsKg > m.min && poidsKg <= m.max);
-
-  if (!valables.length) {
-    throw new Error("aucune méthode n'accepte " + poidsKg + " kg vers ce point relais");
+export function meilleureOption(options) {
+  const liste = (options || []).filter((o) => o && o.code);
+  if (!liste.length) {
+    throw new Error("aucune option d'expédition vers ce point relais pour ce poids");
   }
 
-  // Le moins cher d'abord ; à prix égal, la tranche la plus serrée, qui est
-  // celle que le transporteur attend vraiment. À tranche égale, le plus
-  // petit identifiant, pour que deux appels successifs donnent le même
-  // résultat — un choix qui varie d'un envoi à l'autre est impossible à
-  // expliquer quand une facture transporteur arrive.
-  valables.sort((a, b) => {
-    const pa = a.prix === null ? 1e9 : a.prix;
-    const pb = b.prix === null ? 1e9 : b.prix;
-    if (pa !== pb) return pa - pb;
-    const la = a.max - a.min, lb = b.max - b.min;
-    if (la !== lb) return la - lb;
-    return a.id - b.id;
+  const prix = (o) => {
+    // La v3 ne garantit pas de prix dans cette réponse. Quand il y en a un,
+    // il décide ; sinon on s'en remet à l'ordre alphabétique du code, qui
+    // a le mérite d'être stable.
+    const c = o.contract || {};
+    const v = o.price || o.total_price || c.price;
+    if (v && typeof v === "object") return Number(v.value ?? v.amount ?? NaN);
+    return Number(v ?? NaN);
+  };
+
+  liste.sort((a, b) => {
+    const pa = prix(a), pb = prix(b);
+    const a1 = Number.isFinite(pa), b1 = Number.isFinite(pb);
+    if (a1 && b1 && pa !== pb) return pa - pb;
+    if (a1 !== b1) return a1 ? -1 : 1;
+    return String(a.code).localeCompare(String(b.code));
   });
-  return valables[0];
+
+  const choisie = liste[0];
+  return {
+    code: choisie.code,
+    nom: choisie.name || choisie.code,
+    transporteur: (choisie.carrier && (choisie.carrier.name || choisie.carrier.code)) || "",
+    prix: Number.isFinite(prix(choisie)) ? prix(choisie) : null,
+    combien: liste.length,
+  };
 }
 
 /**
- * Crée le colis et obtient l'étiquette, en deux temps.
+ * Crée l'envoi et obtient l'étiquette.
  *
- * @returns { parcelId, suivi, transporteur, methode, prix, etiquette_url }
+ * Le destinataire est le CLIENT, pas le point relais : c'est
+ * to_service_point qui dévie la livraison. Mettre l'adresse du relais ici
+ * donnerait un colis adressé à un commerce, sans nom de destinataire, que
+ * personne ne pourrait réclamer.
  */
 export async function creerEtiquetteRelais(env, { destinataire, relais, poidsKg, reference, pays }) {
   if (!configureSendcloud(env)) throw new Error("clés SendCloud absentes");
@@ -166,61 +155,41 @@ export async function creerEtiquetteRelais(env, { destinataire, relais, poidsKg,
       + " kg il faut plusieurs colis, ce qui demande une décision humaine");
   }
 
-  const methode = await choisirMethode(env, pays, relais.id, poidsKg);
+  const expediteur = await adresseExpediteur(env);
+  const dest = { ...destinataire, pays, post_number: relais.post_number || "" };
 
-  const colis = {
-    name: String(destinataire.nom || "").slice(0, 75),
-    address: String(destinataire.adresse || "").slice(0, 75),
-    house_number: String(destinataire.numero || "n/a").slice(0, 20),
-    city: String(destinataire.ville || "").slice(0, 75),
-    postal_code: String(destinataire.code_postal || "").slice(0, 20),
-    country: String(pays).toUpperCase(),
-    email: String(destinataire.email || "") || undefined,
-    telephone: String(destinataire.telephone || "") || undefined,
-    order_number: String(reference || "").slice(0, 50),
-    weight: poidsKg.toFixed(3),
-    to_service_point: Number(relais.id),
-    shipment: { id: methode.id },
-    quantity: 1,
-    // Premier temps : pas d'étiquette. On vérifie avant d'acheter.
-    request_label: false,
-  };
-  if (relais.post_number) colis.to_post_number = String(relais.post_number);
+  const options = await optionsVersPointRelais(env, {
+    expediteur, destinataire: dest, pointId: relais.id, poidsKg,
+  });
+  const option = meilleureOption(options);
 
-  const cree = await appelSendcloud(env, "/parcels", { method: "POST", body: { parcel: colis } });
-  const p = (cree && cree.parcel) || null;
-  if (!p || !p.id) throw new Error("SendCloud n'a pas créé le colis");
+  const envoi = await annoncerEnvoi(env, {
+    expediteur, destinataire: dest, pointId: relais.id,
+    poidsKg, code: option.code, reference,
+  });
 
-  // Second temps : vérifier, puis seulement demander l'étiquette.
-  const pointRetenu = Number(p.to_service_point || 0);
-  if (pointRetenu !== Number(relais.id)) {
-    throw new Error("SendCloud a enregistré le point relais " + (pointRetenu || "aucun")
-      + " au lieu de " + relais.id + " : aucune étiquette n'a été achetée");
+  const retenu = envoi && envoi.to_service_point ? String(envoi.to_service_point.id || "") : "";
+  if (retenu && retenu !== String(relais.id)) {
+    throw new Error("SendCloud a retenu le point relais " + retenu
+      + " au lieu de " + relais.id);
   }
 
-  const avec = await appelSendcloud(env, "/parcels", {
-    method: "PUT",
-    body: { parcel: { id: p.id, request_label: true } },
-  });
-  const f = (avec && avec.parcel) || null;
-  if (!f) throw new Error("SendCloud n'a pas rendu le colis après la demande d'étiquette");
-
-  const suivi = f.tracking_number || "";
+  const { suivi, lien, etiquette } = suiviDansReponse(envoi);
   if (!suivi) {
-    throw new Error("colis " + p.id + " créé mais sans numéro de suivi — "
-      + "à terminer à la main dans SendCloud");
+    throw new Error("envoi " + ((envoi && envoi.id) || "?") + " créé mais sans numéro de suivi "
+      + "— à terminer à la main dans SendCloud");
   }
 
   return {
-    parcelId: f.id,
+    envoiId: (envoi && envoi.id) || null,
     suivi,
-    lien_suivi: f.tracking_url || "",
-    transporteur: (f.carrier && f.carrier.code) || methode.transporteur || "",
-    methode: methode.nom,
-    prix: methode.prix,
-    etiquette_url: (f.label && f.label.normal_printer
-                    && (Array.isArray(f.label.normal_printer)
-                        ? f.label.normal_printer[0] : f.label.normal_printer)) || "",
+    lien_suivi: lien,
+    transporteur: (envoi && envoi.carrier && (envoi.carrier.name || envoi.carrier.code))
+                  || option.transporteur,
+    methode: option.nom,
+    prix: option.prix,
+    etiquette_url: etiquette,
+    options_proposees: option.combien,
   };
 }
 

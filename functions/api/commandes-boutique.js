@@ -17,7 +17,10 @@
    ========================================================================== */
 
 import { json, erreur, compteConnecte } from "../_commun.js";
-import { preparerTable, ETAPES } from "../_paiements.js";
+import { preparerTable, ETAPES, lireParRef, noterEtape,
+         prendreLaMain, rendreLaMain, lire } from "../_paiements.js";
+import { poursuivre } from "../_apres_paiement.js";
+import { configure as configureOdoo } from "../_odoo.js";
 
 const ADMIN_DEFAUT = "contact@nishman.be";
 
@@ -44,9 +47,62 @@ export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const combien = Math.min(50, Math.max(1, Number(url.searchParams.get("n")) || 15));
   const ref = String(url.searchParams.get("ref") || "").trim();
+  const retenter = String(url.searchParams.get("retenter") || "").trim();
 
   try { await preparerTable(env.DB); }
   catch (e) { return erreur("Registre indisponible.", 503, "registre"); }
+
+  /* Reprendre une commande dont l'étiquette a échoué.
+   *
+   * L'échec d'étiquette ne bloque pas la chaîne — c'est voulu — mais il la
+   * laisse donc à « fini » sans étiquette, et rien ne la reprendra jamais.
+   * Ici on la ramène d'un cran en arrière, à « envoyee », et la suite
+   * refait le dernier geste. Les étapes d'avant ne sont pas rejouées :
+   * elles vérifient toutes l'état réel dans Odoo avant d'agir, donc une
+   * facture déjà émise ne sera pas émise deux fois.
+   */
+  if (retenter) {
+    const p = await lireParRef(env.DB, retenter, 0);
+    if (!p) return erreur("Commande introuvable.", 404, "inconnue");
+    if (String(p.statut) !== "paye") {
+      return json({ ok: false, message: "Cette commande n'est pas payée : rien à reprendre." });
+    }
+    if (p.suivi) {
+      return json({ ok: false, message: "Cette commande a déjà un suivi : " + p.suivi });
+    }
+    if (!configureOdoo(env)) return erreur("Odoo n'est pas configuré.", 503, "odoo");
+
+    await noterEtape(env.DB, p.mollie_id, "envoyee",
+      { note: "Reprise manuelle de l'étiquette, demandée depuis le site." });
+
+    let aLaMain = false;
+    try { aLaMain = await prendreLaMain(env.DB, p.mollie_id); } catch (e) {}
+    if (!aLaMain) {
+      return json({ ok: false, message: "Une autre reprise est déjà en cours. Réessayez dans deux minutes." });
+    }
+
+    let resultat;
+    try {
+      const frais = await lire(env.DB, p.mollie_id);
+      resultat = await poursuivre(env, env.DB, { ...(frais || p), statut: "paye" });
+    } catch (e) {
+      resultat = { erreur: String(e && e.message).slice(0, 240), journal: [] };
+    } finally {
+      try { await rendreLaMain(env.DB, p.mollie_id); } catch (e2) {}
+    }
+
+    const apres = await lire(env.DB, p.mollie_id);
+    return json({
+      ok: true,
+      reprise: retenter,
+      suivi: (apres && apres.suivi) || "",
+      note: (apres && apres.note) || "",
+      journal: (resultat && resultat.journal) || [],
+      message: (apres && apres.suivi)
+        ? "Étiquette créée, suivi " + apres.suivi
+        : "L'étiquette n'a toujours pas pu être créée. La note dit pourquoi.",
+    });
+  }
 
   let lignes;
   try {
