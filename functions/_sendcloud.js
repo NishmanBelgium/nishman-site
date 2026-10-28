@@ -77,6 +77,51 @@ export async function compteSendcloud(env) {
   return (d && d.user) || null;
 }
 
+/**
+ * La fiche d'un point relais, par son identifiant SendCloud.
+ *
+ * Elle est demandée à SendCloud et jamais reprise du navigateur. Le
+ * sélecteur tourne côté client : son résultat peut être modifié avant de
+ * nous parvenir, et une adresse de livraison qu'on accepterait sans la
+ * vérifier serait un colis envoyé où quelqu'un d'autre a décidé.
+ *
+ * L'API des points relais vit sur son propre hôte et sa propre version.
+ */
+export async function pointRelais(env, id) {
+  if (!configureSendcloud(env)) {
+    const e = new Error("Les clés SendCloud ne sont pas configurées.");
+    e.statut = 0;
+    throw e;
+  }
+  const n = Math.floor(Number(id));
+  if (!(n > 0)) throw new Error("identifiant de point relais invalide");
+
+  let r;
+  try {
+    r = await fetch("https://servicepoints.sendcloud.sc/api/v2/service-points/" + n, {
+      headers: {
+        authorization: autorisation(env),
+        accept: "application/json",
+      },
+    });
+  } catch (e) {
+    const err = new Error("SendCloud est injoignable.");
+    err.statut = 0;
+    throw err;
+  }
+
+  const texte = await r.text();
+  let d = null;
+  try { d = texte ? JSON.parse(texte) : null; } catch (e) { /* réponse non JSON */ }
+
+  if (!r.ok) {
+    const err = new Error("Point relais introuvable (HTTP " + r.status + ")");
+    err.statut = r.status;
+    throw err;
+  }
+  return d;
+}
+
 /** Les méthodes d'expédition disponibles, pour un pays donné. */
 export async function methodesSendcloud(env, pays) {
   const q = pays ? ("?to_country=" + encodeURIComponent(String(pays).toUpperCase())) : "";

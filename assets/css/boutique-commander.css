@@ -1,0 +1,283 @@
+/* ==========================================================================
+   BOUTIQUE — le tunnel de commande.
+   Reprend les variables de boutique.css : rien n'est redéfini ici, pour que
+   le jour où la direction artistique change, elle change partout.
+   ========================================================================== */
+
+.bc-main { padding: 26px 0 70px; }
+
+.bc-carte {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 22px 22px 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+}
+
+.bc-carte h1 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4vw, 28px);
+  line-height: 1.15;
+  margin: 0 0 8px;
+}
+.bc-carte h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  margin: 0 0 14px;
+}
+.bc-lead { margin: 0 0 14px; color: var(--ink-soft); }
+.bc-note { margin: 12px 0 0; font-size: 13px; color: var(--ink-faint); }
+
+/* Le numéro d'étape, dans la pastille orange. */
+.bc-bloc { position: relative; padding-left: 22px; }
+.bc-num {
+  position: absolute;
+  left: 22px; top: 22px;
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--gradient);
+  color: #fff;
+  font-weight: 700; font-size: 14px;
+  margin: 0;
+}
+.bc-bloc h2 { margin-left: 36px; min-height: 26px; }
+
+/* --- Deux colonnes sur grand écran, une seule au téléphone ------------- */
+
+.bc-colonnes {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+/* 78px et pas 16 : la barre du haut est collante sur 62px de haut, et un
+   récapitulatif collé à 16px passerait dessous au défilement. */
+.bc-droite { position: sticky; top: 78px; }
+
+@media (max-width: 900px) {
+  .bc-colonnes { grid-template-columns: 1fr; }
+  /* Au téléphone, le récapitulatif passe en premier : on veut savoir ce
+     qu'on paie avant de remplir six champs. */
+  .bc-droite { position: static; order: -1; }
+}
+
+/* --- Les champs -------------------------------------------------------- */
+
+.bc-champs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.bc-champ { display: block; }
+.bc-large { grid-column: 1 / -1; }
+
+.bc-champ > span {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.bc-champ > span small { font-weight: 400; color: var(--ink-faint); }
+
+.bc-champ input,
+.bc-champ select {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;     /* 15px minimum : en dessous, iOS zoome à la saisie */
+}
+.bc-champ input:focus,
+.bc-champ select:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+.bc-champ input::placeholder { color: var(--ink-faint); }
+
+@media (max-width: 520px) {
+  .bc-champs { grid-template-columns: 1fr; }
+}
+
+/* --- Le point relais ---------------------------------------------------- */
+
+.bc-relais-btn {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1.5px dashed var(--line-strong);
+  background: var(--bg-soft);
+  font-weight: 700;
+  transition: border-color .2s var(--ease), background .2s var(--ease);
+}
+.bc-relais-btn:hover:not([disabled]) { border-color: var(--gold); background: var(--bg); }
+.bc-relais-btn[disabled] { color: var(--ink-faint); cursor: not-allowed; }
+
+.bc-relais-choisi {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--gold);
+  background: rgba(237, 155, 36, 0.06);
+}
+.bc-relais-txt { flex: 1; min-width: 0; }
+.bc-relais-nom { margin: 0; font-weight: 700; }
+.bc-relais-adr { margin: 2px 0 0; font-size: 13.5px; color: var(--ink-soft); }
+.bc-relais-h { margin: 4px 0 0; font-size: 13px; color: var(--vert); font-weight: 600; }
+.bc-relais-changer {
+  flex: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-deep);
+  text-decoration: underline;
+  padding: 2px 0;
+}
+
+/* --- Le récapitulatif --------------------------------------------------- */
+
+.bc-ligne {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+.bc-ligne-img {
+  flex: none;
+  width: 44px; height: 44px;
+  border-radius: 8px;
+  background: var(--bg-soft);
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+.bc-ligne-img img { width: 100%; height: 100%; object-fit: contain; }
+.bc-ligne-txt { flex: 1; min-width: 0; }
+.bc-ligne-nom {
+  margin: 0; font-size: 13.5px; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.bc-ligne-q { margin: 1px 0 0; font-size: 12.5px; color: var(--ink-faint); }
+.bc-ligne-tot { flex: none; font-weight: 700; font-size: 14px; }
+
+.bc-totaux { margin: 14px 0 0; padding: 0; }
+.bc-totaux > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+}
+.bc-totaux dt, .bc-totaux dd { margin: 0; }
+.bc-totaux dd { font-weight: 600; }
+.bc-grand {
+  border-top: 1px solid var(--line);
+  margin-top: 6px; padding-top: 11px !important;
+  font-family: var(--font-display);
+  font-size: 19px;
+}
+.bc-grand dd { font-weight: 700; }
+.bc-tva { font-size: 12.5px; color: var(--ink-faint); }
+.bc-tva dd { font-weight: 400; }
+.bc-offert { color: var(--vert); }
+
+/* --- La jauge du franco -------------------------------------------------- */
+
+.bc-jauge-zone { margin: 10px 0 2px; }
+.bc-jauge {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-soft-2);
+  overflow: hidden;
+}
+.bc-jauge i {
+  display: block; height: 100%;
+  background: var(--gradient);
+  border-radius: 999px;
+  transition: width .35s var(--ease);
+}
+.bc-jauge-txt { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-soft); }
+
+/* --- Validation ---------------------------------------------------------- */
+
+.bc-case {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 16px 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.bc-case input { margin-top: 2px; flex: none; accent-color: var(--gold-deep); width: 17px; height: 17px; }
+
+.bc-cta {
+  display: block;
+  width: 100%;
+  padding: 15px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--gradient);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  text-decoration: none;
+  transition: filter .2s var(--ease);
+}
+.bc-cta:hover:not([disabled]) { filter: brightness(1.05); }
+.bc-cta[disabled] { background: var(--bg-soft-2); color: var(--ink-faint); cursor: not-allowed; }
+
+.bc-alt {
+  display: inline-block;
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--gold-deep);
+}
+
+.bc-rassure {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+.bc-alerte {
+  margin: 12px 0 0;
+  padding: 10px 13px;
+  border-radius: var(--radius-sm);
+  background: rgba(190, 50, 40, 0.08);
+  color: #a8322a;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+/* --- Attente et retour --------------------------------------------------- */
+
+.bc-attente { text-align: center; color: var(--ink-soft); }
+
+.bc-retour { text-align: center; max-width: 520px; margin-inline: auto; }
+.bc-pastille {
+  width: 54px; height: 54px;
+  margin: 4px auto 14px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(26, 138, 74, 0.12);
+  color: var(--vert);
+  font-size: 26px; font-weight: 700;
+}
+.bc-pastille.attente { background: var(--bg-soft-2); color: var(--ink-soft); }
+.bc-pastille.souci { background: rgba(190, 50, 40, 0.10); color: #a8322a; }
+.bc-retour .bc-cta { margin-top: 6px; }
+
+/* Deux conteneurs qui n'ont besoin d'aucune décoration, seulement d'exister
+   dans la grille. Déclarés tout de même : une classe employée dans le HTML
+   et absente de la feuille de style est, neuf fois sur dix, une faute de
+   frappe qu'on met des heures à trouver. */
+.bc-gauche { min-width: 0; }
+.bc-recap { min-width: 0; }

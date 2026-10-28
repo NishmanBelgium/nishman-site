@@ -41,7 +41,7 @@ export const LIVRAISON_DEFAUT = {
   LU: "LIVRAISON Luxembourg",
 };
 
-function nomLivraison(pays, env) {
+export function nomLivraison(pays, env) {
   const reglages = {
     BE: (env && env.LIVRAISON_BE) || LIVRAISON_DEFAUT.BE,
     FR: (env && env.LIVRAISON_FR) || LIVRAISON_DEFAUT.FR,
@@ -51,7 +51,7 @@ function nomLivraison(pays, env) {
 }
 
 /** Une erreur qui porte un code exploitable, pas seulement une phrase. */
-function echec(code, message, detail) {
+export function echec(code, message, detail) {
   const e = new Error(message);
   e.code = code;
   if (detail !== undefined) e.detail = detail;
@@ -68,7 +68,7 @@ function echec(code, message, detail) {
  * différence avait déjà fait échouer des recherches côté script Google.
  * On cherche donc large, puis on compare nous-mêmes.
  */
-async function parNomInsensible(env, modele, nom, champs) {
+export async function parNomInsensible(env, modele, nom, champs) {
   const cible = String(nom || "").trim().toLowerCase();
   if (!cible) return null;
   const r = await appel(env, modele, "search_read",
@@ -79,7 +79,7 @@ async function parNomInsensible(env, modele, nom, champs) {
   return null;
 }
 
-async function paysId(env, code) {
+export async function paysId(env, code) {
   const r = await appel(env, "res.country", "search_read",
     [[["code", "=", String(code || "BE").toUpperCase()]], ["id"]], { limit: 1 });
   return r && r[0] ? r[0].id : null;

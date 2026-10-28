@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Commander — NISHMAN</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=246" />
+<link rel="stylesheet" href="/assets/css/boutique-commander.css?v=246" />
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="logo" href="/boutique/" aria-label="Nishman, accueil"><img src="/assets/img/nishman.svg" alt="Nishman" /></a>
+    <div class="bar-sp"></div>
+    <a class="pill" href="/boutique/">Retour à la boutique</a>
+  </div>
+</header>
+
+<main class="wrap bc-main">
+
+  <!-- Tant que le serveur n'a pas répondu, aucun montant n'est affiché.
+       Mieux vaut une seconde d'attente qu'un total provisoire. -->
+  <section class="bc-carte bc-attente" id="bc-attente">
+    <p>Nous préparons votre commande…</p>
+  </section>
+
+  <section class="bc-carte" id="bc-vide" hidden>
+    <h1>Votre panier est vide</h1>
+    <p class="bc-lead">Ajoutez des produits à la boutique pour passer commande.</p>
+    <a class="bc-cta" href="/boutique/">Voir la boutique</a>
+  </section>
+
+  <!-- ============================ LE TUNNEL ============================ -->
+  <div id="bc-tunnel" hidden>
+    <div class="bc-colonnes">
+
+      <div class="bc-gauche">
+
+        <section class="bc-carte bc-bloc">
+          <p class="bc-num">1</p>
+          <h2>Vos coordonnées</h2>
+          <div class="bc-champs">
+            <label class="bc-champ bc-large">
+              <span>Adresse e-mail</span>
+              <input type="email" id="bc-email" autocomplete="email" inputmode="email"
+                     placeholder="pour recevoir votre preuve d'achat et le suivi" required />
+            </label>
+            <label class="bc-champ">
+              <span>Prénom</span>
+              <input type="text" id="bc-prenom" autocomplete="given-name" required />
+            </label>
+            <label class="bc-champ">
+              <span>Nom</span>
+              <input type="text" id="bc-nom" autocomplete="family-name" required />
+            </label>
+            <label class="bc-champ bc-large">
+              <span>Téléphone <small>(pour le transporteur)</small></span>
+              <input type="tel" id="bc-tel" autocomplete="tel" inputmode="tel" />
+            </label>
+          </div>
+          <p class="bc-note">Pas de compte à créer. Vos coordonnées servent à la commande et à son suivi.</p>
+        </section>
+
+        <section class="bc-carte bc-bloc">
+          <p class="bc-num">2</p>
+          <h2>Adresse de facturation</h2>
+          <div class="bc-champs">
+            <label class="bc-champ bc-large">
+              <span>Adresse (rue et numéro)</span>
+              <input type="text" id="bc-adresse" autocomplete="street-address" required />
+            </label>
+            <label class="bc-champ">
+              <span>Code postal</span>
+              <input type="text" id="bc-cp" autocomplete="postal-code" required />
+            </label>
+            <label class="bc-champ">
+              <span>Ville</span>
+              <input type="text" id="bc-ville" autocomplete="address-level2" required />
+            </label>
+            <label class="bc-champ bc-large">
+              <span>Pays</span>
+              <select id="bc-pays">
+                <option value="BE">Belgique</option>
+                <option value="FR">France</option>
+                <option value="LU">Luxembourg</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="bc-carte bc-bloc">
+          <p class="bc-num">3</p>
+          <h2>Votre point relais</h2>
+          <p class="bc-lead" id="bc-relais-intro">
+            Votre colis vous attendra dans le commerce de votre choix, aux horaires
+            qui vous arrangent.
+          </p>
+
+          <button type="button" class="bc-relais-btn" id="bc-choisir-relais">
+            Choisir mon point relais
+          </button>
+
+          <div class="bc-relais-choisi" id="bc-relais-choisi" hidden>
+            <div class="bc-relais-txt">
+              <p class="bc-relais-nom" id="bc-relais-nom">—</p>
+              <p class="bc-relais-adr" id="bc-relais-adr">—</p>
+              <p class="bc-relais-h" id="bc-relais-h" hidden>—</p>
+            </div>
+            <button type="button" class="bc-relais-changer" id="bc-relais-changer">Changer</button>
+          </div>
+
+          <p class="bc-alerte" id="bc-relais-souci" hidden></p>
+        </section>
+
+      </div>
+
+      <div class="bc-droite">
+        <section class="bc-carte bc-recap" id="bc-recap">
+          <h2>Votre commande</h2>
+          <div id="bc-lignes"></div>
+
+          <dl class="bc-totaux">
+            <div><dt>Sous-total</dt><dd id="bc-sous">—</dd></div>
+            <div><dt>Livraison</dt><dd id="bc-port">—</dd></div>
+            <div class="bc-grand"><dt>Total</dt><dd id="bc-total">—</dd></div>
+            <div class="bc-tva"><dt id="bc-tva-lab">dont TVA</dt><dd id="bc-tva">—</dd></div>
+          </dl>
+
+          <div class="bc-jauge-zone" id="bc-jauge-zone" hidden>
+            <div class="bc-jauge"><i id="bc-jauge-barre"></i></div>
+            <p class="bc-jauge-txt" id="bc-jauge-txt"></p>
+          </div>
+
+          <label class="bc-case">
+            <input type="checkbox" id="bc-cgv" />
+            <span>J'accepte les <a href="/conditions-de-vente/" target="_blank" rel="noopener">conditions de vente</a>
+              et je reconnais que ma commande implique une obligation de paiement.</span>
+          </label>
+
+          <button class="bc-cta" id="bc-payer">Payer ma commande</button>
+          <p class="bc-alerte" id="bc-erreur" hidden></p>
+          <p class="bc-rassure">
+            Paiement sécurisé par Bancontact ou carte bancaire.<br />
+            Expédition sous 2 jours ouvrables · Retour sous 14 jours
+          </p>
+        </section>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================= RETOUR DE PAIEMENT ======================= -->
+  <section class="bc-carte bc-retour" id="bc-retour" hidden>
+    <div class="bc-pastille" id="bc-retour-icone" aria-hidden="true">&#8230;</div>
+    <h1 id="bc-retour-titre">—</h1>
+    <p class="bc-lead" id="bc-retour-texte">—</p>
+    <p class="bc-note" id="bc-retour-detail" hidden></p>
+    <button class="bc-cta" id="bc-retour-reprendre" hidden>Reprendre ma commande</button>
+    <a class="bc-alt" href="/boutique/">Retour à la boutique</a>
+  </section>
+
+</main>
+
+<script src="https://embed.sendcloud.sc/spp/1.0.0/api.min.js"></script>
+<script src="/assets/js/boutique-commander.js?v=246"></script>
+</body>
+</html>
