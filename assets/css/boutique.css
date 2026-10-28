@@ -86,19 +86,22 @@
 .hero {
   background: var(--noir);
   color: var(--encre-inverse);
-  padding: var(--e8) 0 var(--e9);
+  padding: var(--e7) 0 var(--e8);
 }
 .hero h1 {
-  /* Archivo réglée étroite et lourde, en écho au logotype. */
-  font-stretch: 78%;
+  /* Archivo réglée étroite et lourde, en écho au logotype. Le titre
+     s'affirme sans occuper tout l'écran : sur une boutique, ce qu'on vient
+     voir est en dessous. */
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  font-stretch: 80%;
   font-weight: 800;
-  max-width: 16ch;
+  max-width: 22ch;
   margin-bottom: var(--e4);
 }
 .hero p {
   color: var(--encre-inverse-douce);
-  font-size: var(--t-sous);
-  max-width: 52ch;
+  font-size: var(--t-corps);
+  max-width: 56ch;
   margin: 0;
 }
 
