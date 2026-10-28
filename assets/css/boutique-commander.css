@@ -281,3 +281,16 @@
    frappe qu'on met des heures à trouver. */
 .bc-gauche { min-width: 0; }
 .bc-recap { min-width: 0; }
+
+/* Les mentions légales sous le bouton de paiement. Discrètes mais toujours
+   atteignables : c'est le dernier écran avant que le client n'engage son
+   argent, et la loi veut qu'il puisse tout relire à cet instant-là. */
+.bc-legal {
+  margin: 10px 0 0;
+  font-size: 11.5px;
+  line-height: 1.7;
+  text-align: center;
+  color: #8a8a8a;
+}
+.bc-legal a { color: #8a8a8a; text-decoration: underline; text-underline-offset: 2px; }
+.bc-legal a:hover { color: #111; }

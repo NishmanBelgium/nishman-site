@@ -13,19 +13,19 @@
 
   const UI = {
     fr: { back: "Retour au catalogue", eyebrow: "Document légal", title: "Conditions générales de vente",
-          sub: "Réseau de distribution sélective — clients professionnels · Version du 7 août 2026",
+          sub: "Réseau de distribution sélective — clients professionnels · Version du 28 octobre 2026",
           dl: "Télécharger le PDF" },
     en: { back: "Back to catalogue", eyebrow: "Legal document", title: "General Terms and Conditions of Sale",
-          sub: "Selective distribution network — professional customers · Version of 7 August 2026",
+          sub: "Selective distribution network — professional customers · Version of 28 October 2026",
           dl: "Download the PDF" },
     nl: { back: "Terug naar catalogus", eyebrow: "Juridisch document", title: "Algemene verkoopvoorwaarden",
-          sub: "Selectief distributienetwerk — professionele klanten · Versie van 7 augustus 2026",
+          sub: "Selectief distributienetwerk — professionele klanten · Versie van 28 oktober 2026",
           dl: "PDF downloaden" },
     de: { back: "Zurück zum Katalog", eyebrow: "Rechtsdokument", title: "Allgemeine Geschäftsbedingungen",
-          sub: "Selektives Vertriebsnetz — Fachkunden · Fassung vom 7. August 2026",
+          sub: "Selektives Vertriebsnetz — Fachkunden · Fassung vom 28. Oktober 2026",
           dl: "PDF herunterladen" },
     tr: { back: "Kataloğa dön", eyebrow: "Hukuki belge", title: "Genel Satış Koşulları",
-          sub: "Seçici dağıtım ağı — profesyonel müşteriler · 7 Ağustos 2026 sürümü",
+          sub: "Seçici dağıtım ağı — profesyonel müşteriler · 28 Ekim 2026 sürümü",
           dl: "PDF indir" },
   };
 
@@ -35,9 +35,9 @@
 
   CGV.fr = [
     ["1. Champ d'application et acceptation", [
-      "Les présentes conditions générales régissent l'ensemble des ventes conclues par NBD Distribution SRL, dont le siège est établi Rue de la Poire d'Or 26, 7033 Cuesmes (Belgique), inscrite à la Banque-Carrefour des Entreprises sous le numéro BE 0817.750.283, ci-après « le Vendeur ».",
+      "Les présentes conditions générales régissent l'ensemble des ventes conclues par NBD Distribution SRL, dont le siège est établi Avenue Léopold III 21, 7133 Binche (Belgique), inscrite à la Banque-Carrefour des Entreprises sous le numéro BE 0817.750.283, ci-après « le Vendeur ».",
       "Le Vendeur est le distributeur officiel et exclusif des produits de la marque NISHMAN pour la Belgique, la France et le Grand-Duché de Luxembourg.",
-      "Elles s'appliquent exclusivement aux clients agissant dans le cadre de leur activité professionnelle — salons de coiffure, barbershops et instituts — ci-après « le Client ». Le Vendeur ne contracte pas avec des consommateurs au sens du livre VI du Code de droit économique.",
+      "Elles s'appliquent exclusivement aux clients agissant dans le cadre de leur activité professionnelle — salons de coiffure, barbershops et instituts — ci-après « le Client ». Les présentes conditions ne régissent pas les ventes aux consommateurs au sens du livre VI du Code de droit économique : celles-ci sont soumises aux conditions de vente en ligne publiées sur nishman.be.",
       "Toute commande implique l'acceptation sans réserve des présentes conditions, qui prévalent sur toutes conditions d'achat du Client, sauf accord écrit et préalable du Vendeur.",
     ]],
     ["2. Réseau de distribution sélective", [
@@ -138,9 +138,9 @@
 
   CGV.en = [
     ["1. Scope and acceptance", [
-      "These general terms and conditions govern all sales concluded by NBD Distribution SRL, whose registered office is at Rue de la Poire d'Or 26, 7033 Cuesmes (Belgium), registered with the Belgian Crossroads Bank for Enterprises under number BE 0817.750.283, hereinafter \"the Seller\".",
+      "These general terms and conditions govern all sales concluded by NBD Distribution SRL, whose registered office is at Avenue Léopold III 21, 7133 Binche (Belgium), registered with the Belgian Crossroads Bank for Enterprises under number BE 0817.750.283, hereinafter \"the Seller\".",
       "The Seller is the official and exclusive distributor of NISHMAN branded products for Belgium, France and the Grand Duchy of Luxembourg.",
-      "They apply exclusively to customers acting in the course of their professional activity — hair salons, barbershops and beauty institutes — hereinafter \"the Customer\". The Seller does not contract with consumers within the meaning of Book VI of the Belgian Code of Economic Law.",
+      "They apply exclusively to customers acting in the course of their professional activity — hair salons, barbershops and beauty institutes — hereinafter \"the Customer\". These terms do not govern sales to consumers within the meaning of Book VI of the Belgian Code of Economic Law: those are subject to the online sale conditions published on nishman.be.",
       "Any order implies unreserved acceptance of these terms, which prevail over any purchasing conditions of the Customer, unless otherwise agreed in writing beforehand by the Seller.",
     ]],
     ["2. Selective distribution network", [
@@ -241,9 +241,9 @@
 
   CGV.nl = [
     ["1. Toepassingsgebied en aanvaarding", [
-      "Deze algemene voorwaarden zijn van toepassing op alle verkopen gesloten door NBD Distribution SRL, met maatschappelijke zetel te Rue de la Poire d'Or 26, 7033 Cuesmes (België), ingeschreven bij de Kruispuntbank van Ondernemingen onder het nummer BE 0817.750.283, hierna « de Verkoper ».",
+      "Deze algemene voorwaarden zijn van toepassing op alle verkopen gesloten door NBD Distribution SRL, met maatschappelijke zetel te Avenue Léopold III 21, 7133 Binche (België), ingeschreven bij de Kruispuntbank van Ondernemingen onder het nummer BE 0817.750.283, hierna « de Verkoper ».",
       "De Verkoper is de officiële en exclusieve verdeler van producten van het merk NISHMAN voor België, Frankrijk en het Groothertogdom Luxemburg.",
-      "Zij zijn uitsluitend van toepassing op klanten die handelen in het kader van hun beroepsactiviteit — kapsalons, barbershops en instituten — hierna « de Klant ». De Verkoper contracteert niet met consumenten in de zin van boek VI van het Wetboek van economisch recht.",
+      "Zij zijn uitsluitend van toepassing op klanten die handelen in het kader van hun beroepsactiviteit — kapsalons, barbershops en instituten — hierna « de Klant ». Deze voorwaarden gelden niet voor verkopen aan consumenten in de zin van boek VI van het Wetboek van economisch recht: daarvoor gelden de online verkoopvoorwaarden op nishman.be.",
       "Elke bestelling impliceert de onvoorwaardelijke aanvaarding van deze voorwaarden, die voorrang hebben op alle aankoopvoorwaarden van de Klant, behoudens voorafgaand schriftelijk akkoord van de Verkoper.",
     ]],
     ["2. Selectief distributienetwerk", [
@@ -344,9 +344,9 @@
 
   CGV.de = [
     ["1. Anwendungsbereich und Annahme", [
-      "Diese Allgemeinen Geschäftsbedingungen gelten für alle Verkäufe der NBD Distribution SRL mit Sitz in Rue de la Poire d'Or 26, 7033 Cuesmes (Belgien), eingetragen in der Zentralen Datenbank der Unternehmen unter der Nummer BE 0817.750.283, nachfolgend „der Verkäufer\".",
+      "Diese Allgemeinen Geschäftsbedingungen gelten für alle Verkäufe der NBD Distribution SRL mit Sitz in Avenue Léopold III 21, 7133 Binche (Belgien), eingetragen in der Zentralen Datenbank der Unternehmen unter der Nummer BE 0817.750.283, nachfolgend „der Verkäufer\".",
       "Der Verkäufer ist der offizielle und exklusive Distributor der Produkte der Marke NISHMAN für Belgien, Frankreich und das Großherzogtum Luxemburg.",
-      "Sie gelten ausschließlich für Kunden, die im Rahmen ihrer beruflichen Tätigkeit handeln — Friseursalons, Barbershops und Institute — nachfolgend „der Kunde\". Der Verkäufer schließt keine Verträge mit Verbrauchern im Sinne von Buch VI des belgischen Wirtschaftsgesetzbuchs.",
+      "Sie gelten ausschließlich für Kunden, die im Rahmen ihrer beruflichen Tätigkeit handeln — Friseursalons, Barbershops und Institute — nachfolgend „der Kunde\". Diese Bedingungen gelten nicht für Verkäufe an Verbraucher im Sinne von Buch VI des belgischen Wirtschaftsgesetzbuchs: für diese gelten die auf nishman.be veröffentlichten Online-Verkaufsbedingungen.",
       "Jede Bestellung setzt die vorbehaltlose Annahme dieser Bedingungen voraus, die Vorrang vor allen Einkaufsbedingungen des Kunden haben, sofern nicht zuvor schriftlich anders vereinbart.",
     ]],
     ["2. Selektives Vertriebsnetz", [
@@ -447,9 +447,9 @@
 
   CGV.tr = [
     ["1. Kapsam ve kabul", [
-      "İşbu genel satış koşulları, kayıtlı merkezi Rue de la Poire d'Or 26, 7033 Cuesmes (Belçika) adresinde bulunan ve BE 0817.750.283 numarasıyla Belçika Ticaret Sicili'ne kayıtlı NBD Distribution SRL (bundan böyle « Satıcı ») tarafından yapılan tüm satışları düzenler.",
+      "İşbu genel satış koşulları, kayıtlı merkezi Avenue Léopold III 21, 7133 Binche (Belçika) adresinde bulunan ve BE 0817.750.283 numarasıyla Belçika Ticaret Sicili'ne kayıtlı NBD Distribution SRL (bundan böyle « Satıcı ») tarafından yapılan tüm satışları düzenler.",
       "Satıcı, NISHMAN markalı ürünlerin Belçika, Fransa ve Lüksemburg Büyük Dükalığı için resmi ve münhasır distribütörüdür.",
-      "Bu koşullar yalnızca mesleki faaliyetleri kapsamında hareket eden müşterilere — kuaför salonları, berber dükkânları ve güzellik merkezleri, bundan böyle « Müşteri » — uygulanır. Satıcı, Belçika Ekonomi Hukuku Kanunu'nun VI. Kitabı anlamında tüketicilerle sözleşme yapmaz.",
+      "Bu koşullar yalnızca mesleki faaliyetleri kapsamında hareket eden müşterilere — kuaför salonları, berber dükkânları ve güzellik merkezleri, bundan böyle « Müşteri » — uygulanır. İşbu koşullar, Belçika Ekonomi Hukuku Kanunu'nun VI. Kitabı anlamında tüketicilere yapılan satışları düzenlemez: bu satışlar nishman.be adresinde yayımlanan çevrimiçi satış koşullarına tabidir.",
       "Her sipariş, Müşteri'nin satın alma koşullarına üstün gelen işbu koşulların kayıtsız şartsız kabulünü içerir; Satıcı'nın önceden yazılı onayı saklıdır.",
     ]],
     ["2. Seçici dağıtım ağı", [

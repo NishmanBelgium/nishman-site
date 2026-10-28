@@ -224,3 +224,17 @@
   .cmd-table th:nth-child(3),
   .cmd-table td:nth-child(3) { display: none; }  /* le P.U. passe à la trappe, le total reste */
 }
+
+/* Pied légal de la page de commande professionnelle. */
+.quote-legal {
+  max-width: 980px;
+  margin: 32px auto 0;
+  padding: 18px 20px 28px;
+  border-top: 1px solid rgba(0, 0, 0, .08);
+  font-size: 12px;
+  line-height: 1.8;
+  text-align: center;
+  color: #8a8a8a;
+}
+.quote-legal a { color: #8a8a8a; text-decoration: underline; text-underline-offset: 2px; }
+.quote-legal a:hover { color: #111; }
