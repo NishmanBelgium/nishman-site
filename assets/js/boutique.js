@@ -6,11 +6,18 @@
 (function () {
   "use strict";
 
-  // Réglages commerciaux — tout se change ici.
-  var PORT = 4.9;          // frais de livraison en euros TTC
-  var FRANCO = 49;         // au-dessus de ce montant, la livraison est offerte
-  var TVA = 0.21;          // TVA belge, applicable tant qu'on reste sous le
-                           // seuil de 10 000 EUR de ventes UE à distance
+  // Réglages commerciaux. Ils ne sont PLUS écrits ici : le serveur les
+  // donne, et c'est lui qui les appliquera au moment d'encaisser. Deux
+  // copies d'une même règle finissent toujours par diverger — ce fichier
+  // affichait encore 4,90 € et un franco à 49 € quand le serveur était
+  // passé à 4,95 € et 29,90 €. Une seule source, et le problème disparaît.
+  //
+  // Les valeurs ci-dessous ne servent qu'à l'instant où la page vient de
+  // s'ouvrir et où la réponse du serveur n'est pas encore arrivée.
+  var PORT = 4.95;
+  var FRANCO = 29.90;
+  var TVA = 0.21;
+  var RELAIS = { disponible: false, cle: "" };
 
   var PRODUITS = [];
   var panier = {};         // ean -> quantité
@@ -32,6 +39,29 @@
   function texte(p, champ) {
     return p[champ + "_" + langue] || p[champ + "_fr"] || "";
   }
+
+  // ── les règles, demandées au serveur ────────────────────────────────────
+  // Un panier vide suffit : on ne veut que les réglages et la clé publique
+  // du sélecteur de points relais.
+  fetch("/api/panier-public", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ selection: {} })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (!d || d.ok !== true) return;
+      if (d.regles) {
+        PORT = d.regles.port;
+        FRANCO = d.regles.franco;
+        var ruban = $("#ruban-franco");
+        if (ruban) ruban.textContent = euros(FRANCO);
+      }
+      if (typeof d.taux_tva === "number") TVA = d.taux_tva;
+      if (d.relais) RELAIS = d.relais;
+      majPanier();
+    })
+    .catch(function () { /* on garde les valeurs de secours */ });
 
   // ── chargement ──────────────────────────────────────────────────────────
   fetch("/assets/data/boutique.json?v=183")
@@ -139,11 +169,41 @@
     }).filter(Boolean);
   }
 
+  // Le dernier calcul rendu par le serveur. Tant qu'il n'est pas arrivé,
+  // l'affichage reste sur une estimation locale — mais c'est toujours la
+  // réponse du serveur qui finit par s'afficher, et c'est elle qui sera
+  // débitée.
+  var CALCUL = null;
+  var enCours = 0;
+
+  function demanderCalcul() {
+    var mien = ++enCours;
+    fetch("/api/panier-public", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ selection: panier })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (mien !== enCours) return;        // une demande plus récente a gagné
+        if (!d || d.ok !== true) return;
+        CALCUL = d;
+        if (d.relais) RELAIS = d.relais;
+        dessinerPanier();
+      })
+      .catch(function () { /* l'estimation locale reste à l'écran */ });
+  }
+
   function majPanier() {
+    dessinerPanier();
+    demanderCalcul();
+  }
+
+  function dessinerPanier() {
     var L = lignes();
     var articles = L.reduce(function (s, l) { return s + l.q; }, 0);
-    var sous = L.reduce(function (s, l) { return s + l.total; }, 0);
-    var port = (sous === 0 || sous >= FRANCO) ? 0 : PORT;
+    var sous = CALCUL ? CALCUL.sous_total : L.reduce(function (s, l) { return s + l.total; }, 0);
+    var port = CALCUL ? CALCUL.port : ((sous === 0 || sous >= FRANCO) ? 0 : PORT);
 
     $("#compteur").textContent = articles;
     $("#compteur").style.display = articles ? "grid" : "none";
@@ -184,10 +244,11 @@
               "</b> pour la livraison offerte.</div>";
     }
 
-    var total = sous + port;
+    var total = CALCUL ? CALCUL.total : (sous + port);
     pied += '<div class="tot-l grand"><span>Total</span><span>' + euros(total) + "</span></div>" +
             '<div class="tot-l" style="color:#a4a4a9;font-size:12.5px">' +
-              "<span>dont TVA 21 %</span><span>" + euros(total - total / (1 + TVA)) + "</span></div>" +
+              "<span>dont TVA " + Math.round(TVA * 100) + " %</span><span>" +
+              euros(CALCUL ? CALCUL.tva : (total - total / (1 + TVA))) + "</span></div>" +
             '<button class="payer"' + (sous ? "" : " disabled") + ' id="payer">' +
               "Commander avec obligation de paiement</button>" +
             '<p class="rassure">Paiement sécurisé Bancontact et carte bancaire.<br>' +
@@ -201,7 +262,9 @@
     if (m) ajouter(m.dataset.moins, -1);
     if (p) ajouter(p.dataset.plus, 1);
     if (e.target.id === "payer") {
-      toast("Le paiement sera branché à l'étape suivante");
+      // Le panier voyage dans le stockage du navigateur ; la page de
+      // commande le relit et redemande les montants au serveur.
+      window.location.href = "/boutique/commander/";
     }
   });
 
