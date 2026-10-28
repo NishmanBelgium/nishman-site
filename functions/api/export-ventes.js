@@ -21,7 +21,10 @@ import { erreur, compteConnecte } from "../_commun.js";
 import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
 
 const ADMIN_DEFAUT = "contact@nishman.be";
-const PAR_PAGE = 400;          // lignes de commande par page
+/* 250 et pas 400 : la réponse voyage par le navigateur, qui tronque au-delà
+   d'une cinquantaine de milliers de caractères. Une page qu'on ne peut pas
+   lire en entier ne sert à rien. */
+const PAR_PAGE = 250;
 
 function csv(v) {
   const s = String(v === null || v === undefined ? "" : v);
@@ -41,6 +44,7 @@ export async function onRequestGet({ request, env }) {
 
   const url = new URL(request.url);
   const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+  const resume = url.searchParams.get("resume") === "1";
 
   // On part des LIGNES, pas des commandes : c'est l'unité de l'export, et
   // c'est ce qui permet de paginer sans couper une commande en deux.
@@ -53,6 +57,46 @@ export async function onRequestGet({ request, env }) {
   try { total = await appelOdoo(env, "sale.order.line", "search_count", [filtre], {}); }
   catch (e) {
     return erreur("Odoo n'a pas répondu : " + String(e && e.message).slice(0, 200), 502, "odoo");
+  }
+
+  /* Les totaux, calculés par Odoo plutôt que recomposés ici.
+   *
+   * read_group fait le regroupement côté serveur : une dizaine de lignes
+   * en retour au lieu de plusieurs milliers. C'est ce qui permet d'avoir
+   * les chiffres clés sans transporter tout le détail. */
+  if (resume) {
+    const bloc = [];
+    const demander = async (champs, titre, cles) => {
+      const g = await appelOdoo(env, "sale.order.line", "read_group",
+        [filtre, ["price_subtotal", "price_total", "product_uom_qty"], champs],
+        { lazy: false });
+      bloc.push("# " + titre);
+      bloc.push(cles.join(";") + ";quantite;total_ht;total_ttc");
+      for (const r of g || []) {
+        const vals = champs.map((c) => {
+          const v = r[c];
+          return csv(Array.isArray(v) ? v[1] : (v === false ? "" : v));
+        });
+        bloc.push([...vals,
+          Number(r.product_uom_qty || 0),
+          Number(r.price_subtotal || 0).toFixed(2),
+          Number(r.price_total || 0).toFixed(2)].join(";"));
+      }
+      bloc.push("");
+    };
+
+    try {
+      await demander(["product_id"], "PAR PRODUIT", ["produit"]);
+      await demander(["order_partner_id"], "PAR CLIENT", ["client"]);
+    } catch (e) {
+      return erreur("Odoo n'a pas répondu : " + String(e && e.message).slice(0, 200), 502, "odoo");
+    }
+
+    bloc.push("# lignes au total : " + total);
+    bloc.push("# pages de detail : " + Math.ceil(total / PAR_PAGE));
+    return new Response(bloc.join("\n"), {
+      headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
+    });
   }
 
   let lignes;
