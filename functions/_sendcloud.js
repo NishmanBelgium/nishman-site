@@ -210,14 +210,25 @@ export async function appelSendcloud3(env, chemin, options) {
  */
 let expediteurCache = null;
 export async function adresseExpediteur(env) {
-  const force = Number(String((env && env.SENDCLOUD_EXPEDITEUR) || "").trim());
-  if (force > 0) return force;
   if (expediteurCache) return expediteurCache;
 
   const d = await appelSendcloud(env, "/user/addresses/sender");
   const liste = (d && d.sender_addresses) || [];
   if (!liste.length) throw new Error("aucune adresse d'expéditeur dans le compte SendCloud");
-  expediteurCache = liste[0].id;
+
+  const force = Number(String((env && env.SENDCLOUD_EXPEDITEUR) || "").trim());
+  const choisie = (force > 0 && liste.find((x) => x.id === force)) || liste[0];
+
+  // On garde le pays et le code postal, pas seulement l'identifiant : le
+  // calcul des options d'expédition part de l'origine réelle, et la v3
+  // refuse la demande sans pays de départ.
+  expediteurCache = {
+    id: choisie.id,
+    pays: String(choisie.country || "BE").toUpperCase(),
+    code_postal: String(choisie.postal_code || ""),
+    ville: String(choisie.city || ""),
+    nom: choisie.company_name || choisie.contact_name || "",
+  };
   return expediteurCache;
 }
 
@@ -231,7 +242,11 @@ export async function adresseExpediteur(env) {
  */
 export async function optionsVersPointRelais(env, { expediteur, destinataire, pointId, poidsKg }) {
   const corps = {
-    from_address: { sender_address_id: Number(expediteur) },
+    from_address: {
+      sender_address_id: Number(expediteur.id),
+      country_code: expediteur.pays,
+      postal_code: expediteur.code_postal,
+    },
     to_address: adresseV3(destinataire),
     to_service_point: { id: String(pointId) },
     parcels: [{ weight: { value: Number(poidsKg).toFixed(3), unit: "kg" } }],
@@ -262,7 +277,11 @@ function adresseV3(d) {
  */
 export async function annoncerEnvoi(env, { expediteur, destinataire, pointId, poidsKg, code, reference }) {
   const corps = {
-    from_address: { sender_address_id: Number(expediteur) },
+    from_address: {
+      sender_address_id: Number(expediteur.id),
+      country_code: expediteur.pays,
+      postal_code: expediteur.code_postal,
+    },
     to_address: adresseV3(destinataire),
     to_service_point: { id: String(pointId) },
     ship_with: {
