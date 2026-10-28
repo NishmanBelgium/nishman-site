@@ -149,7 +149,7 @@ function page(p, base, indexable) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&display=swap" />
-<link rel="stylesheet" href="/assets/css/boutique.css?v=282" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=284" />
 <style>
   .fiche-page { max-width: 1040px; margin: 0 auto; padding: 24px 16px 72px;
                 display: grid; gap: 32px; grid-template-columns: 1fr; }

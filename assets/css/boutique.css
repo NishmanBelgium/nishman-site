@@ -421,3 +421,87 @@ a { color: inherit; }
   overflow: hidden; white-space: nowrap;
   clip: rect(0 0 0 0); clip-path: inset(50%);
 }
+
+/* ---------------------------------------------------------------
+   Index du catalogue (étape 284)
+
+   Le quadrillage de la boutique est construit par le script : dans le
+   code source, c'est une case vide. Les moteurs n'avaient donc aucun
+   lien à suivre vers les fiches. Cet index pose les 125 liens en dur.
+   Il reste replié : il sert le moteur sans encombrer la page, et le
+   visiteur qui veut tout voir d'un coup l'ouvre d'un clic.
+   --------------------------------------------------------------- */
+.index-cat {
+  margin: 72px auto 0;
+  padding: 40px 0 8px;
+  border-top: 1px solid var(--line);
+}
+.index-cat h2 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.index-cat-lead {
+  margin: 4px 0 24px;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+}
+.index-cat-cols {
+  display: grid;
+  gap: 2px 32px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 680px)  { .index-cat-cols { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1040px) { .index-cat-cols { grid-template-columns: 1fr 1fr 1fr; } }
+
+.index-cat-fam { border-bottom: 1px solid var(--line); }
+.index-cat-fam > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 2px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.18s var(--ease);
+}
+.index-cat-fam > summary::-webkit-details-marker { display: none; }
+.index-cat-fam > summary::after {
+  content: "+";
+  margin-left: auto;
+  color: var(--ink-faint);
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+.index-cat-fam[open] > summary { color: var(--gold-deep); }
+.index-cat-fam[open] > summary::after { content: "–"; }
+.index-cat-fam > summary:hover { color: var(--gold-deep); }
+.index-cat-fam > summary span {
+  color: var(--ink-faint);
+  font-weight: 500;
+  font-size: 0.78rem;
+}
+.index-cat-fam ul {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0 0 0 2px;
+  display: grid;
+  gap: 7px;
+}
+.index-cat-fam li a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.74rem;
+  letter-spacing: 0.015em;
+  line-height: 1.35;
+  display: block;
+}
+.index-cat-fam li a:hover { color: var(--ink); text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .index-cat-fam > summary { transition: none; }
+}
