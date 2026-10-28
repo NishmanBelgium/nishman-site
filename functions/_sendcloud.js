@@ -242,8 +242,11 @@ export async function adresseExpediteur(env) {
  */
 export async function optionsVersPointRelais(env, { expediteur, destinataire, pointId, poidsKg }) {
   const corps = {
+    // Pour CHERCHER les options, la v3 veut l'adresse décrite — pays et
+    // code postal — et refuse qu'on y joigne l'identifiant : « Provide
+    // either sender_address_id or address fields, not both ». Au moment
+    // d'ANNONCER l'envoi, c'est l'inverse : l'identifiant seul.
     from_address: {
-      sender_address_id: Number(expediteur.id),
       country_code: expediteur.pays,
       postal_code: expediteur.code_postal,
     },
@@ -277,11 +280,7 @@ function adresseV3(d) {
  */
 export async function annoncerEnvoi(env, { expediteur, destinataire, pointId, poidsKg, code, reference }) {
   const corps = {
-    from_address: {
-      sender_address_id: Number(expediteur.id),
-      country_code: expediteur.pays,
-      postal_code: expediteur.code_postal,
-    },
+    from_address: { sender_address_id: Number(expediteur.id) },
     to_address: adresseV3(destinataire),
     to_service_point: { id: String(pointId) },
     ship_with: {
