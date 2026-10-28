@@ -134,12 +134,16 @@ function page(p, base, indexable) {
      Cloudflare : variable INDEXER_BOUTIQUE = oui. -->
 <meta name="robots" content="noindex, nofollow" />`}
 <meta property="og:type" content="product" />
+<meta property="og:site_name" content="Nishman — NBD Distribution Belgium" />
 <meta property="og:title" content="${echapper(nom)} — NISHMAN" />
 <meta property="og:description" content="${echapper(resume(desc))}" />
 <meta property="og:image" content="${echapper(image)}" />
 <meta property="og:url" content="${echapper(url)}" />
+<meta property="og:locale" content="fr_BE" />
+<meta name="twitter:card" content="summary_large_image" />
 <meta property="product:price:amount" content="${Number(p.ttc).toFixed(2)}" />
 <meta property="product:price:currency" content="EUR" />
+<meta property="product:availability" content="${dispo === "InStock" ? "in stock" : "out of stock"}" />
 <script type="application/ld+json">${donneesStructurees(p, base, url, image, nom, desc, dispo)}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
