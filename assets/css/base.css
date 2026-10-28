@@ -1,0 +1,228 @@
+/* ==========================================================================
+   BASE — le vocabulaire visuel du site, en un seul endroit.
+
+   Avant ce fichier, trois feuilles déclaraient chacune leur propre jeu de
+   couleurs (site.css, boutique.css, style.css), six autres codaient en dur,
+   et deux pages portaient leur style dans leur en-tête. Les valeurs
+   s'accordaient aujourd'hui par surveillance, pas par construction : il
+   suffisait d'un orange corrigé à un endroit pour que les autres dérivent.
+
+   Désormais tout part d'ici. Les feuilles de page gardent leurs mises en
+   page ; elles n'ont plus le droit d'inventer une couleur, un rayon ou une
+   ombre.
+
+   LE PARTI PRIS. Le noir habille, les produits colorent. Les pots NISHMAN
+   sont violets, bleus, orange, rouges — ce sont eux la couleur de ce site.
+   Tout le reste se tait : charbon pour les zones de marque, blanc cassé
+   pour lire, blanc franc sous les packshots. L'orange de la marque ne sert
+   qu'à ce sur quoi on clique.
+   ========================================================================== */
+
+:root {
+  /* --- Couleurs ---------------------------------------------------------
+     Six valeurs, pas une de plus. Chacune a un emploi, et un seul. */
+
+  --noir: #101010;          /* bandes de marque : en-tête, hero, pied */
+  --charbon: #171717;       /* surfaces sombres secondaires */
+  --craie: #F7F6F2;         /* blanc cassé : les surfaces où l'on lit */
+  --blanc: #FFFFFF;         /* cartes produit — les packshots ont besoin de blanc franc */
+  --gris: #E8E6E1;          /* filets et séparations sur fond clair */
+  --gris-texte: #666666;    /* texte secondaire */
+
+  /* L'orange officiel NISHMAN. Il est sur les emballages et dans la
+     communication : il reste. Mais il ne décore pas — il signale ce sur
+     quoi on agit. */
+  --orange: #ED9B24;
+  --orange-fonce: #C9841F;  /* survol et états pressés */
+
+  /* Encres, dérivées des deux fonds. */
+  --encre: #101010;
+  --encre-douce: #5A5A5A;
+  --encre-pale: #9A9A96;
+  --encre-inverse: #F7F6F2;        /* texte sur fond sombre */
+  --encre-inverse-douce: #A8A6A0;
+
+  --filet: rgba(16, 16, 16, 0.10);
+  --filet-sombre: rgba(247, 246, 242, 0.14);
+
+  /* --- Typographie ------------------------------------------------------
+     Deux familles, nettement distinctes. Archivo est une grotesque à axe
+     de largeur : réglée étroite et lourde, elle répond au logotype NISHMAN
+     sans le singer. Manrope lit bien en petit corps et ne cherche pas à
+     se faire remarquer. */
+
+  --titre: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --texte: "Manrope", "Segoe UI", system-ui, sans-serif;
+
+  /* Échelle modulaire de quinte réduite (1,25) pour l'interface, et des
+     sauts plus francs pour l'affichage. Les titres se fluidifient entre
+     mobile et grand écran plutôt que de sauter par paliers. */
+  --t-affiche: clamp(2.75rem, 7vw, 5.5rem);
+  --t-titre: clamp(1.9rem, 4vw, 3rem);
+  --t-section: clamp(1.4rem, 2.4vw, 1.9rem);
+  --t-sous: 1.125rem;
+  --t-corps: 1rem;
+  --t-petit: 0.875rem;
+  --t-menu: 0.8125rem;
+
+  /* --- Espacements ------------------------------------------------------
+     Base de 4 px. Les sections respirent davantage sur grand écran. */
+
+  --e1: 4px;
+  --e2: 8px;
+  --e3: 12px;
+  --e4: 16px;
+  --e5: 24px;
+  --e6: 32px;
+  --e7: 48px;
+  --e8: 64px;
+  --e9: 96px;
+  --section: clamp(56px, 9vw, 112px);
+  --gouttiere: clamp(16px, 4vw, 40px);
+  --largeur: 1240px;
+  --lecture: 68ch;          /* longueur de ligne confortable */
+
+  /* --- Rayons -----------------------------------------------------------
+     Différenciés par rôle, à dessein. Le même arrondi partout est la
+     signature des interfaces faites à la chaîne : il aplatit la hiérarchie
+     au lieu de la dire. Les bandes sont franches, les objets qu'on
+     manipule sont doux, les pastilles sont rondes. */
+
+  --r-net: 0;               /* bandes pleine largeur, hero, pied */
+  --r-action: 4px;          /* boutons, champs */
+  --r-objet: 12px;          /* cartes produit, encadrés */
+  --r-pastille: 999px;      /* filtres, étiquettes */
+
+  /* --- Ombres -----------------------------------------------------------
+     Deux, et on s'en sert peu. Une ombre sous chaque carte ne hiérarchise
+     rien ; elle brouille. On élève ce qui flotte vraiment. */
+
+  --ombre-levee: 0 2px 8px -2px rgba(16, 16, 16, 0.10);
+  --ombre-flottante: 0 20px 48px -24px rgba(16, 16, 16, 0.35);
+
+  --transition: 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* --- Remise à zéro mesurée ------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--craie);
+  color: var(--encre);
+  font-family: var(--texte);
+  font-size: var(--t-corps);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img, svg, video { max-width: 100%; height: auto; display: block; }
+
+h1, h2, h3, h4 {
+  font-family: var(--titre);
+  margin: 0;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  /* L'axe de largeur : condensé, comme le logotype. */
+  font-stretch: 86%;
+}
+
+h1 { font-size: var(--t-affiche); }
+h2 { font-size: var(--t-titre); }
+h3 { font-size: var(--t-section); }
+
+p { margin: 0 0 var(--e4); max-width: var(--lecture); }
+
+a { color: inherit; }
+
+/* Un repère de clavier visible partout, y compris sur fond sombre. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+  border-radius: var(--r-action);
+}
+
+/* --- Primitives partagées -------------------------------------------- */
+
+.contenu {
+  width: min(100% - (var(--gouttiere) * 2), var(--largeur));
+  margin-inline: auto;
+}
+
+/* Les deux seuls boutons du site. Le principal se voit de loin, le
+   secondaire se devine et reste manifestement cliquable. */
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e2);
+  min-height: 48px;
+  padding: 0 var(--e5);
+  border: 1px solid transparent;
+  border-radius: var(--r-action);
+  background: var(--orange);
+  color: var(--noir);
+  font-family: var(--texte);
+  font-size: var(--t-corps);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+.bouton:hover { background: var(--orange-fonce); }
+.bouton:active { transform: translateY(1px); }
+
+.bouton-discret {
+  background: transparent;
+  border-color: var(--filet);
+  color: var(--encre);
+}
+.bouton-discret:hover { background: rgba(16, 16, 16, 0.05); border-color: var(--encre); }
+
+/* Sur fond sombre, le secondaire inverse ses filets. */
+.sombre .bouton-discret {
+  border-color: var(--filet-sombre);
+  color: var(--encre-inverse);
+}
+.sombre .bouton-discret:hover {
+  background: rgba(247, 246, 242, 0.08);
+  border-color: var(--encre-inverse);
+}
+
+.bouton[disabled], .bouton[aria-disabled="true"] {
+  background: var(--gris);
+  color: var(--encre-pale);
+  cursor: not-allowed;
+}
+
+/* Une zone sombre. Elle porte sa propre encre pour que rien à l'intérieur
+   n'ait à se souvenir qu'il est sur du noir. */
+.sombre {
+  background: var(--noir);
+  color: var(--encre-inverse);
+}
+.sombre p { color: var(--encre-inverse-douce); }
+
+/* Lu par les moteurs et les lecteurs d'écran, invisible à l'œil, et
+   toujours présent dans la page — pas display:none. */
+.titre-moteur {
+  position: absolute;
+  width: 1px; height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
