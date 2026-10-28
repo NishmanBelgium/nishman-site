@@ -120,96 +120,70 @@ export async function onRequestGet({ request, env }) {
    * on dédoublonne par identifiant. C'est la seule mesure honnête : un
    * sondage sur une ville et sans transporteur nommé sous-estime
    * massivement le réseau. */
+  /* Mode couverture : le réseau réel d'un pays.
+   *
+   * La leçon qui a coûté trois déploiements : `postal_code` est une
+   * correspondance EXACTE, pas une recherche de proximité. Interroger
+   * SendCloud sur « LU 1111 » ne rend que les points relais situés
+   * précisément à ce code postal — donc presque aucun, donc la
+   * conclusion fausse que le Luxembourg n'est pas desservi.
+   *
+   * La bonne question est le pays. On la pose, et on compte. */
   const couverture = String(url.searchParams.get("couverture") || "").toUpperCase();
   if (couverture) {
-    const villes = COUVERTURE[couverture];
-    if (!villes) return erreur("Pays inconnu pour la couverture.", 400, "pays");
+    const ville = String(url.searchParams.get("ville") || "").trim();
+    let q = "country=" + encodeURIComponent(couverture);
+    if (ville) q += "&city=" + encodeURIComponent(ville);
+    const choisi = String(url.searchParams.get("transporteur") || "").trim();
+    if (choisi) q += "&carrier=" + encodeURIComponent(choisi);
 
-    /* Le rayon n'est PAS envoyé par défaut. Avec un code postal, SendCloud
-     * le refuse en silence — il rend une liste vide au lieu d'une erreur,
-     * et on conclut à tort que le pays n'est pas desservi. On le garde
-     * demandable pour pouvoir le vérifier, jamais imposé. */
-    const rayon = Number(url.searchParams.get("rayon")) || 0;
-    /* Un transporteur n'est nommé que si on le demande explicitement.
-     * Nommer un code que SendCloud ne reconnaît pas ne provoque pas
-     * d'erreur : l'API rend une liste vide, ce qui se lit comme « pays
-     * non desservi » alors que la question était mal posée. Sans
-     * transporteur, l'API rend le réseau du compte, tous transporteurs
-     * confondus — c'est ce qu'on veut mesurer. */
-    const choisi = String(url.searchParams.get("transporteur") || "").trim() || null;
-    /* Cloudflare limite le nombre d'appels sortants d'une seule exécution.
-     * On borne donc le balayage, quitte à le refaire en deux fois. */
-    const depuis = Math.max(0, Number(url.searchParams.get("depuis")) || 0);
-    const combien = Math.min(12, Number(url.searchParams.get("combien")) || 12);
-    const tranche = villes.slice(depuis, depuis + combien);
+    let liste = [];
+    let souci = null;
+    try {
+      const r = await fetch("https://servicepoints.sendcloud.sc/api/v2/service-points?" + q, {
+        headers: {
+          authorization: "Basic " + btoa(
+            String(env.SENDCLOUD_PUBLIC || "").trim() + ":" + String(env.SENDCLOUD_SECRET || "").trim()),
+          accept: "application/json",
+        },
+      });
+      const t = await r.text();
+      if (!r.ok) throw new Error("HTTP " + r.status + " — " + t.slice(0, 160));
+      const d = t ? JSON.parse(t) : null;
+      liste = Array.isArray(d) ? d : (d && d.results) || [];
+    } catch (e) { souci = String(e && e.message).slice(0, 200); }
 
-    const vus = new Map();
-    const parVille = [];
-    const soucis = [];
-
-    for (const [cp, nomVille] of tranche) {
-      const ici = new Set();
-      try {
-        for (const x of await pointsPres(env, couverture, cp, choisi, rayon)) {
-          if (!x || !x.id) continue;
-          ici.add(x.id);
-          if (!vus.has(x.id)) {
-            vus.set(x.id, {
-              id: x.id, nom: x.name, transporteur: x.carrier || "?",
-              ville: [x.postal_code, x.city].filter(Boolean).join(" "),
-            });
-          }
-        }
-      } catch (e) {
-        soucis.push(nomVille + " : " + String(e && e.message).slice(0, 140));
-      }
-      parVille.push({ ville: nomVille, cp, points: ici.size });
-    }
-
-    const tous = [...vus.values()];
     const parTransporteur = {};
-    for (const x of tous) parTransporteur[x.transporteur] = (parTransporteur[x.transporteur] || 0) + 1;
+    const parVille = {};
+    for (const x of liste) {
+      const t = x.carrier || "?";
+      parTransporteur[t] = (parTransporteur[t] || 0) + 1;
+      const v = x.city || "?";
+      parVille[v] = (parVille[v] || 0) + 1;
+    }
+    const villes = Object.entries(parVille)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 25)
+      .map(([nom, n]) => ({ ville: nom, points: n }));
 
     return json({
-      ok: true,
+      ok: !souci,
       pays: couverture,
-      rayon_metres: rayon,
-      transporteur_demandé: choisi || "(tous)",
-      communes_sondées: tranche.length,
-      communes_restantes: Math.max(0, villes.length - (depuis + tranche.length)),
-      points_distincts: tous.length,
+      filtre_ville: ville || "(tout le pays)",
+      filtre_transporteur: choisi || "(tous)",
+      points_relais: liste.length,
       par_transporteur: parTransporteur,
-      par_ville: parVille.sort((a, b) => b.points - a.points),
-      exemples: tous.slice(0, 15),
-      soucis,
-      note: "Points relais distincts trouvés en interrogeant chaque transporteur "
-          + "séparément autour de chaque commune. Lecture seule, rien n'est créé.",
+      villes_les_mieux_servies: villes,
+      communes_distinctes: Object.keys(parVille).length,
+      exemples: liste.slice(0, 10).map((x) => ({
+        id: x.id, nom: x.name, transporteur: x.carrier,
+        ville: [x.postal_code, x.city].filter(Boolean).join(" "),
+      })),
+      souci,
+      note: "Interrogation par pays. Attention : chercher par code postal donne une "
+          + "correspondance exacte, pas une proximité — c'est ce qui fait conclure à tort "
+          + "qu'un pays n'est pas desservi. Lecture seule.",
       date: new Date().toISOString(),
-    });
-  }
-
-  /* Voir la réponse de SendCloud telle quelle.
-   *
-   * Une liste vide peut vouloir dire trois choses : pas de point relais,
-   * paramètre refusé, ou compte sans ce transporteur. Les distinguer en
-   * devinant coûte un déploiement par hypothèse. */
-  if (url.searchParams.get("brut")) {
-    const q = String(url.searchParams.get("brut"));
-    const r = await fetch("https://servicepoints.sendcloud.sc/api/v2/service-points?" + q, {
-      headers: {
-        authorization: "Basic " + btoa(
-          String(env.SENDCLOUD_PUBLIC || "").trim() + ":" + String(env.SENDCLOUD_SECRET || "").trim()),
-        accept: "application/json",
-      },
-    });
-    const t = await r.text();
-    let n = null;
-    try { const d = JSON.parse(t); n = Array.isArray(d) ? d.length : (d && d.results ? d.results.length : null); }
-    catch (e) {}
-    return json({
-      ok: true, requête: q, statut: r.status, nombre: n,
-      reponse: t.slice(0, 2500),
-      note: "Réponse brute de SendCloud, lecture seule.",
     });
   }
 
