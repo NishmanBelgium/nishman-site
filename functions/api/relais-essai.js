@@ -123,9 +123,14 @@ export async function onRequestGet({ request, env }) {
       ok: liste.length > 0,
       recherche: pays + " " + lieu.cp + " (" + lieu.ville + ")",
       nombre: liste.length,
+      transporteurs: [...new Set(liste.map((x) => x.carrier).filter(Boolean))],
       exemples: liste.slice(0, 5).map((x) => ({
         id: x.id, nom: x.name, transporteur: x.carrier,
         adresse: [x.street, x.house_number].filter(Boolean).join(" "),
+        ville: [x.postal_code, x.city].filter(Boolean).join(" "),
+      })),
+      tous: liste.map((x) => ({
+        id: x.id, nom: x.name, transporteur: x.carrier,
         ville: [x.postal_code, x.city].filter(Boolean).join(" "),
       })),
     };
@@ -134,40 +139,75 @@ export async function onRequestGet({ request, env }) {
       recherche: pays + " " + lieu.cp };
   }
 
-  // 4) Les méthodes d'expédition vers CE point relais précis. C'est la
-  //    question qui décide de tout : c'est son identifiant qu'il faudra
-  //    poser sur le colis.
-  const unPoint = (sorties.points_relais && sorties.points_relais.exemples
-                   && sorties.points_relais.exemples[0]) || null;
-  if (unPoint) {
+  // 4) Les méthodes d'expédition, pour UN POINT DE CHAQUE TRANSPORTEUR.
+  //
+  //    Interroger un seul point ne dit rien du coût réel : le client
+  //    choisit son point relais, donc il choisit le transporteur, donc il
+  //    choisit ce que l'envoi coûte. Comparer bpost, DPD et Mondial Relay
+  //    sur le même trajet est la seule façon de savoir ce qu'une commande
+  //    coûtera vraiment — et l'écart est loin d'être négligeable.
+  const parTransporteur = {};
+  for (const x of (sorties.points_relais && sorties.points_relais.tous) || []) {
+    if (x.transporteur && !parTransporteur[x.transporteur]) parTransporteur[x.transporteur] = x;
+  }
+
+  const comparatif = [];
+  for (const [transporteur, point] of Object.entries(parTransporteur)) {
     const m = await sansCasser("methodes", appelSendcloud(env,
       "/shipping_methods?to_country=" + encodeURIComponent(pays)
-      + "&service_point_id=" + encodeURIComponent(unPoint.id)));
-    if (m.ok) {
-      const liste = (m.donnees && m.donnees.shipping_methods) || [];
-      sorties.methodes = {
-        ok: liste.length > 0,
-        vers: unPoint.nom + " (" + unPoint.transporteur + ", id " + unPoint.id + ")",
-        nombre: liste.length,
-        liste: liste.map((x) => ({
-          id: x.id, nom: x.name, transporteur: x.carrier,
-          poids_min_kg: x.min_weight, poids_max_kg: x.max_weight,
-          prix: Array.isArray(x.countries) && x.countries[0] ? x.countries[0].price : null,
-        })),
-        conseil: liste.length
-          ? "C'est l'un de ces identifiants qui ira sur le colis."
-          : "Aucune méthode vers ce point relais : le transporteur n'est peut-être pas "
-          + "activé pour les points relais dans l'intégration « Site Nishman ».",
-      };
-    } else {
-      sorties.methodes = { ok: false, souci: m.souci };
+      + "&service_point_id=" + encodeURIComponent(point.id)));
+    if (!m.ok) {
+      comparatif.push({ transporteur, ok: false, souci: m.souci });
+      continue;
     }
-  } else {
-    sorties.methodes = { ok: false, souci: "aucun point relais trouvé pour interroger les méthodes" };
+    const liste = ((m.donnees && m.donnees.shipping_methods) || [])
+      .map((x) => ({
+        id: x.id, nom: x.name,
+        min: Number(x.min_weight), max: Number(x.max_weight),
+        prix: Array.isArray(x.countries) && x.countries[0] ? x.countries[0].price : null,
+      }))
+      .filter((x) => x.prix !== null);
+
+    // Ce qui nous intéresse vraiment : la tranche qui couvrira un colis de
+    // particulier. Un panier de deux ou trois articles pèse rarement plus
+    // de 800 grammes emballé.
+    const pour = (kg) => {
+      const bonnes = liste.filter((x) => kg > x.min && kg <= x.max);
+      if (!bonnes.length) return null;
+      return bonnes.reduce((a, b) => (a.prix <= b.prix ? a : b));
+    };
+    const p300 = pour(0.3), p800 = pour(0.8), p2 = pour(2);
+
+    comparatif.push({
+      transporteur, ok: liste.length > 0,
+      point: point.nom + " (" + point.ville + ")",
+      methodes: liste.length,
+      colis_300g: p300 ? { id: p300.id, nom: p300.nom, prix: p300.prix } : null,
+      colis_800g: p800 ? { id: p800.id, nom: p800.nom, prix: p800.prix } : null,
+      colis_2kg: p2 ? { id: p2.id, nom: p2.nom, prix: p2.prix } : null,
+    });
   }
+
+  comparatif.sort((a, b) => {
+    const pa = (a.colis_300g && a.colis_300g.prix) || 999;
+    const pb = (b.colis_300g && b.colis_300g.prix) || 999;
+    return pa - pb;
+  });
+
+  sorties.methodes = {
+    ok: comparatif.some((c) => c.ok),
+    comparatif,
+    conseil: comparatif.length
+      ? "Le moins cher pour un colis de 300 g est en tête de liste. "
+        + "C'est son identifiant de méthode qui ira sur le colis."
+      : "Aucune méthode trouvée : vérifiez les transporteurs cochés dans "
+        + "l'intégration « Site Nishman » chez SendCloud.",
+  };
 
   const tout = ["compte", "expediteur", "points_relais", "methodes"]
     .every((k) => sorties[k] && sorties[k].ok);
+
+  if (sorties.points_relais && sorties.points_relais.tous) delete sorties.points_relais.tous;
 
   return json({
     ok: true,
