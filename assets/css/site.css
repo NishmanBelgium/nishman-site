@@ -2958,73 +2958,72 @@ body.catalog-body { background: #0E0E0E; }
 }
 
 /* ==========================================================================
-   CATALOGUE PROFESSIONNEL — noir, orange, et assumé.
+   CATALOGUE PROFESSIONNEL — le sombre habille, le clair travaille.
 
-   LE PARTI PRIS. Un catalogue de 201 références est un outil de travail,
-   pas une vitrine : la grille reste dense et disciplinée. Toute l'audace
-   part dans les intertitres de famille, traités comme les chapitres d'une
-   affiche de métier — capitales condensées massives, filet orange, nombre
-   de références posé en regard. C'est ce qui rend la profondeur du
-   catalogue lisible, et la profondeur est précisément ce qui distingue un
-   importateur d'un revendeur.
+   Première tentative : tout le catalogue en noir. L'erreur se voyait au
+   premier clic — la fiche produit s'ouvre en clair, et chaque consultation
+   devenait une rupture. Le sombre est donc réservé à l'habillage : le bloc
+   d'accueil, la barre qui porte la recherche, les langues et le compte, et
+   le bandeau défilant. La grille, elle, travaille sur fond clair.
 
-   L'ORANGE PORTE LE PRIX. Sur un site grand public, l'orange signale ce
-   sur quoi on clique. Ici, le visiteur est un salon qui vient chercher un
-   tarif : c'est le prix qui mérite la couleur, avec le bouton d'ajout.
-   Rien d'autre ne la prend.
+   Ce qui reste de la première passe, et qui ne bouge plus : les chapitres
+   de famille traités comme une affiche de métier, les rayons à 2 px, le
+   bouton d'ajout carré, les noms en capitales condensées. La forme était
+   bonne ; c'est la valeur qui ne l'était pas.
 
-   COMMENT C'EST FAIT. Le catalogue consommait déjà des variables pour ses
-   couleurs. On les redéfinit sur la feuille plutôt que de réécrire
-   cinquante règles — chaque composant suit, sans exception et sans
-   surcharge empilée.
+   L'ORANGE. Il porte le bouton d'ajout et les filets de chapitre. Pas le
+   prix : à 17 px sur fond blanc, l'orange de la marque tombe sous le seuil
+   de contraste lisible. Un tarif qu'on déchiffre mal est un tarif qu'on
+   redemande par téléphone.
    ========================================================================== */
 
-.catalog-sheet {
-  --bg: #171717;
-  --bg-soft: #0E0E0E;
-  --bg-soft-2: #202020;
+/* ---------- La barre : le seul morceau sombre du catalogue ---------- */
+
+.catalog-sheet .search-sticky {
+  --bg-soft: #0A0A0A;
   --ink: #F7F6F2;
   --ink-soft: #A8A49A;
   --ink-faint: #76736C;
-  --line: rgba(247, 246, 242, 0.12);
-  --line-strong: rgba(247, 246, 242, 0.24);
+  --line: rgba(247, 246, 242, 0.14);
 
-  background: #101010;
-  border-radius: 0;
-  box-shadow: none;
+  background: rgba(14, 14, 14, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(247, 246, 242, 0.12);
   color: var(--ink);
-}
-
-/* ---------- La barre de recherche ---------- */
-
-.catalog-sheet .search-sticky {
-  background: rgba(16, 16, 16, 0.86);
-  border-bottom: 1px solid var(--line);
 }
 .catalog-sheet .search-input {
-  background: #0A0A0A;
-  border: 1px solid var(--line);
+  background: #000;
+  border: 1px solid rgba(247, 246, 242, 0.14);
   border-radius: 2px;
-  color: var(--ink);
+  color: #F7F6F2;
 }
-.catalog-sheet .search-input::placeholder { color: var(--ink-faint); }
+.catalog-sheet .search-input::placeholder { color: #76736C; }
 .catalog-sheet .search-input:focus { border-color: var(--gold); }
 
 .catalog-sheet .cat-btn,
 .catalog-sheet .lang-btn,
 .catalog-sheet .pro-access,
 .catalog-sheet .mon-compte {
-  background: #0A0A0A;
-  border: 1px solid var(--line);
+  background: #000;
+  border: 1px solid rgba(247, 246, 242, 0.14);
   border-radius: 2px;
-  color: var(--ink);
+  color: #F7F6F2;
 }
 .catalog-sheet .cat-btn:hover,
 .catalog-sheet .lang-btn:hover,
 .catalog-sheet .pro-access:hover,
-.catalog-sheet .mon-compte:hover { border-color: var(--ink); }
+.catalog-sheet .mon-compte:hover { border-color: #F7F6F2; }
 
 .catalog-sheet .sticky-brand img { filter: invert(1) brightness(1.08); }
+
+/* ---------- La feuille : claire, et carrée ---------- */
+
+.catalog-sheet {
+  background: #FBFAF5;
+  border-radius: 0;
+  box-shadow: none;
+}
 
 /* ---------- Les chapitres ---------- */
 
@@ -3044,7 +3043,7 @@ body.catalog-body { background: #0E0E0E; }
   line-height: 0.95;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: #101010;
 }
 /* Le premier chapitre ne repousse pas la grille : il la commence. */
 .famille-titre:first-child { margin-top: 18px; }
@@ -3054,7 +3053,7 @@ body.catalog-body { background: #0E0E0E; }
   font-stretch: 100%;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: var(--gold);
+  color: var(--gold-deep);
   margin-left: auto;
   align-self: center;
 }
@@ -3062,22 +3061,20 @@ body.catalog-body { background: #0E0E0E; }
 /* ---------- Les cartes ---------- */
 
 .catalog-sheet .product-card {
-  background: var(--bg);
-  border: 1px solid var(--line);
+  background: #fff;
+  border: 1px solid #E8E6E1;
   border-radius: 2px;
 }
 .catalog-sheet .product-card:hover {
-  border-color: var(--gold);
-  box-shadow: none;
+  border-color: #101010;
+  box-shadow: 0 2px 8px -2px rgba(16, 16, 16, 0.10);
   transform: none;
 }
 
 .catalog-sheet .product-image-wrap {
-  background: #0A0A0A;
+  background: #F4F2EB;
   border-radius: 0;
 }
-
-.catalog-sheet .product-cat { color: var(--gold-deep); }
 
 .catalog-sheet .product-name {
   font-family: "Archivo", var(--font-display);
@@ -3086,18 +3083,16 @@ body.catalog-body { background: #0E0E0E; }
   font-size: 14px;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: #101010;
 }
 
-/* Le prix prend l'orange : c'est ce que le salon vient chercher. */
 .catalog-sheet .product-price {
   font-family: "Archivo", var(--font-display);
   font-stretch: 86%;
   font-weight: 800;
   font-size: 17px;
-  color: var(--gold);
+  color: #101010;
 }
-.catalog-sheet .product-price .vat-note { color: var(--ink-faint); }
 
 /* Le bouton d'ajout devient carré, comme tout le reste. */
 .catalog-sheet .add-btn {
@@ -3119,29 +3114,18 @@ body.catalog-body { background: #0E0E0E; }
   font-weight: 800;
 }
 
-.catalog-sheet .result-count { color: var(--ink-faint); }
-.catalog-sheet .no-results { color: var(--ink-soft); }
+.catalog-sheet .price-locked {
+  background: transparent;
+  border: 1px solid #DCD9D1;
+  border-radius: 2px;
+}
+.catalog-sheet .price-locked:hover { border-color: var(--gold-deep); color: var(--gold-deep); }
+
+.catalog-sheet .product-price.price-attente { border-radius: 2px; }
 
 @media (max-width: 760px) {
   .famille-titre { margin-top: 40px; gap: 10px; border-top-width: 2px; }
 }
-
-/* Le gabarit d'attente du prix était un dégradé clair, pensé pour une page
-   blanche : sur le catalogue sombre, il laissait quatre barres lumineuses
-   là où le regard cherche un montant. Il s'assombrit, et le bouton
-   « prix sur demande » devient carré comme le reste. */
-.catalog-sheet .product-price.price-attente {
-  border-radius: 2px;
-  background: linear-gradient(90deg, #1C1C1C 25%, #262626 50%, #1C1C1C 75%);
-  background-size: 240% 100%;
-}
-.catalog-sheet .price-locked {
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  color: var(--ink-soft);
-}
-.catalog-sheet .price-locked:hover { border-color: var(--gold); color: var(--gold); }
 
 /* ==========================================================================
    LA SÉLECTION PROFESSIONNELLE — un panneau latéral, comme la boutique.
@@ -3151,31 +3135,22 @@ body.catalog-body { background: #0E0E0E; }
    fonctionne beaucoup mieux — on garde le catalogue sous les yeux pendant
    qu'on ajuste sa sélection, au lieu de le recouvrir.
 
+   Elle reste claire, comme celui de la boutique et comme la fiche produit :
+   dans ce catalogue, seul l'habillage est sombre.
+
    Les menus de catégories et de langue, eux, restent des feuilles qui
    montent : ce sont des choix fugaces, pas un plan de travail.
-
-   Le tiroir vit hors de la feuille catalogue : il n'héritait donc pas de
-   la palette sombre et arrivait en blanc au milieu du noir.
    ========================================================================== */
 
 #drawer-overlay {
   align-items: stretch;
   justify-content: flex-end;
-  background: rgba(10, 10, 10, 0.62);
+  background: rgba(10, 10, 10, 0.55);
 }
 
 #drawer-overlay .drawer {
-  --bg: #171717;
-  --bg-soft: #0E0E0E;
-  --ink: #F7F6F2;
-  --ink-soft: #A8A49A;
-  --ink-faint: #76736C;
-  --line: rgba(247, 246, 242, 0.12);
-
-  background: #141414;
-  color: var(--ink);
-  border-left: 1px solid var(--line);
   border-radius: 0;
+  border-left: 1px solid var(--line);
   width: min(440px, 100%);
   max-width: none;
   max-height: none;
@@ -3196,31 +3171,9 @@ body.catalog-body { background: #0E0E0E; }
   font-size: 1.35rem;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: var(--ink);
 }
-#drawer-overlay .drawer-close,
-#drawer-overlay .drawer-clear { color: var(--ink-soft); }
-#drawer-overlay .drawer-close:hover,
-#drawer-overlay .drawer-clear:hover { color: var(--ink); }
 
-#drawer-overlay .drawer-item { border-color: var(--line); }
-#drawer-overlay .drawer-item-name { color: var(--ink); }
-#drawer-overlay .drawer-item-kind { color: var(--ink-faint); }
-#drawer-overlay .drawer-empty { color: var(--ink-soft); }
-
-#drawer-overlay .drawer-total {
-  border-top: 1px solid var(--line);
-  color: var(--ink);
-}
-#drawer-overlay .drawer-total strong { color: var(--gold); }
-
-#drawer-overlay .drawer-stepper {
-  background: #0A0A0A;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-}
-#drawer-overlay .drawer-stepper button { color: var(--ink-soft); }
-#drawer-overlay .drawer-stepper button:hover { color: var(--ink); }
+#drawer-overlay .drawer-stepper { border-radius: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   #drawer-overlay .drawer { animation: none; }
