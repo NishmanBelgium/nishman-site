@@ -450,3 +450,46 @@
   .carte-bas { flex-direction: column; align-items: stretch; gap: var(--e2); }
   .carte-add { width: 100%; }
 }
+
+/* ==========================================================================
+   LE FILM DERRIÈRE LE TITRE DE LA BOUTIQUE
+
+   Le film passe derrière le bloc de titre plutôt qu'au-dessus : empiler
+   une bande animée et un bloc de titre ferait deux fois la même chose et
+   repousserait les produits d'autant.
+
+   Ici il y a du texte par-dessus, donc le film est assombri à la source —
+   un voile assez opaque pour sauver du texte clair sur une étagère claire
+   ne laisserait plus rien voir. La valeur est mesurée, pas choisie.
+   ========================================================================== */
+
+.hero-film {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.hero-film .bandeau-film {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.85) contrast(1.02) brightness(0.58);
+  opacity: 0.62;
+}
+.hero-film .bandeau-voile {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    rgba(16, 16, 16, 0.55) 0%,
+    rgba(16, 16, 16, 0.3) 40%,
+    rgba(16, 16, 16, 0.72) 100%
+  );
+}
+/* Le texte reprend quelques points de clarté : le film garde alors plus
+   de lumière à marge de contraste égale. */
+.hero-film p { color: #C4C0B8; }

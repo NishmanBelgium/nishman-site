@@ -33,7 +33,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=324" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=328" />
 </head>
 <body class="catalog-body">
 <h1 class="titre-moteur">Catalogue professionnel NISHMAN — tarifs salons, barbershops et instituts</h1>
@@ -47,6 +47,17 @@
 
   <div class="catalog-sheet" id="catalog-sheet">
   <div class="catalog-shell">
+
+    <!-- Un bandeau, pas un écran d'accueil : la bande fait deux cents
+         pixels et la barre de recherche reste au-dessus de la ligne de
+         flottaison. L'écran noir qui vivait ici prenait deux hauteurs
+         d'écran et c'est précisément ce qu'on a retiré ce matin. -->
+    <div class="bandeau">
+      <video class="bandeau-film" muted loop playsinline preload="none"
+             poster="/assets/img/bandeau-pro.webp?v=328"
+             data-film="/assets/video/bandeau-pro.mp4?v=328" aria-hidden="true"></video>
+      <div class="bandeau-voile" aria-hidden="true"></div>
+    </div>
 
     <div class="search-sticky" id="search-sticky">
       <div class="filter-row">
@@ -255,6 +266,7 @@
   <script src="/assets/js/catalog.js?v=320"></script>
   <script src="/assets/js/offre.js?v=205"></script>
   <script src="/assets/js/ruban-pro.js?v=303" defer></script>
+  <script src="/assets/js/bandeau.js?v=328" defer></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 <script src="/assets/js/mesure.js?v=322" defer></script>
 </body>

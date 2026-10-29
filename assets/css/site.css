@@ -3495,3 +3495,42 @@ body.catalog-body { background: #0E0E0E; }
 /* Le reste du panneau suit la géométrie du catalogue. */
 #drawer-overlay .drawer-clear,
 #drawer-overlay .drawer-close { border-radius: 2px; }
+
+/* ==========================================================================
+   LE BANDEAU DU CATALOGUE — une bande, pas un écran d'accueil.
+
+   L'écran noir qui vivait en tête de cette page prenait deux hauteurs
+   d'écran avant le premier tarif, et il a été retiré pour cette raison.
+   Celui-ci fait deux cents pixels au plus : la barre de recherche reste
+   au-dessus de la ligne de flottaison, et le catalogue commence toujours
+   par le catalogue.
+
+   Rien n'est écrit dessus, donc rien à sauver en contraste : le film peut
+   garder sa lumière. Seul un léger dégradé le rattache à la page.
+   ========================================================================== */
+
+.bandeau {
+  position: relative;
+  overflow: hidden;
+  height: clamp(120px, 17vw, 200px);
+  margin: 0 0 20px;
+  background: #0E0E0E;
+  border-radius: 2px;
+}
+.bandeau-film {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.92) contrast(1.03) brightness(0.78);
+}
+.bandeau-voile {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(14, 14, 14, 0.42) 0%,
+    rgba(14, 14, 14, 0.08) 42%,
+    rgba(14, 14, 14, 0.52) 100%
+  );
+}
