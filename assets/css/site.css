@@ -2823,19 +2823,26 @@ body.catalog-body { background: #0E0E0E; }
   overflow: hidden;
   min-height: 100svh;
   display: grid;
-  align-items: end;
-  padding: clamp(56px, 10vw, 120px) 20px clamp(36px, 5vw, 64px);
+  grid-template-rows: auto 1fr;
+  align-content: start;
+  padding: 0 0 36px;
   background: #0E0E0E;
 }
 
-/* --- Téléphone : le film passe derrière, ses proportions sont les bonnes.
-       Le voile est faible en haut et lourd en bas — le film respire là où
-       personne ne lit, le texte se pose sur un fond presque plein là où il
-       faut le lire. --- */
+/* --- Téléphone : le film occupe une bande en haut et s'éteint dans le
+       noir ; le texte travaille en dessous, sur fond plein.
+
+       La première version le posait en fond derrière tout le bloc. Mesuré
+       sur les images les plus claires du film — une chemise blanche, un
+       visage éclairé — il aurait fallu un voile à 88 % pour que le
+       sous-titre reste lisible, c'est-à-dire éteindre le film pour sauver
+       le texte. Les séparer règle les deux. --- */
 .accueil-ecran {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
+  position: relative;
+  height: 30svh;
+  min-height: 190px;
+  max-height: 300px;
+  overflow: hidden;
 }
 .accueil-film {
   width: 100%;
@@ -2849,10 +2856,11 @@ body.catalog-body { background: #0E0E0E; }
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(14, 14, 14, 0.5) 0%,
-    rgba(14, 14, 14, 0.34) 24%,
-    rgba(14, 14, 14, 0.9) 62%,
-    rgba(14, 14, 14, 0.98) 100%
+    rgba(14, 14, 14, 0.3) 0%,
+    rgba(14, 14, 14, 0) 35%,
+    rgba(14, 14, 14, 0.5) 72%,
+    rgba(14, 14, 14, 0.94) 94%,
+    #0E0E0E 100%
   );
 }
 
@@ -2860,21 +2868,22 @@ body.catalog-body { background: #0E0E0E; }
   max-width: 1000px;
   margin: 0 auto;
   width: 100%;
+  padding: 0 20px;
   text-align: center;
 }
 
 .accueil-logo {
   filter: invert(1) brightness(1.08);
-  height: clamp(40px, 5.6vw, 56px);
+  height: clamp(36px, 5.6vw, 56px);
   width: auto;
-  margin: 0 auto clamp(20px, 3vw, 30px);
+  margin: 0 auto clamp(16px, 3vw, 30px);
 }
 
 .accueil-titre {
   font-family: var(--font-display);
   font-stretch: 76%;
   font-weight: 900;
-  font-size: clamp(2.1rem, 5.6vw, 3.9rem);
+  font-size: clamp(1.5rem, 7vw, 3.9rem);
   line-height: 0.96;
   letter-spacing: 0.005em;
   text-transform: uppercase;
@@ -2884,9 +2893,9 @@ body.catalog-body { background: #0E0E0E; }
 
 .accueil-sur {
   max-width: 52ch;
-  margin: 0 auto clamp(28px, 4vw, 44px);
+  margin: 0 auto clamp(22px, 4vw, 44px);
   color: #C8C4BB;
-  font-size: clamp(0.95rem, 1.5vw, 1.0625rem);
+  font-size: clamp(0.9rem, 1.5vw, 1.0625rem);
   line-height: 1.6;
 }
 
@@ -3010,7 +3019,9 @@ body.catalog-body { background: #0E0E0E; }
 @media (min-width: 900px) {
   .accueil {
     align-items: center;
+    align-content: center;
     justify-content: center;
+    grid-template-rows: auto;
     grid-template-columns: minmax(0, 1fr) clamp(280px, 26vw, 400px);
     gap: clamp(40px, 5vw, 80px);
     max-width: 1280px;
@@ -3021,6 +3032,7 @@ body.catalog-body { background: #0E0E0E; }
     grid-column: 1;
     text-align: left;
     margin: 0;
+    padding: 0;
     max-width: none;
   }
 
@@ -3031,14 +3043,14 @@ body.catalog-body { background: #0E0E0E; }
     font-size: clamp(2.4rem, 3.3vw, 3.1rem);
   }
   .accueil-ecran {
-    position: relative;
-    inset: auto;
+    height: auto;
+    min-height: 0;
+    max-height: 76svh;
     z-index: 0;
     grid-column: 2;
     grid-row: 1;
     align-self: center;
     aspect-ratio: 9 / 16;
-    max-height: 76svh;
     overflow: hidden;
     border: 1px solid rgba(247, 246, 242, 0.1);
     border-radius: 2px;
