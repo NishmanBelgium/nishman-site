@@ -2992,27 +2992,6 @@ body.catalog-body { background: #0E0E0E; }
   border-color: #F7F6F2;
 }
 
-/* ---------- Les réseaux ---------- */
-
-.accueil-reseaux {
-  display: flex;
-  gap: 18px;
-  margin-top: clamp(18px, 2.5vh, 26px);
-}
-.accueil-reseaux a {
-  color: #8E8A82;
-  text-decoration: none;
-  font-family: var(--font-display);
-  font-stretch: 92%;
-  font-weight: 700;
-  font-size: 0.6875rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  transition: color 160ms;
-}
-.accueil-reseaux a:hover { color: #ED9B24; }
-.accueil-reseaux a:focus-visible { outline: 2px solid #ED9B24; outline-offset: 3px; }
-
 /* ---------- Grand écran ---------- */
 
 @media (min-width: 900px) {
@@ -3089,7 +3068,7 @@ body.catalog-body { background: #0E0E0E; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .porte-action, .accueil-reseaux a { transition: none; }
+  .porte-action { transition: none; }
 }
 
 /* ---------- Le pied, strictement légal ---------- */
