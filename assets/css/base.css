@@ -24,9 +24,22 @@
 
   --noir: #101010;          /* bandes de marque : en-tête, hero, pied */
   --charbon: #171717;       /* surfaces sombres secondaires */
-  --craie: #F7F6F2;         /* blanc cassé : les surfaces où l'on lit */
-  --blanc: #FFFFFF;         /* cartes produit — les packshots ont besoin de blanc franc */
-  --gris: #E8E6E1;          /* filets et séparations sur fond clair */
+  /* Les surfaces claires, depuis le lot 339 : un vrai blanc pour la page,
+     un gris franchement neutre pour les fonds de produit.
+
+     Avant, la page était crème (#F7F6F2) et le fond des visuels tirait
+     soit vers le bleu côté professionnel (#F5F5F7), soit vers le chaud
+     côté boutique (#FAFAF8). Trois blancs cassés différents qui ne se
+     ressemblaient pas et qui, mis l'un à côté de l'autre, donnaient à
+     chaque page l'air d'avoir une température de couleur différente.
+
+     Le blanc franc sert aussi le détourage : les packshots sont découpés
+     sur blanc, et un fond crème laissait voir la limite de la découpe. */
+  --craie: #FFFFFF;         /* la page : un vrai blanc, pas un blanc cassé */
+  --blanc: #FFFFFF;         /* cartes produit */
+  --gris: #E6E6E6;          /* filets et séparations — neutre, pas beige */
+  --gris-fond: #F2F2F2;     /* fond des visuels produit : un gris simple */
+  --gris-fond-appui: #EAEAEA; /* le même, d'un cran, au survol */
   --gris-texte: #666666;    /* texte secondaire */
 
   /* L'orange officiel NISHMAN. Il est sur les emballages et dans la
@@ -38,7 +51,10 @@
   /* Encres, dérivées des deux fonds. */
   --encre: #101010;
   --encre-douce: #5A5A5A;
-  --encre-pale: #9A9A96;
+  /* 2,82:1 sur blanc avant le lot 339 : illisible pour les familles de
+     produit et les mentions secondaires. Descendu au minimum qui atteint
+     4,5:1, teinte conservée. */
+  --encre-pale: #777772;
   --encre-inverse: #F7F6F2;        /* texte sur fond sombre */
   --encre-inverse-douce: #A8A6A0;
 

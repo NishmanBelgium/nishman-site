@@ -194,9 +194,11 @@
 .carte-img {
   aspect-ratio: 1 / 1;
   display: grid; place-items: center;
-  background: #FAFAF8;
+  background: var(--gris-fond);
   padding: var(--e5);
+  transition: background 0.22s ease;
 }
+.carte:hover .carte-img { background: var(--gris-fond-appui); }
 .carte-img img {
   max-height: 100%; width: auto; object-fit: contain;
   mix-blend-mode: multiply;

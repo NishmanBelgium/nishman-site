@@ -7,17 +7,26 @@
 
 :root {
   --bg: #ffffff;
-  --bg-soft: #f5f5f7;
-  --bg-soft-2: #ebebee;
+  /* Neutres depuis le lot 339 : ces deux-là tiraient vers le bleu
+     (#F5F5F7, #EBEBEE), ce qui refroidissait les fonds de produit alors
+     que toute la marque est noir et orange. */
+  --bg-soft: #f2f2f2;
+  --bg-soft-2: #eaeaea;
   --ink: #0e0e0f;
   --ink-soft: #6e6e73;
-  --ink-faint: #a4a4a9;
+  /* Assombri au lot 339 : à 2,48:1 sur blanc, ce gris ne se lisait pas.
+     La valeur n'est pas choisie mais calculée — la teinte et la saturation
+     sont conservées, seule la clarté descend jusqu'à atteindre 4,5:1. */
+  --ink-faint: #76767d;
 
   /* Orange Nishman officiel. Le dégradé n'en est plus un : en redéfinissant
      la variable, les 25 endroits qui l'emploient deviennent plats d'un coup,
      sans toucher à une seule règle. */
   --gold: #ED9B24;
-  --gold-deep: #C9841F;
+  /* Même méthode : l'or de la marque tombait à 3,09:1 sur les petits
+     libellés. Il reste l'or, en plus dense. L'orange vif continue de
+     porter les boutons, où il est sur fond plein et non en petit texte. */
+  --gold-deep: #A26B19;
   --gradient: #ED9B24;
   /* Voile orange, désormais uni lui aussi. */
   --gradient-soft: rgba(237, 155, 36, 0.08);
@@ -3062,7 +3071,10 @@ body.catalog-body { background: #0E0E0E; }
   border-bottom: 1px solid rgba(247, 246, 242, 0.18);
 }
 .accueil-pied-liens a:hover { color: #ED9B24; border-color: #ED9B24; }
-.accueil-pied-bas { font-size: 0.8125rem; color: #6F6B64; margin-bottom: 0; }
+/* #6F6B64 donnait 3,74:1 sur le noir du pied : c'est la ligne qui porte
+   l'adresse du showroom et le numéro de TVA, autant qu'elle se lise.
+   Éclairci au minimum qui atteint 4,5:1, teinte conservée. */
+.accueil-pied-bas { font-size: 0.8125rem; color: #7C7870; margin-bottom: 0; }
 
 /* ==========================================================================
    CATALOGUE PROFESSIONNEL — le sombre habille, le clair travaille.
@@ -3126,8 +3138,11 @@ body.catalog-body { background: #0E0E0E; }
 
 /* ---------- La feuille : claire, et carrée ---------- */
 
+/* Un vrai blanc, et non plus la crème #FBFAF5. Le catalogue professionnel
+   est un outil de travail qu'on parcourt longtemps : le blanc franc rend
+   les photos et fait reposer l'œil mieux qu'un fond teinté. */
 .catalog-sheet {
-  background: #FBFAF5;
+  background: #FFFFFF;
   border-radius: 0;
   box-shadow: none;
 }
@@ -3169,7 +3184,7 @@ body.catalog-body { background: #0E0E0E; }
 
 .catalog-sheet .product-card {
   background: #fff;
-  border: 1px solid #E8E6E1;
+  border: 1px solid #E6E6E6;
   border-radius: 2px;
 }
 .catalog-sheet .product-card:hover {
@@ -3178,9 +3193,15 @@ body.catalog-body { background: #0E0E0E; }
   transform: none;
 }
 
+/* Le même gris que la boutique, et pour la même raison : les deux
+   catalogues montrent les mêmes photos, détourées sur blanc. Un fond crème
+   d'un côté et un gris de l'autre faisaient deux marques. */
 .catalog-sheet .product-image-wrap {
-  background: #F4F2EB;
+  background: var(--gris-fond, #F2F2F2);
   border-radius: 0;
+}
+.catalog-sheet .product-card:hover .product-image-wrap {
+  background: var(--gris-fond-appui, #EAEAEA);
 }
 
 .catalog-sheet .product-name {
