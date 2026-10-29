@@ -300,12 +300,18 @@ body.catalog-body {
 
 body.catalog-body::before { display: none; }
 
+/* La gouttière de la coque est nommée parce que trois blocs ont besoin
+   de la connaître pour en sortir proprement — la barre de recherche, le
+   ruban et le bandeau. Elle change à deux points de rupture ; une valeur
+   recopiée à la main finit toujours par en manquer un, et le symptôme est
+   une barre de défilement horizontale de six pixels. */
 .catalog-shell {
+  --coque: 20px;
   position: relative;
   z-index: 1;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--coque);
 }
 
 /* ---------- Barre de recherche sticky ---------- */
@@ -1143,7 +1149,7 @@ button, .label-row, .cat-cell, .product-card { touch-action: manipulation; }
 }
 
 @media (max-width: 480px) {
-  .catalog-shell { padding-left: 14px; padding-right: 14px; }
+  .catalog-shell { --coque: 14px; padding-left: 14px; padding-right: 14px; }
   .search-sticky { margin: 0 -14px; padding-left: 14px; padding-right: 14px; }
   .cat-btn { padding: 12px 13px; font-size: 12.5px; }
 }
@@ -1949,7 +1955,7 @@ img { max-width: 100%; height: auto; }
 /* ---------- Téléphone ---------- */
 
 @media (max-width: 620px) {
-  .catalog-shell { padding-left: 16px; padding-right: 16px; }
+  .catalog-shell { --coque: 16px; padding-left: 16px; padding-right: 16px; }
   .search-sticky { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
 
   /* La recherche occupe sa propre ligne, les 3 boutons se partagent la suivante */
@@ -3099,7 +3105,6 @@ body.catalog-body { background: #0E0E0E; }
   border-radius: 2px;
   color: #F7F6F2;
 }
-/* Était à 4,37 pour un seuil de 4,5 — défaut antérieur à ce lot. */
 .catalog-sheet .search-input::placeholder { color: #918D85; }
 .catalog-sheet .search-input:focus { border-color: var(--gold); }
 
@@ -3498,118 +3503,117 @@ body.catalog-body { background: #0E0E0E; }
 #drawer-overlay .drawer-close { border-radius: 2px; }
 
 /* ==========================================================================
-   LA TÊTE DU CATALOGUE — un bloc, pas trois bandes empilées.
-
-   Le haut de cette page était fait de trois bandes sombres de hauteurs
-   différentes : le bandeau, la barre de recherche, le ruban défilant.
-   Trois barres horizontales, c'est une accumulation. Le film passe
-   maintenant derrière les trois, et la hauteur totale diminue — de trois
-   cent dix pixels à deux cent cinquante.
-
-   Le film est posé en ABSOLU et la feuille ne le rogne pas. C'est
-   délibéré : « position: sticky » cesse de fonctionner dès qu'un ancêtre
-   rogne son contenu, et la barre de recherche doit rester collante sur
-   toute la page, pas seulement sur la hauteur de ce bloc. Le rognage est
-   donc confié au film lui-même.
-   ========================================================================== */
-
-.tete-filmee {
-  position: relative;
-  /* Une seule valeur pour la hauteur du film et pour l'endroit où la
-     feuille claire reprend : deux nombres séparés finiraient par se
-     désaccorder, et le compteur de produits retomberait sur l'image. */
-  --tete: clamp(230px, 28vh, 320px);
-}
-
-.tete-filmee > *:not(.bandeau) { position: relative; z-index: 1; }
-
-.tete-filmee .bandeau {
-  position: absolute;
-  top: 0;
-  /* Déborde des gouttières de la feuille : un film qui s'arrête à vingt
-     pixels des bords se lit comme une image, pas comme un fond. */
-  left: -20px;
-  right: -20px;
-  height: var(--tete);
-  margin: 0;
-  border-radius: 0;
-  z-index: 0;
-}
-
-/* Posée sur le film, la barre n'a pas de fond : c'est tout l'objet. Elle
-   le reprend à l'instant où elle le quitte, pas au premier pixel de
-   défilement — ce basculement est piloté par le script, qui lit la hauteur
-   réelle du film. */
-.catalog-sheet .search-sticky.sur-film {
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border-bottom-color: transparent;
-}
-
-/* Le ruban défilant perd sa pilule tant qu'il est sur le film, et la
-   retrouve ensuite — il ne défile jamais hors de cette zone, mais la règle
-   vaut aussi pour un petit écran où le film est plus bas. */
-.tete-filmee .ruban-pro {
-  /* Pas tout à fait transparent : posé à même le film, son texte tombait à
-     2,6 pour un seuil de 4,5. Une teinte légère et un texte éclairci le
-     ramènent au-dessus sans masquer l'image. */
-  background: rgba(14, 14, 14, 0.56);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  border-color: rgba(247, 246, 242, 0.18);
-}
-.tete-filmee .ruban-pro .rp-item { color: #F0EEE9; }
-.tete-filmee .ruban-pro .rp-cle { color: #F7F6F2; }
-
-/* L'espace sous le ruban laisse voir le film avant que la feuille claire
-   ne commence. Sans lui, les commandes mangeraient toute la hauteur et on
-   ne verrait plus l'image. */
-/* Le compteur commence à distance fixe du bas des commandes ; c'est la
-   hauteur du film qui s'ajuste, pas lui. Un nombre fixe ne pouvait pas
-   convenir aux deux : sur téléphone les commandes s'empilent et occupent
-   deux fois plus de hauteur que sur ordinateur. */
-.tete-filmee .result-count { margin-top: 76px; }
-
-/* ==========================================================================
    LE BANDEAU DU CATALOGUE — une bande, pas un écran d'accueil.
 
-   L'écran noir qui vivait en tête de cette page prenait deux hauteurs
-   d'écran avant le premier tarif, et il a été retiré pour cette raison.
-   Celui-ci fait deux cents pixels au plus : la barre de recherche reste
-   au-dessus de la ligne de flottaison, et le catalogue commence toujours
-   par le catalogue.
+   La différence n'est pas une question de pixels, c'est une question de
+   ce qu'on voit en arrivant : le film et la barre de recherche, et le
+   haut de la première rangée de produits qui dépasse en bas pour dire
+   qu'il y a quelque chose dessous. L'écran noir qui vivait ici prenait
+   deux hauteurs entières avant le premier tarif ; on ne refait pas ça.
 
-   Rien n'est écrit dessus, donc rien à sauver en contraste : le film peut
-   garder sa lumière. Seul un léger dégradé le rattache à la page.
+   D'où la hauteur en calc() plutôt qu'en vh seul : c'est la place qui
+   reste sous le bandeau — barre de recherche, ruban, marge — qui décide
+   de sa hauteur, pas une fraction d'écran choisie au hasard. Les bornes
+   évitent les deux ridicules : une bande écrasée sur un petit écran,
+   une affiche sur un grand.
+
+   Il y a maintenant du texte dessus, donc le film est assombri à la
+   source (brightness) et non voilé. La mesure est sans appel : du texte
+   clair sur une étagère de salon éclairée demanderait un voile à 0,89
+   d'opacité, c'est-à-dire un rectangle noir. Un film plus sombre et un
+   dégradé ancré sous le texte font le même travail en laissant voir
+   l'image.
    ========================================================================== */
 
+/* Les marges négatives reprennent exactement celles de la barre de
+   recherche (0 -20px) : le bandeau et la barre font alors la même
+   largeur et s'empilent sans décrochement. Le -34px en haut annule le
+   rembourrage de la feuille, pour que le bandeau affleure le haut de
+   page au lieu de flotter sur une bande de crème. */
 .bandeau {
   position: relative;
   overflow: hidden;
-  height: clamp(120px, 17vw, 200px);
-  margin: 0 0 20px;
+  height: clamp(300px, calc(100svh - 310px), 440px);
+  margin: -34px calc(-1 * var(--coque)) 20px;
   background: #0E0E0E;
-  border-radius: 2px;
 }
 .bandeau-film {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Il porte maintenant la barre de recherche et le ruban : assombri à la
-     source, comme sur la porte d'entrée, parce qu'un voile assez opaque
-     pour sauver du texte clair ne laisserait plus rien voir. */
-  filter: saturate(0.9) contrast(1.02) brightness(0.72);
-  opacity: 0.85;
+  filter: saturate(0.88) contrast(1.03) brightness(0.66);
 }
+/* Le dégradé est ancré en bas, là où vit le texte, et non réparti en
+   pourcentages : un pourcentage juste sur un iPhone SE tombe à côté sur
+   un Pro Max. Le haut de l'image ne garde qu'un soupçon d'ombre, pour
+   que la barre de recherche ne se détache pas sur du gris clair. */
 .bandeau-voile {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(14, 14, 14, 0.42) 0%,
-    rgba(14, 14, 14, 0.08) 42%,
-    rgba(14, 14, 14, 0.52) 100%
-  );
+  background:
+    linear-gradient(
+      180deg,
+      rgba(12, 12, 12, 0.34) 0px,
+      rgba(12, 12, 12, 0.06) 110px,
+      rgba(12, 12, 12, 0) 170px
+    ),
+    linear-gradient(
+      0deg,
+      rgba(12, 12, 12, 0.82) 0px,
+      rgba(12, 12, 12, 0.6) 90px,
+      rgba(12, 12, 12, 0.18) 180px,
+      rgba(12, 12, 12, 0) 250px
+    );
+}
+
+/* ---------- L'écriture sur l'image ---------- */
+
+/* Deux gouttières, et non une valeur fluide : une pour rattraper le
+   débord du bandeau, une pour la marge de la feuille. L'écriture tombe
+   alors exactement sur la colonne des produits qui défilent dessous. */
+.bandeau-texte {
+  position: absolute;
+  left: calc(var(--coque) * 2);
+  right: calc(var(--coque) * 2);
+  bottom: clamp(20px, 3.2vw, 34px);
+}
+.bandeau-sur {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-stretch: 86%;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: #D3CFC6;
+}
+/* Un filet orange devant la sur-ligne : le même signe que sur les cartes
+   du catalogue, pour que le bandeau appartienne visiblement à la page. */
+.bandeau-sur::before {
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 2px;
+  margin: 0 10px 3px 0;
+  background: var(--orange, #ED9B24);
+}
+.bandeau-titre {
+  margin: 0;
+  font-family: var(--font-display);
+  font-stretch: 72%;
+  font-weight: 900;
+  font-size: clamp(1.9rem, 8.2vw, 3rem);
+  line-height: 0.92;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: #F7F6F2;
+}
+
+/* Sur écran large, le bandeau redevient une bande : la place manque en
+   hauteur bien avant de manquer en largeur, et une affiche de 440 px de
+   haut sur 1 400 de large repousserait les tarifs sans rien apporter. */
+@media (min-width: 900px) {
+  .bandeau { height: clamp(260px, 24vw, 380px); }
+  .bandeau-titre { font-size: clamp(2.1rem, 2.9vw, 3.1rem); }
 }

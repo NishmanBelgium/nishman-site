@@ -33,7 +33,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=329" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=330" />
 </head>
 <body class="catalog-body">
 <h1 class="titre-moteur">Catalogue professionnel NISHMAN — tarifs salons, barbershops et instituts</h1>
@@ -46,22 +46,26 @@
        pas où on lui représente la marque. -->
 
   <div class="catalog-sheet" id="catalog-sheet">
-  <div class="catalog-shell tete-filmee">
+  <div class="catalog-shell">
 
-    <!-- Le film ne forme plus une bande au-dessus des commandes : il passe
-         derrière elles. Le haut du catalogue était fait de trois bandes
-         sombres empilées de hauteurs différentes — le bandeau, la barre de
-         recherche, le ruban défilant — ce qui est une accumulation, pas une
-         composition. Un seul bloc, et la hauteur totale diminue au passage.
+    <!-- Un bandeau, pas un écran d'accueil. La nuance tient à ce qui
+         reste visible : on arrive sur le film et la barre de recherche,
+         et le catalogue commence juste en dessous, à portée d'un pouce.
+         L'écran noir qui vivait ici prenait deux hauteurs entières avant
+         le premier tarif — c'est ce qu'on a retiré, et on n'y revient pas.
 
-         Le film est posé en absolu : la barre de recherche reste un enfant
-         direct de la feuille, sinon elle cesserait de coller dès la fin du
-         bloc au lieu de suivre toute la page. -->
-    <div class="bandeau" aria-hidden="true">
+         Une ligne d'écriture, pas une accroche : le même registre que la
+         porte d'entrée, et les faits restent dans le ruban juste dessous
+         plutôt que d'être empilés sur l'image. -->
+    <div class="bandeau">
       <video class="bandeau-film" muted loop playsinline preload="none"
-             poster="/assets/img/bandeau-pro.webp?v=328"
-             data-film="/assets/video/bandeau-pro.mp4?v=328" aria-hidden="true"></video>
+             poster="/assets/img/bandeau-pro.webp?v=330"
+             data-film="/assets/video/bandeau-pro.mp4?v=330" aria-hidden="true"></video>
       <div class="bandeau-voile" aria-hidden="true"></div>
+      <div class="bandeau-texte">
+        <p class="bandeau-sur">Catalogue professionnel</p>
+        <p class="bandeau-titre">L'art du grooming,<br />au carton.</p>
+      </div>
     </div>
 
     <div class="search-sticky" id="search-sticky">
@@ -268,10 +272,10 @@
   </div>
 
   <script src="/assets/js/config.js?v=303"></script>
-  <script src="/assets/js/catalog.js?v=329"></script>
+  <script src="/assets/js/catalog.js?v=320"></script>
   <script src="/assets/js/offre.js?v=205"></script>
   <script src="/assets/js/ruban-pro.js?v=303" defer></script>
-  <script src="/assets/js/bandeau.js?v=329" defer></script>
+  <script src="/assets/js/bandeau.js?v=330" defer></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 <script src="/assets/js/mesure.js?v=322" defer></script>
 </body>
