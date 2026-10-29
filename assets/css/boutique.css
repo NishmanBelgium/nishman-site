@@ -468,6 +468,13 @@
   isolation: isolate;
   overflow: hidden;
 }
+/* Le film est étalonné à la source depuis le lot 332 : plus besoin de le
+   corriger au navigateur, et surtout plus besoin de l'écraser. Il passe
+   de 0,58 × 0,62 — où il ne restait qu'une ombre d'étagère — à 0,80 ×
+   0,88. La contrepartie est un voile plus ferme et plus régulier, parce
+   qu'ici le texte peut tomber n'importe où sur l'image : le pire pixel
+   de toute la boucle a été mesuré, pas une bande. Titre 9,6:1 pour un
+   seuil à 3, texte courant 5,3:1 pour un seuil à 4,5. */
 .hero-film .bandeau-film {
   position: absolute;
   inset: 0;
@@ -476,8 +483,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.85) contrast(1.02) brightness(0.58);
-  opacity: 0.62;
+  filter: brightness(0.80);
+  opacity: 0.88;
 }
 .hero-film .bandeau-voile {
   position: absolute;
@@ -485,9 +492,9 @@
   z-index: -1;
   background: linear-gradient(
     180deg,
-    rgba(16, 16, 16, 0.55) 0%,
-    rgba(16, 16, 16, 0.3) 40%,
-    rgba(16, 16, 16, 0.72) 100%
+    rgba(16, 16, 16, 0.74) 0%,
+    rgba(16, 16, 16, 0.68) 45%,
+    rgba(16, 16, 16, 0.80) 100%
   );
 }
 /* Le texte reprend quelques points de clarté : le film garde alors plus

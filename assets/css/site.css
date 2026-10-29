@@ -3539,35 +3539,45 @@ body.catalog-body { background: #0E0E0E; }
      un attribut ne connaît pas les points de rupture, un fond si. Elle
      est pré-assombrie au même taux que le filtre appliqué au film, pour
      que l'image ne s'éclaircisse pas d'un coup quand la vidéo démarre. */
-  background: #0E0E0E url("/assets/img/bandeau-pro-haut.webp?v=331") center / cover no-repeat;
+  background: #0E0E0E url("/assets/img/bandeau-pro-haut.webp?v=332") center / cover no-repeat;
 }
+/* Plus de saturate ni de contrast ici : le film est maintenant étalonné
+   à la source, sur les rushes 10 bits. Les corriger une seconde fois au
+   navigateur ne ferait que reprendre ce que l'étalonnage vient de rendre.
+   Il ne reste qu'un assombrissement, et léger : 0,86 au lieu de 0,66. */
 .bandeau-film {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.88) contrast(1.03) brightness(0.66);
+  filter: brightness(0.86);
 }
 /* Le dégradé est ancré en bas, là où vit le texte, et non réparti en
    pourcentages : un pourcentage juste sur un iPhone SE tombe à côté sur
-   un Pro Max. Le haut de l'image ne garde qu'un soupçon d'ombre, pour
-   que la barre de recherche ne se détache pas sur du gris clair. */
+   un Pro Max.
+
+   Il tient fort jusqu'à 170 px puis s'efface vite. C'est le compromis
+   mesuré : un voile faible obligeait à écraser tout le film pour sauver
+   la sur-ligne, alors qu'un voile ferme sous le texte seul laisse les
+   deux tiers hauts de l'image intacts. Mesuré sur la boucle entière :
+   titre 11,3:1 pour un seuil à 3, sur-ligne 5,7:1 pour un seuil à 4,5. */
 .bandeau-voile {
   position: absolute;
   inset: 0;
   background:
     linear-gradient(
       180deg,
-      rgba(12, 12, 12, 0.34) 0px,
-      rgba(12, 12, 12, 0.06) 110px,
+      rgba(12, 12, 12, 0.30) 0px,
+      rgba(12, 12, 12, 0.05) 110px,
       rgba(12, 12, 12, 0) 170px
     ),
     linear-gradient(
       0deg,
-      rgba(12, 12, 12, 0.82) 0px,
-      rgba(12, 12, 12, 0.6) 90px,
-      rgba(12, 12, 12, 0.18) 180px,
-      rgba(12, 12, 12, 0) 250px
+      rgba(12, 12, 12, 0.88) 0px,
+      rgba(12, 12, 12, 0.80) 110px,
+      rgba(12, 12, 12, 0.62) 170px,
+      rgba(12, 12, 12, 0.16) 260px,
+      rgba(12, 12, 12, 0) 330px
     );
 }
 
@@ -3620,7 +3630,7 @@ body.catalog-body { background: #0E0E0E; }
 @media (min-width: 900px) {
   .bandeau {
     height: clamp(260px, 24vw, 380px);
-    background-image: url("/assets/img/bandeau-pro.webp?v=331");
+    background-image: url("/assets/img/bandeau-pro.webp?v=332");
   }
   .bandeau-titre { font-size: clamp(2.1rem, 2.9vw, 3.1rem); }
 }
