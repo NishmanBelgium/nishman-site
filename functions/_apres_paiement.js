@@ -239,11 +239,89 @@ async function envoyerFacture(env, factureIds, journal) {
  * chaîne là-dessus ferait réessayer indéfiniment un geste qui coûte de
  * l'argent à chaque tentative.
  */
+/**
+ * Le transporteur posé sur le bon de livraison, pour que l'étiquette soit
+ * imprimable d'un clic.
+ *
+ * Pourquoi ce geste existe : les tarifs « LIVRAISON france », « LIVRAISON
+ * BELGIQUE » et consorts sont des PRIX de port, pas des transporteurs. Ils
+ * n'ont aucun lien SendCloud. Un bon qui les porte ne peut rien imprimer, et
+ * il faut changer le transporteur à la main avant chaque envoi — ce qui est
+ * exactement ce qu'on a découvert sur la commande S00204.
+ *
+ * Pourquoi on ne crée PAS l'étiquette ici : une commande professionnelle
+ * part souvent en plusieurs colis, et le nombre ne se déduit pas du poids.
+ * Mesuré sur les bons réels : 22,93 kg partis en trois colis, 37,41 kg en
+ * deux. C'est le volume et la taille des cartons qui décident, pas la
+ * balance. Une étiquette fausse coûte plus cher qu'une étiquette absente :
+ * colis refusé, surcoût de dépassement, ou envoi parti sous un numéro de
+ * suivi qui ne correspond à rien.
+ *
+ * On prépare donc tout jusqu'au clic, et on laisse le clic.
+ */
+const TRANSPORTEUR_PAR_PAYS = { BE: "bposte DOMICILE", FR: "dpd classic" };
+const TRANSPORTEUR_DEFAUT = "dpd classic";
+
+async function poserTransporteur(env, p, journal) {
+  const bons = await appel(env, "stock.picking", "search_read",
+    [[["sale_id", "=", p.odoo_order_id], ["state", "not in", ["cancel", "done"]]],
+     ["id", "name", "carrier_id", "partner_id"]], { limit: 5 });
+  if (!bons || !bons.length) return;
+
+  // Le pays de LIVRAISON, pas celui de facturation : un salon français
+  // peut être facturé à un siège belge.
+  const cmd = await appel(env, "sale.order", "read",
+    [[p.odoo_order_id], ["partner_shipping_id"]], {});
+  const destId = cmd && cmd[0] && cmd[0].partner_shipping_id
+    ? cmd[0].partner_shipping_id[0] : null;
+  let pays = "";
+  if (destId) {
+    const dest = await appel(env, "res.partner", "read", [[destId], ["country_id"]], {});
+    const c = dest && dest[0] && dest[0].country_id;
+    if (c) {
+      const pc = await appel(env, "res.country", "read", [[c[0]], ["code"]], {});
+      pays = (pc && pc[0] && pc[0].code) || "";
+    }
+  }
+
+  const voulu = TRANSPORTEUR_PAR_PAYS[pays] || TRANSPORTEUR_DEFAUT;
+  // Recherché par nom et non par identifiant : un transporteur recréé dans
+  // Odoo change d'identifiant, pas de nom.
+  const tr = await appel(env, "delivery.carrier", "search_read",
+    [[["name", "=", voulu], ["delivery_type", "=", "sendcloud"]], ["id", "name"]], { limit: 1 });
+  if (!tr || !tr.length) {
+    ligne(journal, "transporteur", true,
+      "transporteur « " + voulu + " » introuvable dans Odoo : bon laissé tel quel");
+    return;
+  }
+
+  const aPoser = bons.filter((b) => !b.carrier_id || b.carrier_id[0] !== tr[0].id);
+  if (!aPoser.length) {
+    ligne(journal, "transporteur", true, "déjà posé");
+    return;
+  }
+  await appel(env, "stock.picking", "write",
+    [aPoser.map((b) => b.id), { carrier_id: tr[0].id }], {});
+  ligne(journal, "transporteur", true,
+    aPoser.map((b) => b.name).join(", ") + " → " + tr[0].name +
+    (pays ? " (livraison " + pays + ")" : ""));
+}
+
 async function expedier(env, p, journal) {
   const relaisId = Number(p.relais_id || 0);
   if (!relaisId) {
+    // Livraison à une adresse : on prépare le bon et on s'arrête là.
+    // L'échec de ce geste ne doit rien bloquer non plus — à ce stade le
+    // client a payé et sa facture est partie.
+    try {
+      await poserTransporteur(env, p, journal);
+    } catch (e) {
+      ligne(journal, "transporteur", true,
+        "transporteur non posé (" + (e && e.message ? e.message : "erreur") +
+        ") : à choisir dans Odoo");
+    }
     ligne(journal, "expédition", true,
-      "commande sans point relais : bon de livraison à préparer et étiqueter dans Odoo");
+      "livraison à l'adresse : colis à faire et étiquette à imprimer depuis le bon Odoo");
     return null;
   }
   if (!configureSendcloud(env)) {
