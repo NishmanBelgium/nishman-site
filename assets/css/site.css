@@ -2785,27 +2785,29 @@ body.has-offre-barre .search-sticky {
    LA PORTE D'ENTRÉE — une marque, deux chemins, rien d'autre.
 
    Ce qui a été retiré, et pourquoi. La feuille catalogue vivait sous cet
-   écran : il suffisait de faire défiler pour entrer dans les tarifs pro
-   sans jamais choisir, et les mêmes 201 références répondaient à deux
-   adresses. La page ne redirige plus par politesse, elle redirige vraiment.
+   écran : il suffisait de faire défiler pour entrer dans les tarifs sans
+   jamais choisir, et les mêmes 201 références répondaient à deux adresses.
    Les vignettes produits ont suivi : un pot en petit ne dit ni qui nous
    sommes ni où aller, et son détourage se voyait sur tous les fonds.
 
-   Ce qui le remplace : le film de la foire, posé en fond. Il montre la
-   gamme en mouvement — ce que douze vignettes n'arrivaient pas à faire.
-   Il est muet, il boucle, il pèse 1,2 Mo, et il s'arrête net si le
-   système de la personne demande moins d'animations.
+   LE FILM. Il est tourné à la verticale. Sur téléphone, ses proportions
+   sont les bonnes : il occupe tout l'écran, sans recadrage. Sur grand
+   écran, « cover » n'en garderait que la bande centrale — une veste, une
+   chemise — et tous les plans produits tomberaient hors cadre : il reprend
+   donc sa forme, en panneau à droite.
 
-   LA LUMIÈRE. Le voile est faible en haut, lourd en bas : le film respire
-   là où personne ne lit, et le texte se pose sur un fond à 88 % d'opacité
-   là où il faut le lire. C'est ce qui permet de garder une vidéo derrière
-   du texte sans sacrifier l'un ou l'autre.
+   LA LUMIÈRE. Le dégradé est quasi nul sur les deux tiers hauts et presque
+   plein dans le tiers bas, où vit le texte. Mesuré sur les images les plus
+   claires du film : un voile uniforme aurait dû monter à 88 % pour que le
+   sous-titre reste au seuil de lisibilité, c'est-à-dire éteindre le film
+   pour sauver le texte. Concentrer le noir là où on lit règle les deux.
+
+   LES CHEMINS. Sans cadre ni fond : deux cartes encadrées sur une vidéo
+   font deux rectangles opaques qui la recouvrent. Un filet entre les deux
+   suffit à les séparer, et un seul bouton plein par écran — sinon aucun
+   des deux ne ressort.
    ========================================================================== */
 
-/* Le body global est resté en « display: flex » centré, hérité de l'époque
-   où le site tenait dans une seule carte. Sans cette remise à plat, la
-   porte et le pied se rangent côte à côte et le film ne fait plus toute
-   la largeur. Le catalogue fait exactement la même chose, plus bas. */
 body.accueil-body {
   display: block;
   padding: 0;
@@ -2823,138 +2825,144 @@ body.catalog-body { background: #0E0E0E; }
   overflow: hidden;
   min-height: 100svh;
   display: grid;
-  grid-template-rows: auto 1fr;
-  align-content: start;
-  padding: 0 0 36px;
+  align-items: end;
+  padding: 0 20px 28px;
   background: #0E0E0E;
 }
 
-/* --- Téléphone : le film occupe une bande en haut et s'éteint dans le
-       noir ; le texte travaille en dessous, sur fond plein.
-
-       La première version le posait en fond derrière tout le bloc. Mesuré
-       sur les images les plus claires du film — une chemise blanche, un
-       visage éclairé — il aurait fallu un voile à 88 % pour que le
-       sous-titre reste lisible, c'est-à-dire éteindre le film pour sauver
-       le texte. Les séparer règle les deux. --- */
 .accueil-ecran {
-  position: relative;
-  height: 30svh;
-  min-height: 190px;
-  max-height: 300px;
-  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
 }
 .accueil-film {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: saturate(0.82) contrast(1.04);
+  filter: saturate(0.88) contrast(1.04);
 }
 .accueil-voile {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(14, 14, 14, 0.3) 0%,
-    rgba(14, 14, 14, 0) 35%,
-    rgba(14, 14, 14, 0.5) 72%,
-    rgba(14, 14, 14, 0.94) 94%,
+    /* Le texte commence à 37 % de la hauteur — mesuré, pas estimé. La
+       rampe est calée là-dessus : au-dessus, le film est quasiment nu ;
+       au niveau du titre, le voile atteint 0,72, ce qui place du blanc à
+       3,8:1 même sur l'image la plus claire du film (une chemise blanche) ;
+       au niveau du sous-titre, 0,92, soit 4,6:1 pour du texte courant.
+       C'est le calcul qui fixe ces nombres. */
+    rgba(14, 14, 14, 0.44) 0%,
+    rgba(14, 14, 14, 0.05) 16%,
+    rgba(14, 14, 14, 0.10) 28%,
+    rgba(14, 14, 14, 0.72) 37%,
+    rgba(14, 14, 14, 0.92) 46%,
+    rgba(14, 14, 14, 0.97) 58%,
     #0E0E0E 100%
   );
+}
+
+/* Le logo et la mention d'importateur forment un bloc, en haut à gauche :
+   ils signent l'écran au lieu de l'occuper, et ils y sont lisibles — c'est
+   le seul endroit du haut où le dégradé remonte. Les descendre avec le
+   reste du texte coûtait un tiers d'écran de film. */
+.accueil-marque {
+  position: absolute;
+  top: clamp(20px, 4vh, 34px);
+  left: 20px;
+  z-index: 1;
+}
+.accueil-marque img {
+  display: block;
+  height: clamp(34px, 5vw, 44px);
+  width: auto;
+  filter: invert(1) brightness(1.08) drop-shadow(0 2px 12px rgba(0, 0, 0, 0.6));
+}
+.accueil-marque p {
+  margin: 9px 0 0;
+  font-family: var(--font-display);
+  font-stretch: 92%;
+  font-weight: 700;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #F0C077;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
 }
 
 .accueil-in {
   max-width: 1000px;
   margin: 0 auto;
   width: 100%;
-  padding: 0 20px;
-  text-align: center;
-}
-
-.accueil-logo {
-  filter: invert(1) brightness(1.08);
-  height: clamp(36px, 5.6vw, 56px);
-  width: auto;
-  margin: 0 auto clamp(16px, 3vw, 30px);
 }
 
 .accueil-titre {
   font-family: var(--font-display);
-  font-stretch: 76%;
+  font-stretch: 70%;
   font-weight: 900;
-  font-size: clamp(1.5rem, 7vw, 3.9rem);
-  line-height: 0.96;
-  letter-spacing: 0.005em;
+  font-size: clamp(2.6rem, 13.5vw, 4.25rem);
+  line-height: 0.88;
+  letter-spacing: -0.005em;
   text-transform: uppercase;
   color: #F7F6F2;
-  margin: 0 0 14px;
+  margin: 0 0 12px;
 }
 
 .accueil-sur {
-  max-width: 52ch;
-  margin: 0 auto clamp(22px, 4vw, 44px);
-  color: #C8C4BB;
-  font-size: clamp(0.9rem, 1.5vw, 1.0625rem);
-  line-height: 1.6;
+  max-width: 38ch;
+  margin: 0 0 clamp(22px, 3.5vh, 34px);
+  color: #B9B5AC;
+  font-size: 0.9375rem;
+  line-height: 1.55;
 }
 
 /* ---------- Les deux chemins ---------- */
 
 .portes {
   display: grid;
-  gap: 16px;
+  gap: 0;
   grid-template-columns: 1fr;
-  text-align: left;
 }
-@media (min-width: 760px) { .portes { grid-template-columns: 1fr 1fr; } }
 
-/* Les cartes laissent passer le film plutôt que de le masquer de deux
-   rectangles opaques — le flou garde le texte lisible par-dessus. */
 .porte-carte {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: rgba(16, 16, 16, 0.68);
-  -webkit-backdrop-filter: blur(16px) saturate(1.1);
-  backdrop-filter: blur(16px) saturate(1.1);
-  border: 1px solid rgba(247, 246, 242, 0.15);
-  border-radius: 2px;
-  padding: clamp(18px, 2.4vw, 26px);
+  gap: 6px;
+  padding: 18px 0;
   text-decoration: none;
   color: inherit;
-  transition: border-color 180ms cubic-bezier(.2,0,0,1),
-              background 180ms cubic-bezier(.2,0,0,1);
+  border-top: 1px solid rgba(247, 246, 242, 0.16);
 }
-.porte-carte:hover { border-color: #ED9B24; background: rgba(16,16,16,.8); }
-.porte-carte:focus-visible { outline: 2px solid #ED9B24; outline-offset: 3px; }
+.porte-carte:first-child { border-top: 0; padding-top: 0; }
+.porte-carte:focus-visible { outline: 2px solid #ED9B24; outline-offset: 4px; }
 
 .porte-titre {
   display: block;
   font-family: var(--font-display);
-  font-stretch: 80%;
+  font-stretch: 84%;
   font-weight: 800;
-  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-size: 0.9375rem;
   line-height: 1.1;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #F7F6F2;
 }
 .porte-ligne {
   display: block;
-  color: #B5B1A8;
-  font-size: 0.9375rem;
+  max-width: 44ch;
+  color: #A9A59D;
+  font-size: 0.875rem;
   line-height: 1.5;
-  flex: 1;
 }
 
 .porte-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 6px;
-  min-height: 50px;
-  padding: 0 18px;
+  margin-top: 8px;
+  min-height: 52px;
+  padding: 0 20px;
   border: 1px solid transparent;
   border-radius: 0;
   background: #ED9B24;
@@ -2963,21 +2971,23 @@ body.catalog-body { background: #0E0E0E; }
   font-stretch: 88%;
   font-weight: 800;
   font-size: 0.875rem;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   text-align: center;
   transition: background 180ms cubic-bezier(.2,0,0,1);
 }
 .porte-carte:hover .porte-action { background: #C9841F; }
 
-/* Un seul bouton plein par écran, sinon aucun des deux ne ressort. */
+/* Un seul bouton plein par écran, mais le second reste un vrai bouton :
+   un lien souligné serait moins trouvable, et le parcours grand public
+   n'est pas secondaire pour autant. */
 .porte-action-discret {
   background: transparent;
-  border-color: rgba(247, 246, 242, 0.3);
+  border-color: rgba(247, 246, 242, 0.38);
   color: #F7F6F2;
 }
 .porte-carte:hover .porte-action-discret {
-  background: rgba(247, 246, 242, 0.06);
+  background: rgba(247, 246, 242, 0.08);
   border-color: #F7F6F2;
 }
 
@@ -2985,90 +2995,93 @@ body.catalog-body { background: #0E0E0E; }
 
 .accueil-reseaux {
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: clamp(26px, 3.5vw, 38px);
+  gap: 18px;
+  margin-top: clamp(18px, 2.5vh, 26px);
 }
 .accueil-reseaux a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 38px;
-  padding: 0 18px;
-  border: 1px solid rgba(247, 246, 242, 0.22);
-  border-radius: 999px;
-  color: #C8C4BB;
+  color: #8E8A82;
   text-decoration: none;
   font-family: var(--font-display);
-  font-stretch: 90%;
+  font-stretch: 92%;
   font-weight: 700;
-  font-size: 0.8125rem;
-  letter-spacing: 0.05em;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  transition: color 160ms, border-color 160ms, background 160ms;
+  transition: color 160ms;
 }
-.accueil-reseaux a:hover {
-  color: #ED9B24;
-  border-color: #ED9B24;
-  background: rgba(237, 155, 36, 0.08);
-}
+.accueil-reseaux a:hover { color: #ED9B24; }
 .accueil-reseaux a:focus-visible { outline: 2px solid #ED9B24; outline-offset: 3px; }
 
-/* --- Grand écran : le film reprend sa forme verticale, en panneau à
-       droite, et le texte travaille sur fond plein à gauche. Plus aucun
-       mot n'est posé sur une image qui bouge. --- */
+/* ---------- Grand écran ---------- */
+
 @media (min-width: 900px) {
   .accueil {
     align-items: center;
-    align-content: center;
     justify-content: center;
-    grid-template-rows: auto;
-    grid-template-columns: minmax(0, 1fr) clamp(280px, 26vw, 400px);
-    gap: clamp(40px, 5vw, 80px);
+    grid-template-columns: minmax(0, 1fr) clamp(300px, 27vw, 420px);
+    gap: clamp(40px, 5vw, 88px);
     max-width: 1280px;
     margin: 0 auto;
     padding: clamp(48px, 6vw, 88px) 40px;
   }
-  .accueil-in {
-    grid-column: 1;
-    text-align: left;
-    margin: 0;
-    padding: 0;
-    max-width: none;
-  }
 
-  /* La colonne fait environ 720 px : le titre doit y tenir en deux lignes,
-     pas en quatre, sinon les deux boutons tombent sous la ligne de flottaison
-     et la porte ne montre plus de porte. */
-  .accueil-titre {
-    font-size: clamp(2.4rem, 3.3vw, 3.1rem);
-  }
+  /* Le film quitte le fond pour devenir un objet de la page : plus de
+     recadrage, et plus un mot posé sur une image qui bouge. */
   .accueil-ecran {
-    height: auto;
-    min-height: 0;
-    max-height: 76svh;
+    position: relative;
+    inset: auto;
     z-index: 0;
     grid-column: 2;
     grid-row: 1;
     align-self: center;
     aspect-ratio: 9 / 16;
+    max-height: 78svh;
     overflow: hidden;
     border: 1px solid rgba(247, 246, 242, 0.1);
-    border-radius: 2px;
   }
-  /* Dans le panneau, le voile ne sert plus à sauver un texte : juste à
-     poser le film dans la page au lieu de l'y coller. */
   .accueil-voile {
     background: linear-gradient(
       180deg,
-      rgba(14, 14, 14, 0.18) 0%,
-      rgba(14, 14, 14, 0) 30%,
-      rgba(14, 14, 14, 0.42) 100%
+      rgba(14, 14, 14, 0.16) 0%,
+      rgba(14, 14, 14, 0) 28%,
+      rgba(14, 14, 14, 0.38) 100%
     );
   }
-  .accueil-logo { margin-left: 0; margin-right: 0; }
-  .accueil-sur { margin-left: 0; margin-right: 0; max-width: 46ch; }
-  .portes { max-width: 760px; }
-  .accueil-reseaux { justify-content: flex-start; }
+
+  .accueil-marque {
+    position: static;
+    margin-bottom: 26px;
+  }
+  .accueil-marque img { height: 52px; filter: invert(1) brightness(1.08); }
+  .accueil-marque p { text-shadow: none; }
+
+  .accueil-in {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+    max-width: none;
+  }
+
+  .accueil-titre { font-size: clamp(3.2rem, 6vw, 5rem); }
+  .accueil-sur { max-width: 44ch; font-size: 1rem; }
+
+  /* Côte à côte, séparés par un filet vertical plutôt que par deux cadres. */
+  .portes {
+    grid-template-columns: 1fr 1fr;
+    gap: 0 36px;
+    max-width: 720px;
+  }
+  .porte-carte {
+    border-top: 0;
+    border-left: 1px solid rgba(247, 246, 242, 0.16);
+    padding: 2px 0 2px 24px;
+  }
+  .porte-carte:first-child { border-left: 0; padding-left: 0; }
+  .porte-action { margin-top: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .porte-action, .accueil-reseaux a { transition: none; }
 }
 
 /* ---------- Le pied, strictement légal ---------- */
@@ -3100,14 +3113,6 @@ body.catalog-body { background: #0E0E0E; }
 }
 .accueil-pied-liens a:hover { color: #ED9B24; border-color: #ED9B24; }
 .accueil-pied-bas { font-size: 0.8125rem; color: #6F6B64; margin-bottom: 0; }
-
-@media (max-width: 420px) {
-  .porte-action { width: 100%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .porte-carte, .porte-action, .accueil-reseaux a { transition: none; }
-}
 
 /* ==========================================================================
    CATALOGUE PROFESSIONNEL — le sombre habille, le clair travaille.

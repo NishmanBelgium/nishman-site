@@ -33,7 +33,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=312" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=313" />
   <!-- Qui édite ce site, pour les moteurs. Le siège social, pas le
        dépôt : c'est l'identité légale de l'entreprise qu'un moteur
        rapproche de la Banque-Carrefour, pas son adresse de travail. -->
@@ -103,11 +103,12 @@
 
 <section class="accueil" id="intro">
 
-  <!-- Le film a été tourné à la verticale. En plein écran large, « cover »
-       n'en garde que la bande centrale : une veste, une chemise, jamais un
-       produit — et le texte se retrouvait posé sur du blanc. Sur grand
-       écran il reprend donc sa forme, en panneau. Sur téléphone, où ses
-       proportions sont les bonnes, il repasse en fond. -->
+  <!-- Le film a été tourné à la verticale : sur téléphone, il occupe donc
+       tout l'écran sans être recadré. Le texte vit dans le tiers bas, là où
+       le dégradé est presque plein — c'est ce qui permet de garder le film
+       lisible en haut sans sacrifier le contraste du texte en bas. Sur
+       grand écran, il reprend sa forme en panneau plutôt que d'être rogné
+       de ses trois quarts. -->
   <div class="accueil-ecran">
     <video class="accueil-film" id="accueil-film" autoplay muted loop playsinline
            preload="metadata" poster="/assets/img/accueil-poster.webp" aria-hidden="true">
@@ -117,29 +118,31 @@
   </div>
 
   <div class="accueil-in">
-    <img class="accueil-logo" src="/assets/img/nishman.svg" alt="Nishman"
-         width="188" height="100" />
 
-    <h2 class="accueil-titre">Toute la gamme NISHMAN,<br />importée officiellement.</h2>
-    <p class="accueil-sur">Distributeur exclusif pour la Belgique, la France et le
-      Luxembourg. Plus de 200 références en stock, expédiées depuis Binche.</p>
+    <div class="accueil-marque">
+      <img src="/assets/img/nishman.svg" alt="Nishman" width="188" height="100" />
+      <p>Importateur officiel · BE / FR / LU</p>
+    </div>
 
-    <!-- Deux chemins. Le libellé dit ce qu'on vient chercher : un salon vient
-         pour des tarifs, pas pour un catalogue. -->
+    <h2 class="accueil-titre">L'art<br />du grooming</h2>
+    <p class="accueil-sur">Toute la gamme NISHMAN, en stock à Binche.</p>
+
+    <!-- Deux chemins, sans cadre : un filet suffit à les séparer. Le libellé
+         dit ce qu'on vient chercher — un salon vient pour des tarifs. -->
     <div class="portes">
 
       <a class="porte-carte porte-pro" href="/produits/" id="porte-pro">
-        <span class="porte-titre">Vous êtes coiffeur ou barbier</span>
-        <span class="porte-ligne">Tarifs au carton, facture, stock en Belgique.
-          Création de compte immédiate et gratuite.</span>
-        <span class="porte-action">Voir les tarifs professionnels</span>
+        <span class="porte-titre">Pour les professionnels</span>
+        <span class="porte-ligne">Les produits qui accompagnent votre savoir-faire.
+          Tarifs au carton, facture, stock en Belgique.</span>
+        <span class="porte-action">Accéder aux tarifs pro</span>
       </a>
 
       <a class="porte-carte porte-client" href="/boutique/" id="porte-client">
-        <span class="porte-titre">Vous cherchez vos produits</span>
-        <span class="porte-ligne">Les mêmes formules qu'en salon, livrées en point
-          relais. Livraison offerte dès 29,90 €.</span>
-        <span class="porte-action porte-action-discret">Entrer dans la boutique</span>
+        <span class="porte-titre">Pour votre style</span>
+        <span class="porte-ligne">Les essentiels du grooming, chez vous.
+          Livraison offerte dès 29,90 €.</span>
+        <span class="porte-action porte-action-discret">Explorer la boutique</span>
       </a>
 
     </div>
