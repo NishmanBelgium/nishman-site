@@ -3099,7 +3099,8 @@ body.catalog-body { background: #0E0E0E; }
   border-radius: 2px;
   color: #F7F6F2;
 }
-.catalog-sheet .search-input::placeholder { color: #76736C; }
+/* Était à 4,37 pour un seuil de 4,5 — défaut antérieur à ce lot. */
+.catalog-sheet .search-input::placeholder { color: #918D85; }
 .catalog-sheet .search-input:focus { border-color: var(--gold); }
 
 .catalog-sheet .cat-btn,
@@ -3497,6 +3498,80 @@ body.catalog-body { background: #0E0E0E; }
 #drawer-overlay .drawer-close { border-radius: 2px; }
 
 /* ==========================================================================
+   LA TÊTE DU CATALOGUE — un bloc, pas trois bandes empilées.
+
+   Le haut de cette page était fait de trois bandes sombres de hauteurs
+   différentes : le bandeau, la barre de recherche, le ruban défilant.
+   Trois barres horizontales, c'est une accumulation. Le film passe
+   maintenant derrière les trois, et la hauteur totale diminue — de trois
+   cent dix pixels à deux cent cinquante.
+
+   Le film est posé en ABSOLU et la feuille ne le rogne pas. C'est
+   délibéré : « position: sticky » cesse de fonctionner dès qu'un ancêtre
+   rogne son contenu, et la barre de recherche doit rester collante sur
+   toute la page, pas seulement sur la hauteur de ce bloc. Le rognage est
+   donc confié au film lui-même.
+   ========================================================================== */
+
+.tete-filmee {
+  position: relative;
+  /* Une seule valeur pour la hauteur du film et pour l'endroit où la
+     feuille claire reprend : deux nombres séparés finiraient par se
+     désaccorder, et le compteur de produits retomberait sur l'image. */
+  --tete: clamp(230px, 28vh, 320px);
+}
+
+.tete-filmee > *:not(.bandeau) { position: relative; z-index: 1; }
+
+.tete-filmee .bandeau {
+  position: absolute;
+  top: 0;
+  /* Déborde des gouttières de la feuille : un film qui s'arrête à vingt
+     pixels des bords se lit comme une image, pas comme un fond. */
+  left: -20px;
+  right: -20px;
+  height: var(--tete);
+  margin: 0;
+  border-radius: 0;
+  z-index: 0;
+}
+
+/* Posée sur le film, la barre n'a pas de fond : c'est tout l'objet. Elle
+   le reprend à l'instant où elle le quitte, pas au premier pixel de
+   défilement — ce basculement est piloté par le script, qui lit la hauteur
+   réelle du film. */
+.catalog-sheet .search-sticky.sur-film {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom-color: transparent;
+}
+
+/* Le ruban défilant perd sa pilule tant qu'il est sur le film, et la
+   retrouve ensuite — il ne défile jamais hors de cette zone, mais la règle
+   vaut aussi pour un petit écran où le film est plus bas. */
+.tete-filmee .ruban-pro {
+  /* Pas tout à fait transparent : posé à même le film, son texte tombait à
+     2,6 pour un seuil de 4,5. Une teinte légère et un texte éclairci le
+     ramènent au-dessus sans masquer l'image. */
+  background: rgba(14, 14, 14, 0.56);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-color: rgba(247, 246, 242, 0.18);
+}
+.tete-filmee .ruban-pro .rp-item { color: #F0EEE9; }
+.tete-filmee .ruban-pro .rp-cle { color: #F7F6F2; }
+
+/* L'espace sous le ruban laisse voir le film avant que la feuille claire
+   ne commence. Sans lui, les commandes mangeraient toute la hauteur et on
+   ne verrait plus l'image. */
+/* Le compteur commence à distance fixe du bas des commandes ; c'est la
+   hauteur du film qui s'ajuste, pas lui. Un nombre fixe ne pouvait pas
+   convenir aux deux : sur téléphone les commandes s'empilent et occupent
+   deux fois plus de hauteur que sur ordinateur. */
+.tete-filmee .result-count { margin-top: 76px; }
+
+/* ==========================================================================
    LE BANDEAU DU CATALOGUE — une bande, pas un écran d'accueil.
 
    L'écran noir qui vivait en tête de cette page prenait deux hauteurs
@@ -3522,7 +3597,11 @@ body.catalog-body { background: #0E0E0E; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.92) contrast(1.03) brightness(0.78);
+  /* Il porte maintenant la barre de recherche et le ruban : assombri à la
+     source, comme sur la porte d'entrée, parce qu'un voile assez opaque
+     pour sauver du texte clair ne laisserait plus rien voir. */
+  filter: saturate(0.9) contrast(1.02) brightness(0.72);
+  opacity: 0.85;
 }
 .bandeau-voile {
   position: absolute;

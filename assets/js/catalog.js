@@ -1401,13 +1401,37 @@
 
     const stickyBar = document.getElementById("search-sticky");
     if (stickyBar) {
-      window.addEventListener(
-        "scroll",
-        () => {
-          stickyBar.classList.toggle("scrolled", window.scrollY > 8);
-        },
-        { passive: true }
-      );
+      /* Deux états, et non un seul. « scrolled » pose le filet du bas dès
+         qu'on quitte le haut de la page. « sur-film » dit que la barre est
+         encore posée sur le film et doit donc rester transparente : elle ne
+         reprend son fond plein qu'au moment où elle le quitte, sinon elle
+         s'opacifierait au premier pixel de défilement, en plein milieu de
+         l'image. Le seuil se lit sur la hauteur réelle du film — elle varie
+         avec la taille de l'écran. */
+      /* La hauteur du film suit celle des commandes qu'il porte : la barre
+         de recherche et le ruban s'empilent sur petit écran et occupent le
+         double. Une hauteur écrite en dur convenait à un seul format. */
+      const film = document.querySelector(".bandeau");
+      const ruban = document.getElementById("ban-port");
+      const feuille = document.querySelector(".tete-filmee");
+      const caler = () => {
+        if (!film || !ruban || !feuille) return;
+        const bas = ruban.offsetTop + ruban.offsetHeight;
+        feuille.style.setProperty("--tete", (bas + 76) + "px");
+      };
+      caler();
+      window.addEventListener("resize", caler, { passive: true });
+      /* Le ruban est rempli après coup par la traduction : sa hauteur change
+         une fois le texte posé. On recale quand il bouge. */
+      if (window.ResizeObserver) new ResizeObserver(caler).observe(ruban);
+      const seuil = () => (film ? Math.max(0, film.offsetHeight - stickyBar.offsetHeight - 8) : 0);
+      const etat = () => {
+        stickyBar.classList.toggle("scrolled", window.scrollY > 8);
+        stickyBar.classList.toggle("sur-film", !!film && window.scrollY < seuil());
+      };
+      etat();
+      window.addEventListener("scroll", etat, { passive: true });
+      window.addEventListener("resize", etat, { passive: true });
     }
   }
 

@@ -39,4 +39,30 @@
 
   if ("requestIdleCallback" in window) requestIdleCallback(lancer, { timeout: 2000 });
   else window.addEventListener("load", lancer);
+
+  /* --- La boutique : le film couvre tout le haut de la page ------------- */
+
+  var tete = document.querySelector(".tete-film");
+  var barre = document.querySelector(".bar");
+  var titre = document.querySelector(".hero-film");
+  if (!tete || !barre || !titre) return;
+
+  /* La hauteur du film suit celle de ce qu'il porte. Un nombre écrit en
+     dur conviendrait à un seul format : sur téléphone, le bandeau de
+     livraison tient sur deux lignes et le titre sur quatre. */
+  function caler() {
+    var bas = titre.offsetTop + titre.offsetHeight;
+    document.documentElement.style.setProperty("--tete-boutique", bas + "px");
+    coller();
+  }
+
+  function coller() {
+    var h = tete.offsetHeight - barre.offsetHeight;
+    barre.classList.toggle("collee", window.scrollY > Math.max(0, h));
+  }
+
+  caler();
+  window.addEventListener("scroll", coller, { passive: true });
+  window.addEventListener("resize", caler, { passive: true });
+  if (window.ResizeObserver) new ResizeObserver(caler).observe(titre);
 })();

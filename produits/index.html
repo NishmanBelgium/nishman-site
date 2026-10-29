@@ -33,7 +33,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=328" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=329" />
 </head>
 <body class="catalog-body">
 <h1 class="titre-moteur">Catalogue professionnel NISHMAN — tarifs salons, barbershops et instituts</h1>
@@ -46,13 +46,18 @@
        pas où on lui représente la marque. -->
 
   <div class="catalog-sheet" id="catalog-sheet">
-  <div class="catalog-shell">
+  <div class="catalog-shell tete-filmee">
 
-    <!-- Un bandeau, pas un écran d'accueil : la bande fait deux cents
-         pixels et la barre de recherche reste au-dessus de la ligne de
-         flottaison. L'écran noir qui vivait ici prenait deux hauteurs
-         d'écran et c'est précisément ce qu'on a retiré ce matin. -->
-    <div class="bandeau">
+    <!-- Le film ne forme plus une bande au-dessus des commandes : il passe
+         derrière elles. Le haut du catalogue était fait de trois bandes
+         sombres empilées de hauteurs différentes — le bandeau, la barre de
+         recherche, le ruban défilant — ce qui est une accumulation, pas une
+         composition. Un seul bloc, et la hauteur totale diminue au passage.
+
+         Le film est posé en absolu : la barre de recherche reste un enfant
+         direct de la feuille, sinon elle cesserait de coller dès la fin du
+         bloc au lieu de suivre toute la page. -->
+    <div class="bandeau" aria-hidden="true">
       <video class="bandeau-film" muted loop playsinline preload="none"
              poster="/assets/img/bandeau-pro.webp?v=328"
              data-film="/assets/video/bandeau-pro.mp4?v=328" aria-hidden="true"></video>
@@ -263,10 +268,10 @@
   </div>
 
   <script src="/assets/js/config.js?v=303"></script>
-  <script src="/assets/js/catalog.js?v=320"></script>
+  <script src="/assets/js/catalog.js?v=329"></script>
   <script src="/assets/js/offre.js?v=205"></script>
   <script src="/assets/js/ruban-pro.js?v=303" defer></script>
-  <script src="/assets/js/bandeau.js?v=328" defer></script>
+  <script src="/assets/js/bandeau.js?v=329" defer></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 <script src="/assets/js/mesure.js?v=322" defer></script>
 </body>
