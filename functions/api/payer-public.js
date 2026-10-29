@@ -151,12 +151,20 @@ export async function onRequestPost({ request, env }) {
   // qui voit son total changer sans explication abandonne. On lui dit ce
   // qui a bougé et on le laisse décider, plutôt que de débiter une
   // commande qu'on ne pourra pas servir.
-  let stock;
+  // Si la LECTURE échoue — et non le stock lui-même — on laisse passer.
+  // Raisonnement : une panne d'Odoo bloque de toute façon la création de la
+  // commande deux étapes plus loin, donc refuser ici n'ajoute aucune
+  // protection. Le cas qui resterait est Odoo joignable mais la lecture du
+  // stock cassée : refuser arrêterait alors toute la boutique pour un
+  // défaut qui, lui, ne fait que ramener au comportement d'avant.
+  // La raison est enregistrée sur le paiement : un défaut muet est un
+  // défaut qu'on découvre trois semaines plus tard.
+  let stock = { selection, rupture: false, retires: [], reduits: [] };
+  let stockNonVerifie = null;
   try {
     stock = await limiterAuStock(env, selection);
   } catch (e) {
-    return erreur("Nous ne pouvons pas vérifier les stocks en ce moment. Réessayez dans un instant.",
-                  503, "stock");
+    stockNonVerifie = String((e && e.message) || e).slice(0, 160);
   }
   if (stock.rupture) {
     const noms = {};

@@ -100,6 +100,8 @@ export async function onRequestPost({ request, env }) {
   try { tva = await controlerSiBesoin(env.DB, compte, env); }
   catch (e) { /* le registre muet ne doit pas faire perdre la commande */ }
 
+  let stockNonVerifie = null;
+
   // Le stock, avant d'engager quoi que ce soit.
   //
   // Le catalogue limite déjà les quantités à l'écran, mais dans le
@@ -117,8 +119,11 @@ export async function onRequestPost({ request, env }) {
       }, 409);
     }
   } catch (e) {
-    return erreur("Nous ne pouvons pas vérifier les stocks en ce moment. Réessayez dans un instant.",
-                  503, "stock");
+    // Lecture impossible : on laisse passer plutôt que d'arrêter la prise
+    // de commande. Une panne d'Odoo bloquera de toute façon l'étape
+    // suivante, et un défaut de lecture seul ne fait que ramener au
+    // comportement d'avant ce lot.
+    stockNonVerifie = String((e && e.message) || e).slice(0, 160);
   }
 
   const resultat = calculer({
