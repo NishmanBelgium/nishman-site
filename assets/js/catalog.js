@@ -1723,12 +1723,13 @@
 
   function initTopControls() {
     const toTop = document.getElementById("to-top");
-    const brand = document.getElementById("sticky-brand");
+    // Le logo ne remonte plus en haut de page : le haut de page est
+    // désormais la barre de recherche elle-même, et le clic ne produisait
+    // donc plus rien. Il ramène à l'accueil, comme partout ailleurs.
     const goTop = (e) => {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
-    if (brand) brand.addEventListener("click", goTop);
     if (toTop) {
       toTop.addEventListener("click", goTop);
       let ticking = false;
