@@ -3466,3 +3466,14 @@ body.catalog-body { background: #0E0E0E; }
 @media (max-width: 560px) {
   #sheet-overlay .product-sheet { width: 100%; border-left: 0; }
 }
+
+/* Panne de tarifs : un message, pas des barres grises muettes. */
+.prix-indispo {
+  margin: 4px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid #ED9B24;
+  background: rgba(237, 155, 36, 0.08);
+  color: var(--ink);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}

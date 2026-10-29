@@ -71,6 +71,7 @@
       seeSelection: "voir ma sélection", discover: "Découvrir",
       askPrice: "Prix sur demande", proAccess: "Accès professionnel",
       priceLoading: "Chargement des tarifs…",
+      priceDown: "Tarifs momentanément indisponibles. Écrivez-nous à contact@nishman.be, nous vous les transmettons.",
       noResults: "Aucun produit ne correspond à votre recherche.",
       welcomeTitle: "Catalogue professionnel",
       welcomeText: "Ce catalogue s'adresse aux salons de coiffure et aux barbiers. Les tarifs affichés sont nos prix professionnels. Pour commander, il faut un compte — la création est immédiate et gratuite.",
@@ -138,6 +139,7 @@
       seeSelection: "view my selection", discover: "Discover",
       askPrice: "Price on request", proAccess: "Professional access",
       priceLoading: "Loading prices…",
+      priceDown: "Prices are temporarily unavailable. Email contact@nishman.be and we will send them to you.",
       noResults: "No product matches your search.",
       welcomeTitle: "Trade catalogue",
       welcomeText: "This catalogue is for hair salons and barbershops. The prices shown are our trade prices. An account is required to order — creating one is free and immediate.",
@@ -205,6 +207,7 @@
       seeSelection: "bekijk mijn selectie", discover: "Ontdekken",
       askPrice: "Prijs op aanvraag", proAccess: "Professionele toegang",
       priceLoading: "Prijzen laden…",
+      priceDown: "Prijzen zijn tijdelijk niet beschikbaar. Mail naar contact@nishman.be, wij bezorgen ze u.",
       noResults: "Geen enkel product komt overeen met uw zoekopdracht.",
       welcomeTitle: "Vakcatalogus",
       welcomeText: "Deze catalogus is bedoeld voor kapsalons en barbershops. De getoonde tarieven zijn onze vakprijzen. Om te bestellen hebt u een account nodig — aanmaken is gratis en onmiddellijk.",
@@ -272,6 +275,7 @@
       seeSelection: "meine Auswahl ansehen", discover: "Entdecken",
       askPrice: "Preis auf Anfrage", proAccess: "Professioneller Zugang",
       priceLoading: "Preise werden geladen…",
+      priceDown: "Preise vorübergehend nicht verfügbar. Schreiben Sie an contact@nishman.be, wir senden sie Ihnen zu.",
       noResults: "Kein Produkt entspricht Ihrer Suche.",
       welcomeTitle: "Fachkatalog",
       welcomeText: "Dieser Katalog richtet sich an Friseursalons und Barbershops. Die angezeigten Preise sind unsere Händlerpreise. Zum Bestellen ist ein Konto nötig — die Anmeldung ist kostenlos und sofort möglich.",
@@ -339,6 +343,7 @@
       seeSelection: "seçimimi gör", discover: "Keşfet",
       askPrice: "Fiyat için sorunuz", proAccess: "Profesyonel erişim",
       priceLoading: "Fiyatlar yükleniyor…",
+      priceDown: "Fiyatlar ge\u00e7ici olarak kullan\u0131lam\u0131yor. contact@nishman.be adresine yaz\u0131n, size iletelim.",
       noResults: "Aramanızla eşleşen ürün yok.",
       welcomeTitle: "Profesyonel katalog",
       welcomeText: "Bu katalog kuaför salonları ve berberler içindir. Gösterilen fiyatlar profesyonel fiyatlarımızdır. Sipariş vermek için hesap gerekir — hesap açmak ücretsiz ve anındadır.",
@@ -712,6 +717,11 @@
     const filtered = getFiltered();
 
     countEl.textContent = T.results(filtered.length);
+    const panne = document.getElementById("prix-indispo");
+    if (panne) {
+      panne.textContent = PRIX_INDISPO ? T.priceDown : "";
+      panne.hidden = !PRIX_INDISPO;
+    }
 
     if (filtered.length === 0) {
       grid.innerHTML = `<p class="no-results">${T.noResults}</p>`;
@@ -935,7 +945,7 @@
     // Les prix ne sont pas encore arrivés : on le dit sobrement plutôt que
     // de proposer un accès dont plus personne n'a besoin.
     if (!unlocked()) {
-      zone.innerHTML = `<p class="sheet-locked">${T.priceLoading}</p>`;
+      zone.innerHTML = `<p class="sheet-locked">${PRIX_INDISPO ? T.priceDown : T.priceLoading}</p>`;
       return;
     }
     const p = PRODUCTS.find((x) => x.ean === ean);
@@ -1413,6 +1423,10 @@
   let LIMITS = null;        // { ean: {u, b, state} } limites de commande
   let CONNECTE = false;     // une session professionnelle est-elle ouverte ?
   let PAYS_CLIENT = null;   // pays du compte, qui décide du seuil de port
+  // Sans ce drapeau, une panne du portier et un chargement en cours
+  // s'affichaient du même mot : « Chargement des tarifs… », indéfiniment.
+  // C'est ce qui a rendu la panne du 26 octobre illisible depuis la page.
+  let PRIX_INDISPO = false;
 
   // Le navigateur ne connaît aucun code : il demande les prix à son propre
   // serveur. Depuis l'étape 201 ils sont servis à tout le monde ; la réponse
@@ -1470,7 +1484,8 @@
   function connecte() { return CONNECTE; }
 
   async function initPriceLock() {
-    await chargerPrix();
+    PRIX_INDISPO = !(await chargerPrix());
+    if (PRIX_INDISPO) renderGrid();
   }
 
   // ---------- Fenêtre d'accès : saisie du code OU inscription ----------
