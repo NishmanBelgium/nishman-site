@@ -1359,7 +1359,6 @@
       if (e.key === "Escape") { closeCatPanel(); closeProductSheet(); closeDrawer(); closeAccessModal(); }
     });
 
-    initIntro();
     initTopControls();
 
     // Service worker conservé : il accélère les visites répétées et garde le
@@ -1402,172 +1401,6 @@
     }
   }
 
-
-  // ==========================================================================
-  // ÉCRAN D'ACCUEIL — particules, transition 3D vers la feuille catalogue.
-  // ==========================================================================
-
-  // Particules orange sur l'écran noir. Coupées hors écran / onglet masqué.
-  function initIntroParticles() {
-    const canvas = document.getElementById("intro-particles");
-    if (!canvas) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    // Sur écran tactile, aucune particule : c'est la charge la plus lourde
-    // du site et elle empêche un défilement parfaitement fluide.
-    if (window.matchMedia("(pointer: coarse)").matches) {
-      canvas.style.display = "none";
-      return;
-    }
-
-    const ctx = canvas.getContext("2d");
-    let w = 0, h = 0, dots = [], raf = null;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    function resize() {
-      const r = canvas.getBoundingClientRect();
-      w = r.width; h = r.height;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const coarse = window.matchMedia("(pointer: coarse)").matches;
-      const count = Math.round(Math.min(coarse ? 26 : 60, (w * h) / (coarse ? 26000 : 15000)));
-      dots = Array.from({ length: count }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        r: Math.random() * 1.6 + 0.4,
-        vx: (Math.random() - 0.5) * 0.14,
-        vy: -(Math.random() * 0.24 + 0.05),
-        a: Math.random() * 0.45 + 0.1,
-        tw: Math.random() * Math.PI * 2,
-      }));
-    }
-
-    const slow = window.matchMedia("(pointer: coarse)").matches;
-    let last = 0;
-
-    function frame(ts) {
-      raf = requestAnimationFrame(frame);
-      // Sur mobile, 30 images/s suffisent largement et libèrent le processeur
-      // pour un défilement fluide.
-      if (slow && ts - last < 33) return;
-      last = ts || 0;
-      ctx.clearRect(0, 0, w, h);
-      dots.forEach((d) => {
-        d.x += d.vx; d.y += d.vy; d.tw += 0.018;
-        if (d.y < -6) { d.y = h + 6; d.x = Math.random() * w; }
-        if (d.x < -6) d.x = w + 6;
-        if (d.x > w + 6) d.x = -6;
-        const alpha = d.a * (0.6 + 0.4 * Math.sin(d.tw));
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 156, 40, ${alpha})`;
-        ctx.fill();
-      });
-    }
-
-    function start() { if (!raf) raf = requestAnimationFrame(frame); }
-    function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
-
-    resize();
-    start();
-    window.addEventListener("resize", resize);
-    document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
-    new IntersectionObserver(
-      (entries) => (entries[0].isIntersecting ? start() : stop()),
-      { threshold: 0 }
-    ).observe(document.getElementById("intro"));
-  }
-
-  // Transition 3D : pendant que la feuille blanche monte, la scène du logo
-  // bascule vers l'arrière (profondeur), rétrécit et s'éteint.
-  // Transition 3D d'entrée — version stabilisée mobile :
-  // - hauteurs verrouillées en pixels (la barre d'adresse mobile ne fait
-  //   plus sauter les calculs en plein scroll) ;
-  // - la feuille catalogue n'est jamais transformée sur écran tactile, et
-  //   sur desktop une hystérésis évite qu'elle rebascule en 3D quand on
-  //   remonte vite (une feuille transformée casse la barre sticky).
-  function initIntroScroll() {
-    const scene = document.getElementById("intro-scene");
-    const cue = document.getElementById("intro-cue");
-    const intro = document.getElementById("intro");
-    const track = document.getElementById("intro-track");
-    if (!scene || !intro || !track) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    // Sur écran tactile : mise en page simple gérée par le CSS. Le script
-    // ne touche à rien — c'est ce qui garantit un défilement natif et fluide.
-    const simple = window.matchMedia("(pointer: coarse), (max-width: 860px)").matches;
-    if (simple) {
-      if (cue) {
-        let t = false;
-        window.addEventListener("scroll", () => {
-          if (t) return;
-          t = true;
-          requestAnimationFrame(() => {
-            t = false;
-            cue.style.opacity = window.scrollY > 40 ? "0" : "";
-          });
-        }, { passive: true });
-      }
-      return;
-    }
-
-    let H = window.innerHeight || 1;
-    let lastW = window.innerWidth;
-
-    const sheet = document.getElementById("catalog-sheet");
-
-    function lockHeights() {
-      H = window.innerHeight || 1;
-      intro.style.height = H + "px";
-      track.style.height = H * 2 + "px";
-      // La remontée de la feuille est fixée en PIXELS, comme les hauteurs
-      // ci-dessus : sinon le repli de la barre d'adresse mobile recalcule
-      // les unités vh en plein scroll et toute la page se décale.
-      if (sheet) sheet.style.marginTop = -H + "px";
-    }
-
-    // Ne re-verrouiller qu'aux vrais changements (rotation, redimensionnement),
-    // jamais au simple repli de la barre d'adresse pendant le scroll.
-    window.addEventListener("resize", () => {
-      if (window.innerWidth !== lastW) {
-        lastW = window.innerWidth;
-        lockHeights();
-        apply();
-      }
-    });
-    window.addEventListener("orientationchange", () => {
-      setTimeout(() => { lastW = window.innerWidth; lockHeights(); apply(); }, 250);
-    });
-
-    let ticking = false;
-    let lastP = -1;
-
-    function apply() {
-      ticking = false;
-      const p = Math.min(Math.max(window.scrollY / H, 0), 1);
-      // Rien à faire si la position n'a pas bougé, ou si l'intro est déjà
-      // entièrement passée : on évite d'écrire dans la page à chaque image.
-      if (p === lastP) return;
-      if (p === 1 && lastP === 1) return;
-      lastP = p;
-      if (!reduced) {
-        scene.style.transform = `translateY(${p * -40}px) translateZ(${p * -260}px) rotateX(${p * 22}deg) scale(${1 - p * 0.12})`;
-        scene.style.opacity = String(Math.max(0, 1 - p * 1.25));
-        // La feuille n'est JAMAIS transformée : un transform sur elle créerait
-        // un cadre de référence et décrocherait la barre de recherche collante.
-        // L'effet de profondeur reste porté par la scène du logo, isolée.
-      }
-      if (cue) cue.style.opacity = p > 0.04 ? "0" : "";
-    }
-
-    lockHeights();
-    window.addEventListener("scroll", () => {
-      if (!ticking) { ticking = true; requestAnimationFrame(apply); }
-    }, { passive: true });
-    apply();
-  }
 
   // ==========================================================================
   // PRIX PROTÉGÉS — servis par /api/prix, qui ne répond qu'à une session
@@ -1907,18 +1740,6 @@
           toTop.classList.toggle("visible", window.scrollY > window.innerHeight * 2);
         });
       }, { passive: true });
-    }
-  }
-
-  function initIntro() {
-    initIntroParticles();
-    initIntroScroll();
-    const cue = document.getElementById("intro-cue");
-    if (cue) {
-      cue.addEventListener("click", () => {
-        const target = document.getElementById("search-sticky") || document.getElementById("catalog-sheet");
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
     }
   }
 

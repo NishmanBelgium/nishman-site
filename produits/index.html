@@ -33,28 +33,17 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=307" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=308" />
 </head>
 <body class="catalog-body">
 <h1 class="titre-moteur">Catalogue professionnel NISHMAN — tarifs salons, barbershops et instituts</h1>
 
-  <!-- ======================================================================
-       ÉCRAN D'ACCUEIL — noir, logo orange, cinématique de chargement.
-       Au scroll, le catalogue monte en feuille blanche 3D par-dessus.
-       ====================================================================== -->
-  <div class="intro-track" id="intro-track">
-    <section class="intro" id="intro">
-      <canvas class="intro-particles" id="intro-particles" aria-hidden="true"></canvas>
-      <div class="intro-scene" id="intro-scene">
-        <img class="intro-logo" src="/assets/img/logo-gold.png" alt="Nishman" />
-        <div class="intro-line" aria-hidden="true"><span></span></div>
-      </div>
-      <button class="intro-cue" id="intro-cue" aria-label="Découvrir la gamme">
-        <span class="cue-track"><span class="cue-dot"></span></span>
-        <span class="cue-text">Découvrir</span>
-      </button>
-    </section>
-  </div>
+  <!-- L'écran d'accueil noir et sa cinématique vivaient ici. Ils font
+       maintenant leur travail à la racine du site, sur la page qui sert
+       justement à montrer la marque et à orienter. Les répéter obligeait
+       un professionnel à traverser deux hauteurs d'écran avant de voir un
+       seul tarif — et le catalogue est l'endroit où il vient travailler,
+       pas où on lui représente la marque. -->
 
   <div class="catalog-sheet" id="catalog-sheet">
   <div class="catalog-shell">
@@ -262,7 +251,7 @@
   </div>
 
   <script src="/assets/js/config.js?v=303"></script>
-  <script src="/assets/js/catalog.js?v=303"></script>
+  <script src="/assets/js/catalog.js?v=308"></script>
   <script src="/assets/js/offre.js?v=205"></script>
   <script src="/assets/js/ruban-pro.js?v=303" defer></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
