@@ -461,4 +461,28 @@
    Ici « Se connecter » et « Créer mon compte » sont des liens, pas des
    boutons : il faut leur retirer le soulignement du navigateur. */
 a.quote-cta, a.quote-alt { text-decoration: none; }
-a.quote-cta + a.quote-alt { margin-left: 12px; }
+
+/* Les deux portes de l'écran de connexion. Elles étaient posées l'une
+   après l'autre sans conteneur : deux liens en ligne, dont la largeur de
+   100 % et le « flex: 1 » ne s'appliquaient à rien — ils se chevauchaient
+   au millimètre près sur un écran de téléphone. */
+.quote-portes {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+@media (min-width: 540px) {
+  .quote-portes { grid-template-columns: 1fr 1fr; align-items: stretch; }
+}
+.quote-portes .quote-cta,
+.quote-portes .quote-alt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  margin: 0;
+  min-height: 52px;
+  padding: 14px 18px;
+  font-size: 14px;
+  text-align: center;
+}

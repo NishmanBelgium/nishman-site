@@ -19,7 +19,7 @@ window.NISHMAN_CMD_LANGUES = {
     conn_texte: "Nous vendons exclusivement aux professionnels. Votre panier est conservé : vous le retrouverez après connexion.",
     conn_cta: "Me connecter",
     conn_creer: "Je n'ai pas encore de compte",
-    conn_devis: "Ou demander un devis sans compte",
+    conn_devis: "Ou demander un devis",
 
     ident_titre: "Vos coordonnées",
     ident_modifier: "Modifier dans mon compte",
@@ -133,7 +133,7 @@ window.NISHMAN_CMD_LANGUES = {
     conn_texte: "We sell to professionals only. Your basket is saved — you will find it again after signing in.",
     conn_cta: "Sign in",
     conn_creer: "I don't have an account yet",
-    conn_devis: "Or request a quotation without an account",
+    conn_devis: "Or request a quotation",
 
     ident_titre: "Your details",
     ident_modifier: "Edit in my account",
@@ -246,7 +246,7 @@ window.NISHMAN_CMD_LANGUES = {
     conn_texte: "Wij verkopen uitsluitend aan professionals. Uw mandje blijft bewaard: u vindt het terug na het aanmelden.",
     conn_cta: "Aanmelden",
     conn_creer: "Ik heb nog geen account",
-    conn_devis: "Of vraag een offerte aan zonder account",
+    conn_devis: "Of vraag een offerte aan",
 
     ident_titre: "Uw gegevens",
     ident_modifier: "Wijzigen in mijn account",
@@ -359,7 +359,7 @@ window.NISHMAN_CMD_LANGUES = {
     conn_texte: "Wir verkaufen ausschließlich an Gewerbetreibende. Ihr Warenkorb bleibt erhalten: Sie finden ihn nach der Anmeldung wieder.",
     conn_cta: "Anmelden",
     conn_creer: "Ich habe noch kein Konto",
-    conn_devis: "Oder ein Angebot ohne Konto anfordern",
+    conn_devis: "Oder ein Angebot anfordern",
 
     ident_titre: "Ihre Daten",
     ident_modifier: "In meinem Konto ändern",
@@ -472,7 +472,7 @@ window.NISHMAN_CMD_LANGUES = {
     conn_texte: "Yaln\u0131zca profesyonellere sat\u0131\u015f yap\u0131yoruz. Sepetiniz saklan\u0131r: giri\u015f yapt\u0131ktan sonra onu yeniden bulursunuz.",
     conn_cta: "Giri\u015f yap",
     conn_creer: "Hen\u00fcz hesab\u0131m yok",
-    conn_devis: "Veya hesaps\u0131z fiyat teklifi isteyin",
+    conn_devis: "Veya fiyat teklifi isteyin",
 
     ident_titre: "Bilgileriniz",
     ident_modifier: "Hesab\u0131mda d\u00fczenle",

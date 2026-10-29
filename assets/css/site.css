@@ -436,7 +436,7 @@ body.catalog-body::before { display: none; }
   line-height: 1.3;
   color: var(--ink);
   margin: 0 0 5px;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   /* exactement 2 lignes réservées : rangées parfaitement alignées */
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1597,8 +1597,8 @@ body.card-dark .label-row.primary .swatch {
 }
 
 /* Pastille du bouton « Demander un devis » dans le panier */
-.swatch-quote { background: var(--whatsapp); }
-.drawer .label-row.primary .swatch-quote { background: var(--whatsapp) !important; opacity: 1 !important; }
+.swatch-quote { background: var(--gold, #ED9B24); }
+.drawer .label-row.primary .swatch-quote { background: var(--gold, #ED9B24) !important; opacity: 1 !important; }
 
 /* ---------- Inscription professionnelle dans la fenêtre d'accès ---------- */
 
@@ -1893,7 +1893,7 @@ body { max-width: 100%; }
 img { max-width: 100%; height: auto; }
 
 .product-name, .drawer-item-name, .foot-line, .foot-tag,
-.sheet-name, .sheet-desc { overflow-wrap: anywhere; }
+.sheet-name, .sheet-desc { overflow-wrap: break-word; }
 
 /* ---------- Écrans tactiles : mise en page simple et fluide ---------- */
 
@@ -3470,3 +3470,72 @@ body.catalog-body { background: #0E0E0E; }
   font-size: 0.875rem;
   line-height: 1.5;
 }
+
+/* ==========================================================================
+   LES DEUX ACTIONS DE LA SÉLECTION — un couple, pas deux objets étrangers.
+
+   Elles étaient restées dans la forme arrondie du reste du site : un
+   bouton orange en dégradé qui se soulève au survol, et à côté un
+   panneau gris sans contour, qui ne ressemblait pas à un bouton. Dans un
+   catalogue passé au carré, les deux juraient.
+
+   Elles gardent leur hiérarchie — une seule action pleine par écran —
+   mais la seconde devient un vrai bouton cerné, et les deux partagent la
+   même géométrie.
+   ========================================================================== */
+
+#agent-pick-list { display: grid; gap: 10px; }
+
+#agent-pick-list .label-row {
+  border-radius: 2px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg);
+  box-shadow: none;
+  padding: 14px 16px;
+}
+#agent-pick-list .label-row .row-text {
+  font-family: var(--font-display);
+  font-stretch: 86%;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+#agent-pick-list .label-row .row-sub {
+  font-family: var(--font-body);
+  font-stretch: 100%;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+#agent-pick-list .label-row.primary {
+  background: #ED9B24;
+  border-color: #ED9B24;
+  box-shadow: none;
+}
+/* Pas de soulèvement : un bouton carré qui décolle se lit comme un bouton
+   rond mal réglé. */
+#agent-pick-list .label-row:hover { border-color: var(--ink); }
+#agent-pick-list .label-row.primary:hover {
+  transform: none;
+  background: #C9841F;
+  border-color: #C9841F;
+  box-shadow: none;
+}
+
+/* Dans le panneau de sélection, le compteur mangeait les deux tiers de la
+   largeur et le nom du produit se brisait en plein milieu d'un mot. Il
+   reprend une taille de compteur, pas de clavier. */
+#drawer-overlay .drawer-item-name { min-width: 0; }
+#drawer-overlay .drawer-stepper .qty-input { width: 34px; }
+@media (pointer: coarse) {
+  #drawer-overlay .drawer-stepper .qty-input { width: 38px; font-size: 16px; }
+}
+
+/* Les deux pastilles ne disent plus rien : les deux actions demandent la
+   même chose. Celle du bouton plein était d'ailleurs devenue invisible,
+   orange sur orange. */
+#agent-pick-list .swatch { display: none; }
+
+/* Le reste du panneau suit la géométrie du catalogue. */
+#drawer-overlay .drawer-clear,
+#drawer-overlay .drawer-close { border-radius: 2px; }

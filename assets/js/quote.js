@@ -773,7 +773,7 @@
     if (Object.keys(selection).length === 0) {
       $("step-form").innerHTML =
         '<h1 class="quote-title">' + esc(T.empty) + "</h1>" +
-        '<a class="quote-alt" href="/produits/">' + esc(T.back) + "</a>";
+        '<div class="quote-portes"><a class="quote-alt" href="/produits/">' + esc(T.back) + "</a></div>";
       return;
     }
 
@@ -786,10 +786,14 @@
         '<p class="quote-eyebrow">' + esc(T.step1) + "</p>" +
         '<h1 class="quote-title">' + esc(T.loginTitle) + "</h1>" +
         '<p class="quote-lead">' + esc(T.loginText) + "</p>" +
-        '<a class="quote-cta" href="/pro/connexion/?retour=' + retour + '">' +
-          esc(T.loginBtn) + "</a>" +
-        '<a class="quote-alt" href="/pro/connexion/?creer&retour=' + retour + '">' +
-          esc(T.createBtn) + "</a>";
+        // Deux liens côte à côte : sans conteneur, ce sont deux éléments
+        // en ligne, leur largeur de 100 % est ignorée et ils se chevauchent.
+        '<div class="quote-portes">' +
+          '<a class="quote-cta" href="/pro/connexion/?retour=' + retour + '">' +
+            esc(T.loginBtn) + "</a>" +
+          '<a class="quote-alt" href="/pro/connexion/?creer&retour=' + retour + '">' +
+            esc(T.createBtn) + "</a>" +
+        "</div>";
       return;
     }
 

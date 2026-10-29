@@ -189,7 +189,7 @@ function page(p, base, indexable) {
   <div class="wrap bar-in">
     <a class="logo" href="/boutique/" aria-label="Nishman, accueil"><img src="/assets/img/nishman.svg" alt="Nishman" /></a>
     <div class="bar-sp"></div>
-    <a class="pill" href="/?pro"><span class="long">Espace professionnel</span><span class="court">Pro</span></a>
+    <a class="pill" href="/"><span class="long">Accueil</span><span class="court">Accueil</span></a>
     <a class="pill pill-gold" href="/boutique/#panier">Panier</a>
   </div>
 </header>
@@ -232,8 +232,8 @@ function page(p, base, indexable) {
     <div class="fiche-texte">${echapper(desc)}</div>
 
     <p class="fiche-pro">Vous êtes coiffeur ou barbier ?
-      <a href="/?pro">Voir les tarifs professionnels</a> — vente au carton,
-      facture et livraison.</p>
+      <a href="/">Le catalogue professionnel passe par l'accueil</a> — vente
+      au carton, facture et livraison.</p>
   </div>
 </main>
 
