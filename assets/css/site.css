@@ -3334,3 +3334,135 @@ body.catalog-body { background: #0E0E0E; }
 @media (max-width: 560px) {
   #drawer-overlay .drawer { width: 100%; border-left: 0; }
 }
+
+/* ==========================================================================
+   LA FICHE PRODUIT — même panneau que la sélection, même géométrie.
+
+   Elle montait du bas, centrée, en boîte de 520 px à coins ronds de 26 px,
+   avec sa propre barre de défilement interne : un format de téléphone posé
+   sur un écran d'ordinateur, et une fiche où il fallait faire défiler pour
+   voir le prix. Elle glisse maintenant depuis la droite, pleine hauteur,
+   comme la sélection professionnelle et comme le panier de la boutique —
+   le catalogue reste visible derrière, et on referme d'un geste.
+
+   Les rayons passent à 2 px, les pastilles disparaissent, les titres
+   prennent l'Archivo condensée. Rien d'autre ne change : le contenu de la
+   fiche et sa logique de prix sont les mêmes.
+   ========================================================================== */
+
+#sheet-overlay {
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+#sheet-overlay .product-sheet {
+  border-radius: 0;
+  border-left: 1px solid var(--line);
+  width: min(440px, 100%);
+  max-width: none;
+  max-height: none;
+  height: 100%;
+  padding: 20px 22px 32px;
+  animation: drawer-droite 0.3s cubic-bezier(.2, 0, 0, 1) both;
+}
+
+#sheet-overlay .drawer-close {
+  border-radius: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+}
+#sheet-overlay .drawer-close:hover { border-color: var(--ink); color: var(--ink); }
+
+/* Le packshot a un vrai fond transparent : un creux légèrement plus sombre
+   que la page suffit à le cadrer, sans boîte ni ombre. */
+#sheet-overlay .sheet-image {
+  border-radius: 2px;
+  background: #F2F0EA;
+  border: 1px solid var(--line);
+  box-shadow: none;
+  margin-top: 8px;
+}
+
+#sheet-overlay .sheet-tagline {
+  font-family: var(--font-display);
+  font-stretch: 90%;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #B07614;
+}
+
+#sheet-overlay .sheet-name {
+  font-family: var(--font-display);
+  font-stretch: 80%;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+/* Le conditionnement est une donnée de la fiche, pas une étiquette :
+   un filet au-dessus suffit à le détacher. */
+#sheet-overlay .sheet-packaging {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  padding: 12px 0 0;
+  font-family: var(--font-display);
+  font-stretch: 92%;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+#sheet-overlay .sheet-add-btn,
+#sheet-overlay .buy-add,
+#sheet-overlay .sheet-confirm,
+#sheet-overlay .sheet-unlock {
+  border-radius: 2px;
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-stretch: 88%;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+/* Pas de soulèvement au survol : un bouton carré qui décolle de deux
+   pixels se lit comme un bouton rond mal réglé. La couleur suffit. */
+#sheet-overlay .sheet-add-btn:hover,
+#sheet-overlay .sheet-confirm:hover:not(:disabled) { transform: none; box-shadow: none; }
+#sheet-overlay .sheet-add-btn:active { transform: none; }
+
+#sheet-overlay .sheet-add-btn,
+#sheet-overlay .sheet-confirm {
+  background: #ED9B24;
+  color: #101010;
+}
+#sheet-overlay .sheet-add-btn:hover,
+#sheet-overlay .sheet-confirm:hover:not(:disabled) { background: #C9841F; }
+
+#sheet-overlay .buy-add { border-color: var(--line-strong); }
+#sheet-overlay .buy-add:hover { border-color: var(--ink); }
+
+#sheet-overlay .sheet-price,
+#sheet-overlay .buy-row-label {
+  font-family: var(--font-display);
+  font-stretch: 90%;
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #sheet-overlay .product-sheet { animation: none; }
+}
+
+@media (max-width: 560px) {
+  #sheet-overlay .product-sheet { width: 100%; border-left: 0; }
+}
