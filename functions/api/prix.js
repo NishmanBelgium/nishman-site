@@ -12,7 +12,8 @@
    ========================================================================== */
 
 import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
-import { donneesPortier } from "../_tarifs.js";
+import { donneesPortier, catalogue } from "../_tarifs.js";
+import { stockVendable } from "../_stock.js";
 
 export async function onRequestGet({ request, env }) {
   if (!env.DB) return json({ ok: false, raison: "base" });
@@ -34,6 +35,32 @@ export async function onRequestGet({ request, env }) {
     return json({ ok: false, raison: m.indexOf("code") >= 0 ? "code" : "portier" });
   }
 
+  // Les limites affichées doivent être celles que le serveur appliquera au
+  // moment de valider. Sinon le client compose un panier que la commande
+  // refuse, ce qui est la pire façon de dire « c'est épuisé ».
+  //
+  // Elles viennent donc d'Odoo, comme le contrôle. Si Odoo ne répond pas on
+  // retombe sur celles du portier : des limites approximatives valent mieux
+  // qu'un catalogue sans aucune limite, et le contrôle serveur tient le
+  // filet de toute façon.
+  let limits = data.limits || null;
+  try {
+    const produits = await catalogue(request);
+    const dispo = await stockVendable(env, (produits || []).map((p) => p && p.ean));
+    const calculees = {};
+    for (const p of produits || []) {
+      if (!p || !p.ean) continue;
+      const u = dispo[String(p.ean)] || 0;
+      const parCarton = Math.max(0, Math.floor(Number(p.box_qty) || 0));
+      calculees[String(p.ean)] = {
+        u,
+        b: parCarton ? Math.floor(u / parCarton) : 0,
+        state: u > 0 ? "ok" : "out",
+      };
+    }
+    if (Object.keys(calculees).length) limits = calculees;
+  } catch (e) { /* on garde celles du portier */ }
+
   // Le nom affiché est celui du compte, pas celui rattaché au code interne :
   // c'est le client qui regarde ses prix, pas NBD. Un visiteur anonyme n'a
   // évidemment ni l'un ni l'autre.
@@ -41,7 +68,7 @@ export async function onRequestGet({ request, env }) {
     ok: true,
     connecte: !!compte,
     prices: data.prices,
-    limits: data.limits || null,
+    limits,
     societe: compte ? compte.salon : null,
     email: compte ? compte.email : null,
     // Le pays décide du seuil de port affiché dans le panier.

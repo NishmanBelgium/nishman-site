@@ -18,6 +18,7 @@ import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
 import { positionFiscale } from "../_fiscal.js";
+import { verifierStockPro } from "../_stock.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 
@@ -196,6 +197,27 @@ export async function onRequestPost({ request, env }) {
   let tva = { valide: !!compte.tva_valide, statut: compte.tva_statut || "", preuve: compte.tva_preuve || "" };
   try { tva = await controlerSiBesoin(env.DB, compte, env); }
   catch (e) { /* le registre muet ne doit pas faire perdre la commande */ }
+
+  // Le stock, avant d'engager quoi que ce soit.
+  //
+  // Le catalogue limite déjà les quantités à l'écran, mais dans le
+  // navigateur seulement : un onglet resté ouvert une heure, deux salons
+  // sur le dernier carton, et la commande passait quand même. C'est ici
+  // que ça se décide, avec le stock d'Odoo au moment présent.
+  try {
+    const stock = await verifierStockPro(env, selection, produits);
+    if (stock.rupture) {
+      return json({
+        ok: false, motif: "stock",
+        message: "Certaines références ne sont plus disponibles en quantité suffisante. "
+               + "Ajustez votre panier, les quantités affichées ont été mises à jour.",
+        manquants: stock.manquants,
+      }, 409);
+    }
+  } catch (e) {
+    return erreur("Nous ne pouvons pas vérifier les stocks en ce moment. Réessayez dans un instant.",
+                  503, "stock");
+  }
 
   const resultat = calculer({
     selection, produits, prix,

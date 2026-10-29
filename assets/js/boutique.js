@@ -20,6 +20,8 @@
   var RELAIS = { disponible: false, cle: "" };
 
   var PRODUITS = [];
+  var STOCK = null;      // { ean: pièces vendables } — renseigné par le serveur
+  var FAMILLE = "Tout";  // la famille affichée, pour redessiner au même endroit
   var panier = {};         // ean -> quantité
   var langue = "fr";
 
@@ -59,6 +61,9 @@
       }
       if (typeof d.taux_tva === "number") TVA = d.taux_tva;
       if (d.relais) RELAIS = d.relais;
+      // Le stock réel, pour que la grille ne propose pas ce qui n'existe
+      // plus. Il arrive souvent après le premier dessin : on redessine.
+      if (d.stock) { STOCK = d.stock; if (PRODUITS.length) dessinerGrille(FAMILLE); }
       majPanier();
     })
     .catch(function () { /* on garde les valeurs de secours */ });
@@ -100,18 +105,29 @@
     });
   }
 
+  // Le stock vendable par code-barres, tel que le serveur l'applique.
+  // Tant qu'il vaut null on n'invente rien : on affiche le catalogue, et
+  // c'est le serveur qui refusera si besoin.
+  function epuise(p) {
+    if (p.bientot) return true;
+    if (!STOCK) return false;
+    return (STOCK[String(p.ean)] || 0) <= 0;
+  }
+
   function dessinerGrille(fam) {
+    FAMILLE = fam;
     var liste = fam === "Tout" ? PRODUITS
               : PRODUITS.filter(function (p) { return p.famille === fam; });
     $("#grille").innerHTML = liste.map(function (p) {
+      var hs = epuise(p);
       return '' +
-        '<article class="carte' + (p.bientot ? " indispo" : "") + '" data-ean="' + p.ean + '">' +
+        '<article class="carte' + (hs ? " indispo" : "") + '" data-ean="' + p.ean + '">' +
           // Un vrai lien, et non plus une fenêtre ouverte par JavaScript :
           // c'est par lui que Google atteint les fiches, et c'est lui qu'on
           // copie pour partager un produit.
           '<a class="carte-lien" href="/boutique/' + echappe(p.slug || p.ean) + '/">' +
           '<div class="carte-img">' +
-            (p.bientot ? '<span class="bientot">Bientôt</span>' : "") +
+            (hs ? '<span class="bientot">' + (p.bientot ? "Bientôt" : "Épuisé") + "</span>" : "") +
             '<img src="/assets/img/products/' + echappe(p.image) +
             '" alt="' + echappe(p.nom) + '" loading="lazy" width="900" height="900" /></div>' +
           '<div class="carte-fam">' + echappe(p.famille) + "</div>" +
@@ -120,8 +136,9 @@
           "</a>" +
           '<div class="carte-bas">' +
             '<span class="prix">' + euros(p.ttc) + "</span>" +
-            (p.bientot
-              ? '<button class="carte-add" disabled aria-label="Bientôt disponible">+</button>'
+            (hs
+              ? '<button class="carte-add" disabled aria-label="' +
+                (p.bientot ? "Bientôt disponible" : "Épuisé") + '">+</button>'
               : '<button class="carte-add" data-add="' + p.ean + '" ' +
                 'aria-label="Ajouter au panier">+</button>') +
           "</div>" +

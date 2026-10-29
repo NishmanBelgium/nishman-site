@@ -22,6 +22,7 @@
 import { freinerIp, json, erreur, texteValide } from "../_commun.js";
 import { catalogue } from "../_boutique.js";
 import { calculerB2C, paysValideB2C } from "../_calcul_b2c.js";
+import { limiterAuStock } from "../_stock.js";
 import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
 import { creerCommandeB2C } from "../_commande_b2c.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
@@ -143,7 +144,34 @@ export async function onRequestPost({ request, env }) {
   try { produits = await catalogue(request); }
   catch (e) { return erreur("Boutique momentanément indisponible.", 503, "catalogue"); }
 
-  const resultat = calculerB2C({ selection, produits, pays: client.pays });
+  // Le stock, avant tout calcul de montant.
+  //
+  // On ne fait pas confiance au panier : il a pu être composé il y a une
+  // heure, ou modifié. Et surtout, on ne refuse pas en silence — un client
+  // qui voit son total changer sans explication abandonne. On lui dit ce
+  // qui a bougé et on le laisse décider, plutôt que de débiter une
+  // commande qu'on ne pourra pas servir.
+  let stock;
+  try {
+    stock = await limiterAuStock(env, selection);
+  } catch (e) {
+    return erreur("Nous ne pouvons pas vérifier les stocks en ce moment. Réessayez dans un instant.",
+                  503, "stock");
+  }
+  if (stock.rupture) {
+    const noms = {};
+    for (const p of produits || []) if (p && p.ean) noms[String(p.ean)] = p.nom_court || p.nom || "";
+    return json({
+      ok: false, motif: "stock",
+      message: stock.retires.length && !Object.keys(stock.selection).length
+        ? "Les articles de votre panier ne sont plus disponibles."
+        : "Votre panier a changé : certains articles ne sont plus disponibles en quantité suffisante.",
+      epuises: stock.retires.map((e) => ({ ean: e, nom: noms[e] || "" })),
+      reduits: stock.reduits.map((r) => ({ ean: r.ean, nom: noms[r.ean] || "", restant: r.servi })),
+    }, 409);
+  }
+
+  const resultat = calculerB2C({ selection: stock.selection, produits, pays: client.pays });
   if (!resultat.lignes.length) return erreur("Aucun produit reconnu.", 400, "vide");
   if (!(resultat.total > 0)) return erreur("Le montant à payer est nul.", 400, "montant");
 

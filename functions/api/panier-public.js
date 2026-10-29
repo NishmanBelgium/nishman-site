@@ -19,6 +19,7 @@ import { json, erreur } from "../_commun.js";
 import { catalogue } from "../_boutique.js";
 import { calculerB2C, REGLES, paysValideB2C } from "../_calcul_b2c.js";
 import { configureSendcloud } from "../_sendcloud.js";
+import { stockVendable } from "../_stock.js";
 
 export async function onRequestPost({ request, env }) {
   let corps;
@@ -36,11 +37,37 @@ export async function onRequestPost({ request, env }) {
   try { produits = await catalogue(request); }
   catch (e) { return json({ ok: false, raison: "indisponible" }); }
 
+  // Le stock de tout le catalogue, et non du seul panier : la boutique s'en
+  // sert pour griser les fiches épuisées dans la grille. Mieux vaut qu'un
+  // client ne puisse pas mettre au panier ce qu'il n'aura pas, plutôt que de
+  // le lui apprendre à l'instant de payer.
+  let stock = null;
+  try {
+    stock = await stockVendable(env, (produits || []).map((p) => p && p.ean));
+  } catch (e) { /* la boutique reste utilisable ; le contrôle serveur tient */ }
+
+  // Et le panier lui-même, ramené dans les clous avant d'annoncer un total.
+  let epuises = [];
+  let reduits = [];
+  if (stock) {
+    for (const cle of Object.keys(selection || {})) {
+      const ean = String(cle).trim();
+      const voulu = Math.floor(Number(selection[cle]) || 0);
+      if (!(voulu > 0)) continue;
+      const libre = stock[ean] || 0;
+      if (libre <= 0) { epuises.push(ean); delete selection[cle]; }
+      else if (voulu > libre) { reduits.push({ ean, restant: libre }); selection[cle] = libre; }
+    }
+  }
+
   const resultat = calculerB2C({ selection, produits, pays });
 
   return json({
     ok: true,
     ...resultat,
+    stock,
+    epuises,
+    reduits,
     regles: {
       port: REGLES.port,
       franco: REGLES.franco,
