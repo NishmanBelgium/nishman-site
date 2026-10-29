@@ -2852,8 +2852,9 @@ body.catalog-body { background: #0E0E0E; }
      commence à 15 % de la hauteur sur un iPhone SE et à 36 % sur un Pro
      Max, alors que sa hauteur en pixels, elle, ne bouge presque pas. */
   background: linear-gradient(to bottom,
-    rgba(14, 14, 14, 0.5) 0,
-    rgba(14, 14, 14, 0) 130px);
+    rgba(14, 14, 14, 0.72) 0,
+    rgba(14, 14, 14, 0.34) 90px,
+    rgba(14, 14, 14, 0) 190px);
 }
 
 /* Le logo et la mention d'importateur forment un bloc, en haut à gauche :
