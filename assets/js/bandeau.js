@@ -10,6 +10,15 @@
    Un écouteur pour tous les <video data-film> de la page : les deux
    catalogues n'en ont qu'un chacun aujourd'hui, mais la règle ne doit pas
    être réécrite le jour où il y en aura un troisième.
+
+   Deux montages pour le bandeau professionnel, et non un seul étiré :
+   sur téléphone la boîte est presque carrée, sur ordinateur c'est une
+   bande très large. Un unique fichier 1920×480 posé dans la boîte du
+   téléphone n'en montrait que la tranche centrale, soit des pots coupés
+   en deux. Le choix se fait ici plutôt qu'avec l'attribut media d'un
+   <source>, que les navigateurs n'honorent pas sur une vidéo. L'affiche
+   fixe, elle, est un fond CSS : elle suit le même point de rupture, en
+   une seule ligne de feuille de style.
    ========================================================================== */
 (function () {
   "use strict";
@@ -22,12 +31,18 @@
   if (res.saveData === true) return;
   if (/(^|-)2g$/.test(res.effectiveType || "")) return;
 
+  // Le même seuil que la feuille de style (min-width: 900px), écrit une
+  // fois : si les deux divergent, on sert le montage large dans la boîte
+  // étroite, ce qui est exactement le défaut qu'on corrige.
+  var large = window.matchMedia("(min-width: 900px)").matches;
+
   function lancer() {
     Array.prototype.forEach.call(films, function (f) {
       if (f.querySelector("source")) return;
       var s = document.createElement("source");
       s.type = "video/mp4";
-      s.src = f.getAttribute("data-film");
+      var etroit = f.getAttribute("data-film-haut");
+      s.src = !large && etroit ? etroit : f.getAttribute("data-film");
       f.appendChild(s);
       f.load();
       var p = f.play();

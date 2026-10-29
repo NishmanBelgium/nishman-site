@@ -33,7 +33,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=330" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=331" />
 </head>
 <body class="catalog-body">
 <h1 class="titre-moteur">Catalogue professionnel NISHMAN — tarifs salons, barbershops et instituts</h1>
@@ -58,9 +58,14 @@
          porte d'entrée, et les faits restent dans le ruban juste dessous
          plutôt que d'être empilés sur l'image. -->
     <div class="bandeau">
+      <!-- Pas d'attribut poster : l'affiche fixe est le fond CSS du
+           bandeau, ce qui lui permet de changer au même point de rupture
+           que le film. Deux montages, l'un cadré pour la boîte presque
+           carrée du téléphone, l'autre pour la bande large. -->
       <video class="bandeau-film" muted loop playsinline preload="none"
-             poster="/assets/img/bandeau-pro.webp?v=330"
-             data-film="/assets/video/bandeau-pro.mp4?v=330" aria-hidden="true"></video>
+             data-film="/assets/video/bandeau-pro.mp4?v=331"
+             data-film-haut="/assets/video/bandeau-pro-haut.mp4?v=331"
+             aria-hidden="true"></video>
       <div class="bandeau-voile" aria-hidden="true"></div>
       <div class="bandeau-texte">
         <p class="bandeau-sur">Catalogue professionnel</p>
@@ -275,7 +280,7 @@
   <script src="/assets/js/catalog.js?v=320"></script>
   <script src="/assets/js/offre.js?v=205"></script>
   <script src="/assets/js/ruban-pro.js?v=303" defer></script>
-  <script src="/assets/js/bandeau.js?v=330" defer></script>
+  <script src="/assets/js/bandeau.js?v=331" defer></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 <script src="/assets/js/mesure.js?v=322" defer></script>
 </body>

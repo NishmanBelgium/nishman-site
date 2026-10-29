@@ -3535,7 +3535,11 @@ body.catalog-body { background: #0E0E0E; }
   overflow: hidden;
   height: clamp(300px, calc(100svh - 310px), 440px);
   margin: -34px calc(-1 * var(--coque)) 20px;
-  background: #0E0E0E;
+  /* L'affiche fixe vit ici et non dans l'attribut poster de la vidéo :
+     un attribut ne connaît pas les points de rupture, un fond si. Elle
+     est pré-assombrie au même taux que le filtre appliqué au film, pour
+     que l'image ne s'éclaircisse pas d'un coup quand la vidéo démarre. */
+  background: #0E0E0E url("/assets/img/bandeau-pro-haut.webp?v=331") center / cover no-repeat;
 }
 .bandeau-film {
   display: block;
@@ -3614,6 +3618,9 @@ body.catalog-body { background: #0E0E0E; }
    hauteur bien avant de manquer en largeur, et une affiche de 440 px de
    haut sur 1 400 de large repousserait les tarifs sans rien apporter. */
 @media (min-width: 900px) {
-  .bandeau { height: clamp(260px, 24vw, 380px); }
+  .bandeau {
+    height: clamp(260px, 24vw, 380px);
+    background-image: url("/assets/img/bandeau-pro.webp?v=331");
+  }
   .bandeau-titre { font-size: clamp(2.1rem, 2.9vw, 3.1rem); }
 }
