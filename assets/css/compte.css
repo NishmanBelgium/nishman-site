@@ -440,3 +440,17 @@
 @media (max-width: 560px) {
   .tva-bouton { width: 100%; }
 }
+
+/* Les actions de l'en-tête : « Chiffres du site » n'apparaît que pour le
+   compte d'administration, et ne doit pas pousser le bouton principal
+   hors de l'écran sur un téléphone. */
+.espace-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+@media (max-width: 560px) {
+  .espace-actions { width: 100%; }
+  .espace-actions .pill { flex: 1; justify-content: center; text-align: center; }
+}

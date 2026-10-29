@@ -3,7 +3,7 @@
    Répond toujours 200 : « personne » est une réponse valable, pas une erreur.
    ========================================================================== */
 
-import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
+import { json, compteConnecte, prolongerSiBesoin, estAdresseAdmin } from "../_commun.js";
 
 export async function onRequestGet({ request, env }) {
   if (!env.DB) return json({ connecte: false, souci: "base" });
@@ -17,6 +17,11 @@ export async function onRequestGet({ request, env }) {
 
   return json({
     connecte: true,
+    /* Dit à la page si elle doit montrer le lien vers les chiffres. Ne
+       donne aucun accès : /api/stats revérifie de son côté, et le dire
+       ici n'apprend rien à quelqu'un qui est déjà dans son propre
+       compte. */
+    admin: estAdresseAdmin(env, c.email),
     compte: {
       email: c.email,
       salon: c.salon,

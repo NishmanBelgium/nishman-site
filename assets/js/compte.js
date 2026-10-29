@@ -419,6 +419,11 @@
       .then(function (d) {
         if (!d.connecte) { location.href = "/pro/connexion/"; return; }
         MOI = d.compte;
+        /* Le lien vers les chiffres, pour le seul compte d'administration.
+           Il n'ouvre aucun accès — /api/stats revérifie de son côté — il
+           évite seulement d'avoir à retenir une adresse. */
+        var chiffres = $("#lien-chiffres");
+        if (chiffres && d.admin) chiffres.hidden = false;
         remplirEntete();
         remplirApercu();
         remplirProfil();
