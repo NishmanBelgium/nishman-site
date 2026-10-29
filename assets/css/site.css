@@ -2828,27 +2828,31 @@ body.catalog-body { background: #0E0E0E; }
   background: #0E0E0E;
 }
 
-/* Le film est un décor, pas un message : il est recadré au centre, jamais
-   déformé, et il n'empêche jamais de lire ce qui est posé dessus. */
-.accueil-film {
+/* --- Téléphone : le film passe derrière, ses proportions sont les bonnes.
+       Le voile est faible en haut et lourd en bas — le film respire là où
+       personne ne lit, le texte se pose sur un fond presque plein là où il
+       faut le lire. --- */
+.accueil-ecran {
   position: absolute;
   inset: 0;
-  z-index: -2;
+  z-index: -1;
+}
+.accueil-film {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
   filter: saturate(0.82) contrast(1.04);
 }
 .accueil-voile {
   position: absolute;
   inset: 0;
-  z-index: -1;
   background: linear-gradient(
     180deg,
-    rgba(14, 14, 14, 0.55) 0%,
-    rgba(14, 14, 14, 0.34) 26%,
-    rgba(14, 14, 14, 0.86) 66%,
-    rgba(14, 14, 14, 0.97) 100%
+    rgba(14, 14, 14, 0.5) 0%,
+    rgba(14, 14, 14, 0.34) 24%,
+    rgba(14, 14, 14, 0.9) 62%,
+    rgba(14, 14, 14, 0.98) 100%
   );
 }
 
@@ -2857,6 +2861,53 @@ body.catalog-body { background: #0E0E0E; }
   margin: 0 auto;
   width: 100%;
   text-align: center;
+}
+
+/* --- Grand écran : le film reprend sa forme verticale, en panneau à
+       droite, et le texte travaille sur fond plein à gauche. Plus aucun
+       mot n'est posé sur une image qui bouge. --- */
+@media (min-width: 900px) {
+  .accueil {
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 26vw, 400px);
+    gap: clamp(40px, 5vw, 80px);
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: clamp(48px, 6vw, 88px) 40px;
+  }
+  .accueil-in {
+    grid-column: 1;
+    text-align: left;
+    margin: 0;
+  }
+  .accueil-ecran {
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    aspect-ratio: 9 / 16;
+    max-height: 76svh;
+    overflow: hidden;
+    border: 1px solid rgba(247, 246, 242, 0.1);
+    border-radius: 2px;
+  }
+  /* Dans le panneau, le voile ne sert plus à sauver un texte : juste à
+     poser le film dans la page au lieu de l'y coller. */
+  .accueil-voile {
+    background: linear-gradient(
+      180deg,
+      rgba(14, 14, 14, 0.18) 0%,
+      rgba(14, 14, 14, 0) 30%,
+      rgba(14, 14, 14, 0.42) 100%
+    );
+  }
+  .accueil-logo { margin-left: 0; margin-right: 0; }
+  .accueil-sur { margin-left: 0; margin-right: 0; }
+  .portes { max-width: 640px; }
+  .accueil-reseaux { justify-content: flex-start; }
 }
 
 .accueil-logo {
