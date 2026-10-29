@@ -12,15 +12,14 @@
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=320" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=320" />
-<link rel="stylesheet" href="/assets/css/stats.css?v=279" />
+<link rel="stylesheet" href="/assets/css/stats.css?v=326" />
 </head>
 <body data-palette="#ED9B24,#1F6FB2">
 
 <header class="bar">
   <div class="wrap bar-in">
-    <a class="logo" href="/pro/" aria-label="Nishman"><img src="/assets/img/nishman.svg" alt="Nishman" /></a>
+    <a class="logo" href="/" aria-label="Accueil Nishman"><img src="/assets/img/nishman.svg" alt="Nishman" /></a>
     <div class="bar-sp"></div>
-    <a class="pill" href="/boutique/">Boutique</a>
     <a class="pill" href="/pro/compte/">Mon compte</a>
   </div>
 </header>
@@ -47,17 +46,42 @@
       </div>
       <!-- Les filtres sur une seule ligne, au-dessus de tout le reste :
            ils commandent la page entière, pas un graphique en particulier. -->
-      <nav class="st-filtres" id="st-filtres" aria-label="Période">
-        <button type="button" data-jours="7">7 jours</button>
-        <button type="button" data-jours="30" aria-pressed="true">30 jours</button>
-        <button type="button" data-jours="90">90 jours</button>
-      </nav>
+      <div class="st-commandes">
+        <!-- Le site sert deux clientèles qui n'ont rien à voir : des salons
+             qui achètent au carton hors TVA, et des particuliers. Un chiffre
+             qui mélange les deux ne se pilote pas — d'où ces trois vues. -->
+        <nav class="st-filtres st-vues" id="st-vues" aria-label="Côté du site">
+          <button type="button" data-vue="tout" aria-pressed="true">Tout le site</button>
+          <button type="button" data-vue="boutique">Boutique</button>
+          <button type="button" data-vue="pro">Professionnel</button>
+        </nav>
+        <nav class="st-filtres" id="st-filtres" aria-label="Période">
+          <button type="button" data-jours="7">7 jours</button>
+          <button type="button" data-jours="30" aria-pressed="true">30 jours</button>
+          <button type="button" data-jours="90">90 jours</button>
+        </nav>
+      </div>
     </div>
 
     <!-- Les six chiffres qui se regardent en premier. Chacun porte sa
          comparaison avec la période précédente : un nombre seul ne se
          juge pas. -->
     <section class="st-cartes" id="st-cartes" aria-label="Chiffres clés"></section>
+
+    <!-- Où va le trafic. Visible seulement dans la vue d'ensemble : dans
+         les deux autres, la réponse est dans le titre. -->
+    <section class="st-bloc st-partage" id="st-repartition" hidden>
+      <div class="st-bloc-tete"><h2>Où va le trafic</h2></div>
+      <div id="st-repartition-barre"></div>
+    </section>
+
+    <!-- Les deux portes de l'accueil. Comptées seulement depuis leur mise
+         en place : la page doit le dire plutôt que d'afficher un zéro qui
+         ressemble à un échec. -->
+    <section class="st-bloc" id="st-portes" hidden>
+      <div class="st-bloc-tete"><h2>Les deux portes de l'accueil</h2></div>
+      <div id="st-portes-corps"></div>
+    </section>
 
     <section class="st-bloc">
       <div class="st-bloc-tete">
@@ -72,6 +96,13 @@
       <div class="st-bloc-tete"><h2>Commandes par jour</h2></div>
       <div class="st-graph" id="st-graph-commandes"></div>
       <p class="st-vide" id="st-vide-commandes" hidden>Aucune commande sur la période.</p>
+    </section>
+
+    <!-- Les salons. La boutique n'a pas de clients à compter : on y achète
+         sans compte, et c'est voulu. -->
+    <section class="st-bloc" id="st-clients" hidden>
+      <div class="st-bloc-tete"><h2>Clients professionnels</h2></div>
+      <div id="st-clients-corps"></div>
     </section>
 
     <section class="st-souffrance" id="st-souffrance" hidden>
@@ -89,15 +120,18 @@
 
     <p class="st-note">
       Comptage interne, sans cookie ni identifiant : les visites sont totalisées à
-      l'écriture et aucun parcours individuel n'existe en base. Les commandes sont
-      celles de la boutique grand public ; les ventes professionnelles passées hors du
-      site ne sont pas comptées ici, pour que le taux de transformation garde un sens.
+      l'écriture et aucun parcours individuel n'existe en base. C'est aussi pourquoi
+      il n'y a pas d'entonnoir visiteur par visiteur — il faudrait reconnaître les
+      gens, donc poser un identifiant, donc un bandeau de consentement.
+      Les commandes comptées sont celles payées en ligne : les ventes professionnelles
+      passées par devis, au salon ou par téléphone vivent dans Odoo et n'apparaissent
+      pas ici, pour que le taux de transformation garde un sens.
     </p>
 
   </div>
 
 </main>
 
-<script src="/assets/js/stats.js?v=279" defer></script>
+<script src="/assets/js/stats.js?v=326" defer></script>
 </body>
 </html>

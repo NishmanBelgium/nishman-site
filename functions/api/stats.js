@@ -215,7 +215,13 @@ export async function onRequestGet({ request, env }) {
     audience,
     commerce: { ...vente, taux_transformation: taux(vente, audienceBoutique) },
     precedent: {
-      audience: { vues: audienceAvant.vues, sessions: audienceAvant.sessions },
+      audience: {
+        vues: audienceAvant.vues, sessions: audienceAvant.sessions,
+        /* La répartition d'avant, pour que les deux cartes de segment
+           portent une vraie comparaison au lieu d'un « nouveau » qui ne
+           veut rien dire. */
+        par_segment: audienceAvant.par_segment,
+      },
       commerce: {
         commandes: venteAvant.commandes, chiffre: venteAvant.chiffre,
         panier_moyen: venteAvant.panier_moyen,

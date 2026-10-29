@@ -27,7 +27,7 @@
   var TRAIT = "rgba(10,10,10,0.10)";
 
   var $ = function (s) { return document.querySelector(s); };
-  var etat = { jours: 30, donnees: null };
+  var etat = { jours: 30, vue: "tout", donnees: null };
 
   function ech(t) {
     return String(t == null ? "" : t)
@@ -74,19 +74,56 @@
       + "</article>";
   }
 
+  /* La vue choisie décide de ce que portent « audience », « commerce » et
+     « précédent ». Tout le reste de la page lit ces trois-là et n'a pas à
+     savoir de quel côté on regarde. */
+  function cote(d) {
+    if (etat.vue === "boutique") return d.boutique;
+    if (etat.vue === "pro") return d.pro;
+    return { audience: d.audience, commerce: d.commerce, precedent: d.precedent };
+  }
+
+  function part(n, total) {
+    return total ? Math.round((n / total) * 100) : 0;
+  }
+
   function dessinerCartes(d) {
-    var a = d.audience, c = d.commerce, p = d.precedent;
+    var k = cote(d), a = k.audience, c = k.commerce, p = k.precedent;
     var taux = c.taux_transformation;
-    $("#st-cartes").innerHTML =
+    var tauxTexte = taux === null ? "—" : String(taux).replace(".", ",") + " %";
+    var out =
         carte("Visites", a.sessions, p.audience.sessions, nombre(a.sessions))
-      + carte("Pages vues", a.vues, p.audience.vues, nombre(a.vues))
-      + carte("Commandes", c.commandes, p.commerce.commandes, nombre(c.commandes))
-      + carte("Chiffre d'affaires", c.chiffre, p.commerce.chiffre, euros(c.chiffre))
-      + carte("Panier moyen", c.panier_moyen, p.commerce.panier_moyen, euros(c.panier_moyen))
-      + carte("Taux de transformation",
-              taux === null ? 0 : taux,
-              p.commerce.taux_transformation,
-              taux === null ? "—" : String(taux).replace(".", ",") + " %");
+      + carte("Pages vues", a.vues, p.audience.vues, nombre(a.vues));
+
+    if (etat.vue === "tout") {
+      /* Dans la vue d'ensemble, les deux moitiés valent mieux que le
+         panier moyen : c'est le chiffre qui dit où porter l'effort. */
+      var seg = {}, segAvant = {};
+      (a.par_segment || []).forEach(function (s) { seg[s.segment] = Number(s.vues || 0); });
+      (p.audience.par_segment || []).forEach(function (s) {
+        segAvant[s.segment] = Number(s.vues || 0);
+      });
+      out += carte("Vues boutique", seg.boutique || 0, segAvant.boutique,
+                   nombre(seg.boutique || 0) + " · " + part(seg.boutique || 0, a.vues) + " %")
+           + carte("Vues catalogue pro", seg.pro || 0, segAvant.pro,
+                   nombre(seg.pro || 0) + " · " + part(seg.pro || 0, a.vues) + " %")
+           + carte("Commandes boutique", c.commandes, p.commerce.commandes, nombre(c.commandes))
+           + carte("Chiffre boutique", c.chiffre, p.commerce.chiffre, euros(c.chiffre));
+    } else if (etat.vue === "pro") {
+      out += carte("Comptes créés", d.clients.nouveaux, d.clients.nouveaux_avant,
+                   nombre(d.clients.nouveaux))
+           + carte("Commandes payées en ligne", c.commandes, p.commerce.commandes,
+                   nombre(c.commandes))
+           + carte("Chiffre en ligne", c.chiffre, p.commerce.chiffre, euros(c.chiffre))
+           + carte("Panier moyen", c.panier_moyen, p.commerce.panier_moyen, euros(c.panier_moyen));
+    } else {
+      out += carte("Commandes", c.commandes, p.commerce.commandes, nombre(c.commandes))
+           + carte("Chiffre d'affaires", c.chiffre, p.commerce.chiffre, euros(c.chiffre))
+           + carte("Panier moyen", c.panier_moyen, p.commerce.panier_moyen, euros(c.panier_moyen))
+           + carte("Taux de transformation", taux === null ? 0 : taux,
+                   p.commerce.taux_transformation, tauxTexte);
+    }
+    $("#st-cartes").innerHTML = out;
   }
 
   /* --- Le dessin ------------------------------------------------------- */
@@ -229,13 +266,106 @@
       + corps + "</tbody></table>";
   }
 
+  /* --- La répartition, les portes, les clients ------------------------- */
+
+  var NOMS_SEGMENT = {
+    accueil: "Page d'accueil", boutique: "Boutique", pro: "Catalogue professionnel",
+    commun: "Pages communes",
+  };
+  var COULEURS_SEGMENT = {
+    accueil: "#6e6e73", boutique: OR, pro: BLEU, commun: "#b9b5ac",
+  };
+
+  function repartition(d) {
+    var zone = $("#st-repartition");
+    var lignes = (d.audience.par_segment || []).filter(function (s) { return Number(s.vues) > 0; });
+    if (etat.vue !== "tout" || !lignes.length) { zone.hidden = true; return; }
+    zone.hidden = false;
+    var total = lignes.reduce(function (s, l) { return s + Number(l.vues); }, 0) || 1;
+
+    /* Une seule barre partagée plutôt que quatre barres côte à côte : la
+       question est « quelle part », pas « combien », et une part se lit
+       mieux sur un tout que sur une échelle. */
+    var barre = lignes.map(function (l) {
+      var p = (Number(l.vues) / total) * 100;
+      return '<span class="st-segment" style="width:' + p.toFixed(2) + "%;background:"
+        + (COULEURS_SEGMENT[l.segment] || "#999") + '" title="'
+        + ech((NOMS_SEGMENT[l.segment] || l.segment) + " : " + nombre(l.vues) + " vues")
+        + '"></span>';
+    }).join("");
+
+    var legende = lignes.map(function (l) {
+      return '<span class="st-cle"><i style="background:'
+        + (COULEURS_SEGMENT[l.segment] || "#999") + '"></i>'
+        + ech(NOMS_SEGMENT[l.segment] || l.segment) + " — "
+        + nombre(l.vues) + " vues · " + part(Number(l.vues), total) + " %</span>";
+    }).join("");
+
+    $("#st-repartition-barre").innerHTML =
+      '<div class="st-barre-partagee">' + barre + "</div>"
+      + '<div class="st-legende st-legende-bas">' + legende + "</div>";
+  }
+
+  function portes(d) {
+    var zone = $("#st-portes");
+    if (etat.vue !== "tout") { zone.hidden = true; return; }
+    zone.hidden = false;
+    var p = d.portes || {};
+    var pro = Number(p["porte-pro"] || 0), bout = Number(p["porte-boutique"] || 0);
+    var total = pro + bout;
+
+    if (!total) {
+      $("#st-portes-corps").innerHTML =
+        '<p class="st-vide">Rien encore. Ces deux compteurs ont été posés le '
+        + '29 octobre 2026 : les chiffres commenceront à la première visite '
+        + "qui suit, pas avant.</p>";
+      return;
+    }
+
+    $("#st-portes-corps").innerHTML =
+      '<div class="st-barre-partagee">'
+      + '<span class="st-segment" style="width:' + ((pro / total) * 100).toFixed(2)
+      + '%;background:' + BLEU + '"></span>'
+      + '<span class="st-segment" style="width:' + ((bout / total) * 100).toFixed(2)
+      + '%;background:' + OR + '"></span></div>'
+      + '<div class="st-legende st-legende-bas">'
+      + '<span class="st-cle"><i style="background:' + BLEU + '"></i>Tarifs professionnels — '
+      + nombre(pro) + " clics · " + part(pro, total) + " %</span>"
+      + '<span class="st-cle"><i style="background:' + OR + '"></i>Boutique — '
+      + nombre(bout) + " clics · " + part(bout, total) + " %</span></div>"
+      + '<p class="st-lead">Sur ' + nombre(d.audience.sessions) + " visites, "
+      + nombre(total) + " ont poussé l'une des deux portes.</p>";
+  }
+
+  function clients(d) {
+    var zone = $("#st-clients");
+    if (etat.vue === "boutique" || !d.clients) { zone.hidden = true; return; }
+    zone.hidden = false;
+    var c = d.clients;
+    var pays = (c.par_pays || []).map(function (l) {
+      return "<tr><td>" + ech(l.pays || "—") + '</td><td class="st-num">'
+        + nombre(l.n) + "</td></tr>";
+    }).join("");
+
+    $("#st-clients-corps").innerHTML =
+      '<p class="st-lead"><b>' + nombre(c.nouveaux) + "</b> compte(s) créé(s) sur la période, "
+      + "<b>" + nombre(c.total) + "</b> au total depuis l'ouverture. "
+      + "Un salon ouvre un compte avant de commander : cette courbe précède "
+      + "les commandes, elle ne les suit pas.</p>"
+      + (pays
+          ? '<table class="st-table"><thead><tr><th>Pays</th>'
+            + '<th class="st-num">Comptes</th></tr></thead><tbody>' + pays + "</tbody></table>"
+          : '<p class="st-vide">Aucun compte pour l\'instant.</p>');
+  }
+
   function souffrance(liste) {
     var zone = $("#st-souffrance");
     if (!liste || !liste.length) { zone.hidden = true; return; }
     zone.hidden = false;
     $("#st-souffrance-liste").innerHTML = liste.map(function (c) {
+      var ou = c.cote === "pro" ? "professionnel" : "boutique";
       return '<div class="st-bloquee"><p class="st-bloquee-ref">' + ech(c.ref)
-        + ' <span>arrêtée à l\'étape « ' + ech(c.etape) + ' »</span></p>'
+        + ' <span>côté ' + ech(ou) + ", arrêtée à l'étape « " + ech(c.etape) + " »</span></p>"
         + '<p class="st-bloquee-note">' + ech(c.note || "—") + "</p></div>";
     }).join("");
   }
@@ -244,6 +374,7 @@
 
   function dessiner(d) {
     etat.donnees = d;
+    var k = cote(d);
 
     $("#st-periode").textContent =
       "Du " + jourCourt(d.periode.depuis) + " au " + jourCourt(d.periode.jusqua)
@@ -260,14 +391,14 @@
       jours.push(new Date(debut.getTime() + i * 86400000).toISOString().slice(0, 10));
     }
     var parJour = {}, parJourCmd = {};
-    (d.audience.par_jour || []).forEach(function (l) { parJour[l.jour] = l; });
-    (d.commerce.par_jour || []).forEach(function (l) { parJourCmd[l.jour] = l; });
+    (k.audience.par_jour || []).forEach(function (l) { parJour[l.jour] = l; });
+    (k.commerce.par_jour || []).forEach(function (l) { parJourCmd[l.jour] = l; });
 
     var sessions = jours.map(function (j) { return Number((parJour[j] || {}).sessions || 0); });
     var vues = jours.map(function (j) { return Number((parJour[j] || {}).vues || 0); });
     var commandes = jours.map(function (j) { return Number((parJourCmd[j] || {}).commandes || 0); });
 
-    var aucuneVisite = !d.audience.vues;
+    var aucuneVisite = !k.audience.vues;
     $("#st-vide-visites").hidden = !aucuneVisite;
     $("#st-graph-visites").hidden = aucuneVisite;
     $("#st-legende-visites").innerHTML = aucuneVisite ? "" :
@@ -280,15 +411,29 @@
       ]);
     }
 
-    var aucuneCmd = !d.commerce.commandes;
+    var aucuneCmd = !k.commerce.commandes;
     $("#st-vide-commandes").hidden = !aucuneCmd;
     $("#st-graph-commandes").hidden = aucuneCmd;
     if (!aucuneCmd) graphiqueBarres("#st-graph-commandes", jours, commandes, BLEU, "commande(s)");
 
-    tableau("#st-pages", d.audience.par_chemin, "chemin", "Page");
-    tableau("#st-sources", d.audience.par_source, "source", "Source");
-    tableau("#st-pays", d.audience.par_pays, "pays", "Pays");
-    tableau("#st-appareils", d.audience.par_appareil, "appareil", "Appareil");
+    /* Le libellé dit ce qui est compté. « Commandes » tout court, dans la
+       vue professionnelle, laisserait croire que les devis et les ventes
+       au salon y sont — ils sont dans Odoo, pas ici. */
+    var titreCmd = document.querySelector("#st-graph-commandes")
+      .closest(".st-bloc").querySelector("h2");
+    titreCmd.textContent = etat.vue === "pro"
+      ? "Commandes professionnelles payées en ligne, par jour"
+      : etat.vue === "boutique" ? "Commandes de la boutique, par jour"
+      : "Commandes de la boutique, par jour";
+
+    repartition(d);
+    portes(d);
+    clients(d);
+
+    tableau("#st-pages", k.audience.par_chemin, "chemin", "Page");
+    tableau("#st-sources", k.audience.par_source, "source", "Source");
+    tableau("#st-pays", k.audience.par_pays, "pays", "Pays");
+    tableau("#st-appareils", k.audience.par_appareil, "appareil", "Appareil");
     souffrance(d.en_souffrance);
   }
 
@@ -322,6 +467,19 @@
       x.setAttribute("aria-pressed", x === b ? "true" : "false");
     });
     charger();
+  });
+
+  /* Changer de vue ne recharge rien : tout est déjà là. Une requête de
+     plus pour redessiner des chiffres qu'on tient déjà serait du temps
+     d'attente offert à personne. */
+  $("#st-vues").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-vue]");
+    if (!b) return;
+    etat.vue = b.dataset.vue;
+    Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) {
+      x.setAttribute("aria-pressed", x === b ? "true" : "false");
+    });
+    if (etat.donnees) dessiner(etat.donnees);
   });
 
   charger();

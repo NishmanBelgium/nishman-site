@@ -178,3 +178,41 @@
   .st-cartes { grid-template-columns: repeat(2, 1fr); }
   .st-carte-valeur { font-size: 21px; }
 }
+
+/* ==========================================================================
+   LES TROIS VUES, ET LES BLOCS QUI VONT AVEC
+   ========================================================================== */
+
+.st-commandes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+@media (max-width: 720px) {
+  .st-commandes { align-items: stretch; }
+  .st-commandes .st-filtres { justify-content: stretch; }
+  .st-commandes .st-filtres button { flex: 1; }
+}
+
+/* La bascule entre les deux moitiés du site commande toute la page : elle
+   se distingue du choix de période, qui n'en règle que l'étendue. */
+.st-vues button[aria-pressed="true"] { background: #0e0e0f; color: #fff; border-color: #0e0e0f; }
+
+/* Une seule barre partagée : la question est « quelle part », pas
+   « combien », et une part se lit sur un tout, pas sur une échelle. */
+.st-barre-partagee {
+  display: flex;
+  width: 100%;
+  height: 22px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: rgba(10, 10, 10, 0.06);
+}
+.st-segment { display: block; height: 100%; }
+.st-legende-bas {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
