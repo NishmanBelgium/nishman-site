@@ -42,9 +42,15 @@ export async function onRequestPost({ request, env }) {
   // client ne puisse pas mettre au panier ce qu'il n'aura pas, plutôt que de
   // le lui apprendre à l'instant de payer.
   let stock = null;
+  let stock_erreur = null;
   try {
     stock = await stockVendable(env, (produits || []).map((p) => p && p.ean));
-  } catch (e) { /* la boutique reste utilisable ; le contrôle serveur tient */ }
+  } catch (e) {
+    // La boutique reste utilisable et le contrôle de payer-public tient le
+    // filet. Mais la raison est dite : une panne de stock muette est une
+    // panne qu'on découvre trois jours plus tard.
+    stock_erreur = String((e && e.message) || e).slice(0, 160);
+  }
 
   // Et le panier lui-même, ramené dans les clous avant d'annoncer un total.
   let epuises = [];
@@ -66,6 +72,7 @@ export async function onRequestPost({ request, env }) {
     ok: true,
     ...resultat,
     stock,
+    stock_erreur,
     epuises,
     reduits,
     regles: {
