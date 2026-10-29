@@ -2802,10 +2802,19 @@ body.has-offre-barre .search-sticky {
    du texte sans sacrifier l'un ou l'autre.
    ========================================================================== */
 
+/* Le body global est resté en « display: flex » centré, hérité de l'époque
+   où le site tenait dans une seule carte. Sans cette remise à plat, la
+   porte et le pied se rangent côte à côte et le film ne fait plus toute
+   la largeur. Le catalogue fait exactement la même chose, plus bas. */
 body.accueil-body {
+  display: block;
+  padding: 0;
+  align-items: initial;
+  min-height: 0;
   background: #0E0E0E;
   color: #F7F6F2;
 }
+body.accueil-body::before { display: none; }
 body.catalog-body { background: #0E0E0E; }
 
 .accueil {
