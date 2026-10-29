@@ -3539,7 +3539,7 @@ body.catalog-body { background: #0E0E0E; }
      un attribut ne connaît pas les points de rupture, un fond si. Elle
      est pré-assombrie au même taux que le filtre appliqué au film, pour
      que l'image ne s'éclaircisse pas d'un coup quand la vidéo démarre. */
-  background: #0E0E0E url("/assets/img/bandeau-pro-haut.webp?v=332") center / cover no-repeat;
+  background: #0E0E0E url("/assets/img/bandeau-pro-haut.webp?v=333") center / cover no-repeat;
 }
 /* Plus de saturate ni de contrast ici : le film est maintenant étalonné
    à la source, sur les rushes 10 bits. Les corriger une seconde fois au
@@ -3630,7 +3630,7 @@ body.catalog-body { background: #0E0E0E; }
 @media (min-width: 900px) {
   .bandeau {
     height: clamp(260px, 24vw, 380px);
-    background-image: url("/assets/img/bandeau-pro.webp?v=332");
+    background-image: url("/assets/img/bandeau-pro.webp?v=333");
   }
   .bandeau-titre { font-size: clamp(2.1rem, 2.9vw, 3.1rem); }
 }

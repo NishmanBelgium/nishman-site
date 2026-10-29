@@ -473,8 +473,8 @@
    de 0,58 × 0,62 — où il ne restait qu'une ombre d'étagère — à 0,80 ×
    0,88. La contrepartie est un voile plus ferme et plus régulier, parce
    qu'ici le texte peut tomber n'importe où sur l'image : le pire pixel
-   de toute la boucle a été mesuré, pas une bande. Titre 9,6:1 pour un
-   seuil à 3, texte courant 5,3:1 pour un seuil à 4,5. */
+   de toute la boucle a été mesuré, pas une bande. Titre 6,8:1 pour un
+   seuil à 3, texte courant 4,8:1 pour un seuil à 4,5. */
 .hero-film .bandeau-film {
   position: absolute;
   inset: 0;
@@ -483,8 +483,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.80);
-  opacity: 0.88;
+  filter: brightness(0.88);
+  opacity: 0.95;
 }
 .hero-film .bandeau-voile {
   position: absolute;
@@ -492,11 +492,14 @@
   z-index: -1;
   background: linear-gradient(
     180deg,
-    rgba(16, 16, 16, 0.74) 0%,
-    rgba(16, 16, 16, 0.68) 45%,
-    rgba(16, 16, 16, 0.80) 100%
+    rgba(16, 16, 16, 0.68) 0%,
+    rgba(16, 16, 16, 0.62) 45%,
+    rgba(16, 16, 16, 0.74) 100%
   );
 }
-/* Le texte reprend quelques points de clarté : le film garde alors plus
-   de lumière à marge de contraste égale. */
-.hero-film p { color: #C4C0B8; }
+/* Le texte reprend quelques points de clarté, et ce n'est pas cosmétique :
+   chaque point gagné sur sa clarté se rend en lumière sur le film, à marge
+   de contraste égale. Mesuré, le passage de #C4C0B8 à #DCD9D3 permet au
+   film de monter de 0,80 × 0,88 à 0,88 × 0,95 — un tiers de lumière en
+   plus — sans descendre sous 4,5:1. */
+.hero-film p { color: #DCD9D3; }
