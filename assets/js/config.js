@@ -14,7 +14,10 @@ const AGENTS = {
 };
 
 const SHARED = {
-  instagram: "https://www.instagram.com/nishmanfr_be/",
+  // Vérifiés le 29/10/2026 : « nishmanfr_be » renvoyait une page
+  // introuvable depuis le pied du catalogue professionnel.
+  instagram: "https://www.instagram.com/nishman.be.fr/",
+  facebook: "https://www.facebook.com/profile.php?id=61592867044572",
   catalog: "/produits/",
   website: "https://nishman.be",
   bio: "Distributeur officiel Nishman pour la Belgique, la France et le Luxembourg. Produits professionnels pour barbers et coiffeurs.",

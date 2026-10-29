@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&family=Baloo+2:wght@600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
 
@@ -33,7 +33,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=282" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=303" />
 </head>
 <body class="catalog-body">
 <h1 class="titre-moteur">Catalogue professionnel NISHMAN — tarifs salons, barbershops et instituts</h1>
@@ -97,17 +97,47 @@
     </div>
 
 
-    <!-- Bandeau fin : qui nous sommes et à quelles conditions on commande.
-         Une ligne de faits vérifiables, pas d'encadrés — c'est une mention,
-         pas une promotion. Rien sur le paiement sécurisé tant qu'il n'est
-         pas en service : on n'annonce pas ce qui n'existe pas encore. -->
-    <p class="ban-faits" id="ban-port">
-      <span class="ban-fait ban-fait-cle" id="ban-importateur"></span>
-      <span class="ban-fait" id="ban-ht"></span>
-      <span class="ban-fait" id="ban-be"></span>
-      <span class="ban-fait" id="ban-fr"></span>
-      <span class="ban-fait" id="ban-retrait"></span>
-    </p>
+    <!-- Bandeau : qui nous sommes et à quelles conditions on commande.
+         Des faits vérifiables, pas une promotion. Rien sur le paiement
+         sécurisé tant qu'il n'est pas en service : on n'annonce pas ce qui
+         n'existe pas encore.
+
+         Il défile parce qu'il y a cinq mentions à faire tenir : empilées,
+         elles formaient un pavé de deux lignes qu'on ne lisait pas. Le
+         défilement s'arrête au survol et au clavier, et ne démarre pas du
+         tout si le système demande moins d'animations — la seconde copie
+         est alors masquée et le texte revient à la ligne normalement. -->
+    <div class="ruban-pro" id="ban-port">
+      <div class="ruban-pro-piste">
+        <div class="ruban-pro-lot" id="ruban-pro-source">
+          <span class="rp-item rp-cle" id="ban-importateur"></span>
+          <span class="rp-item" id="ban-ht"></span>
+          <span class="rp-item">
+            <svg class="rp-drapeau" viewBox="0 0 9 6" aria-hidden="true">
+              <rect width="3" height="6" x="0" fill="#000"/>
+              <rect width="3" height="6" x="3" fill="#FAE042"/>
+              <rect width="3" height="6" x="6" fill="#ED2939"/>
+            </svg>
+            <span id="ban-be"></span>
+          </span>
+          <span class="rp-item">
+            <svg class="rp-drapeau" viewBox="0 0 9 6" aria-hidden="true">
+              <rect width="3" height="6" x="0" fill="#002395"/>
+              <rect width="3" height="6" x="3" fill="#FFF"/>
+              <rect width="3" height="6" x="6" fill="#ED2939"/>
+            </svg>
+            <svg class="rp-drapeau" viewBox="0 0 9 6" aria-hidden="true">
+              <rect width="9" height="2" y="0" fill="#ED2939"/>
+              <rect width="9" height="2" y="2" fill="#FFF"/>
+              <rect width="9" height="2" y="4" fill="#00A1DE"/>
+            </svg>
+            <span id="ban-fr"></span>
+          </span>
+          <span class="rp-item" id="ban-retrait"></span>
+        </div>
+        <div class="ruban-pro-lot" id="ruban-pro-copie" aria-hidden="true"></div>
+      </div>
+    </div>
 
     <div data-offre-flash data-offre-popup></div>
 
@@ -231,9 +261,10 @@
     </div>
   </div>
 
-  <script src="/assets/js/config.js?v=205"></script>
-  <script src="/assets/js/catalog.js?v=205"></script>
+  <script src="/assets/js/config.js?v=303"></script>
+  <script src="/assets/js/catalog.js?v=303"></script>
   <script src="/assets/js/offre.js?v=205"></script>
+  <script src="/assets/js/ruban-pro.js?v=303" defer></script>
   <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
 <script src="/assets/js/mesure.js?v=278" defer></script>
 </body>

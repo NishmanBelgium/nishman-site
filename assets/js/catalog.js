@@ -1848,17 +1848,16 @@
         // Facebook : lu dans config.js s'il y est, sinon l'adresse de la page.
         const fb = (typeof SHARED !== "undefined" && SHARED.facebook)
           ? SHARED.facebook
-          : "https://www.facebook.com/share/19Kw4PGMRF/";
+          : "https://www.facebook.com/profile.php?id=61592867044572";
+        // Les glyphes d'Instagram et de Facebook sont des marques déposées :
+        // ils ne sont pas redessinés ici. Le libellé fait le même travail,
+        // et les fichiers officiels de Meta pourront prendre sa place.
         const liens = [];
         if (ig) {
-          // Le logo d'Instagram est une marque déposée : on ne le redessine pas.
-          // Un lien texte fait le même travail et ne dépend d'aucun fichier.
           liens.push(`<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">Instagram</a>`);
         }
         if (fb) {
-          liens.push(`<a class="foot-btn foot-fb" target="_blank" rel="noopener" href="${fb}">
-               <svg class="foot-fb-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor"
-                 d="M14.5 8.5V6.9c0-.7.2-1.1 1.2-1.1h1.6V3.1A21 21 0 0 0 15 3c-2.3 0-3.9 1.4-3.9 4v1.5H8.6V11h2.5v8h3.4v-8h2.4l.4-2.5h-2.8Z"/></svg>Facebook</a>`);
+          liens.push(`<a class="foot-btn foot-fb" target="_blank" rel="noopener" href="${fb}">Facebook</a>`);
         }
         social.innerHTML = liens.join("");
       }
