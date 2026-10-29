@@ -72,7 +72,7 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Enregistrement…",
     valid_note: "Votre commande est enregistrée chez nous et vous recevez le devis correspondant par e-mail. Aucun paiement n'est prélevé à cette étape.",
 
-    pay_cta: "Payer maintenant",
+    pay_cta: "Aller au paiement",
     pay_note: "Carte bancaire, Bancontact ou virement instantané. Votre facture est émise dès le paiement reçu.",
     pay_ou: "ou",
     pay_envoi: "Ouverture du paiement…",
@@ -186,7 +186,7 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Saving…",
     valid_note: "Your order is recorded with us and you receive the matching quotation by e-mail. No payment is taken at this stage.",
 
-    pay_cta: "Pay now",
+    pay_cta: "Continue to payment",
     pay_note: "Card, Bancontact or instant transfer. Your invoice is issued as soon as the payment arrives.",
     pay_ou: "or",
     pay_envoi: "Opening payment…",
@@ -299,7 +299,7 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Bezig met opslaan…",
     valid_note: "Uw bestelling wordt bij ons geregistreerd en u ontvangt de bijbehorende offerte per e-mail. In deze stap wordt niets afgeschreven.",
 
-    pay_cta: "Nu betalen",
+    pay_cta: "Naar de betaling",
     pay_note: "Kaart, Bancontact of directe overschrijving. Uw factuur wordt opgemaakt zodra de betaling binnen is.",
     pay_ou: "of",
     pay_envoi: "Betaling wordt geopend…",
@@ -412,7 +412,7 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Wird gespeichert…",
     valid_note: "Ihre Bestellung wird bei uns erfasst und Sie erhalten das zugehörige Angebot per E-Mail. In diesem Schritt wird nichts abgebucht.",
 
-    pay_cta: "Jetzt bezahlen",
+    pay_cta: "Zur Zahlung",
     pay_note: "Karte, Bancontact oder Sofortüberweisung. Ihre Rechnung wird erstellt, sobald die Zahlung eingeht.",
     pay_ou: "oder",
     pay_envoi: "Zahlung wird geöffnet…",
@@ -525,7 +525,7 @@ window.NISHMAN_CMD_LANGUES = {
     valid_envoi: "Kaydediliyor…",
     valid_note: "Sipari\u015finiz taraf\u0131m\u0131zca kaydedilir ve ilgili teklifi e-posta ile al\u0131rs\u0131n\u0131z. Bu a\u015famada hi\u00e7bir \u00f6deme al\u0131nmaz.",
 
-    pay_cta: "\u015eimdi \u00f6de",
+    pay_cta: "\u00d6demeye ge\u00e7",
     pay_note: "Kart, Bancontact veya an\u0131nda havale. \u00d6deme ula\u015ft\u0131\u011f\u0131 anda faturan\u0131z d\u00fczenlenir.",
     pay_ou: "veya",
     pay_envoi: "\u00d6deme a\u00e7\u0131l\u0131yor\u2026",

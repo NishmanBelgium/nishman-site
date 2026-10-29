@@ -159,7 +159,10 @@
     if (!panier[ean]) delete panier[ean];
     ecrirePanier();
     majPanier();
-    if (n > 0) toast("Ajouté au panier");
+    // Un ajout ouvre le tiroir. Le petit message seul obligeait à rouvrir
+    // le panier pour vérifier que l'article y était ; voir la ligne
+    // apparaître est la seule confirmation qui ne laisse aucun doute.
+    if (n > 0) ouvrirPanier(true);
   }
 
   function lignes() {
@@ -195,6 +198,16 @@
   }
 
   function majPanier() {
+    // Le dernier calcul du serveur porte sur le panier d'AVANT. Le garder
+    // à l'écran le temps que la nouvelle réponse arrive, c'est afficher un
+    // sous-total périmé pendant une demi-seconde — c'est exactement ce qui
+    // donnait l'impression que l'article n'était pas arrivé.
+    //
+    // On l'oublie donc tout de suite. L'estimation locale prend le relais,
+    // et depuis que le serveur calcule lui aussi à partir du prix TTC
+    // affiché, les deux tombent sur le même centime : le chiffre ne saute
+    // plus quand la réponse arrive, il se confirme.
+    CALCUL = null;
     dessinerPanier();
     demanderCalcul();
   }

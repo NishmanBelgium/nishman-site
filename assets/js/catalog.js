@@ -71,6 +71,7 @@
       seeSelection: "voir ma sélection", discover: "Découvrir",
       askPrice: "Prix sur demande", proAccess: "Accès professionnel",
       priceLoading: "Chargement des tarifs…",
+      priceDown: "Tarifs momentanément indisponibles. Écrivez-nous à contact@nishman.be, nous vous les transmettons.",
       noResults: "Aucun produit ne correspond à votre recherche.",
       welcomeTitle: "Catalogue professionnel",
       welcomeText: "Ce catalogue s'adresse aux salons de coiffure et aux barbiers. Les tarifs affichés sont nos prix professionnels. Pour commander, il faut un compte — la création est immédiate et gratuite.",
@@ -138,6 +139,7 @@
       seeSelection: "view my selection", discover: "Discover",
       askPrice: "Price on request", proAccess: "Professional access",
       priceLoading: "Loading prices…",
+      priceDown: "Prices are temporarily unavailable. Email contact@nishman.be and we will send them to you.",
       noResults: "No product matches your search.",
       welcomeTitle: "Trade catalogue",
       welcomeText: "This catalogue is for hair salons and barbershops. The prices shown are our trade prices. An account is required to order — creating one is free and immediate.",
@@ -205,6 +207,7 @@
       seeSelection: "bekijk mijn selectie", discover: "Ontdekken",
       askPrice: "Prijs op aanvraag", proAccess: "Professionele toegang",
       priceLoading: "Prijzen laden…",
+      priceDown: "Prijzen zijn tijdelijk niet beschikbaar. Mail naar contact@nishman.be, wij bezorgen ze u.",
       noResults: "Geen enkel product komt overeen met uw zoekopdracht.",
       welcomeTitle: "Vakcatalogus",
       welcomeText: "Deze catalogus is bedoeld voor kapsalons en barbershops. De getoonde tarieven zijn onze vakprijzen. Om te bestellen hebt u een account nodig — aanmaken is gratis en onmiddellijk.",
@@ -272,6 +275,7 @@
       seeSelection: "meine Auswahl ansehen", discover: "Entdecken",
       askPrice: "Preis auf Anfrage", proAccess: "Professioneller Zugang",
       priceLoading: "Preise werden geladen…",
+      priceDown: "Preise vorübergehend nicht verfügbar. Schreiben Sie an contact@nishman.be, wir senden sie Ihnen zu.",
       noResults: "Kein Produkt entspricht Ihrer Suche.",
       welcomeTitle: "Fachkatalog",
       welcomeText: "Dieser Katalog richtet sich an Friseursalons und Barbershops. Die angezeigten Preise sind unsere Händlerpreise. Zum Bestellen ist ein Konto nötig — die Anmeldung ist kostenlos und sofort möglich.",
@@ -339,6 +343,7 @@
       seeSelection: "seçimimi gör", discover: "Keşfet",
       askPrice: "Fiyat için sorunuz", proAccess: "Profesyonel erişim",
       priceLoading: "Fiyatlar yükleniyor…",
+      priceDown: "Fiyatlar ge\u00e7ici olarak kullan\u0131lam\u0131yor. contact@nishman.be adresine yaz\u0131n, size iletelim.",
       noResults: "Aramanızla eşleşen ürün yok.",
       welcomeTitle: "Profesyonel katalog",
       welcomeText: "Bu katalog kuaför salonları ve berberler içindir. Gösterilen fiyatlar profesyonel fiyatlarımızdır. Sipariş vermek için hesap gerekir — hesap açmak ücretsiz ve anındadır.",
@@ -712,18 +717,22 @@
     const filtered = getFiltered();
 
     countEl.textContent = T.results(filtered.length);
+    const panne = document.getElementById("prix-indispo");
+    if (panne) {
+      panne.textContent = PRIX_INDISPO ? T.priceDown : "";
+      panne.hidden = !PRIX_INDISPO;
+    }
 
     if (filtered.length === 0) {
       grid.innerHTML = `<p class="no-results">${T.noResults}</p>`;
       return;
     }
 
-    grid.innerHTML = filtered
-      .map((p) => {
-        const q = selection[p.ean] || { u: 0, b: 0 };
-        const inSel = q.u > 0 || q.b > 0;
-        const summary = [q.u ? q.u + " u" : "", q.b ? q.b + " ct" : ""].filter(Boolean).join(" + ");
-        return `
+    function carte(p) {
+      const q = selection[p.ean] || { u: 0, b: 0 };
+      const inSel = q.u > 0 || q.b > 0;
+      const summary = [q.u ? q.u + " u" : "", q.b ? q.b + " ct" : ""].filter(Boolean).join(" + ");
+      return `
           <div class="product-card" data-open="${p.ean}" role="button" tabindex="0">
             <div class="product-image-wrap">
               <img src="${productImageSrc(p)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" width="900" height="900" />
@@ -747,8 +756,38 @@
             </div>
           </div>
         `;
-      })
-      .join("");
+    }
+
+    // DÉCOUPAGE PAR FAMILLE. Deux cents références d'affilée forment un mur
+    // qu'on parcourt sans jamais savoir où l'on en est. Des intertitres
+    // rendent la profondeur du catalogue lisible — et c'est la profondeur
+    // qui distingue un importateur d'un revendeur.
+    //
+    // On ne découpe que quand il y a quelque chose à découper : si une
+    // famille est déjà sélectionnée, le titre répéterait le filtre ; et si
+    // une recherche est en cours, les résultats sont classés par pertinence,
+    // un ordre que des sections casseraient.
+    const parFamilles = activeCategory === "Tous" && !searchTerm.trim();
+
+    if (!parFamilles) {
+      grid.innerHTML = filtered.map(carte).join("");
+    } else {
+      const ordre = [];
+      const paquets = new Map();
+      for (const p of filtered) {
+        const c = p.category || "—";
+        if (!paquets.has(c)) { paquets.set(c, []); ordre.push(c); }
+        paquets.get(c).push(p);
+      }
+      grid.innerHTML = ordre
+        .map((c) => {
+          const lot = paquets.get(c);
+          return `<h2 class="famille-titre">${escapeHtml(catLabel(c))}`
+            + `<span class="famille-compte">${lot.length}</span></h2>`
+            + lot.map(carte).join("");
+        })
+        .join("");
+    }
 
     grid.querySelectorAll("[data-action='access']").forEach((btn) => {
       btn.addEventListener("click", (e) => {
@@ -906,7 +945,7 @@
     // Les prix ne sont pas encore arrivés : on le dit sobrement plutôt que
     // de proposer un accès dont plus personne n'a besoin.
     if (!unlocked()) {
-      zone.innerHTML = `<p class="sheet-locked">${T.priceLoading}</p>`;
+      zone.innerHTML = `<p class="sheet-locked">${PRIX_INDISPO ? T.priceDown : T.priceLoading}</p>`;
       return;
     }
     const p = PRODUCTS.find((x) => x.ean === ean);
@@ -1330,7 +1369,6 @@
       if (e.key === "Escape") { closeCatPanel(); closeProductSheet(); closeDrawer(); closeAccessModal(); }
     });
 
-    initIntro();
     initTopControls();
 
     // Service worker conservé : il accélère les visites répétées et garde le
@@ -1375,172 +1413,6 @@
 
 
   // ==========================================================================
-  // ÉCRAN D'ACCUEIL — particules, transition 3D vers la feuille catalogue.
-  // ==========================================================================
-
-  // Particules orange sur l'écran noir. Coupées hors écran / onglet masqué.
-  function initIntroParticles() {
-    const canvas = document.getElementById("intro-particles");
-    if (!canvas) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    // Sur écran tactile, aucune particule : c'est la charge la plus lourde
-    // du site et elle empêche un défilement parfaitement fluide.
-    if (window.matchMedia("(pointer: coarse)").matches) {
-      canvas.style.display = "none";
-      return;
-    }
-
-    const ctx = canvas.getContext("2d");
-    let w = 0, h = 0, dots = [], raf = null;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    function resize() {
-      const r = canvas.getBoundingClientRect();
-      w = r.width; h = r.height;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const coarse = window.matchMedia("(pointer: coarse)").matches;
-      const count = Math.round(Math.min(coarse ? 26 : 60, (w * h) / (coarse ? 26000 : 15000)));
-      dots = Array.from({ length: count }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        r: Math.random() * 1.6 + 0.4,
-        vx: (Math.random() - 0.5) * 0.14,
-        vy: -(Math.random() * 0.24 + 0.05),
-        a: Math.random() * 0.45 + 0.1,
-        tw: Math.random() * Math.PI * 2,
-      }));
-    }
-
-    const slow = window.matchMedia("(pointer: coarse)").matches;
-    let last = 0;
-
-    function frame(ts) {
-      raf = requestAnimationFrame(frame);
-      // Sur mobile, 30 images/s suffisent largement et libèrent le processeur
-      // pour un défilement fluide.
-      if (slow && ts - last < 33) return;
-      last = ts || 0;
-      ctx.clearRect(0, 0, w, h);
-      dots.forEach((d) => {
-        d.x += d.vx; d.y += d.vy; d.tw += 0.018;
-        if (d.y < -6) { d.y = h + 6; d.x = Math.random() * w; }
-        if (d.x < -6) d.x = w + 6;
-        if (d.x > w + 6) d.x = -6;
-        const alpha = d.a * (0.6 + 0.4 * Math.sin(d.tw));
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 156, 40, ${alpha})`;
-        ctx.fill();
-      });
-    }
-
-    function start() { if (!raf) raf = requestAnimationFrame(frame); }
-    function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
-
-    resize();
-    start();
-    window.addEventListener("resize", resize);
-    document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
-    new IntersectionObserver(
-      (entries) => (entries[0].isIntersecting ? start() : stop()),
-      { threshold: 0 }
-    ).observe(document.getElementById("intro"));
-  }
-
-  // Transition 3D : pendant que la feuille blanche monte, la scène du logo
-  // bascule vers l'arrière (profondeur), rétrécit et s'éteint.
-  // Transition 3D d'entrée — version stabilisée mobile :
-  // - hauteurs verrouillées en pixels (la barre d'adresse mobile ne fait
-  //   plus sauter les calculs en plein scroll) ;
-  // - la feuille catalogue n'est jamais transformée sur écran tactile, et
-  //   sur desktop une hystérésis évite qu'elle rebascule en 3D quand on
-  //   remonte vite (une feuille transformée casse la barre sticky).
-  function initIntroScroll() {
-    const scene = document.getElementById("intro-scene");
-    const cue = document.getElementById("intro-cue");
-    const intro = document.getElementById("intro");
-    const track = document.getElementById("intro-track");
-    if (!scene || !intro || !track) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    // Sur écran tactile : mise en page simple gérée par le CSS. Le script
-    // ne touche à rien — c'est ce qui garantit un défilement natif et fluide.
-    const simple = window.matchMedia("(pointer: coarse), (max-width: 860px)").matches;
-    if (simple) {
-      if (cue) {
-        let t = false;
-        window.addEventListener("scroll", () => {
-          if (t) return;
-          t = true;
-          requestAnimationFrame(() => {
-            t = false;
-            cue.style.opacity = window.scrollY > 40 ? "0" : "";
-          });
-        }, { passive: true });
-      }
-      return;
-    }
-
-    let H = window.innerHeight || 1;
-    let lastW = window.innerWidth;
-
-    const sheet = document.getElementById("catalog-sheet");
-
-    function lockHeights() {
-      H = window.innerHeight || 1;
-      intro.style.height = H + "px";
-      track.style.height = H * 2 + "px";
-      // La remontée de la feuille est fixée en PIXELS, comme les hauteurs
-      // ci-dessus : sinon le repli de la barre d'adresse mobile recalcule
-      // les unités vh en plein scroll et toute la page se décale.
-      if (sheet) sheet.style.marginTop = -H + "px";
-    }
-
-    // Ne re-verrouiller qu'aux vrais changements (rotation, redimensionnement),
-    // jamais au simple repli de la barre d'adresse pendant le scroll.
-    window.addEventListener("resize", () => {
-      if (window.innerWidth !== lastW) {
-        lastW = window.innerWidth;
-        lockHeights();
-        apply();
-      }
-    });
-    window.addEventListener("orientationchange", () => {
-      setTimeout(() => { lastW = window.innerWidth; lockHeights(); apply(); }, 250);
-    });
-
-    let ticking = false;
-    let lastP = -1;
-
-    function apply() {
-      ticking = false;
-      const p = Math.min(Math.max(window.scrollY / H, 0), 1);
-      // Rien à faire si la position n'a pas bougé, ou si l'intro est déjà
-      // entièrement passée : on évite d'écrire dans la page à chaque image.
-      if (p === lastP) return;
-      if (p === 1 && lastP === 1) return;
-      lastP = p;
-      if (!reduced) {
-        scene.style.transform = `translateY(${p * -40}px) translateZ(${p * -260}px) rotateX(${p * 22}deg) scale(${1 - p * 0.12})`;
-        scene.style.opacity = String(Math.max(0, 1 - p * 1.25));
-        // La feuille n'est JAMAIS transformée : un transform sur elle créerait
-        // un cadre de référence et décrocherait la barre de recherche collante.
-        // L'effet de profondeur reste porté par la scène du logo, isolée.
-      }
-      if (cue) cue.style.opacity = p > 0.04 ? "0" : "";
-    }
-
-    lockHeights();
-    window.addEventListener("scroll", () => {
-      if (!ticking) { ticking = true; requestAnimationFrame(apply); }
-    }, { passive: true });
-    apply();
-  }
-
-  // ==========================================================================
   // PRIX PROTÉGÉS — servis par /api/prix, qui ne répond qu'à une session
   // ouverte. Aucun prix n'existe dans les fichiers du site : sans compte
   // professionnel connecté, il n'y a rien à télécharger ni à déchiffrer.
@@ -1551,6 +1423,10 @@
   let LIMITS = null;        // { ean: {u, b, state} } limites de commande
   let CONNECTE = false;     // une session professionnelle est-elle ouverte ?
   let PAYS_CLIENT = null;   // pays du compte, qui décide du seuil de port
+  // Sans ce drapeau, une panne du portier et un chargement en cours
+  // s'affichaient du même mot : « Chargement des tarifs… », indéfiniment.
+  // C'est ce qui a rendu la panne du 26 octobre illisible depuis la page.
+  let PRIX_INDISPO = false;
 
   // Le navigateur ne connaît aucun code : il demande les prix à son propre
   // serveur. Depuis l'étape 201 ils sont servis à tout le monde ; la réponse
@@ -1608,7 +1484,8 @@
   function connecte() { return CONNECTE; }
 
   async function initPriceLock() {
-    await chargerPrix();
+    PRIX_INDISPO = !(await chargerPrix());
+    if (PRIX_INDISPO) renderGrid();
   }
 
   // ---------- Fenêtre d'accès : saisie du code OU inscription ----------
@@ -1819,17 +1696,16 @@
         // Facebook : lu dans config.js s'il y est, sinon l'adresse de la page.
         const fb = (typeof SHARED !== "undefined" && SHARED.facebook)
           ? SHARED.facebook
-          : "https://www.facebook.com/share/19Kw4PGMRF/";
+          : "https://www.facebook.com/profile.php?id=61592867044572";
+        // Les glyphes d'Instagram et de Facebook sont des marques déposées :
+        // ils ne sont pas redessinés ici. Le libellé fait le même travail,
+        // et les fichiers officiels de Meta pourront prendre sa place.
         const liens = [];
         if (ig) {
-          // Le logo d'Instagram est une marque déposée : on ne le redessine pas.
-          // Un lien texte fait le même travail et ne dépend d'aucun fichier.
           liens.push(`<a class="foot-btn foot-ig" target="_blank" rel="noopener" href="${ig}">Instagram</a>`);
         }
         if (fb) {
-          liens.push(`<a class="foot-btn foot-fb" target="_blank" rel="noopener" href="${fb}">
-               <svg class="foot-fb-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor"
-                 d="M14.5 8.5V6.9c0-.7.2-1.1 1.2-1.1h1.6V3.1A21 21 0 0 0 15 3c-2.3 0-3.9 1.4-3.9 4v1.5H8.6V11h2.5v8h3.4v-8h2.4l.4-2.5h-2.8Z"/></svg>Facebook</a>`);
+          liens.push(`<a class="foot-btn foot-fb" target="_blank" rel="noopener" href="${fb}">Facebook</a>`);
         }
         social.innerHTML = liens.join("");
       }
@@ -1862,12 +1738,13 @@
 
   function initTopControls() {
     const toTop = document.getElementById("to-top");
-    const brand = document.getElementById("sticky-brand");
+    // Le logo ne remonte plus en haut de page : le haut de page est
+    // désormais la barre de recherche elle-même, et le clic ne produisait
+    // donc plus rien. Il ramène à l'accueil, comme partout ailleurs.
     const goTop = (e) => {
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
-    if (brand) brand.addEventListener("click", goTop);
     if (toTop) {
       toTop.addEventListener("click", goTop);
       let ticking = false;
@@ -1879,18 +1756,6 @@
           toTop.classList.toggle("visible", window.scrollY > window.innerHeight * 2);
         });
       }, { passive: true });
-    }
-  }
-
-  function initIntro() {
-    initIntroParticles();
-    initIntroScroll();
-    const cue = document.getElementById("intro-cue");
-    if (cue) {
-      cue.addEventListener("click", () => {
-        const target = document.getElementById("search-sticky") || document.getElementById("catalog-sheet");
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
     }
   }
 

@@ -30,7 +30,7 @@
   --shadow-md: 0 16px 40px -16px rgba(10, 10, 10, 0.22);
   --shadow-lg: 0 24px 60px -20px rgba(10, 10, 10, 0.28);
 
-  --font-display: "Space Grotesk", "Manrope", sans-serif;
+  --font-display: "Archivo", "Manrope", sans-serif;
   --font-body: "Manrope", "Segoe UI", sans-serif;
 
   --radius-lg: 26px;
@@ -1039,156 +1039,14 @@ body.catalog-body::before { display: none; }
 @media (prefers-reduced-motion: reduce) {
 }
 
-/* ==========================================================================
-   ÉCRAN D'ACCUEIL — noir, logo orange, cinématique de chargement,
-   puis feuille catalogue qui monte en 3D par-dessus au scroll.
-   ========================================================================== */
-
-body.catalog-body { background: #0a0a0a; }
-html {
-  background: #0a0a0a;
-  /* Surtout PAS d'overflow-x ici : combiné à celui du body, cela crée deux
-     conteneurs de défilement imbriqués et fige le scroll sur Safari iOS. */
-}
-
-/* La piste fait 2 écrans : le 1er pour l'accueil, le 2e pour la transition. */
-.intro-track {
-  height: 200vh;
-  height: 200svh;
-  position: relative;
-  z-index: 0;
-}
-
-.intro {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100dvh;
-  background: #0a0a0a;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1100px;
-}
-
-.intro-particles {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-/* ---------- Cinématique du logo ---------- */
-
-.intro-scene {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  will-change: transform, opacity;
-  transform-style: preserve-3d;
-}
-
-.intro-logo {
-  width: clamp(220px, 38vw, 380px);
-  clip-path: inset(0 100% 0 0);
-  animation: logo-reveal 1.5s var(--ease) 0.35s forwards;
-}
-
-@keyframes logo-reveal {
-  from { clip-path: inset(0 100% 0 0); opacity: 0.6; }
-  to   { clip-path: inset(0 -8% 0 0); opacity: 1; }
-}
-
-/* Ligne de chargement : se remplit avec le logo, puis s'efface. */
-.intro-line {
-  width: min(240px, 46vw);
-  height: 2px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.10);
-  overflow: hidden;
-  animation: line-out 0.5s ease 2s forwards;
-}
-
-.intro-line span {
-  display: block;
-  height: 100%;
-  width: 0;
-  background: var(--gradient);
-  border-radius: inherit;
-  animation: line-fill 1.5s var(--ease) 0.35s forwards;
-}
-
-@keyframes line-fill { to { width: 100%; } }
-@keyframes line-out  { to { opacity: 0; transform: scaleX(0.6); } }
-
-/* ---------- Invitation au scroll ---------- */
-
-.intro-cue {
-  position: absolute;
-  bottom: 34px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  opacity: 0;
-  animation: cue-in 0.8s ease 2.3s forwards;
-}
-
-@keyframes cue-in { to { opacity: 1; } }
-
-.cue-track {
-  width: 2px;
-  height: 44px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
-  overflow: hidden;
-  display: block;
-}
-
-.cue-dot {
-  display: block;
-  width: 100%;
-  height: 12px;
-  border-radius: 999px;
-  background: var(--gold);
-  animation: cue-drop 1.7s var(--ease) infinite;
-}
-
-@keyframes cue-drop {
-  0%   { transform: translateY(-14px); opacity: 0; }
-  30%  { opacity: 1; }
-  100% { transform: translateY(46px); opacity: 0; }
-}
-
-.cue-text {
-  font-family: var(--font-body);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
-  transition: color 0.2s ease;
-}
-
-.intro-cue:hover .cue-text { color: var(--gold); }
+/* L'écran d'accueil et les portes sont désormais en bas de ce fichier. */
 
 /* ---------- Feuille catalogue : monte en 3D par-dessus le noir ---------- */
 
 .catalog-sheet {
   position: relative;
   z-index: 2;
-  margin-top: -100vh;   /* valeur de repli ; le script la fixe en pixels */
+  margin-top: 0;         /* plus de superposition : l'accueil et le catalogue s'empilent */
   background: var(--bg);
   border-radius: 34px 34px 0 0;
   box-shadow: 0 -30px 80px -20px rgba(0, 0, 0, 0.65);
@@ -1207,10 +1065,6 @@ html {
 .search-sticky { border-radius: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro-logo { animation: none; clip-path: inset(0 -8% 0 0); }
-  .intro-line, .intro-line span, .cue-dot, .intro-cue { animation: none; }
-  .intro-cue { opacity: 1; }
-  .intro-track { height: 100vh; }
   .catalog-sheet { margin-top: 0; }
 }
 
@@ -1292,7 +1146,6 @@ button, .label-row, .cat-cell, .product-card { touch-action: manipulation; }
   .catalog-shell { padding-left: 14px; padding-right: 14px; }
   .search-sticky { margin: 0 -14px; padding-left: 14px; padding-right: 14px; }
   .cat-btn { padding: 12px 13px; font-size: 12.5px; }
-  .intro-logo { width: clamp(190px, 58vw, 300px); }
 }
 
 /* Grand écran : la grille respire, les tiroirs restent centrés et lisibles */
@@ -1977,16 +1830,6 @@ body.card-dark .label-row.primary .swatch {
 
 /* Bouton Facebook : même gabarit qu'Instagram, icône en SVG donc aucune
    image à charger, et la couleur suit celle du texte. */
-.foot-fb-icon {
-  width: 17px;
-  height: 17px;
-  display: block;
-  flex-shrink: 0;
-  opacity: 0.9;
-  transition: opacity 0.18s ease;
-}
-
-.foot-fb:hover .foot-fb-icon { opacity: 1; }
 .foot-fb:hover { border-color: #1877f2; background: rgba(24, 119, 242, 0.10); }
 
 .foot-bottom {
@@ -2138,7 +1981,6 @@ img { max-width: 100%; height: auto; }
   .price-locked { font-size: 10px; padding: 7px 8px; }
   .sel-chip { font-size: 10.5px; padding: 7px 8px; }
   .product-footer { gap: 6px; }
-  .intro-logo { width: clamp(170px, 56vw, 260px); }
 }
 
 /* ---------- Barre flottante et retour haut : jamais superposés ---------- */
@@ -2783,25 +2625,7 @@ body.has-offre-barre .search-sticky {
 /* ── bandeau de faits sous l'en-tête (étape 205) ────────────────────────
    Une ligne, des faits séparés par des points. Sobre par construction :
    c'est une mention de confiance, pas une bannière promotionnelle. */
-.ban-faits {
-  margin: 2px 0 16px;
-  font-size: 12.5px; line-height: 1.7; color: var(--ink-soft);
-}
-.ban-fait { white-space: nowrap; }
-.ban-fait + .ban-fait::before {
-  content: "·";
-  margin: 0 9px;
-  color: var(--ink-faint);
-}
-.ban-fait-cle { color: var(--ink); font-weight: 700; }
 
-/* Sur téléphone, les mentions se coupent en milieu de phrase si on les
-   garde insécables : on les laisse respirer. */
-@media (max-width: 760px) {
-  .ban-faits { font-size: 12px; line-height: 1.75; margin-bottom: 12px; }
-  .ban-fait { white-space: normal; }
-  .ban-fait + .ban-fait::before { margin: 0 7px; }
-}
 
 /* ── « Qui vous livre » (étape 205) ─────────────────────────────────────
    Après le catalogue, pas avant : le visiteur vient pour les produits.
@@ -2872,73 +2696,6 @@ body.has-offre-barre .search-sticky {
    catalogue de gros : « 203 produits », « prix professionnels hors TVA ».
    Un particulier n'avait aucune raison de penser qu'il pouvait acheter.
 
-   Les deux portes ne se ressemblent pas, et c'est voulu : la sombre mène
-   au comptoir professionnel, la claire a déjà l'allure de la boutique où
-   elle conduit. La forme renseigne avant que le texte soit lu. La porte
-   professionnelle est aussi la plus large — c'est le parcours par défaut.
-   ========================================================================== */
-
-.porte-sur {
-  margin: 14px 0 0; color: rgba(255,255,255,.62);
-  font-size: clamp(12px, 1.4vw, 14px); letter-spacing: .01em; text-align: center;
-}
-
-.portes {
-  display: grid; gap: 14px; width: min(980px, 92vw); margin: 30px auto 0;
-  grid-template-columns: 1fr;
-}
-@media (min-width: 820px) {
-  .portes { grid-template-columns: 1.15fr .85fr; gap: 18px; }
-}
-
-.porte-carte {
-  position: relative; display: flex; align-items: center; gap: 18px;
-  padding: 20px 22px; border-radius: 18px; text-decoration: none;
-  overflow: hidden; isolation: isolate;
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-}
-.porte-carte img {
-  width: 96px; height: 96px; object-fit: contain; flex: 0 0 auto;
-}
-.porte-txt { min-width: 0; }
-.porte-carte h2 {
-  font-family: "Space Grotesk", system-ui, sans-serif; font-weight: 700;
-  font-size: clamp(1.15rem, 2.4vw, 1.5rem); margin: 0 0 4px; line-height: 1.1;
-}
-.porte-carte p { margin: 0 0 12px; font-size: .92rem; line-height: 1.45; }
-.porte-action {
-  display: inline-block; font-weight: 700; font-size: .9rem;
-  padding: 9px 16px; border-radius: 999px;
-}
-
-/* Le comptoir professionnel : sombre, cerclé d'orange. */
-.porte-pro {
-  background: #141210; border: 1px solid rgba(250,162,27,.38); color: #f4f1ea;
-}
-.porte-pro p { color: rgba(244,241,230,.68); }
-.porte-pro .porte-action { background: var(--gold, #faa21b); color: #16130c; }
-.porte-pro:hover { border-color: var(--gold, #faa21b); transform: translateY(-2px); }
-
-/* La boutique : claire, comme la page qu'elle ouvre. */
-.porte-client {
-  background: #f4f1ea; border: 1px solid #e3dccb; color: #1b1813;
-}
-.porte-client p { color: #6d6553; }
-.porte-client .porte-action { background: #1b1813; color: #f4f1ea; }
-.porte-client:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,.28); }
-
-.porte-carte:focus-visible { outline: 2px solid var(--gold, #faa21b); outline-offset: 3px; }
-
-@media (prefers-reduced-motion: reduce) {
-  .porte-carte, .porte-carte:hover { transition: none; transform: none; }
-}
-
-/* Sous 420 px, l'image mange la place du texte : on la réduit. */
-@media (max-width: 420px) {
-  .porte-carte { gap: 14px; padding: 16px; }
-  .porte-carte img { width: 68px; height: 68px; }
-}
-
 /* Un titre lu par les moteurs et les lecteurs d'écran, invisible à
    l'œil. Utilisé là où le titre de la page est une image — le logo —
    ou un libellé graphique qui ne peut pas porter de balise h1.
@@ -2950,4 +2707,766 @@ body.has-offre-barre .search-sticky {
   margin: -1px; padding: 0; border: 0;
   overflow: hidden; white-space: nowrap;
   clip: rect(0 0 0 0); clip-path: inset(50%);
+}
+
+/* ==========================================================================
+   BANDEAU PROFESSIONNEL — cinq mentions qui défilent.
+
+   Elles tenaient sur deux lignes serrées, séparées par des points médians.
+   Personne ne lisait. Le défilement rend chaque mention lisible à son tour
+   et rapproche le bandeau de celui de la boutique, qui fonctionne bien.
+
+   Il s'arrête dès qu'on le survole ou qu'on l'atteint au clavier : un texte
+   qui bouge sous la main est un texte qu'on ne peut pas lire. Et si le
+   système demande moins d'animations, rien ne bouge du tout — la copie
+   disparaît et les mentions reviennent à la ligne.
+   ========================================================================== */
+
+.ruban-pro {
+  background: var(--noir, #101010);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin: 2px 0 18px;
+}
+
+.ruban-pro-piste {
+  display: flex;
+  width: max-content;
+  animation: ruban-defile 48s linear infinite;
+}
+.ruban-pro:hover .ruban-pro-piste,
+.ruban-pro:focus-within .ruban-pro-piste { animation-play-state: paused; }
+
+@keyframes ruban-defile { to { transform: translateX(-50%); } }
+
+.ruban-pro-lot {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: 11px 0;
+}
+
+.rp-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 22px;
+  white-space: nowrap;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: rgba(247, 246, 242, 0.66);
+}
+/* Une séparation discrète, à la place des points médians. */
+.rp-item + .rp-item { border-left: 1px solid rgba(247, 246, 242, 0.14); }
+
+.rp-cle { color: #F7F6F2; font-weight: 700; }
+
+.rp-drapeau {
+  width: 18px; height: 12px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+  box-shadow: 0 0 0 1px rgba(247, 246, 242, 0.18);
+}
+
+@media (max-width: 760px) {
+  .rp-item { font-size: 12px; padding: 0 16px; }
+  .ruban-pro { margin-bottom: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ruban-pro-piste { animation: none; width: auto; }
+  #ruban-pro-copie { display: none; }
+  .ruban-pro-lot { flex-wrap: wrap; padding: 9px 14px; gap: 4px 0; }
+  .rp-item { white-space: normal; padding: 0 14px; }
+  .rp-item:first-child { padding-left: 0; }
+}
+
+/* ==========================================================================
+   LA PORTE D'ENTRÉE — une marque, deux chemins, rien d'autre.
+
+   Ce qui a été retiré, et pourquoi. La feuille catalogue vivait sous cet
+   écran : il suffisait de faire défiler pour entrer dans les tarifs sans
+   jamais choisir, et les mêmes 201 références répondaient à deux adresses.
+   Les vignettes produits ont suivi : un pot en petit ne dit ni qui nous
+   sommes ni où aller, et son détourage se voyait sur tous les fonds.
+
+   LE FILM. Il est tourné à la verticale. Sur téléphone, ses proportions
+   sont les bonnes : il occupe tout l'écran, sans recadrage. Sur grand
+   écran, « cover » n'en garderait que la bande centrale — une veste, une
+   chemise — et tous les plans produits tomberaient hors cadre : il reprend
+   donc sa forme, en panneau à droite.
+
+   LA LUMIÈRE. Le dégradé est quasi nul sur les deux tiers hauts et presque
+   plein dans le tiers bas, où vit le texte. Mesuré sur les images les plus
+   claires du film : un voile uniforme aurait dû monter à 88 % pour que le
+   sous-titre reste au seuil de lisibilité, c'est-à-dire éteindre le film
+   pour sauver le texte. Concentrer le noir là où on lit règle les deux.
+
+   LES CHEMINS. Sans cadre ni fond : deux cartes encadrées sur une vidéo
+   font deux rectangles opaques qui la recouvrent. Un filet entre les deux
+   suffit à les séparer, et un seul bouton plein par écran — sinon aucun
+   des deux ne ressort.
+   ========================================================================== */
+
+body.accueil-body {
+  display: block;
+  padding: 0;
+  align-items: initial;
+  min-height: 0;
+  background: #0E0E0E;
+  color: #F7F6F2;
+}
+body.accueil-body::before { display: none; }
+body.catalog-body { background: #0E0E0E; }
+
+.accueil {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100svh;
+  display: grid;
+  align-items: end;
+  padding: 0 20px 28px;
+  background: #0E0E0E;
+}
+
+.accueil-ecran {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+.accueil-film {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.88) contrast(1.04);
+}
+.accueil-voile {
+  position: absolute;
+  inset: 0;
+  /* Ne reste ici que le léger assombrissement du haut, sous le logo. Le
+     reste du travail est fait par le dégradé accroché au bloc de texte,
+     juste en dessous — une rampe exprimée en pourcentage de l'écran était
+     juste sur un seul téléphone et fausse sur tous les autres : le texte
+     commence à 15 % de la hauteur sur un iPhone SE et à 36 % sur un Pro
+     Max, alors que sa hauteur en pixels, elle, ne bouge presque pas. */
+  background: linear-gradient(to bottom,
+    rgba(14, 14, 14, 0.72) 0,
+    rgba(14, 14, 14, 0.34) 90px,
+    rgba(14, 14, 14, 0) 190px);
+}
+
+/* Le logo et la mention d'importateur forment un bloc, en haut à gauche :
+   ils signent l'écran au lieu de l'occuper, et ils y sont lisibles — c'est
+   le seul endroit du haut où le dégradé remonte. Les descendre avec le
+   reste du texte coûtait un tiers d'écran de film. */
+.accueil-marque {
+  position: absolute;
+  top: clamp(20px, 4vh, 34px);
+  left: 20px;
+  z-index: 1;
+}
+.accueil-marque img {
+  display: block;
+  height: clamp(34px, 5vw, 44px);
+  width: auto;
+  filter: invert(1) brightness(1.08) drop-shadow(0 2px 12px rgba(0, 0, 0, 0.6));
+}
+/* La mention d'importateur vivait ici, sous le logo. Mesurée sur le pixel,
+   elle plafonnait à 2,0:1 sur l'image la plus claire du film : il aurait
+   fallu un voile à 0,74 sur tout le haut de l'écran pour la sauver, c'est-
+   à-dire poser un bandeau noir sur la vidéo. Elle est redescendue dans la
+   phrase, où le fond est déjà plein — 6,8:1 mesuré. Le logo reste seul :
+   c'est une forme, pas du texte à lire. */
+
+.accueil-in {
+  position: relative;
+  z-index: 0;           /* un contexte d'empilement, pour que le dégradé
+                           ci-dessous reste au-dessus du film */
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Le dégradé épouse le bloc de texte au lieu de viser un pourcentage
+   d'écran : il monte exactement 110 px au-dessus de la première lettre,
+   quelle que soit la hauteur du téléphone, et déborde des gouttières.
+   Mesuré au pixel sur l'image la plus claire du film, toutes les couches
+   de texte passent le seuil WCAG sur quatre largeurs d'écran. */
+.accueil-in::before {
+  content: "";
+  position: absolute;
+  inset: -110px -20px -28px;
+  z-index: -1;
+  background: linear-gradient(to bottom,
+    rgba(14, 14, 14, 0) 0,
+    rgba(14, 14, 14, 0.55) 68px,
+    rgba(14, 14, 14, 0.88) 110px,
+    rgba(14, 14, 14, 0.95) 200px,
+    #0E0E0E 100%);
+}
+
+.accueil-titre {
+  font-family: var(--font-display);
+  font-stretch: 70%;
+  font-weight: 900;
+  font-size: clamp(2.6rem, 13.5vw, 4.25rem);
+  line-height: 0.88;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: #F7F6F2;
+  margin: 0 0 clamp(18px, 2.6vh, 26px);
+}
+
+/* ---------- Les deux chemins ---------- */
+
+.portes {
+  display: grid;
+  gap: 0;
+  grid-template-columns: 1fr;
+}
+
+.porte-carte {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 0;
+  text-decoration: none;
+  color: inherit;
+  border-top: 1px solid rgba(247, 246, 242, 0.16);
+}
+.porte-carte:first-child { border-top: 0; padding-top: 0; }
+.porte-carte:focus-visible { outline: 2px solid #ED9B24; outline-offset: 4px; }
+
+.porte-titre {
+  display: block;
+  font-family: var(--font-display);
+  font-stretch: 84%;
+  font-weight: 800;
+  font-size: 0.8125rem;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #F7F6F2;
+}
+.porte-ligne {
+  display: block;
+  max-width: 44ch;
+  color: #ADA9A1;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.porte-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: #ED9B24;
+  color: #101010;
+  font-family: var(--font-display);
+  font-stretch: 88%;
+  font-weight: 800;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: center;
+  transition: background 180ms cubic-bezier(.2,0,0,1);
+}
+.porte-carte:hover .porte-action { background: #C9841F; }
+
+/* Un seul bouton plein par écran, mais le second reste un vrai bouton :
+   un lien souligné serait moins trouvable, et le parcours grand public
+   n'est pas secondaire pour autant. */
+.porte-action-discret {
+  background: transparent;
+  border-color: rgba(247, 246, 242, 0.38);
+  color: #F7F6F2;
+}
+.porte-carte:hover .porte-action-discret {
+  background: rgba(247, 246, 242, 0.08);
+  border-color: #F7F6F2;
+}
+
+/* ---------- Grand écran ---------- */
+
+@media (min-width: 900px) {
+  .accueil {
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    grid-template-rows: auto auto;
+    grid-template-columns: minmax(0, 1fr) clamp(300px, 27vw, 420px);
+    gap: 0 clamp(40px, 5vw, 88px);
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: clamp(48px, 6vw, 88px) 40px;
+  }
+
+  /* Le film quitte le fond pour devenir un objet de la page : plus de
+     recadrage, et plus un mot posé sur une image qui bouge. */
+  .accueil-ecran {
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    aspect-ratio: 9 / 16;
+    max-height: 78svh;
+    overflow: hidden;
+    border: 1px solid rgba(247, 246, 242, 0.1);
+  }
+  .accueil-marque {
+    position: static;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
+    margin-bottom: 26px;
+  }
+  .accueil-marque img { height: 52px; filter: invert(1) brightness(1.08); }
+
+  .accueil-in {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    margin: 0;
+    max-width: none;
+  }
+  .accueil-in::before { display: none; }
+  .accueil-voile {
+    background: linear-gradient(
+      180deg,
+      rgba(14, 14, 14, 0.16) 0%,
+      rgba(14, 14, 14, 0) 28%,
+      rgba(14, 14, 14, 0.38) 100%
+    );
+  }
+
+  .accueil-titre { font-size: clamp(3.2rem, 6vw, 5rem); margin-bottom: 30px; }
+  .porte-titre { font-size: 0.875rem; }
+  .porte-ligne { font-size: 0.875rem; }
+  .porte-action { min-height: 50px; font-size: 0.875rem; }
+
+  /* Côte à côte, séparés par un filet vertical plutôt que par deux cadres. */
+  .portes {
+    grid-template-columns: 1fr 1fr;
+    gap: 0 36px;
+    max-width: 720px;
+  }
+  .porte-carte {
+    border-top: 0;
+    border-left: 1px solid rgba(247, 246, 242, 0.16);
+    padding: 2px 0 2px 24px;
+  }
+  .porte-carte:first-child { border-left: 0; padding-left: 0; }
+  .porte-action { margin-top: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .porte-action { transition: none; }
+}
+
+/* ---------- Le pied, strictement légal ---------- */
+
+.accueil-pied {
+  background: #0A0A0A;
+  border-top: 1px solid rgba(247, 246, 242, 0.08);
+  padding: 32px 20px 40px;
+}
+.accueil-pied-in {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+  color: #8E8A82;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.accueil-pied-in p { margin: 0 0 12px; }
+.accueil-pied-liens {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+}
+.accueil-pied-liens a {
+  color: #C8C4BB;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(247, 246, 242, 0.18);
+}
+.accueil-pied-liens a:hover { color: #ED9B24; border-color: #ED9B24; }
+.accueil-pied-bas { font-size: 0.8125rem; color: #6F6B64; margin-bottom: 0; }
+
+/* ==========================================================================
+   CATALOGUE PROFESSIONNEL — le sombre habille, le clair travaille.
+
+   Première tentative : tout le catalogue en noir. L'erreur se voyait au
+   premier clic — la fiche produit s'ouvre en clair, et chaque consultation
+   devenait une rupture. Le sombre est donc réservé à l'habillage : le bloc
+   d'accueil, la barre qui porte la recherche, les langues et le compte, et
+   le bandeau défilant. La grille, elle, travaille sur fond clair.
+
+   Ce qui reste de la première passe, et qui ne bouge plus : les chapitres
+   de famille traités comme une affiche de métier, les rayons à 2 px, le
+   bouton d'ajout carré, les noms en capitales condensées. La forme était
+   bonne ; c'est la valeur qui ne l'était pas.
+
+   L'ORANGE. Il porte le bouton d'ajout et les filets de chapitre. Pas le
+   prix : à 17 px sur fond blanc, l'orange de la marque tombe sous le seuil
+   de contraste lisible. Un tarif qu'on déchiffre mal est un tarif qu'on
+   redemande par téléphone.
+   ========================================================================== */
+
+/* ---------- La barre : le seul morceau sombre du catalogue ---------- */
+
+.catalog-sheet .search-sticky {
+  --bg-soft: #0A0A0A;
+  --ink: #F7F6F2;
+  --ink-soft: #A8A49A;
+  --ink-faint: #76736C;
+  --line: rgba(247, 246, 242, 0.14);
+
+  background: rgba(14, 14, 14, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(247, 246, 242, 0.12);
+  color: var(--ink);
+}
+.catalog-sheet .search-input {
+  background: #000;
+  border: 1px solid rgba(247, 246, 242, 0.14);
+  border-radius: 2px;
+  color: #F7F6F2;
+}
+.catalog-sheet .search-input::placeholder { color: #76736C; }
+.catalog-sheet .search-input:focus { border-color: var(--gold); }
+
+.catalog-sheet .cat-btn,
+.catalog-sheet .lang-btn,
+.catalog-sheet .pro-access,
+.catalog-sheet .mon-compte {
+  background: #000;
+  border: 1px solid rgba(247, 246, 242, 0.14);
+  border-radius: 2px;
+  color: #F7F6F2;
+}
+.catalog-sheet .cat-btn:hover,
+.catalog-sheet .lang-btn:hover,
+.catalog-sheet .pro-access:hover,
+.catalog-sheet .mon-compte:hover { border-color: #F7F6F2; }
+
+.catalog-sheet .sticky-brand img { filter: invert(1) brightness(1.08); }
+
+/* ---------- La feuille : claire, et carrée ---------- */
+
+.catalog-sheet {
+  background: #FBFAF5;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ---------- Les chapitres ---------- */
+
+.famille-titre {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin: 56px 0 4px;
+  padding-top: 18px;
+  border-top: 3px solid var(--gold);
+
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 72%;
+  font-weight: 900;
+  font-size: clamp(1.6rem, 4.4vw, 2.75rem);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #101010;
+}
+/* Le premier chapitre ne repousse pas la grille : il la commence. */
+.famille-titre:first-child { margin-top: 18px; }
+
+.famille-compte {
+  font-size: 0.9rem;
+  font-stretch: 100%;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gold-deep);
+  margin-left: auto;
+  align-self: center;
+}
+
+/* ---------- Les cartes ---------- */
+
+.catalog-sheet .product-card {
+  background: #fff;
+  border: 1px solid #E8E6E1;
+  border-radius: 2px;
+}
+.catalog-sheet .product-card:hover {
+  border-color: #101010;
+  box-shadow: 0 2px 8px -2px rgba(16, 16, 16, 0.10);
+  transform: none;
+}
+
+.catalog-sheet .product-image-wrap {
+  background: #F4F2EB;
+  border-radius: 0;
+}
+
+.catalog-sheet .product-name {
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 84%;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #101010;
+}
+
+.catalog-sheet .product-price {
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 86%;
+  font-weight: 800;
+  font-size: 17px;
+  color: #101010;
+}
+
+/* Le bouton d'ajout devient carré, comme tout le reste. */
+.catalog-sheet .add-btn {
+  background: var(--gold);
+  color: #0A0A0A;
+  border-radius: 2px;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  box-shadow: none;
+}
+.catalog-sheet .add-btn:hover { background: var(--gold-deep); }
+
+.catalog-sheet .sel-chip {
+  background: var(--gold);
+  color: #0A0A0A;
+  border: 0;
+  border-radius: 2px;
+  font-weight: 800;
+}
+
+.catalog-sheet .price-locked {
+  background: transparent;
+  border: 1px solid #DCD9D1;
+  border-radius: 2px;
+}
+.catalog-sheet .price-locked:hover { border-color: var(--gold-deep); color: var(--gold-deep); }
+
+.catalog-sheet .product-price.price-attente { border-radius: 2px; }
+
+@media (max-width: 760px) {
+  .famille-titre { margin-top: 40px; gap: 10px; border-top-width: 2px; }
+}
+
+/* ==========================================================================
+   LA SÉLECTION PROFESSIONNELLE — un panneau latéral, comme la boutique.
+
+   Elle montait du bas, centrée, arrondie : un format de téléphone posé sur
+   un écran d'ordinateur. Le panier grand public glisse depuis la droite et
+   fonctionne beaucoup mieux — on garde le catalogue sous les yeux pendant
+   qu'on ajuste sa sélection, au lieu de le recouvrir.
+
+   Elle reste claire, comme celui de la boutique et comme la fiche produit :
+   dans ce catalogue, seul l'habillage est sombre.
+
+   Les menus de catégories et de langue, eux, restent des feuilles qui
+   montent : ce sont des choix fugaces, pas un plan de travail.
+   ========================================================================== */
+
+#drawer-overlay {
+  align-items: stretch;
+  justify-content: flex-end;
+  background: rgba(10, 10, 10, 0.55);
+}
+
+#drawer-overlay .drawer {
+  border-radius: 0;
+  border-left: 1px solid var(--line);
+  width: min(440px, 100%);
+  max-width: none;
+  max-height: none;
+  height: 100%;
+  padding: 24px 22px 32px;
+  animation: drawer-droite 0.3s cubic-bezier(.2, 0, 0, 1) both;
+}
+
+@keyframes drawer-droite {
+  from { transform: translateX(100%); }
+  to   { transform: none; }
+}
+
+#drawer-overlay .drawer-title {
+  font-family: "Archivo", var(--font-display);
+  font-stretch: 82%;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+#drawer-overlay .drawer-stepper { border-radius: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  #drawer-overlay .drawer { animation: none; }
+}
+
+@media (max-width: 560px) {
+  #drawer-overlay .drawer { width: 100%; border-left: 0; }
+}
+
+/* ==========================================================================
+   LA FICHE PRODUIT — même panneau que la sélection, même géométrie.
+
+   Elle montait du bas, centrée, en boîte de 520 px à coins ronds de 26 px,
+   avec sa propre barre de défilement interne : un format de téléphone posé
+   sur un écran d'ordinateur, et une fiche où il fallait faire défiler pour
+   voir le prix. Elle glisse maintenant depuis la droite, pleine hauteur,
+   comme la sélection professionnelle et comme le panier de la boutique —
+   le catalogue reste visible derrière, et on referme d'un geste.
+
+   Les rayons passent à 2 px, les pastilles disparaissent, les titres
+   prennent l'Archivo condensée. Rien d'autre ne change : le contenu de la
+   fiche et sa logique de prix sont les mêmes.
+   ========================================================================== */
+
+#sheet-overlay {
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+#sheet-overlay .product-sheet {
+  border-radius: 0;
+  border-left: 1px solid var(--line);
+  width: min(440px, 100%);
+  max-width: none;
+  max-height: none;
+  height: 100%;
+  padding: 20px 22px 32px;
+  animation: drawer-droite 0.3s cubic-bezier(.2, 0, 0, 1) both;
+}
+
+#sheet-overlay .drawer-close {
+  border-radius: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+}
+#sheet-overlay .drawer-close:hover { border-color: var(--ink); color: var(--ink); }
+
+/* Le packshot a un vrai fond transparent : un creux légèrement plus sombre
+   que la page suffit à le cadrer, sans boîte ni ombre. */
+#sheet-overlay .sheet-image {
+  border-radius: 2px;
+  background: #F2F0EA;
+  border: 1px solid var(--line);
+  box-shadow: none;
+  margin-top: 8px;
+}
+
+#sheet-overlay .sheet-tagline {
+  font-family: var(--font-display);
+  font-stretch: 90%;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #B07614;
+}
+
+#sheet-overlay .sheet-name {
+  font-family: var(--font-display);
+  font-stretch: 80%;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+/* Le conditionnement est une donnée de la fiche, pas une étiquette :
+   un filet au-dessus suffit à le détacher. */
+#sheet-overlay .sheet-packaging {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  padding: 12px 0 0;
+  font-family: var(--font-display);
+  font-stretch: 92%;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+#sheet-overlay .sheet-add-btn,
+#sheet-overlay .buy-add,
+#sheet-overlay .sheet-confirm,
+#sheet-overlay .sheet-unlock {
+  border-radius: 2px;
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-stretch: 88%;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+/* Pas de soulèvement au survol : un bouton carré qui décolle de deux
+   pixels se lit comme un bouton rond mal réglé. La couleur suffit. */
+#sheet-overlay .sheet-add-btn:hover,
+#sheet-overlay .sheet-confirm:hover:not(:disabled) { transform: none; box-shadow: none; }
+#sheet-overlay .sheet-add-btn:active { transform: none; }
+
+#sheet-overlay .sheet-add-btn,
+#sheet-overlay .sheet-confirm {
+  background: #ED9B24;
+  color: #101010;
+}
+#sheet-overlay .sheet-add-btn:hover,
+#sheet-overlay .sheet-confirm:hover:not(:disabled) { background: #C9841F; }
+
+#sheet-overlay .buy-add { border-color: var(--line-strong); }
+#sheet-overlay .buy-add:hover { border-color: var(--ink); }
+
+#sheet-overlay .sheet-price,
+#sheet-overlay .buy-row-label {
+  font-family: var(--font-display);
+  font-stretch: 90%;
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #sheet-overlay .product-sheet { animation: none; }
+}
+
+@media (max-width: 560px) {
+  #sheet-overlay .product-sheet { width: 100%; border-left: 0; }
+}
+
+/* Panne de tarifs : un message, pas des barres grises muettes. */
+.prix-indispo {
+  margin: 4px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid #ED9B24;
+  background: rgba(237, 155, 36, 0.08);
+  color: var(--ink);
+  font-size: 0.875rem;
+  line-height: 1.5;
 }

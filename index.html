@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600;700&family=Baloo+2:wght@600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
 
@@ -33,7 +33,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=282" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=318" />
   <!-- Qui édite ce site, pour les moteurs. Le siège social, pas le
        dépôt : c'est l'identité légale de l'entreprise qu'un moteur
        rapproche de la Banque-Carrefour, pas son adresse de travail. -->
@@ -73,255 +73,131 @@
       }
     ],
     "sameAs": [
-      "https://www.instagram.com/nishman.be.fr"
+      "https://www.instagram.com/nishman.be.fr/",
+      "https://www.facebook.com/profile.php?id=61592867044572"
     ]
   }
   </script>
 </head>
-<body class="catalog-body">
+<body class="accueil-body">
 <h1 class="titre-moteur">NISHMAN — importateur officiel pour la Belgique, la France et le Luxembourg</h1>
 
-  <!-- ======================================================================
-       ÉCRAN D'ACCUEIL — noir, logo orange, cinématique de chargement.
-       Au scroll, le catalogue monte en feuille blanche 3D par-dessus.
-       ====================================================================== -->
-  <div class="intro-track" id="intro-track">
-    <section class="intro" id="intro">
-      <canvas class="intro-particles" id="intro-particles" aria-hidden="true"></canvas>
-      <div class="intro-scene" id="intro-scene">
-        <img class="intro-logo" src="/assets/img/logo-gold.png" alt="Nishman" />
-        <p class="porte-sur">Importateur officiel pour la Belgique, la France et le Luxembourg</p>
+<!-- ======================================================================
+     LA PORTE D'ENTRÉE.
 
-        <!-- Deux portes, volontairement dissemblables : la sombre mène au
-             comptoir professionnel, la claire ressemble déjà à la boutique
-             où elle conduit. La forme dit où l'on va avant qu'on lise. -->
-        <div class="portes">
-          <a class="porte-carte porte-pro" href="#catalog-sheet" id="porte-pro">
-            <img src="/assets/img/products/8682035088158.webp" alt="" aria-hidden="true" />
-            <div class="porte-txt">
-              <h2>Pour mon salon</h2>
-              <p>Tarifs professionnels, vente au carton, facture et livraison.</p>
-              <span class="porte-action">Voir le catalogue</span>
-            </div>
-          </a>
+     Elle a deux choses à dire : qui nous sommes, et où aller. Rien d'autre.
 
-          <a class="porte-carte porte-client" href="/boutique/" id="porte-client">
-            <img src="/assets/img/products/8684736674883.webp" alt="" aria-hidden="true" />
-            <div class="porte-txt">
-              <h2>Pour moi</h2>
-              <p>Les produits que votre barbier utilise, livrés chez vous.</p>
-              <span class="porte-action">Entrer dans la boutique</span>
-            </div>
-          </a>
-        </div>
-      </div>
-    </section>
+     Ce qui a été retiré, et pourquoi : le catalogue professionnel vivait ici
+     ET sur /produits/ — deux adresses servant les mêmes 201 références, avec
+     chacune sa balise canonique. Google y voyait deux pages concurrentes qui
+     se partageaient le référencement. Le catalogue n'existe plus qu'à une
+     seule adresse, et cette page y conduit comme elle conduit à la boutique.
+
+     Les vignettes produits ont disparu des cartes : un pot de wax en petit ne
+     dit ni qui nous sommes ni où aller, et son détourage se voyait sur fond
+     sombre comme sur fond clair. La vidéo, elle, dit les deux.
+
+     Et les 82 Ko de logique catalogue ne sont plus chargés ici. Une porte
+     d'entrée doit s'ouvrir vite.
+     ====================================================================== -->
+
+<section class="accueil" id="intro">
+
+  <!-- Le film a été tourné à la verticale : sur téléphone, il occupe donc
+       tout l'écran sans être recadré. Le texte vit dans le tiers bas, là où
+       le dégradé est presque plein — c'est ce qui permet de garder le film
+       lisible en haut sans sacrifier le contraste du texte en bas. Sur
+       grand écran, il reprend sa forme en panneau plutôt que d'être rogné
+       de ses trois quarts. -->
+  <div class="accueil-ecran">
+    <!-- Le film ne se télécharge pas avec la page. L'image fixe s'affiche
+         tout de suite, et la vidéo n'est demandée qu'une fois la page posée
+         — jamais si le système demande moins d'animations, jamais si le
+         téléphone est en économie de données ou sur un réseau lent. Elle
+         est décorative : elle ne doit coûter à personne ce que personne
+         n'a demandé. -->
+    <video class="accueil-film" id="accueil-film" muted loop playsinline
+           preload="none" poster="/assets/img/accueil-poster.webp?v=318"
+           data-film="/assets/video/accueil.mp4?v=318" aria-hidden="true"></video>
+    <div class="accueil-voile" aria-hidden="true"></div>
   </div>
 
-  <div class="catalog-sheet" id="catalog-sheet">
-  <div class="catalog-shell">
+  <div class="accueil-marque">
+    <img src="/assets/img/nishman.svg" alt="Nishman" width="188" height="100" />
+  </div>
 
-    <div class="search-sticky" id="search-sticky">
-      <div class="filter-row">
-        <a class="sticky-brand" href="#" id="sticky-brand" aria-label="Haut de page">
-          <img src="/assets/img/logo-black.png" alt="Nishman" />
-        </a>
-        <input
-          id="search-input"
-          class="search-input"
-          type="search"
-          placeholder="Rechercher un produit ou un code EAN..."
-          autocomplete="off"
-        />
-        <button class="lang-btn" id="lang-btn" aria-haspopup="dialog" aria-label="Langue">
-          <span class="cat-btn-dot" aria-hidden="true"></span>
-          <span id="lang-btn-label">FR</span>
-          <span class="lang-btn-chevron" aria-hidden="true">&#9662;</span>
-        </button>
-        <button class="cat-btn" id="cat-btn" aria-haspopup="dialog">
-          <span class="cat-btn-dot" aria-hidden="true"></span>
-          <span class="cat-btn-label" id="cat-btn-label">Toutes</span>
-          <span class="cat-btn-chevron" aria-hidden="true">&#9662;</span>
-        </button>
-        <button class="pro-access" id="pro-access">
-          <span class="cat-btn-dot" aria-hidden="true"></span>
-          <span id="pro-access-label"></span>
-        </button>
-        <a class="mon-compte" href="/pro/compte/" title="Mon compte professionnel">
-          <svg viewBox="0 0 24 24" aria-hidden="true" width="17" height="17">
-            <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-              d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          </svg>
-          <span class="mon-compte-mot">Mon compte</span>
-        </a>
-      </div>
+  <div class="accueil-in">
+
+    <h2 class="accueil-titre">L'art<br />du grooming</h2>
+    <!-- Deux chemins, sans cadre : un filet suffit à les séparer. Le libellé
+         dit ce qu'on vient chercher — un salon vient pour des tarifs. -->
+    <div class="portes">
+
+      <a class="porte-carte porte-pro" href="/produits/" id="porte-pro">
+        <span class="porte-titre">Pour les professionnels</span>
+        <span class="porte-ligne">Tarifs au carton, facture, stock en Belgique.</span>
+        <span class="porte-action">Accéder aux tarifs pro</span>
+      </a>
+
+      <a class="porte-carte porte-client" href="/boutique/" id="porte-client">
+        <span class="porte-titre">Pour votre style</span>
+        <span class="porte-ligne">Livraison offerte dès 29,90 €, en point relais.</span>
+        <span class="porte-action porte-action-discret">Explorer la boutique</span>
+      </a>
+
     </div>
+  </div>
+</section>
 
-
-    <!-- Bandeau fin : qui nous sommes et à quelles conditions on commande.
-         Une ligne de faits vérifiables, pas d'encadrés — c'est une mention,
-         pas une promotion. Rien sur le paiement sécurisé tant qu'il n'est
-         pas en service : on n'annonce pas ce qui n'existe pas encore. -->
-    <p class="ban-faits" id="ban-port">
-      <span class="ban-fait ban-fait-cle" id="ban-importateur"></span>
-      <span class="ban-fait" id="ban-ht"></span>
-      <span class="ban-fait" id="ban-be"></span>
-      <span class="ban-fait" id="ban-fr"></span>
-      <span class="ban-fait" id="ban-retrait"></span>
+<footer class="accueil-pied">
+  <div class="accueil-pied-in">
+    <p>NBD Distribution SRL — importateur officiel NISHMAN pour la Belgique,
+       la France et le Luxembourg.</p>
+    <p class="accueil-pied-liens">
+      <a href="/contact/">Nous joindre</a>
+      <a href="/mentions-legales/">Mentions légales</a>
+      <a href="/confidentialite/">Confidentialité</a>
+      <a href="/produits/">Catalogue professionnel</a>
+      <a href="/boutique/">Boutique</a>
+      <a href="https://www.instagram.com/nishman.be.fr/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.facebook.com/profile.php?id=61592867044572" target="_blank" rel="noopener">Facebook</a>
     </p>
-
-    <div data-offre-flash data-offre-popup></div>
-
-    <p class="result-count" id="result-count"></p>
-
-    <div class="product-grid" id="grid"></div>
-
-    <!-- Qui vous livre. Placé APRÈS le catalogue : le visiteur vient pour
-         les produits, pas pour nous lire. Le nombre de références est
-         calculé depuis le catalogue, jamais écrit en dur — il ne peut donc
-         pas devenir faux. Aucune photo pour l'instant : on n'en invente pas. -->
-    <section class="qui" id="qui" hidden>
-      <h2 class="qui-titre" id="qui-titre"></h2>
-      <div class="qui-points">
-        <div class="qui-point">
-          <h3 id="qui-officiel"></h3>
-          <p id="qui-officiel-texte"></p>
-        </div>
-        <div class="qui-point">
-          <h3 id="qui-depot"></h3>
-          <p id="qui-depot-texte"></p>
-        </div>
-        <div class="qui-point">
-          <h3 id="qui-commerciaux"></h3>
-          <p id="qui-commerciaux-texte"></p>
-        </div>
-      </div>
-      <p class="qui-refs" id="qui-refs"></p>
-    </section>
-
-
+    <p class="accueil-pied-bas">
+      Showroom : Avenue Léopold III 21, 7134 Binche · TVA BE 0817.750.283
+    </p>
   </div>
+</footer>
 
-    <footer class="site-footer">
-      <div class="foot-inner">
+<script>
+  (function () {
+    var f = document.getElementById("accueil-film");
+    if (!f) return;
 
-        <div class="foot-col foot-col-brand">
-          <img class="foot-logo" src="/assets/img/logo-gold.png" alt="Nishman" />
-          <p class="foot-tag" id="t-foot-tag"></p>
-          <div class="foot-flags" id="foot-flags"></div>
-        </div>
+    // Trois raisons de s'en tenir à l'image fixe, et de ne rien télécharger.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var res = navigator.connection || {};
+    if (res.saveData === true) return;
+    if (/(^|-)2g$/.test(res.effectiveType || "")) return;
 
-        <div class="foot-col">
-          <p class="foot-head" id="t-foot-contact"></p>
-          <div class="foot-links" id="footer-contact"></div>
-        </div>
+    function lancer() {
+      var s = document.createElement("source");
+      s.type = "video/mp4";
+      s.src = f.getAttribute("data-film");
+      f.appendChild(s);
+      f.load();
+      var p = f.play();
+      // Un refus de lecture automatique n'est pas une erreur : l'image
+      // fixe reste à l'écran et la page ne s'en porte pas plus mal.
+      if (p && p.catch) p.catch(function () {});
+    }
 
-        <div class="foot-col">
-          <p class="foot-head" id="t-foot-company"></p>
-          <p class="foot-line">NBD Distribution SRL</p>
-          <p class="foot-line">Showroom : Avenue Léopold III n°21<br />7134 Binche — Belgique</p>
-          <p class="foot-line">TVA : BE 0817.750.283</p>
-          <p class="foot-line"><a href="/mentions-legales/">Mentions légales</a></p>
-          <p class="foot-line"><a href="/confidentialite/">Confidentialité</a></p>
-        </div>
-
-        <div class="foot-col">
-          <p class="foot-head" id="t-foot-social"></p>
-          <div class="foot-links" id="footer-social"></div>
-        </div>
-
-        <div class="foot-col">
-          <p class="foot-head">Mon compte</p>
-          <div class="foot-links">
-            <a href="/pro/compte/">Mon compte</a>
-            <a href="/pro/connexion/?creer">Créer un compte</a>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div class="foot-bottom">
-        <p>&copy; <span id="footer-year"></span> NBD Distribution SRL. <span id="t-foot-rights"></span></p>
-        <p id="t-foot-legal"></p>
-      </div>
-    </footer>
-  </div>
-
-  <button class="float-bar" id="float-bar" hidden></button>
-  <button class="to-top" id="to-top" aria-label="Retour en haut">&uarr;</button>
-
-  <!-- Sélecteur de catégories : panneau, tout visible d'un coup -->
-  <div class="drawer-overlay cat-overlay" id="cat-overlay" hidden>
-    <div class="cat-panel">
-      <div class="cat-panel-head">
-        <p class="drawer-title">Catégories</p>
-        <button class="drawer-close" id="cat-close">&times;</button>
-      </div>
-      <div class="cat-grid" id="cat-grid"></div>
-    </div>
-  </div>
-
-  <div class="drawer-overlay" id="drawer-overlay" hidden>
-    <div class="drawer">
-      <button class="drawer-close" id="drawer-close">&times;</button>
-      <div class="drawer-head">
-        <p class="drawer-title">Ma sélection</p>
-        <button class="drawer-clear" id="drawer-clear" hidden>
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
-               stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/>
-          </svg>
-          <span id="t-clear">Vider</span>
-        </button>
-      </div>
-      <div id="drawer-list"></div>
-      <p class="agent-pick-title"></p>
-      <div id="agent-pick-list"></div>
-    </div>
-  </div>
-
-  <!-- Choix de langue -->
-  <div class="drawer-overlay cat-overlay" id="lang-overlay" hidden>
-    <div class="cat-panel lang-panel">
-      <button class="lang-choice" data-lang="fr">Français</button>
-      <button class="lang-choice" data-lang="en">English</button>
-      <button class="lang-choice" data-lang="nl">Nederlands</button>
-      <button class="lang-choice" data-lang="de">Deutsch</button>
-      <button class="lang-choice" data-lang="tr">Türkçe</button>
-    </div>
-  </div>
-
-  <!-- Accès professionnel : le compte, et rien d'autre -->
-  <div class="drawer-overlay cat-overlay" id="access-overlay" hidden>
-    <div class="cat-panel access-panel">
-      <div class="cat-panel-head">
-        <p class="drawer-title" id="access-title"></p>
-        <button class="drawer-close" id="access-close">&times;</button>
-      </div>
-
-      <div id="access-step-code">
-        <p class="access-desc" id="access-desc"></p>
-        <a class="access-submit" id="access-login" href="/pro/connexion/"></a>
-        <a class="access-link" id="access-create" href="/pro/connexion/?creer"></a>
-        <button class="access-passer" id="access-continue" type="button" hidden></button>
-      </div>
-    </div>
-  </div>
-
-  <div class="drawer-overlay" id="sheet-overlay" hidden>
-    <div class="drawer product-sheet" id="product-sheet">
-      <button class="drawer-close" id="sheet-close">&times;</button>
-      <div class="sheet-body"></div>
-    </div>
-  </div>
-
-  <script src="/assets/js/config.js?v=205"></script>
-  <script src="/assets/js/catalog.js?v=205"></script>
-  <script src="/assets/js/portes.js?v=222"></script>
-  <script src="/assets/js/offre.js?v=205"></script>
-  <script>document.getElementById("footer-year").textContent = new Date().getFullYear();</script>
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(lancer, { timeout: 2000 });
+    } else {
+      window.addEventListener("load", lancer);
+    }
+  })();
+</script>
 <script src="/assets/js/mesure.js?v=278" defer></script>
 </body>
 </html>
