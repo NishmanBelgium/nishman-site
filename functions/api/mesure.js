@@ -20,7 +20,8 @@
 
 import { freinerIp } from "../_commun.js";
 import {
-  noterVisite, cheminPropre, sourcePropre, appareilPropre, estRobot, paysPropre,
+  noterVisite, noterGeste, gesteValide,
+  cheminPropre, sourcePropre, appareilPropre, estRobot, paysPropre,
 } from "../_mesure.js";
 
 /* Un corps de mesure fait cent octets. Au-delà de deux kilos, ce n'est
@@ -57,6 +58,15 @@ export async function onRequestPost({ request, env }) {
 
   let hoteDuSite = "";
   try { hoteDuSite = new URL(request.url).hostname; } catch (e) {}
+
+  /* Un geste au lieu d'une page vue. Le nom passe par une liste fermée :
+     ce point d'entrée est public, et n'importe qui peut l'appeler avec
+     n'importe quoi. Un nom inconnu n'écrit rien. */
+  const geste = gesteValide(corps.geste);
+  if (geste) {
+    try { await noterGeste(env.DB, geste); } catch (e) { /* un compteur perdu */ }
+    return RIEN();
+  }
 
   try {
     await noterVisite(env.DB, {

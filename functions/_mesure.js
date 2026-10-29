@@ -31,6 +31,7 @@
    ========================================================================== */
 
 let tablePrete = false;
+let tableEvenements = false;
 
 export async function preparerMesure(db) {
   if (tablePrete || !db) return;
@@ -49,6 +50,66 @@ export async function preparerMesure(db) {
     await db.exec("CREATE INDEX IF NOT EXISTS visites_jour ON visites (jour)");
   } catch (e) { /* l'index existe déjà */ }
   tablePrete = true;
+}
+
+/* --- Les gestes qu'une page vue ne raconte pas --------------------------- */
+
+/* La porte d'entrée mène à deux endroits. Savoir combien de visiteurs
+   partent d'un côté ou de l'autre ne se déduit d'aucune page vue : il
+   faudrait relier les pages d'un même visiteur, donc le reconnaître,
+   donc poser un identifiant — et reprendre le bandeau de consentement
+   qu'on a justement évité.
+   
+   Un compteur par geste coûte moins cher et ne désigne personne : on
+   sait que la porte professionnelle a été poussée trois cents fois, pas
+   qui l'a poussée.
+   
+   Table à part, pour que les visites restent des visites : mêlés aux
+   pages vues, ces compteurs gonfleraient les totaux d'audience. */
+const GESTES = [
+  "porte-pro",        // depuis l'accueil, vers les tarifs professionnels
+  "porte-boutique",   // depuis l'accueil, vers la boutique
+];
+
+export function gesteValide(brut) {
+  const g = String(brut || "").trim().toLowerCase();
+  return GESTES.includes(g) ? g : null;
+}
+
+export async function preparerEvenements(db) {
+  if (tableEvenements || !db) return;
+  await db.exec(
+    "CREATE TABLE IF NOT EXISTS evenements (" +
+      "jour TEXT NOT NULL, " +
+      "geste TEXT NOT NULL, " +
+      "n INTEGER NOT NULL DEFAULT 0, " +
+      "PRIMARY KEY (jour, geste))"
+  );
+  tableEvenements = true;
+}
+
+export async function noterGeste(db, geste) {
+  const g = gesteValide(geste);
+  if (!g) return;
+  await preparerEvenements(db);
+  const jour = new Date().toISOString().slice(0, 10);
+  await db.prepare(
+    "INSERT INTO evenements (jour, geste, n) VALUES (?, ?, 1) " +
+    "ON CONFLICT (jour, geste) DO UPDATE SET n = n + 1"
+  ).bind(jour, g).run();
+}
+
+export async function lireGestes(db, depuis, jusqua) {
+  await preparerEvenements(db);
+  const r = await db.prepare(
+    "SELECT geste, SUM(n) AS n FROM evenements WHERE jour BETWEEN ? AND ? " +
+    "GROUP BY geste"
+  ).bind(depuis, jusqua).all();
+  const lignes = (r && r.results) || [];
+  const par = {};
+  for (const g of GESTES) par[g] = 0;
+  for (const l of lignes) par[l.geste] = Number(l.n || 0);
+  return par;
 }
 
 /* --- Normalisation ------------------------------------------------------ */
@@ -119,6 +180,45 @@ export function paysPropre(code) {
   return /^[A-Z]{2}$/.test(p) ? p : "??";
 }
 
+/* --- Les deux moitiés du site ------------------------------------------- */
+
+/* Le site sert deux clientèles qui n'ont rien à voir : des salons qui
+   achètent au carton hors TVA, et des particuliers qui achètent une cire.
+   Un chiffre global mélange les deux et ne pilote rien — « 400 visites »
+   ne dit pas s'il faut travailler la boutique ou le catalogue.
+   
+   Le chemin suffit à trancher, et il est déjà en base : rien de nouveau
+   n'est collecté pour obtenir cette répartition. Les règles vivent ici,
+   une seule fois, et servent aussi bien au JavaScript qu'au SQL — deux
+   listes séparées finiraient par diverger, et le tableau de bord
+   mentirait sans prévenir. */
+const SEGMENTS = [
+  ["accueil",  (c) => c === "/",                 "chemin = '/'"],
+  ["boutique", (c) => c.startsWith("/boutique"), "chemin LIKE '/boutique%'"],
+  ["pro",      (c) => c.startsWith("/produits")
+                   || c.startsWith("/pro/")
+                   || c === "/pro"
+                   || c.startsWith("/devis")
+                   || c.startsWith("/commander"),
+               "chemin LIKE '/produits%' OR chemin LIKE '/pro/%' OR chemin = '/pro' "
+               + "OR chemin LIKE '/devis%' OR chemin LIKE '/commander%'"],
+];
+
+/* Tout le reste — contact, mentions légales, conditions de vente — est
+   « commun » : ces pages servent les deux clientèles, et les attribuer à
+   l'une fausserait sa part. */
+export function segmentDe(chemin) {
+  const c = String(chemin || "/");
+  for (const [nom, teste] of SEGMENTS) if (teste(c)) return nom;
+  return "commun";
+}
+
+/* La même règle, écrite pour SQLite. Construite à partir de la liste
+   ci-dessus : impossible qu'elle s'en écarte. */
+export const SQL_SEGMENT =
+  "CASE " + SEGMENTS.map(([nom, , sql]) => `WHEN ${sql} THEN '${nom}'`).join(" ")
+  + " ELSE 'commun' END";
+
 /* --- Écriture ----------------------------------------------------------- */
 
 /**
@@ -141,31 +241,53 @@ export async function noterVisite(db, { chemin, pays, source, appareil, nouvelle
 
 /* --- Lecture ------------------------------------------------------------ */
 
-/** Les totaux d'une période, et le détail par dimension. */
-export async function lireMesure(db, depuis, jusqua) {
+/* Les noms de segment acceptés. Une liste fermée : le nom arrive d'une
+   adresse publique, et il ne doit jamais atteindre le SQL autrement que
+   comme une valeur liée. */
+export function segmentValide(brut) {
+  const s = String(brut || "").trim().toLowerCase();
+  return ["accueil", "boutique", "pro", "commun"].includes(s) ? s : null;
+}
+
+/** Les totaux d'une période, et le détail par dimension.
+ *
+ * Avec un segment, tout est restreint à cette moitié du site. Sans, on
+ * lit l'ensemble et la répartition par segment vient en plus. */
+export async function lireMesure(db, depuis, jusqua, segment) {
   await preparerMesure(db);
-  const bornes = [depuis, jusqua];
+  const seg = segmentValide(segment);
+  const ou = seg ? ` AND (${SQL_SEGMENT}) = ?` : "";
+  const bornes = seg ? [depuis, jusqua, seg] : [depuis, jusqua];
 
   const un = async (sql) => {
     const r = await db.prepare(sql).bind(...bornes).all();
     return (r && r.results) || [];
   };
 
-  const [totaux, parJour, parChemin, parSource, parPays, parAppareil] = await Promise.all([
-    un("SELECT SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites WHERE jour BETWEEN ? AND ?"),
-    un("SELECT jour, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-       "WHERE jour BETWEEN ? AND ? GROUP BY jour ORDER BY jour"),
-    un("SELECT chemin, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-       "WHERE jour BETWEEN ? AND ? GROUP BY chemin ORDER BY vues DESC LIMIT 25"),
-    un("SELECT source, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-       "WHERE jour BETWEEN ? AND ? GROUP BY source ORDER BY vues DESC"),
-    un("SELECT pays, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-       "WHERE jour BETWEEN ? AND ? GROUP BY pays ORDER BY vues DESC LIMIT 15"),
-    un("SELECT appareil, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-       "WHERE jour BETWEEN ? AND ? GROUP BY appareil ORDER BY vues DESC"),
-  ]);
+  const [totaux, parJour, parChemin, parSource, parPays, parAppareil, parSegment] =
+    await Promise.all([
+      un("SELECT SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
+         "WHERE jour BETWEEN ? AND ?" + ou),
+      un("SELECT jour, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
+         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY jour ORDER BY jour"),
+      un("SELECT chemin, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
+         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY chemin ORDER BY vues DESC LIMIT 25"),
+      un("SELECT source, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
+         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY source ORDER BY vues DESC"),
+      un("SELECT pays, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
+         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY pays ORDER BY vues DESC LIMIT 15"),
+      un("SELECT appareil, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
+         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY appareil ORDER BY vues DESC"),
+      /* La répartition par moitié de site. C'est le chiffre qui dit s'il
+         faut travailler la boutique ou le catalogue, et il ne coûte rien :
+         le chemin est déjà en base, on ne mesure rien de nouveau. */
+      un("SELECT (" + SQL_SEGMENT + ") AS segment, SUM(vues) AS vues, " +
+         "SUM(sessions) AS sessions FROM visites " +
+         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY segment ORDER BY vues DESC"),
+    ]);
 
   return {
+    segment: seg || "tout",
     vues: Number((totaux[0] && totaux[0].vues) || 0),
     sessions: Number((totaux[0] && totaux[0].sessions) || 0),
     par_jour: parJour,
@@ -173,5 +295,6 @@ export async function lireMesure(db, depuis, jusqua) {
     par_source: parSource,
     par_pays: parPays,
     par_appareil: parAppareil,
+    par_segment: parSegment,
   };
 }

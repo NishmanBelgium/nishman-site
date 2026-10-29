@@ -59,6 +59,35 @@
     } catch (e) { /* tant pis : la mesure n'est pas une fonctionnalité */ }
   }
 
+  /* Les gestes qu'une page vue ne raconte pas : sur la porte d'entrée,
+     savoir de quel côté partent les visiteurs. On envoie le nom du geste,
+     rien d'autre — pas de quoi reconnaître qui que ce soit.
+
+     L'écoute est posée sur le document plutôt que sur chaque lien : les
+     liens peuvent être redessinés après coup, un écouteur au-dessus
+     survit. Et « sendBeacon » part même si la page se ferme dans la
+     foulée, ce qui est exactement le cas quand on clique. */
+  function geste(nom) {
+    var charge = JSON.stringify({ geste: nom });
+    try {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon("/api/mesure", new Blob([charge], { type: "text/plain" }));
+        return;
+      }
+    } catch (e) { /* on tente l'autre voie */ }
+    try {
+      fetch("/api/mesure", {
+        method: "POST", body: charge, keepalive: true,
+        headers: { "content-type": "text/plain" },
+      }).catch(function () {});
+    } catch (e) { /* tant pis */ }
+  }
+
+  document.addEventListener("click", function (e) {
+    var cible = e.target && e.target.closest ? e.target.closest("[data-mesure]") : null;
+    if (cible) geste(cible.getAttribute("data-mesure"));
+  }, true);
+
   if (document.readyState === "complete" || document.readyState === "interactive") {
     annoncer();
   } else {
