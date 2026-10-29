@@ -2841,10 +2841,6 @@ body.catalog-body { background: #0E0E0E; }
   object-fit: cover;
   display: block;
   filter: saturate(0.88) contrast(1.04);
-  /* ESSAI. Le film se fond davantage dans le noir de la page. Il n'y a
-     rien derrière lui que le fond #0E0E0E : baisser son opacité revient
-     donc à l'assombrir, pas à le rendre translucide sur autre chose. */
-  opacity: 0.6;
 }
 .accueil-voile {
   position: absolute;
