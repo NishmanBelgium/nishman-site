@@ -2945,7 +2945,7 @@ body.catalog-body { background: #0E0E0E; }
   justify-content: center;
   margin-top: 6px;
   min-height: 50px;
-  padding: 0 26px;
+  padding: 0 18px;
   border: 1px solid transparent;
   border-radius: 0;
   background: #ED9B24;
@@ -2954,8 +2954,9 @@ body.catalog-body { background: #0E0E0E; }
   font-stretch: 88%;
   font-weight: 800;
   font-size: 0.875rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
+  text-align: center;
   transition: background 180ms cubic-bezier(.2,0,0,1);
 }
 .porte-carte:hover .porte-action { background: #C9841F; }
@@ -3054,7 +3055,7 @@ body.catalog-body { background: #0E0E0E; }
   }
   .accueil-logo { margin-left: 0; margin-right: 0; }
   .accueil-sur { margin-left: 0; margin-right: 0; max-width: 46ch; }
-  .portes { max-width: 700px; }
+  .portes { max-width: 760px; }
   .accueil-reseaux { justify-content: flex-start; }
 }
 
