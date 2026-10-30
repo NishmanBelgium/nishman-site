@@ -19,6 +19,42 @@
   "use strict";
 
   var CLE = "nishman-vu";
+  var CLE_C = "nishman-c";
+
+  /* L'étiquette de campagne.
+   *
+   * Instagram n'envoie pas de référent depuis son application : sans
+   * étiquette, toutes ces visites arrivent en « direct » et on ne sait
+   * plus quel contenu les a produites. On met donc l'étiquette dans le
+   * lien qu'on publie — /produits/?c=ig-reel-mcb — et on la retient le
+   * temps de la visite, pour que la deuxième et la troisième page soient
+   * attribuées à la même origine que la première.
+   *
+   * Ce n'est pas un identifiant : « ig-bio » est partagée par tout le
+   * monde et ne reconnaît personne. Elle vit dans la mémoire de l'onglet
+   * et disparaît avec lui.
+   *
+   * Et on la retire de la barre d'adresse une fois lue : une adresse
+   * propre se partage mieux, et personne ne recopie par mégarde
+   * l'étiquette de quelqu'un d'autre. */
+  function campagne() {
+    var vue = null;
+    try {
+      var p = new URLSearchParams(location.search).get("c");
+      if (p && /^[A-Za-z0-9][A-Za-z0-9-]{0,31}$/.test(p)) vue = p.toLowerCase();
+    } catch (e) { /* adresse illisible : tant pis */ }
+
+    if (vue) {
+      try { sessionStorage.setItem(CLE_C, vue); } catch (e) {}
+      try {
+        var u = new URL(location.href);
+        u.searchParams.delete("c");
+        history.replaceState(null, "", u.pathname + u.search + u.hash);
+      } catch (e) { /* l'adresse reste telle quelle, sans conséquence */ }
+      return vue;
+    }
+    try { return sessionStorage.getItem(CLE_C) || null; } catch (e) { return null; }
+  }
 
   function premiere() {
     // Le stockage peut être refusé — navigation privée, réglages stricts.
@@ -36,10 +72,15 @@
   }
 
   function annoncer() {
+    /* L'ordre compte : l'étiquette est lue AVANT premiere(), qui pose le
+       drapeau de session. Sinon, sur la toute première page, le nettoyage
+       de l'adresse partirait après coup. */
+    var c = campagne();
     var charge = JSON.stringify({
       chemin: location.pathname,
       source: origine(document.referrer),
       nouvelle: premiere(),
+      campagne: c,
     });
 
     // sendBeacon survit au départ de la page et ne retarde rien. Quand il

@@ -21,7 +21,7 @@
 
 import { json, erreur, compteAdmin } from "../_commun.js";
 import { preparerTable } from "../_paiements.js";
-import { lireMesure, preparerMesure, lireGestes } from "../_mesure.js";
+import { lireMesure, preparerMesure, lireGestes, lireCampagnes } from "../_mesure.js";
 
 const JOURS_DEFAUT = 30;
 const JOURS_MAX = 365;
@@ -163,7 +163,7 @@ export async function onRequestGet({ request, env }) {
     audiencePro, audienceProAvant,
     vente, venteAvant,
     ventePro, venteProAvant,
-    gens, gensAvant, portes, bloquees,
+    gens, gensAvant, portes, bloquees, campagnes,
   ] = await Promise.all([
     lireMesure(env.DB, depuis, jusqua),
     lireMesure(env.DB, avantDepuis, avantJusqua),
@@ -179,6 +179,9 @@ export async function onRequestGet({ request, env }) {
     clients(env.DB, avantDepuis, avantJusqua),
     lireGestes(env.DB, depuis, jusqua),
     enSouffrance(env.DB),
+    /* Ce que chaque lien publié a réellement amené. C'est le seul chiffre
+       qui relie un contenu à une visite, et donc à une commande. */
+    lireCampagnes(env.DB, depuis, jusqua),
   ]);
 
   /* Le taux de transformation se calcule sur les sessions, pas sur les
@@ -207,6 +210,8 @@ export async function onRequestGet({ request, env }) {
     ok: true,
     periode: { depuis, jusqua, jours },
     periode_precedente: { depuis: avantDepuis, jusqua: avantJusqua },
+
+    campagnes,
 
     /* La vue d'ensemble. « audience » porte la répartition par moitié de
        site, « commerce » reste la boutique : c'est le seul canal qui

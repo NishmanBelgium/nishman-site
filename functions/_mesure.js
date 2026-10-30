@@ -239,6 +239,88 @@ export async function noterVisite(db, { chemin, pays, source, appareil, nouvelle
   ).bind(jour, chemin, pays, source, appareil, nouvelle ? 1 : 0).run();
 }
 
+/* --- Les campagnes ------------------------------------------------------
+
+   D'où vient le visiteur, quand le référent ne le dit pas.
+
+   Instagram n'envoie pas de référent exploitable depuis l'application :
+   tout arrive en « direct », et on ne sait plus quel contenu a produit
+   quelle visite. La seule façon honnête de le savoir est de le dire
+   soi-même dans le lien — nishman.be/produits/?c=ig-reel-mcb — et de
+   retenir l'étiquette.
+
+   Ce qu'on garde est une ÉTIQUETTE, pas un identifiant : « ig-bio » est
+   partagée par des milliers de visiteurs et ne désigne personne. C'est
+   pour cela que cette mesure ne demande aucun consentement, là où un
+   pixel publicitaire en exigerait un — et obligerait à réécrire la page
+   Confidentialité.
+
+   Table à part : la table des visites a une clé primaire composée, et
+   lui ajouter une colonne demanderait de la reconstruire. Une table de
+   plus ne coûte rien et ne met rien en péril. */
+
+let tableCampagnes = false;
+
+export async function preparerCampagnes(db) {
+  if (tableCampagnes || !db) return;
+  await db.exec(
+    "CREATE TABLE IF NOT EXISTS campagnes (" +
+      "jour TEXT NOT NULL, " +
+      "campagne TEXT NOT NULL, " +
+      "chemin TEXT NOT NULL, " +
+      "vues INTEGER NOT NULL DEFAULT 0, " +
+      "sessions INTEGER NOT NULL DEFAULT 0, " +
+      "PRIMARY KEY (jour, campagne, chemin))"
+  );
+  try {
+    await db.exec("CREATE INDEX IF NOT EXISTS campagnes_jour ON campagnes (jour)");
+  } catch (e) { /* l'index existe déjà */ }
+  tableCampagnes = true;
+}
+
+/* L'étiquette arrive d'une adresse publique : on la réduit à ce qu'une
+   étiquette peut être, et rien d'autre. Minuscules, lettres, chiffres et
+   tirets, trente-deux caractères. Tout le reste est refusé — pas corrigé,
+   refusé, parce qu'une étiquette approximative fausse un comptage sans
+   qu'on s'en aperçoive. */
+export function campagnePropre(brut) {
+  const s = String(brut || "").trim().toLowerCase();
+  if (!s || s.length > 32) return null;
+  return /^[a-z0-9][a-z0-9-]*$/.test(s) ? s : null;
+}
+
+export async function noterCampagne(db, { campagne, chemin, nouvelle }) {
+  await preparerCampagnes(db);
+  const jour = new Date().toISOString().slice(0, 10);
+  await db.prepare(
+    "INSERT INTO campagnes (jour, campagne, chemin, vues, sessions) " +
+    "VALUES (?, ?, ?, 1, ?) " +
+    "ON CONFLICT (jour, campagne, chemin) DO UPDATE SET " +
+    "vues = vues + 1, sessions = sessions + excluded.sessions"
+  ).bind(jour, campagne, chemin, nouvelle ? 1 : 0).run();
+}
+
+/* Ce que chaque campagne a amené, et où elle a déposé les visiteurs.
+   Les sessions comptent plus que les vues : une session est une visite,
+   une vue n'est qu'une page de plus. */
+export async function lireCampagnes(db, depuis, jusqua) {
+  await preparerCampagnes(db);
+  const un = async (sql) => {
+    const r = await db.prepare(sql).bind(depuis, jusqua).all();
+    return (r && r.results) || [];
+  };
+  const [parCampagne, parJour, atterrissage] = await Promise.all([
+    un("SELECT campagne, SUM(vues) AS vues, SUM(sessions) AS sessions FROM campagnes " +
+       "WHERE jour BETWEEN ? AND ? GROUP BY campagne ORDER BY sessions DESC, vues DESC LIMIT 40"),
+    un("SELECT jour, SUM(sessions) AS sessions FROM campagnes " +
+       "WHERE jour BETWEEN ? AND ? GROUP BY jour ORDER BY jour"),
+    un("SELECT campagne, chemin, SUM(sessions) AS sessions FROM campagnes " +
+       "WHERE jour BETWEEN ? AND ? GROUP BY campagne, chemin " +
+       "ORDER BY sessions DESC LIMIT 60"),
+  ]);
+  return { par_campagne: parCampagne, par_jour: parJour, atterrissage };
+}
+
 /* --- Lecture ------------------------------------------------------------ */
 
 /* Les noms de segment acceptés. Une liste fermée : le nom arrive d'une

@@ -266,6 +266,46 @@
       + corps + "</tbody></table>";
   }
 
+  /* --- Les campagnes --------------------------------------------------- */
+
+  /* On classe sur les SESSIONS, pas sur les vues : une campagne qui amène
+     dix visiteurs qui lisent une page vaut mieux qu'une qui en amène un
+     qui en lit dix. Et on montre où ils atterrissent, parce qu'un lien
+     qui dépose les barbiers sur la boutique grand public est un lien mal
+     posé — c'est le genre d'erreur qu'on ne voit pas sans ce tableau. */
+  function campagnes(d) {
+    var zone = $("#st-campagnes");
+    var lignes = (d.campagnes && d.campagnes.par_campagne) || [];
+    if (!lignes.length) { zone.hidden = true; return; }
+    zone.hidden = false;
+
+    var arrivees = {};
+    ((d.campagnes && d.campagnes.atterrissage) || []).forEach(function (a) {
+      var c = a.campagne;
+      if (!arrivees[c] || Number(a.sessions) > Number(arrivees[c].sessions)) arrivees[c] = a;
+    });
+
+    var total = lignes.reduce(function (s, l) { return s + Number(l.sessions || 0); }, 0) || 1;
+    var corps = lignes.map(function (l) {
+      var se = Number(l.sessions || 0);
+      var part = Math.round((se / total) * 100);
+      var a = arrivees[l.campagne];
+      var pages = se ? Math.round((Number(l.vues || 0) / se) * 10) / 10 : 0;
+      return "<tr><td><strong>" + ech(l.campagne) + "</strong></td>"
+        + '<td class="st-num">' + nombre(se) + "</td>"
+        + '<td class="st-num">' + (pages || "—") + "</td>"
+        + "<td>" + ech((a && a.chemin) || "—") + "</td>"
+        + '<td class="st-part"><span style="width:' + part + '%"></span>'
+        + "<em>" + part + " %</em></td></tr>";
+    }).join("");
+
+    $("#st-campagnes-corps").innerHTML =
+      '<table class="st-table"><thead><tr><th>Étiquette</th>'
+      + '<th class="st-num">Visites</th><th class="st-num">Pages / visite</th>'
+      + "<th>Arrivée principale</th><th>Part</th></tr></thead><tbody>"
+      + corps + "</tbody></table>";
+  }
+
   /* --- La répartition, les portes, les clients ------------------------- */
 
   var NOMS_SEGMENT = {
@@ -430,6 +470,7 @@
     portes(d);
     clients(d);
 
+    campagnes(k);
     tableau("#st-pages", k.audience.par_chemin, "chemin", "Page");
     tableau("#st-sources", k.audience.par_source, "source", "Source");
     tableau("#st-pays", k.audience.par_pays, "pays", "Pays");

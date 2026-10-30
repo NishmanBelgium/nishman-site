@@ -12,7 +12,7 @@
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=339" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=339" />
-<link rel="stylesheet" href="/assets/css/stats.css?v=326" />
+<link rel="stylesheet" href="/assets/css/stats.css?v=341" />
 </head>
 <body data-palette="#ED9B24,#1F6FB2">
 
@@ -83,6 +83,20 @@
       <div id="st-portes-corps"></div>
     </section>
 
+    <!-- Ce que chaque lien publié a rapporté. C'est la seule section qui
+         relie un contenu publié à une visite réelle, et donc à une
+         commande. Elle reste cachée tant qu'aucun lien étiqueté n'a
+         été cliqué. -->
+    <section class="st-bloc" id="st-campagnes" hidden>
+      <div class="st-bloc-tete">
+        <h2>Ce que chaque lien a rapporté</h2>
+        <p class="st-aide">Les liens publiés portent une étiquette — par exemple
+          <code>nishman.be/produits/?c=ig-bio</code>. Une visite est comptée pour
+          l'étiquette qui l'a amenée, sur toutes les pages qu'elle consulte ensuite.</p>
+      </div>
+      <div id="st-campagnes-corps"></div>
+    </section>
+
     <section class="st-bloc">
       <div class="st-bloc-tete">
         <h2>Visites</h2>
@@ -132,6 +146,6 @@
 
 </main>
 
-<script src="/assets/js/stats.js?v=326" defer></script>
+<script src="/assets/js/stats.js?v=341" defer></script>
 </body>
 </html>

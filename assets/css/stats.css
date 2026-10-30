@@ -90,6 +90,18 @@
 }
 .st-bloc h2 { margin: 0; font: 700 15px/1.3 var(--font-display); color: var(--ink); }
 
+/* La phrase qui explique un tableau. Elle prend toute la largeur sous le
+   titre plutôt que de se serrer à côté : une explication coupée en deux
+   n'explique rien. */
+.st-aide {
+  flex: 1 0 100%; margin: 2px 0 0;
+  font: 400 12.5px/1.5 var(--font-body); color: var(--ink-soft);
+}
+.st-aide code {
+  font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: #f4f2ee; border-radius: 3px; padding: 2px 5px; color: var(--ink);
+}
+
 /* La légende est toujours là dès qu'il y a deux séries : l'identité ne
    doit jamais reposer sur la seule couleur. */
 .st-legende { display: flex; gap: 14px; }

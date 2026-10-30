@@ -20,7 +20,7 @@
 
 import { freinerIp } from "../_commun.js";
 import {
-  noterVisite, noterGeste, gesteValide,
+  noterVisite, noterGeste, gesteValide, noterCampagne, campagnePropre,
   cheminPropre, sourcePropre, appareilPropre, estRobot, paysPropre,
 } from "../_mesure.js";
 
@@ -66,6 +66,20 @@ export async function onRequestPost({ request, env }) {
   if (geste) {
     try { await noterGeste(env.DB, geste); } catch (e) { /* un compteur perdu */ }
     return RIEN();
+  }
+
+  /* L'étiquette de campagne, si le visiteur en porte une. Elle est notée
+     à part de la visite : une campagne inconnue ou mal formée n'empêche
+     pas la page vue d'être comptée. */
+  const campagne = campagnePropre(corps.campagne);
+  if (campagne) {
+    try {
+      await noterCampagne(env.DB, {
+        campagne,
+        chemin: cheminPropre(corps.chemin),
+        nouvelle: corps.nouvelle === true,
+      });
+    } catch (e) { /* un compteur perdu, jamais une page cassée */ }
   }
 
   try {
