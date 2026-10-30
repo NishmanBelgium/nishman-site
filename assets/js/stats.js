@@ -295,10 +295,13 @@
       var se = Number(l.sessions || 0);
       var part = Math.round((se / total) * 100);
       var a = arrivees[l.campagne];
-      var pages = se ? Math.round((Number(l.vues || 0) / se) * 10) / 10 : 0;
+      /* Les pages vues brutes, et non un ratio : une étiquette cliquée par
+         quelqu'un qui était déjà sur le site compte des pages sans ouvrir
+         de visite. Le ratio affichait alors « — » et donnait l'impression
+         que le lien n'avait rien fait. */
       return "<tr><td><strong>" + ech(l.campagne) + "</strong></td>"
         + '<td class="st-num">' + nombre(se) + "</td>"
-        + '<td class="st-num">' + (pages || "—") + "</td>"
+        + '<td class="st-num">' + nombre(Number(l.vues || 0)) + "</td>"
         + "<td>" + ech((a && a.chemin) || "—") + "</td>"
         + '<td class="st-part"><span style="width:' + part + '%"></span>'
         + "<em>" + part + " %</em></td></tr>";
@@ -306,7 +309,7 @@
 
     $("#st-campagnes-corps").innerHTML =
       '<table class="st-table"><thead><tr><th>Étiquette</th>'
-      + '<th class="st-num">Visites</th><th class="st-num">Pages / visite</th>'
+      + '<th class="st-num">Visites</th><th class="st-num">Pages vues</th>'
       + "<th>Arrivée principale</th><th>Part</th></tr></thead><tbody>"
       + corps + "</tbody></table>";
   }

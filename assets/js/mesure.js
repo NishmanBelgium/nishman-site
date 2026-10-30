@@ -36,24 +36,37 @@
    *
    * Et on la retire de la barre d'adresse une fois lue : une adresse
    * propre se partage mieux, et personne ne recopie par mégarde
-   * l'étiquette de quelqu'un d'autre. */
+   * l'étiquette de quelqu'un d'autre.
+   *
+   * LA PREMIÈRE ÉTIQUETTE D'UNE VISITE L'EMPORTE. Celle qui a fait venir
+   * quelqu'un est celle de son arrivée ; une étiquette rencontrée plus
+   * tard, en cliquant d'une page à l'autre, ne l'a pas fait venir. Si
+   * elle écrasait la première, l'origine réelle disparaîtrait et la
+   * nouvelle afficherait des pages vues sans aucune visite — un lien
+   * qui a l'air de ne rien rapporter alors qu'il a tout amené. */
   function campagne() {
+    var deja = null;
+    try { deja = sessionStorage.getItem(CLE_C) || null; } catch (e) {}
+
     var vue = null;
     try {
       var p = new URLSearchParams(location.search).get("c");
       if (p && /^[A-Za-z0-9][A-Za-z0-9-]{0,31}$/.test(p)) vue = p.toLowerCase();
     } catch (e) { /* adresse illisible : tant pis */ }
 
+    // L'adresse est nettoyée même quand l'étiquette est ignorée : ce qui
+    // compte ici, c'est qu'elle ne traîne pas dans ce qu'on partage.
     if (vue) {
-      try { sessionStorage.setItem(CLE_C, vue); } catch (e) {}
       try {
         var u = new URL(location.href);
         u.searchParams.delete("c");
         history.replaceState(null, "", u.pathname + u.search + u.hash);
       } catch (e) { /* l'adresse reste telle quelle, sans conséquence */ }
-      return vue;
     }
-    try { return sessionStorage.getItem(CLE_C) || null; } catch (e) { return null; }
+
+    if (deja) return deja;
+    if (vue) { try { sessionStorage.setItem(CLE_C, vue); } catch (e) {} }
+    return vue;
   }
 
   function premiere() {
