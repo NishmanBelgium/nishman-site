@@ -158,10 +158,116 @@
   transition: background var(--transition), color var(--transition), border-color var(--transition);
 }
 .chip:hover { border-color: var(--encre); color: var(--encre); }
-/* Un filtre actif est un état, pas une action : il se marque en charbon. */
-.chip.on {
+/* Un filtre actif est un état, pas une action : il se marque en charbon.
+   Le script pose aria-pressed, pas une classe — l'ancienne règle .chip.on
+   ne s'appliquait donc jamais et les seize familles se ressemblaient
+   toutes, y compris celle qu'on venait de choisir. */
+.chip.on,
+.chip[aria-pressed="true"] {
   background: var(--noir); border-color: var(--noir); color: var(--encre-inverse);
 }
+
+/* ──────────────── chercher, trier ────────────────
+   La barre vit dans le bandeau collant, au-dessus des familles : c'est
+   le premier geste de quelqu'un qui arrive avec un produit en tête. */
+
+.bq-outils {
+  display: flex; align-items: center; gap: var(--e3);
+  padding-bottom: var(--e3);
+}
+
+.bq-chercher {
+  position: relative; flex: 1 1 auto; min-width: 0;
+  display: flex; align-items: center;
+}
+.bq-loupe {
+  position: absolute; left: 14px; width: 17px; height: 17px;
+  color: var(--encre-pale); pointer-events: none;
+}
+#bq-q {
+  width: 100%; min-height: 44px;
+  padding: 0 40px 0 40px;
+  border: 1px solid var(--gris); border-radius: var(--r-pastille);
+  background: var(--blanc); color: var(--encre);
+  font-family: var(--texte); font-size: var(--t-menu);
+  -webkit-appearance: none; appearance: none;
+}
+#bq-q::placeholder { color: var(--encre-pale); }
+#bq-q::-webkit-search-cancel-button { display: none; }
+#bq-q:focus-visible {
+  outline: none; border-color: var(--encre);
+  box-shadow: 0 0 0 3px rgba(16, 16, 16, 0.10);
+}
+#bq-vider {
+  position: absolute; right: 6px;
+  width: 32px; height: 32px; border: 0; border-radius: 50%;
+  background: none; color: var(--encre-douce);
+  font-size: 21px; line-height: 1; cursor: pointer;
+}
+#bq-vider:hover { background: var(--craie); color: var(--encre); }
+
+.bq-tri { flex: 0 0 auto; display: flex; align-items: center; gap: var(--e2); }
+.bq-tri > span {
+  color: var(--encre-pale); font-size: var(--t-petit); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .08em;
+}
+#bq-tri {
+  min-height: 44px; padding: 0 var(--e3);
+  border: 1px solid var(--gris); border-radius: var(--r-pastille);
+  background: var(--blanc); color: var(--encre);
+  font-family: var(--texte); font-size: var(--t-menu); font-weight: 600;
+  cursor: pointer;
+}
+
+/* Sur téléphone, tout tient sur une seule ligne. Mis l'un sous l'autre,
+   la barre collante mangeait plus du tiers de l'écran et il ne restait
+   qu'une rangée et demie de produits visibles — on venait de rendre le
+   catalogue plus difficile à parcourir en voulant le rendre cherchable.
+   Le mot « Trier » disparaît : le menu déroulant dit déjà ce qu'il fait. */
+@media (max-width: 620px) {
+  .bq-outils { gap: var(--e2); padding-bottom: var(--e2); }
+  .bq-tri > span { display: none; }
+  #bq-q { padding-right: 36px; font-size: 16px; }  /* 16px : iOS ne zoome pas */
+  #bq-tri {
+    max-width: 38vw; padding: 0 var(--e2);
+    font-size: var(--t-petit);
+    text-overflow: ellipsis;
+  }
+}
+
+.bq-compte {
+  margin: var(--e4) 0 0;
+  color: var(--encre-pale); font-size: var(--t-petit); font-weight: 600;
+}
+.bq-compte:empty { display: none; }
+/* Quand le compte s'affiche, la grille ne rajoute pas son propre blanc. */
+.bq-compte:not(:empty) + .grille { padding-top: var(--e4); }
+
+/* La grille portait tout le blanc du bas. Maintenant qu'un bouton la suit,
+   ce blanc devient un trou entre les deux : on le rend à la grille quand
+   le bouton est caché, et on le réduit quand il est là. */
+.grille { padding-bottom: var(--e7); }
+.bq-suite { display: flex; justify-content: center; padding-bottom: var(--section); }
+.bq-suite:has(.bq-plus[hidden]) { padding-bottom: 0; }
+.bq-plus {
+  min-height: 48px; padding: 0 var(--e6);
+  border: 1px solid var(--encre); border-radius: var(--r-pastille);
+  background: var(--blanc); color: var(--encre);
+  font-family: var(--texte); font-size: var(--t-menu); font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.bq-plus:hover { background: var(--noir); color: var(--encre-inverse); }
+.bq-plus[hidden] { display: none; }
+
+.bq-rien {
+  grid-column: 1 / -1; text-align: center;
+  padding: var(--section) var(--e4);
+}
+.bq-rien p { margin: 0 0 var(--e3); color: var(--encre-douce); }
+.bq-rien b { color: var(--encre); }
+.bq-rien-aide { font-size: var(--t-petit); color: var(--encre-pale); }
+.bq-rien .bq-plus { margin-top: var(--e3); }
 
 /* ─────────────────────── la grille ─────────────────────── */
 

@@ -21,9 +21,15 @@
 
   var PRODUITS = [];
   var STOCK = null;      // { ean: pièces vendables } — renseigné par le serveur
-  var FAMILLE = "Tout";  // la famille affichée, pour redessiner au même endroit
   var panier = {};         // ean -> quantité
   var langue = "fr";
+
+  // L'état de la vitrine. Il remplace l'ancienne variable FAMILLE : avec
+  // 125 références et seize familles, le filtre seul ne suffisait pas —
+  // un visiteur qui vient chercher « flaming » devait faire défiler
+  // cent vingt vignettes avant de la trouver.
+  var PAR_PAGE = 24;
+  var ETAT = { famille: "Tout", q: "", tri: "defaut", vus: PAR_PAGE };
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -63,7 +69,7 @@
       if (d.relais) RELAIS = d.relais;
       // Le stock réel, pour que la grille ne propose pas ce qui n'existe
       // plus. Il arrive souvent après le premier dessin : on redessine.
-      if (d.stock) { STOCK = d.stock; if (PRODUITS.length) dessinerGrille(FAMILLE); }
+      if (d.stock) { STOCK = d.stock; if (PRODUITS.length) dessinerGrille(); }
       majPanier();
     })
     .catch(function () { /* on garde les valeurs de secours */ });
@@ -75,7 +81,7 @@
       PRODUITS = d;
       lirePanier();
       dessinerFiltres();
-      dessinerGrille("Tout");
+      brancherOutils();
       majPanier();
     })
     .catch(function () {
@@ -101,8 +107,107 @@
       var b = e.target.closest(".chip");
       if (!b) return;
       $$(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c === b); });
-      dessinerGrille(b.dataset.fam);
+      ETAT.famille = b.dataset.fam;
+      ETAT.vus = PAR_PAGE;
+      dessinerGrille();
     });
+  }
+
+  // ── recherche et tri ────────────────────────────────────────────────────
+
+  // On compare sur du texte mis à plat : sans accents, sans casse, sans
+  // ponctuation. « crème » trouve « creme », « après-shampoing » trouve
+  // « apres shampoing ». C'est la seule façon d'avoir une recherche qui
+  // ne punit pas la manière dont les gens tapent.
+  function aplatir(s) {
+    var t = String(s == null ? "" : s);
+    if (t.normalize) t = t.normalize("NFD").replace(/[̀-ͯ]/g, "");
+    return t.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  }
+
+  // L'index est calculé une fois par produit, pas à chaque frappe.
+  function index(p) {
+    if (p._i == null) {
+      p._i = aplatir([p.nom, p.nom_court, p.famille, p.volume, p.ean].join(" "));
+    }
+    return p._i;
+  }
+
+  // Tous les mots tapés doivent être présents, dans n'importe quel ordre :
+  // « wax mat » et « mat wax » donnent le même résultat.
+  function correspond(p, mots) {
+    var t = index(p);
+    for (var i = 0; i < mots.length; i++) if (t.indexOf(mots[i]) === -1) return false;
+    return true;
+  }
+
+  function selection() {
+    var liste = ETAT.famille === "Tout" ? PRODUITS.slice()
+              : PRODUITS.filter(function (p) { return p.famille === ETAT.famille; });
+
+    var mots = aplatir(ETAT.q).split(" ").filter(Boolean);
+    if (mots.length) liste = liste.filter(function (p) { return correspond(p, mots); });
+
+    if (ETAT.tri === "prix-bas")       liste.sort(function (a, b) { return a.ttc - b.ttc; });
+    else if (ETAT.tri === "prix-haut") liste.sort(function (a, b) { return b.ttc - a.ttc; });
+    else if (ETAT.tri === "nom")       liste.sort(function (a, b) {
+      return (a.nom_court || a.nom).localeCompare(b.nom_court || b.nom, "fr");
+    });
+    // « defaut » : l'ordre du catalogue, qui regroupe déjà par famille.
+
+    return liste;
+  }
+
+  function brancherOutils() {
+    var champ = $("#bq-q"), vider = $("#bq-vider"), tri = $("#bq-tri"), plus = $("#bq-plus");
+
+    // Un lien de campagne peut arriver avec sa recherche déjà écrite :
+    // nishman.be/boutique/?q=flaming envoie directement sur la bonne cire.
+    // On la lit, on ne l'écrit jamais.
+    try {
+      var q0 = new URLSearchParams(location.search).get("q");
+      if (q0) { ETAT.q = String(q0).slice(0, 60); if (champ) champ.value = ETAT.q; }
+    } catch (err) { /* vieux navigateur : on part du catalogue entier */ }
+
+    if (champ) {
+      // Un léger délai : redessiner cent vignettes à chaque lettre fait
+      // sauter le clavier sur un téléphone.
+      var minuteurQ = null;
+      champ.addEventListener("input", function () {
+        clearTimeout(minuteurQ);
+        minuteurQ = setTimeout(function () {
+          ETAT.q = champ.value;
+          ETAT.vus = PAR_PAGE;
+          dessinerGrille();
+        }, 140);
+      });
+      champ.addEventListener("search", function () {
+        ETAT.q = champ.value; ETAT.vus = PAR_PAGE; dessinerGrille();
+      });
+    }
+
+    if (vider) vider.addEventListener("click", function () {
+      ETAT.q = ""; ETAT.vus = PAR_PAGE;
+      if (champ) { champ.value = ""; champ.focus(); }
+      dessinerGrille();
+    });
+
+    if (tri) tri.addEventListener("change", function () {
+      ETAT.tri = tri.value; ETAT.vus = PAR_PAGE; dessinerGrille();
+    });
+
+    if (plus) plus.addEventListener("click", function () {
+      // On repère la dernière carte avant d'agrandir : après le dessin, on
+      // y ramène le focus, sinon le lecteur d'écran repart du haut de la
+      // page et l'utilisateur perd sa place.
+      var avant = $$(".carte", $("#grille")).length;
+      ETAT.vus += PAR_PAGE;
+      dessinerGrille();
+      var cartes = $$(".carte .carte-lien", $("#grille"));
+      if (cartes[avant]) cartes[avant].focus({ preventScroll: true });
+    });
+
+    dessinerGrille();
   }
 
   // Le stock vendable par code-barres, tel que le serveur l'applique.
@@ -114,37 +219,81 @@
     return (STOCK[String(p.ean)] || 0) <= 0;
   }
 
-  function dessinerGrille(fam) {
-    FAMILLE = fam;
-    var liste = fam === "Tout" ? PRODUITS
-              : PRODUITS.filter(function (p) { return p.famille === fam; });
-    $("#grille").innerHTML = liste.map(function (p) {
-      var hs = epuise(p);
-      return '' +
-        '<article class="carte' + (hs ? " indispo" : "") + '" data-ean="' + p.ean + '">' +
-          // Un vrai lien, et non plus une fenêtre ouverte par JavaScript :
-          // c'est par lui que Google atteint les fiches, et c'est lui qu'on
-          // copie pour partager un produit.
-          '<a class="carte-lien" href="/boutique/' + echappe(p.slug || p.ean) + '/">' +
-          '<div class="carte-img">' +
-            (hs ? '<span class="bientot">' + (p.bientot ? "Bientôt" : "Épuisé") + "</span>" : "") +
-            '<img src="/assets/img/products/' + echappe(p.image) +
-            '" alt="' + echappe(p.nom) + '" loading="lazy" width="900" height="900" /></div>' +
-          '<div class="carte-fam">' + echappe(p.famille) + "</div>" +
-          '<h3 class="carte-nom">' + echappe(p.nom_court || p.nom) + "</h3>" +
-          '<div class="carte-vol">' + echappe(p.volume) + "</div>" +
-          "</a>" +
-          '<div class="carte-bas">' +
-            '<span class="prix">' + euros(p.ttc) + "</span>" +
-            (hs
-              ? '<button class="carte-add" disabled aria-label="' +
-                (p.bientot ? "Bientôt disponible" : "Épuisé") + '">+</button>'
-              : '<button class="carte-add" data-add="' + p.ean + '" ' +
-                'aria-label="Ajouter au panier">+</button>') +
-          "</div>" +
-        "</article>";
-    }).join("");
+  function carte(p) {
+    var hs = epuise(p);
+    return '' +
+      '<article class="carte' + (hs ? " indispo" : "") + '" data-ean="' + p.ean + '">' +
+        '<a class="carte-lien" href="/boutique/' + echappe(p.slug || p.ean) + '/">' +
+        '<div class="carte-img">' +
+          (hs ? '<span class="bientot">' + (p.bientot ? "Bientôt" : "Épuisé") + "</span>" : "") +
+          '<img src="/assets/img/products/' + echappe(p.image) +
+          '" alt="' + echappe(p.nom) + '" loading="lazy" width="900" height="900" /></div>' +
+        '<div class="carte-fam">' + echappe(p.famille) + "</div>" +
+        '<h3 class="carte-nom">' + echappe(p.nom_court || p.nom) + "</h3>" +
+        '<div class="carte-vol">' + echappe(p.volume) + "</div>" +
+        "</a>" +
+        '<div class="carte-bas">' +
+          '<span class="prix">' + euros(p.ttc) + "</span>" +
+          (hs
+            ? '<button class="carte-add" disabled aria-label="' +
+              (p.bientot ? "Bientôt disponible" : "Épuisé") + '">+</button>'
+            : '<button class="carte-add" data-add="' + p.ean + '" ' +
+              'aria-label="Ajouter au panier">+</button>') +
+        "</div>" +
+      "</article>";
   }
+
+  function dessinerGrille() {
+    var liste = selection();
+    var visibles = liste.slice(0, ETAT.vus);
+    var reste = liste.length - visibles.length;
+
+    var champ = $("#bq-q"), vider = $("#bq-vider");
+    if (vider) vider.hidden = !(champ && champ.value);
+
+    // Le compte n'a d'intérêt que quand on a filtré : l'afficher sur le
+    // catalogue entier, c'est répéter ce que la page dit déjà plus bas.
+    var compte = $("#bq-compte");
+    if (compte) {
+      var filtre = ETAT.q || ETAT.famille !== "Tout";
+      compte.textContent = !filtre ? ""
+        : liste.length === 0 ? "Aucun produit ne correspond."
+        : liste.length === 1 ? "1 produit"
+        : liste.length + " produits";
+    }
+
+    if (!liste.length) {
+      $("#grille").innerHTML =
+        '<div class="bq-rien">' +
+          "<p>Nous n'avons rien trouvé pour <b>" + echappe(ETAT.q || ETAT.famille) + "</b>.</p>" +
+          '<p class="bq-rien-aide">Essayez un mot plus court — « wax », « cologne », ' +
+            "« poudre », « barbe » — ou parcourez tout le catalogue.</p>" +
+          '<button type="button" class="bq-plus" id="bq-tout">Voir tout le catalogue</button>' +
+        "</div>";
+    } else {
+      $("#grille").innerHTML = visibles.map(carte).join("");
+    }
+
+    var plus = $("#bq-plus");
+    if (plus) {
+      plus.hidden = reste <= 0;
+      plus.textContent = reste <= 0 ? ""
+        : reste === 1 ? "Voir le dernier produit"
+        : "Voir les " + Math.min(reste, PAR_PAGE) + " suivants";
+    }
+  }
+
+  // Le bouton de secours du cas « rien trouvé » : il remet la vitrine à zéro.
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest("#bq-tout")) return;
+    ETAT.q = ""; ETAT.famille = "Tout"; ETAT.vus = PAR_PAGE;
+    var champ = $("#bq-q");
+    if (champ) champ.value = "";
+    $$(".chip").forEach(function (c) {
+      c.setAttribute("aria-pressed", c.dataset.fam === "Tout");
+    });
+    dessinerGrille();
+  });
 
   // ── interactions sur la grille ──────────────────────────────────────────
   document.addEventListener("click", function (e) {
@@ -310,7 +459,10 @@
   // La fiche produit a sa propre page depuis l'étape 218 : plus de fenêtre.
 
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { fermerFiche(); ouvrirPanier(false); }
+    // fermerFiche() a disparu à l'étape 218, quand la fiche produit est
+    // devenue une vraie page — mais l'appel était resté. Échap levait donc
+    // une erreur AVANT de fermer le panier : la touche ne servait plus à rien.
+    if (e.key === "Escape") ouvrirPanier(false);
   });
 
   // ── toast ───────────────────────────────────────────────────────────────

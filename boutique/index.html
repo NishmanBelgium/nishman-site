@@ -23,7 +23,7 @@
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=339" />
-<link rel="stylesheet" href="/assets/css/boutique.css?v=339" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=343" />
 </head>
 <body>
 
@@ -74,12 +74,41 @@
     </div>
   </section>
 
-  <nav class="filtres">
+  <!-- Chercher, trier, puis filtrer. Dans cet ordre, parce que quelqu'un
+       qui arrive d'une story cherche UN produit : il doit pouvoir le
+       nommer avant de devoir comprendre nos seize familles. -->
+  <nav class="filtres" aria-label="Recherche et tri du catalogue">
+    <div class="wrap bq-outils">
+      <div class="bq-chercher">
+        <svg class="bq-loupe" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor"
+                  stroke-width="2" /><path d="M15.5 15.5 21 21" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <input id="bq-q" type="search" autocomplete="off" spellcheck="false"
+               placeholder="Chercher une cire, une cologne, une poudre…"
+               aria-label="Chercher dans le catalogue" />
+        <button type="button" id="bq-vider" hidden aria-label="Effacer la recherche">&times;</button>
+      </div>
+      <label class="bq-tri">
+        <span>Trier</span>
+        <select id="bq-tri">
+          <option value="defaut">Par famille</option>
+          <option value="prix-bas">Prix croissant</option>
+          <option value="prix-haut">Prix décroissant</option>
+          <option value="nom">Nom A → Z</option>
+        </select>
+      </label>
+    </div>
     <div class="wrap filtres-in" id="filtres"></div>
   </nav>
 
   <div class="wrap">
+    <p class="bq-compte" id="bq-compte" role="status" aria-live="polite"></p>
     <div class="grille" id="grille"></div>
+    <div class="bq-suite">
+      <button type="button" class="bq-plus" id="bq-plus" hidden></button>
+    </div>
   </div>
 </main>
 
@@ -346,7 +375,7 @@
 <!-- fenêtre d'orientation : professionnel ou particulier -->
 <div class="toast" id="toast"></div>
 
-<script src="/assets/js/boutique.js?v=335"></script>
+<script src="/assets/js/boutique.js?v=343"></script>
 <script src="/assets/js/bandeau.js?v=333" defer></script>
 <script src="/assets/js/porte.js?v=219"></script>
 <script src="/assets/js/mesure.js?v=341" defer></script>
