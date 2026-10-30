@@ -276,7 +276,12 @@
   function campagnes(d) {
     var zone = $("#st-campagnes");
     var lignes = (d.campagnes && d.campagnes.par_campagne) || [];
-    if (!lignes.length) { zone.hidden = true; return; }
+    /* Les étiquettes ne sont pas découpées par vue : un même lien peut
+       déposer sur la boutique comme sur le catalogue pro. On ne l'affiche
+       donc que dans la vue d'ensemble, comme les autres blocs globaux —
+       le montrer dans la vue « boutique » laisserait croire à un chiffre
+       boutique alors que c'est le chiffre du site. */
+    if (etat.vue !== "tout" || !lignes.length) { zone.hidden = true; return; }
     zone.hidden = false;
 
     var arrivees = {};
@@ -470,7 +475,9 @@
     portes(d);
     clients(d);
 
-    campagnes(k);
+    /* d, pas k : les étiquettes vivent à la racine de la réponse, pas dans
+       la tranche de la vue courante. */
+    campagnes(d);
     tableau("#st-pages", k.audience.par_chemin, "chemin", "Page");
     tableau("#st-sources", k.audience.par_source, "source", "Source");
     tableau("#st-pays", k.audience.par_pays, "pays", "Pays");
