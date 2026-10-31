@@ -3655,3 +3655,70 @@ body.catalog-body { background: #0E0E0E; }
   }
   .bandeau-titre { font-size: clamp(2.1rem, 2.9vw, 3.1rem); }
 }
+
+/* ==========================================================================
+   SOUS LES DEUX PORTES.
+
+   La porte d'entrée perd douze pour cent de sa hauteur. Ce n'est pas une
+   coquetterie : à cent pour cent de l'écran, rien n'indique qu'il y a
+   quelque chose dessous, et le visiteur qui ne se reconnaît dans aucune
+   des deux portes referme la page. À quatre-vingt-huit, le titre de la
+   bande suivante affleure, et c'est tout ce qu'il faut pour qu'on
+   descende. Les deux portes, elles, restent où elles sont.
+   ========================================================================== */
+.accueil { min-height: 88svh; }
+
+/* Les bandes s'alignent sur les portes plutôt que sur la largeur de
+   l'écran : deux largeurs différentes dans la même colonne se verraient. */
+.accueil-bande {
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 20px;
+}
+
+/* ─────────────────────── les quatre faits ─────────────────────── */
+
+.accueil-preuves {
+  background: #141414;
+  color: #F7F6F2;
+  padding: 56px 0 64px;
+  border-top: 1px solid rgba(247, 246, 242, 0.08);
+}
+.accueil-preuves h2 {
+  font-family: var(--titre, "Archivo", "Helvetica Neue", Arial, sans-serif);
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  font-stretch: 80%;
+  font-weight: 800;
+  margin: 0 0 24px;
+}
+.preuves {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px)  { .preuves { grid-template-columns: 1fr 1fr; gap: 28px 32px; } }
+@media (min-width: 1024px) { .preuves { grid-template-columns: repeat(4, 1fr); } }
+
+.preuves li {
+  padding-top: 14px;
+  border-top: 2px solid var(--orange, #ED9B24);
+}
+.preuves b {
+  display: block;
+  font-family: var(--titre, "Archivo", "Helvetica Neue", Arial, sans-serif);
+  font-stretch: 86%;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  margin-bottom: 7px;
+}
+.preuves span {
+  display: block;
+  color: var(--encre-inverse-douce, #C4C0B8);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}

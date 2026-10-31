@@ -1,0 +1,155 @@
+/* ==========================================================================
+   LES CINQ FAMILLES PHARES.
+
+   La même bande sert d'entrée sur la page d'accueil et en haut de la
+   boutique. Deux pages, deux feuilles de style différentes — site.css
+   d'un côté, base.css plus boutique.css de l'autre — et ces deux
+   familles de feuilles ne déclarent pas les mêmes variables : les
+   espacements et les tailles de titre n'existent que du côté boutique.
+
+   Cette feuille-ci est donc autonome. Chaque variable est appelée avec
+   sa valeur de repli, selon la convention déjà employée dans site.css,
+   de sorte que la bande rend pareil quelle que soit la page qui la
+   charge. C'est la seule façon de n'avoir qu'une version de ce code :
+   l'alternative était de le copier dans les deux feuilles, et une
+   correction sur deux aurait fini par être oubliée.
+   ========================================================================== */
+
+.phares {
+  background: var(--noir, #101010);
+  color: #F7F6F2;
+  padding: 32px 0 64px;
+}
+.phares h2 {
+  font-family: var(--titre, "Archivo", "Helvetica Neue", Arial, sans-serif);
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  font-stretch: 80%;
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+.phares-lead {
+  color: var(--encre-inverse-douce, #C4C0B8);
+  font-size: 0.875rem;
+  max-width: 52ch;
+  margin: 0 0 24px;
+}
+
+/* Sous 1024 px la rangée défile horizontalement au lieu de se casser en
+   3 + 2 : cinq tuiles ne se répartissent pas proprement sur une grille,
+   et le défilement est le geste que le visiteur fait déjà sur son
+   téléphone. */
+.phares-piste {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 12px;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.phares-piste::-webkit-scrollbar { display: none; }
+.phares-piste > li {
+  flex: 0 0 58%;
+  max-width: 240px;
+  scroll-snap-align: start;
+}
+@media (min-width: 1024px) {
+  .phares-piste {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    overflow: visible;
+    padding-bottom: 0;
+  }
+  .phares-piste > li { max-width: none; }
+}
+
+/* Le produit se montre sur le fond clair pour lequel il a été détouré.
+   Posé sur du noir, le noir des pots se fond dans la tuile et les
+   résidus blancs du détourage ressortent comme des trous. La grille du
+   catalogue règle ce problème depuis toujours — fond clair et
+   « multiply », qui fait disparaître le blanc résiduel dans le fond —
+   et il n'y a aucune raison d'inventer autre chose ici.
+
+   Le nom passe donc sous la vitrine plutôt que par-dessus : du texte
+   blanc n'a plus où se poser une fois la vitrine claire, et sous la
+   vitrine il reste lisible quelle que soit l'image. */
+.phare {
+  display: block;
+  text-decoration: none;
+}
+.phare-vitrine {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--gris-fond, #F2F2F2);
+}
+.phare-objet {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  transition: opacity 0.4s ease, transform 0.6s ease;
+}
+.phare-objet img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+/* La matière première attend derrière. Elle ne se découvre qu'au
+   survol : sur un écran tactile, le visiteur voit le produit, ce qui
+   est de toute façon ce qu'il vient chercher. */
+.phare-fond {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+.phare-fond img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.phare-txt { display: block; padding: 12px 2px 0; }
+.phare-txt em {
+  display: block;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--orange, #ED9B24);
+  margin-bottom: 4px;
+}
+.phare-txt b {
+  display: block;
+  font-family: var(--titre, "Archivo", "Helvetica Neue", Arial, sans-serif);
+  font-stretch: 80%;
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .phare:hover .phare-fond { opacity: 1; }
+  .phare:hover .phare-objet { opacity: 0; transform: scale(1.04); }
+  .phare:hover .phare-txt b { color: var(--orange, #ED9B24); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .phare-objet, .phare-fond { transition: opacity 0.2s ease; }
+  .phare:hover .phare-objet { transform: none; }
+}
+.phare:focus-visible { outline: 2px solid var(--orange, #ED9B24); outline-offset: 3px; }
