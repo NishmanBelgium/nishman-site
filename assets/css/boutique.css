@@ -680,24 +680,57 @@
   background: #0b0b0c;
   text-decoration: none;
 }
-.phare img {
+
+/* L'ambiance reste en fond, jamais devant. Sur un écran tactile il n'y a
+   pas de survol : si elle n'était visible qu'au survol, la moitié des
+   visiteurs ne la verrait jamais. À 32 % elle donne sa matière à la
+   tuile sans disputer la place au flacon. */
+.phare-fond {
   position: absolute;
   inset: 0;
+  opacity: 0.32;
+  transition: opacity 0.45s ease, transform 0.6s ease;
+}
+.phare-fond img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  display: block;
 }
+
+/* Le produit occupe les deux tiers hauts de la tuile : le dernier tiers
+   est pris par le nom, et un flacon centré sur toute la hauteur passerait
+   dessous. */
+.phare-objet {
+  position: absolute;
+  inset: 0 0 24% 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--e5) var(--e4) 0;
+  transition: transform 0.6s ease;
+}
+.phare-objet img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.55));
+}
+
 .phare::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
     0deg,
-    rgba(8, 8, 9, 0.88) 0%,
-    rgba(8, 8, 9, 0.5) 42%,
-    rgba(8, 8, 9, 0) 72%
+    rgba(8, 8, 9, 0.9) 0%,
+    rgba(8, 8, 9, 0.45) 34%,
+    rgba(8, 8, 9, 0) 62%
   );
+  pointer-events: none;
 }
 .phare-txt {
   position: absolute;
@@ -705,7 +738,7 @@
   right: 0;
   bottom: 0;
   z-index: 1;
-  padding: var(--e4) var(--e4) var(--e4);
+  padding: var(--e4);
 }
 .phare-txt em {
   display: block;
@@ -727,8 +760,16 @@
   text-transform: uppercase;
   color: #fff;
 }
+
+/* Au survol la matière remonte et le flacon avance d'un cran. Il ne
+   s'efface pas : c'est lui qu'on vend. */
 @media (hover: hover) and (pointer: fine) {
-  .phare:hover img { transform: scale(1.06); }
+  .phare:hover .phare-fond { opacity: 0.92; transform: scale(1.05); }
+  .phare:hover .phare-objet { transform: scale(1.06); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .phare-fond, .phare-objet { transition: none; }
+  .phare:hover .phare-fond, .phare:hover .phare-objet { transform: none; }
 }
 .phare:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
 
