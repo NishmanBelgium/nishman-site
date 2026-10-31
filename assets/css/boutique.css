@@ -618,3 +618,123 @@
    film de monter de 0,80 × 0,88 à 0,88 × 0,95 — un tiers de lumière en
    plus — sans descendre sous 4,5:1. */
 .hero-film p { color: #DCD9D3; }
+
+/* ─────────────────── les cinq familles phares ───────────────────
+   La bande reste noire, dans la continuité du titre : l'œil lit le
+   haut de la boutique comme un seul bloc, puis le blanc annonce le
+   catalogue. Sous 1024 px la rangée défile horizontalement plutôt
+   que de se casser en 3 + 2 — cinq tuiles ne se répartissent pas
+   proprement sur une grille, et le défilement est le geste que le
+   visiteur fait déjà sur son téléphone. */
+.phares {
+  background: var(--noir);
+  color: var(--encre-inverse);
+  padding: var(--e6) 0 var(--e8);
+}
+.phares h2 {
+  font-size: var(--t-section);
+  font-stretch: 80%;
+  font-weight: 800;
+  margin: 0 0 var(--e2);
+}
+.phares-lead {
+  color: var(--encre-inverse-douce);
+  font-size: var(--t-petit);
+  max-width: 52ch;
+  margin: 0 0 var(--e5);
+}
+
+.phares-piste {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 var(--e3);
+  display: flex;
+  gap: var(--e3);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.phares-piste::-webkit-scrollbar { display: none; }
+.phares-piste > li {
+  flex: 0 0 58%;
+  max-width: 240px;
+  scroll-snap-align: start;
+}
+@media (min-width: 1024px) {
+  .phares-piste {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    overflow: visible;
+    padding-bottom: 0;
+  }
+  .phares-piste > li { max-width: none; }
+}
+
+.phare {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #0b0b0c;
+  text-decoration: none;
+}
+.phare img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.phare::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(8, 8, 9, 0.88) 0%,
+    rgba(8, 8, 9, 0.5) 42%,
+    rgba(8, 8, 9, 0) 72%
+  );
+}
+.phare-txt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: var(--e4) var(--e4) var(--e4);
+}
+.phare-txt em {
+  display: block;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 5px;
+}
+.phare-txt b {
+  display: block;
+  font-stretch: 80%;
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #fff;
+}
+@media (hover: hover) and (pointer: fine) {
+  .phare:hover img { transform: scale(1.06); }
+}
+.phare:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+/* Le titre qui sépare les cinq portes d'entrée du catalogue entier.
+   Il porte l'ancre : sans lui, « toute la gamme » tomberait sur la
+   barre de filtres collante, qui recouvrirait sa propre cible. */
+.gamme-titre { padding: var(--e8) 0 var(--e4); scroll-margin-top: 90px; }
+.gamme-titre h2 { font-size: var(--t-section); font-stretch: 80%; font-weight: 800; margin: 0 0 var(--e2); }
+.gamme-titre p { color: var(--encre-douce); font-size: var(--t-petit); margin: 0; }

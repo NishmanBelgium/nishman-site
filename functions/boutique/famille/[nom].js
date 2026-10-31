@@ -345,7 +345,7 @@ function page(slug, f, produits, base, indexable) {
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=289" />
-<link rel="stylesheet" href="/assets/css/boutique.css?v=289" />
+<link rel="stylesheet" href="/assets/css/boutique.css?v=351" />
 <style>
   .fam-page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 72px; }
   .fam-retour { display: inline-block; margin-bottom: 14px; font-size: .9rem; }
