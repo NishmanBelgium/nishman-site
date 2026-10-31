@@ -493,9 +493,16 @@
     // (rupture de stock) : leur fiche reste dans le fichier, prête à revenir.
     // Ceux marqués "mcb" n'existent que pendant l'offre de salon : invisibles
     // au grand public, visibles sur la tablette du stand (adresse avec ?mcb).
+    //
+    // "retire" est différent des deux : c'est une décision commerciale, pas
+    // un état de stock ni une offre de salon. La référence sort du catalogue
+    // jusqu'à nouvel ordre. On garde les trois drapeaux séparés, sinon un
+    // réapprovisionnement remettrait en ligne une référence qu'on avait
+    // choisi de retirer. Le drapeau se pose et se retire depuis
+    // outils/retirer.py.
     const offreOuverte =
       typeof window.offreDispo === "function" && window.offreDispo();
-    PRODUCTS = all.filter((p) => !p.hidden && (!p.mcb || offreOuverte));
+    PRODUCTS = all.filter((p) => !p.hidden && !p.retire && (!p.mcb || offreOuverte));
   }
 
   // ---------- Rendu : filtres catégories ----------

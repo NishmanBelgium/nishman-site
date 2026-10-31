@@ -16,7 +16,18 @@ export async function catalogue(request) {
   if (cache && Date.now() < cacheExpire) return cache;
   const r = await fetch(new URL("/assets/data/boutique.json", request.url));
   if (!r.ok) throw new Error("catalogue boutique injoignable");
-  cache = await r.json();
+  /* Les références marquées « retire » sortent de tout ce qui s'affiche :
+     la boutique, les pages de famille, le plan du site et le flux Google
+     passent tous par ici. Elles restent dans le fichier avec leur EAN,
+     leur prix et leurs traductions — c'est une décision commerciale, pas
+     une suppression, et elle se défait avec outils/retirer.py.
+
+     Le module de tarification, lui, lit le fichier directement et ne
+     filtre pas : un panier déjà constitué doit continuer à calculer son
+     montant, sans quoi le client verrait un total et en paierait un
+     autre. */
+  const tout = await r.json();
+  cache = tout.filter((p) => !p.retire);
   cacheExpire = Date.now() + DUREE_MS;
   return cache;
 }
