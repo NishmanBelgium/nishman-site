@@ -33,6 +33,31 @@ def echapper(t):
             .replace(">", "&gt;").replace('"', "&quot;"))
 
 
+# L'adresse de la page de famille, pour chaque famille du catalogue.
+# Ces clés doivent rester identiques à celles de
+# functions/boutique/famille/[nom].js : c'est la même liste, écrite deux
+# fois parce que l'une est lue par Python et l'autre par le serveur.
+# Une famille absente d'ici garde son bloc sans lien, sans rien casser.
+FAMILLE_SLUG = {
+    "Colognes": "colognes",
+    "Crème & Bien-être": "creme-bien-etre",
+    "Mat Wax": "mat-wax",
+    "Aqua Wax": "aqua-wax",
+    "Gels & Mousses": "gels-mousses",
+    "Poudres coiffantes": "poudres-coiffantes",
+    "Coloration": "coloration",
+    "Shampoings & Après-shampoings": "shampoings-apres-shampoings",
+    "Soins barbe": "soins-barbe",
+    "Spider": "spider",
+    "Consommables": "consommables",
+    "Cream Cologne": "cream-cologne",
+    "Coffrets": "coffrets",
+    "Crèmes coiffantes": "cremes-coiffantes",
+    "Pommades & Brillantine": "pommades-brillantine",
+    "Rasage": "rasage",
+}
+
+
 produits = json.load(io.open(DONNEES, encoding="utf-8"))
 
 familles = {}
@@ -54,6 +79,14 @@ for nom, liste in ordre:
     lignes.append('      <summary>%s <span>%d</span></summary>'
                   % (echapper(nom), len(liste)))
     lignes.append('      <ul>')
+    # Le premier lien de chaque bloc mène à la page de la famille. C'est
+    # par là que Google descend : une famille bien placée fait découvrir
+    # ses dix ou vingt fiches d'un coup.
+    slug_fam = FAMILLE_SLUG.get(nom)
+    if slug_fam:
+        lignes.append('        <li class="index-cat-tout">'
+                      '<a href="/boutique/famille/%s/">Voir toute la famille %s</a></li>'
+                      % (slug_fam, echapper(nom)))
     for p in liste:
         etiquette = p.get("nom_court") or p.get("nom") or p["slug"]
         if p.get("volume"):

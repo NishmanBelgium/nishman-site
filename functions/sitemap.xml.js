@@ -14,6 +14,7 @@
    ========================================================================== */
 
 import { catalogue, origine } from "./_boutique.js";
+import { ORDRE } from "./boutique/famille/[nom].js";
 
 /* Les pages fixes, avec l'importance relative qu'on leur donne. La
    fréquence annoncée est indicative : Google s'en sert comme d'un indice,
@@ -75,6 +76,15 @@ export async function onRequestGet({ request, env }) {
   for (const [chemin, priorite, frequence] of PAGES) {
     if (chemin === "/") continue;
     corps += entree(base + chemin, priorite, frequence, aujourdhui);
+  }
+
+  /* Les pages de famille, avant les fiches.
+   *
+   * Elles passent devant les produits dans le plan parce qu'elles sont le
+   * chemin par lequel Google descend jusqu'aux fiches : une famille bien
+   * placée fait découvrir ses dix ou vingt références d'un coup. */
+  for (const slug of ORDRE) {
+    corps += entree(base + "/boutique/famille/" + slug + "/", 0.85, "weekly", aujourdhui);
   }
 
   /* Les fiches produit. Celles annoncées « bientôt » sont incluses : la

@@ -515,6 +515,13 @@
 }
 .index-cat-fam li a:hover { color: var(--encre); text-decoration: underline; }
 
+/* Le lien vers la page de la famille ouvre la liste : il mène ailleurs
+   que les autres, et doit se distinguer sans crier. */
+.index-cat-fam li.index-cat-tout { margin-bottom: var(--e1); }
+.index-cat-fam li.index-cat-tout a {
+  color: var(--orange-fonce); font-weight: 600;
+}
+
 /* ─────────────────────── pied de page ─────────────────────── */
 
 .pied {
