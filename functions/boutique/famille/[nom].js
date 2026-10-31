@@ -205,13 +205,72 @@ function accroche(p) {
   return (m ? m[0] : d).trim();
 }
 
+/* L'ODEUR, EN IMAGE.
+ *
+ * Une eau de Cologne ne se juge pas sur la photo de son flacon : vingt et
+ * un flacons identiques à la couleur près n'aident personne à choisir.
+ * La carte porte donc une seconde image — les ingrédients de la
+ * fragrance, posés dans le noir de la marque — qui prend la place du
+ * flacon au survol, et se fait glisser du doigt sur téléphone.
+ *
+ * Ce qui est généré et ce qui ne l'est pas. Le packshot reste la photo
+ * du fabricant, toujours. L'image d'odeur ne montre aucun flacon, aucun
+ * emballage : ce sont des ingrédients, et rien d'autre. Une bouteille
+ * NISHMAN produite par une machine serait une fausse photo de produit.
+ *
+ * Les mentions sont écrites ici, pas gravées dans l'image : elles
+ * restent nettes à toutes les tailles, se corrigent sans régénérer une
+ * photo, et pourront se traduire comme le reste du site.
+ *
+ * Chaque ligne vient de la description du produit telle qu'elle existe
+ * déjà. Les quatre dernières colognes du catalogue, 16 Olympic et
+ * 17 Soleil, n'y figurent pas : le fabricant ne publie leurs notes nulle
+ * part — vérifié sur son site et sur sa propre boutique en ligne — et
+ * les inventer aurait été facile et faux. Elles gardent leur packshot
+ * seul jusqu'à ce que l'usine les donne. 18 Vanilla et 19 Sea Salt, en
+ * revanche, portent leur odeur dans leur nom. */
+const ODEURS = {
+  "8684736674883": "Bois de cèdre, notes vertes & baume",
+  "8684736674890": "Patchouli, camphre, ambre & bois",
+  "8684736674906": "Cassis, fruits noirs & musc",
+  "8682035088004": "Pluie, fleurs sauvages & conifères",
+  "8682035088134": "Pamplemousse, mandarine & eau glacée",
+  "8682035088141": "Vanille, caramel, café & lavande",
+  "8682035082736": "Citron, fleurs blanches & patchouli",
+  "8682035082002": "Citron, fleur d'oranger & rose",
+  "8682035080176": "Mandarine, bergamote, cannelle & ambre",
+  "8682035083696": "Sel marin, citron, lime & cèdre",
+  "8682035083702": "Orange sanguine, menthe, cannelle & cuir",
+  "8682035083719": "Blé doré, orange & miel",
+  "8682035083726": "Iode, algues & sel marin",
+  "8682035083733": "Ambre, bois & épices",
+  "8682035083740": "Bergamote, lavande, menthe & thym",
+  "8682035084556": "Poivre rose, safran, cannelle & tabac",
+  "8684736674937": "Vanille",
+  "8684736676047": "Sel marin",
+};
+
 function feuille(p, retirer) {
   const a = accroche(p);
+  const odeur = ODEURS[String(p.ean)];
+  /* Chaque vue est enveloppée. Sans cela l'image, seule enfant de la
+     piste, calcule sa largeur sur la piste — deux fois la carte — et
+     déborde sur sa voisine. */
+  const visuels = `
+        <span class="fam-vue">
+          <img src="/assets/img/products/${echapper(p.image)}" alt="${echapper(p.nom)}"
+               width="600" height="600" loading="lazy" />
+        </span>` + (odeur ? `
+        <span class="fam-vue fam-odeur">
+          <img src="/assets/img/odeurs/${echapper(p.ean)}.webp" alt="" aria-hidden="true"
+               width="512" height="512" loading="lazy" />
+          <span class="fam-sent"><b>Inspiré par</b>${echapper(odeur)}</span>
+        </span>` : "");
   return `
-    <a class="fam-carte" href="/boutique/${echapper(p.slug)}/">
+    <a class="fam-carte${odeur ? " a-odeur" : ""}" href="/boutique/${echapper(p.slug)}/">
       <div class="fam-img">
-        <img src="/assets/img/products/${echapper(p.image)}" alt="${echapper(p.nom)}"
-             width="600" height="600" loading="lazy" />
+        <div class="fam-piste">${visuels}</div>
+        ${odeur ? '<span class="fam-puces" aria-hidden="true"><i></i><i></i></span>' : ""}
       </div>
       <div class="fam-nom">${echapper(etiquette(p, retirer))}</div>
       <div class="fam-vol">${echapper(p.volume || "")}</div>
@@ -303,8 +362,46 @@ function page(slug, f, produits, base, indexable) {
   .fam-grille { align-items: stretch; }
   .fam-carte { display: flex; flex-direction: column; text-decoration: none; color: inherit; }
   .fam-carte .fam-prix { margin-top: auto; padding-top: 8px; }
-  .fam-img { background: #f4f1ea; border-radius: 14px; overflow: hidden; margin-bottom: 10px; }
-  .fam-img img { width: 100%; height: auto; display: block; }
+  /* Deux images sur une piste deux fois plus large que la carte.
+     Au doigt, la piste défile et s'aimante : aucun script, le
+     navigateur sait faire. Au survol, elle glisse d'une demi-largeur.
+     Les deux mécanismes ne se marchent pas dessus : le défilement est
+     coupé là où le survol existe. */
+  .fam-img { position: relative; background: #f4f1ea; border-radius: 14px;
+             overflow: hidden; margin-bottom: 10px; }
+  .fam-piste { display: flex; width: 100%; }
+  .fam-carte.a-odeur .fam-img { overflow-x: auto; scroll-snap-type: x mandatory;
+                                scrollbar-width: none; -ms-overflow-style: none; }
+  .fam-carte.a-odeur .fam-img::-webkit-scrollbar { display: none; }
+  .fam-carte.a-odeur .fam-piste { width: 200%; }
+  .fam-vue { flex: 0 0 100%; scroll-snap-align: start; position: relative; display: block; }
+  .fam-carte.a-odeur .fam-vue { flex-basis: 50%; }
+  .fam-vue img { width: 100%; height: auto; display: block; }
+  .fam-odeur { background: #0b0b0c; }
+  .fam-sent { position: absolute; left: 0; right: 0; top: 0; padding: 14px 14px 30px;
+              background: linear-gradient(180deg, rgba(8,8,9,.9) 0%, rgba(8,8,9,.5) 58%, rgba(8,8,9,0) 100%);
+              font-family: "Archivo Variable", Archivo, sans-serif; font-weight: 800;
+              font-size: .78rem; line-height: 1.22; letter-spacing: -.01em;
+              text-transform: uppercase; color: #fff; }
+  .fam-sent b { display: block; font-weight: 700; font-size: .56rem; letter-spacing: .26em;
+                color: #ED9B24; margin-bottom: 5px; }
+  .fam-puces { position: absolute; left: 0; right: 0; bottom: 9px; display: flex;
+               gap: 4px; justify-content: center; pointer-events: none; }
+  .fam-puces i { width: 16px; height: 3px; border-radius: 2px; background: rgba(16,16,16,.25);
+                 transition: background .3s; }
+  .fam-puces i:first-child { background: rgba(16,16,16,.6); }
+  @media (hover: hover) and (pointer: fine) {
+    .fam-carte.a-odeur .fam-img { overflow: hidden; }
+    .fam-carte.a-odeur .fam-piste { transition: transform .45s cubic-bezier(.22,.9,.22,1); }
+    .fam-carte.a-odeur:hover .fam-piste,
+    .fam-carte.a-odeur:focus-visible .fam-piste { transform: translateX(-50%); }
+    .fam-carte.a-odeur:hover .fam-puces i:first-child { background: rgba(255,255,255,.4); }
+    .fam-carte.a-odeur:hover .fam-puces i:last-child { background: #fff; }
+    .fam-carte.a-odeur:hover .fam-puces i { background: rgba(255,255,255,.4); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fam-carte.a-odeur .fam-piste { transition: none; }
+  }
   .fam-nom { font-weight: 600; line-height: 1.25; }
   .fam-vol { color: #8a8070; font-size: .85rem; margin-top: 2px; }
   .fam-accroche { color: #6b6256; font-size: .82rem; line-height: 1.45; margin: 6px 0 0;
