@@ -35,11 +35,18 @@ import { REGLES } from "../../_calcul_b2c.js";
 const FAMILLES = {
   "colognes": {
     nom: "Colognes",
-    h1: "Colognes et après-rasage NISHMAN",
-    titre: "Cologne NISHMAN après-rasage — toutes les fragrances",
-    intro: "Les colognes NISHMAN sont des après-rasage : elles rafraîchissent, " +
-      "resserrent les pores et apaisent le feu du rasoir, en laissant un sillage. " +
-      "C'est la touche finale du barbershop, et la famille la plus large du catalogue.",
+    h1: "Les eaux de Cologne NISHMAN",
+    /* Le mot « après-rasage » ne paraît plus à l'écran : la marque dit
+       eau de Cologne. Il reste une fois dans le titre de recherche, et
+       une seule, parce que « nishman after shave cologne » est l'une des
+       requêtes réellement tapées — la retirer partout coûterait des
+       visites sans rien gagner, personne ne lit un titre de résultat
+       comme une étiquette de rayon. */
+    titre: "Eau de Cologne NISHMAN — toutes les fragrances (after shave)",
+    intro: "Vingt et une fragrances, du cèdre sec au cassis, de la pluie du Nord " +
+      "à l'ambre. Chacune rafraîchit, resserre les pores et apaise le feu du " +
+      "rasoir — la touche finale du barbershop.",
+    retirer: /\b(?:after\s*shave\s+cologne|eau\s+de\s+cologne|after\s*shave|cologne)\b|\bno[:.]?\s*(?=\d)/gi,
   },
   "mat-wax": {
     nom: "Mat Wax",
@@ -53,6 +60,7 @@ const FAMILLES = {
     nom: "Aqua Wax",
     h1: "Cires à l'eau NISHMAN — Aqua Wax",
     titre: "NISHMAN Aqua Wax — cire à base d'eau, se rince au shampoing",
+    retirer: /\bhair\s+styling\b|\baqua\b/gi,
     intro: "Les Aqua Wax sont des cires à base aqueuse : application facile, " +
       "fini brillant, tenue forte sur la journée. Elles ne laissent pas de " +
       "résidu et se rincent en un seul shampoing.",
@@ -61,6 +69,7 @@ const FAMILLES = {
     nom: "Spider",
     h1: "Cires Spider NISHMAN",
     titre: "NISHMAN Spider Wax — cire fibreuse effet toile",
+    retirer: /\baqua\s+spider\s+wax\b|\bhair\s+styling\b/gi,
     intro: "La Spider est la cire à effet « toile d'araignée » de NISHMAN : une " +
       "texture fibreuse qui ajoute de l'épaisseur et de la matière, avec une " +
       "tenue forte et souple. Base aqueuse, se rince au shampoing.",
@@ -153,17 +162,60 @@ const FAMILLES = {
 
 const ORDRE = Object.keys(FAMILLES);
 
-function feuille(p, base) {
-  const url = base + "/boutique/" + p.slug + "/";
+/* L'étiquette courte d'un produit à l'intérieur de sa famille.
+ *
+ * Dans une page qui ne montre que des eaux de Cologne, répéter « AFTER
+ * SHAVE COLOGNE NO: » vingt et une fois n'apprend rien et noie le seul
+ * mot qui distingue : le numéro et le nom de la fragrance.
+ *
+ * J'ai d'abord calculé le début commun à toute la famille. Ça ne tient
+ * pas : trois références commencent par « 13 - », « 14 - », « 15 - », et
+ * il suffit d'un nom sur vingt qui commence autrement pour que le
+ * préfixe commun soit vide. La règle est donc écrite, famille par
+ * famille, dans `retirer` — c'est de toute façon une décision éditoriale
+ * et non un calcul : c'est ici que la marque décide de ne plus dire
+ * « after shave » mais eau de Cologne.
+ *
+ * Le nom du fabricant, lui, ne bouge pas : il reste dans les données,
+ * sur la fiche, dans le flux Google et sur l'emballage. Seul l'affichage
+ * en grille est allégé. */
+function etiquette(p, retirer) {
   const nom = p.nom_court || p.nom;
+  if (!retirer) return nom;
+  const reste = nom.replace(retirer, " ")
+    .replace(/\s+[-–]\s+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .replace(/^[\s:\-–]+|[\s:\-–]+$/g, "")
+    .trim();
+  /* Un numéro seul distingue très bien une fragrance dans sa famille :
+     « 16 » à côté de « 13 CEDARWOOD » se lit. On ne retombe sur le nom
+     entier que s'il ne reste rien du tout. */
+  return reste.length >= 1 ? reste : nom;
+}
+
+/* La première phrase de la fiche : c'est celle qui décrit l'odeur, la
+   texture ou le geste, et c'est la seule qui change d'un produit à
+   l'autre. Les suivantes répètent la promesse de la famille — elles ont
+   leur place sur la fiche, pas répétées vingt et une fois dans une
+   grille. */
+function accroche(p) {
+  const d = String(p.desc_fr || "").trim();
+  if (!d) return "";
+  const m = d.match(/^[\s\S]*?[.!?](?=\s|$)/);
+  return (m ? m[0] : d).trim();
+}
+
+function feuille(p, retirer) {
+  const a = accroche(p);
   return `
     <a class="fam-carte" href="/boutique/${echapper(p.slug)}/">
       <div class="fam-img">
         <img src="/assets/img/products/${echapper(p.image)}" alt="${echapper(p.nom)}"
              width="600" height="600" loading="lazy" />
       </div>
-      <div class="fam-nom">${echapper(nom)}</div>
+      <div class="fam-nom">${echapper(etiquette(p, retirer))}</div>
       <div class="fam-vol">${echapper(p.volume || "")}</div>
+      ${a ? `<p class="fam-accroche">${echapper(a)}</p>` : ""}
       <div class="fam-prix">${p.bientot ? "Bientôt disponible" : euros(p.ttc)}</div>
     </a>`;
 }
@@ -202,6 +254,7 @@ function donneesStructurees(f, produits, base, url) {
 
 function page(slug, f, produits, base, indexable) {
   const url = base + "/boutique/famille/" + slug + "/";
+  const retirer = f.retirer || null;
   const description = (f.intro + " " + produits.length + " références NISHMAN, " +
     "importateur officiel Belgique, France et Luxembourg.").slice(0, 300);
   const image = produits.length
@@ -244,13 +297,21 @@ function page(slug, f, produits, base, indexable) {
   .fam-grille { display: grid; gap: 18px; grid-template-columns: repeat(2, 1fr); }
   @media (min-width: 680px) { .fam-grille { grid-template-columns: repeat(3, 1fr); } }
   @media (min-width: 980px) { .fam-grille { grid-template-columns: repeat(4, 1fr); } }
-  .fam-carte { display: block; text-decoration: none; color: inherit; }
+  /* Les descriptions n'ont pas toutes la même longueur : sans cela, le
+     prix flotte à une hauteur différente dans chaque carte et la grille
+     perd son peigne. La carte s'étire, le prix est poussé en bas. */
+  .fam-grille { align-items: stretch; }
+  .fam-carte { display: flex; flex-direction: column; text-decoration: none; color: inherit; }
+  .fam-carte .fam-prix { margin-top: auto; padding-top: 8px; }
   .fam-img { background: #f4f1ea; border-radius: 14px; overflow: hidden; margin-bottom: 10px; }
   .fam-img img { width: 100%; height: auto; display: block; }
   .fam-nom { font-weight: 600; line-height: 1.25; }
   .fam-vol { color: #8a8070; font-size: .85rem; margin-top: 2px; }
+  .fam-accroche { color: #6b6256; font-size: .82rem; line-height: 1.45; margin: 6px 0 0;
+                  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+                  overflow: hidden; }
   .fam-prix { font-family: "Space Grotesk", system-ui, sans-serif; font-weight: 700;
-              margin-top: 6px; }
+              margin-top: 8px; }
   .fam-autres { margin-top: 48px; padding-top: 18px; border-top: 1px solid #e6e0d2;
                 font-size: .9rem; line-height: 2; }
   .fam-autres b { display: block; margin-bottom: 6px; }
@@ -280,7 +341,7 @@ function page(slug, f, produits, base, indexable) {
   <p class="fam-compte">${produits.length} référence${produits.length > 1 ? "s" : ""} ·
      expédition sous 2 jours ouvrables vers la Belgique, la France et le Luxembourg.</p>
 
-  <div class="fam-grille">${produits.map((p) => feuille(p, base)).join("")}</div>
+  <div class="fam-grille">${produits.map((p) => feuille(p, retirer)).join("")}</div>
 
   <nav class="fam-autres">
     <b>Les autres familles NISHMAN</b>
