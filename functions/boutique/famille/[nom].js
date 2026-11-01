@@ -43,7 +43,7 @@ const FAMILLES = {
        visites sans rien gagner, personne ne lit un titre de résultat
        comme une étiquette de rayon. */
     titre: "Eau de Cologne NISHMAN — toutes les fragrances (after shave)",
-    intro: "Vingt et une fragrances, du cèdre sec au cassis, de la pluie du Nord " +
+    intro: "Vingt fragrances, du cèdre sec au cassis, de la pluie du Nord " +
       "à l'ambre. Chacune rafraîchit, resserre les pores et apaise le feu du " +
       "rasoir — la touche finale du barbershop.",
     retirer: /\b(?:after\s*shave\s+cologne|eau\s+de\s+cologne|after\s*shave|cologne)\b|\bno[:.]?\s*(?=\d)/gi,
@@ -165,7 +165,7 @@ const ORDRE = Object.keys(FAMILLES);
 /* L'étiquette courte d'un produit à l'intérieur de sa famille.
  *
  * Dans une page qui ne montre que des eaux de Cologne, répéter « AFTER
- * SHAVE COLOGNE NO: » vingt et une fois n'apprend rien et noie le seul
+ * SHAVE COLOGNE NO: » vingt fois n'apprend rien et noie le seul
  * mot qui distingue : le numéro et le nom de la fragrance.
  *
  * J'ai d'abord calculé le début commun à toute la famille. Ça ne tient
@@ -196,7 +196,7 @@ function etiquette(p, retirer) {
 /* La première phrase de la fiche : c'est celle qui décrit l'odeur, la
    texture ou le geste, et c'est la seule qui change d'un produit à
    l'autre. Les suivantes répètent la promesse de la famille — elles ont
-   leur place sur la fiche, pas répétées vingt et une fois dans une
+   leur place sur la fiche, pas répétées vingt fois dans une
    grille. */
 function accroche(p) {
   const d = String(p.desc_fr || "").trim();

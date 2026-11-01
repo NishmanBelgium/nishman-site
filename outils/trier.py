@@ -94,7 +94,16 @@ def ranger(produits, champ_famille, champ_nom):
 
     def cle(p):
         nom = p.get(champ_nom) or ""
-        return (rang[p.get(champ_famille) or ""], numero(nom), nom.casefold())
+        # « rang » permet d'épingler une référence là où la règle se
+        # trompe. Les numéros de deux gammes peuvent entrer en
+        # collision dans une même famille : la LOTION N.1 porte le
+        # numéro 1, comme la CREAM + COLOGNE 2in1 01, et se glissait
+        # entre la 01 et la 02 en coupant la série en deux. Aucune règle
+        # automatique ne devinait ça ; un champ facultatif, si.
+        pointe = p.get("rang")
+        return (rang[p.get(champ_famille) or ""],
+                numero(nom) if pointe is None else int(pointe),
+                nom.casefold())
 
     return sorted(produits, key=cle)
 

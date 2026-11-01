@@ -941,25 +941,6 @@
   "description_tr": "Akıllı 2'si 1 arada: bir kolonyanın tazeliği ve nemlendirici balsamın konforu tek harekette. Yağlandırmayan doku, hızlı emilim, tıraş sonrası yatışmış cilt. City Senior versiyonu, ferah ve şehirli notalarla."
  },
  {
-  "ean": "8682035088905",
-  "name": "LOTION N.1 (ALCOHOL FREE)",
-  "volume": "200 ML",
-  "category": "Colognes",
-  "image": "8682035088905.webp",
-  "tagline": "Sans alcool — peaux sensibles",
-  "description": "Lotion après-rasage sans alcool, idéale pour les peaux sensibles ou réactives. Apaise, hydrate et protège des rougeurs et sensations de brûlure, sans piquer.",
-  "usage": "Appliquer sur peau propre après le rasage, masser légèrement.",
-  "box_qty": 24,
-  "tagline_en": "Alcohol-free — sensitive skin",
-  "tagline_nl": "Alcoholvrij — gevoelige huid",
-  "description_en": "Alcohol-free aftershave lotion, ideal for sensitive or reactive skin. Soothes, moisturizes and protects from redness and burning sensations, without stinging.",
-  "description_nl": "Alcoholvrije aftershave lotion, ideaal voor de gevoelige of reactieve huid. Kalmeert, hydrateert en beschermt tegen roodheid en branderigheid, zonder te prikken.",
-  "tagline_de": "Alkoholfrei — empfindliche Haut",
-  "description_de": "Alkoholfreie Aftershave-Lotion, ideal für empfindliche oder reaktive Haut. Beruhigt, spendet Feuchtigkeit und schützt vor Rötungen und Brennen, ohne zu stechen.",
-  "tagline_tr": "Alkolsüz — hassas ciltler",
-  "description_tr": "Alkolsüz tıraş losyonu, hassas veya tepkisel ciltler için ideal. Yakmadan yatıştırır, nemlendirir ve kızarıklık ile yanma hissine karşı korur."
- },
- {
   "ean": "8682035088141",
   "name": "COLOGNE NO:2 STORM 400 ML",
   "volume": "400 ML",
@@ -1376,6 +1357,26 @@
   "description_nl": "Professionele eau de cologne in spray, te gebruiken na het scheren of aan het einde van een knipbeurt. Verfrist, zuivert de huid en laat een subtiel spoor achter.",
   "description_de": "Professionelles Eau de Cologne als Spray, für nach der Rasur oder zum Abschluss des Haarschnitts. Erfrischt, klärt die Haut und hinterlässt einen dezenten Duft.",
   "description_tr": "Tıraş sonrası veya kesim sonunda kullanılan profesyonel sprey kolonya. Ferahlatır, cildi arındırır ve hafif bir iz bırakır."
+ },
+ {
+  "ean": "8682035088905",
+  "name": "LOTION N.1 (ALCOHOL FREE)",
+  "volume": "200 ML",
+  "category": "Cream Cologne",
+  "image": "8682035088905.webp",
+  "tagline": "Sans alcool — peaux sensibles",
+  "description": "Lotion après-rasage sans alcool, idéale pour les peaux sensibles ou réactives. Apaise, hydrate et protège des rougeurs et sensations de brûlure, sans piquer.",
+  "usage": "Appliquer sur peau propre après le rasage, masser légèrement.",
+  "box_qty": 24,
+  "tagline_en": "Alcohol-free — sensitive skin",
+  "tagline_nl": "Alcoholvrij — gevoelige huid",
+  "description_en": "Alcohol-free aftershave lotion, ideal for sensitive or reactive skin. Soothes, moisturizes and protects from redness and burning sensations, without stinging.",
+  "description_nl": "Alcoholvrije aftershave lotion, ideaal voor de gevoelige of reactieve huid. Kalmeert, hydrateert en beschermt tegen roodheid en branderigheid, zonder te prikken.",
+  "tagline_de": "Alkoholfrei — empfindliche Haut",
+  "description_de": "Alkoholfreie Aftershave-Lotion, ideal für empfindliche oder reaktive Haut. Beruhigt, spendet Feuchtigkeit und schützt vor Rötungen und Brennen, ohne zu stechen.",
+  "tagline_tr": "Alkolsüz — hassas ciltler",
+  "description_tr": "Alkolsüz tıraş losyonu, hassas veya tepkisel ciltler için ideal. Yakmadan yatıştırır, nemlendirir ve kızarıklık ile yanma hissine karşı korur.",
+  "rang": 99
  },
  {
   "ean": "8684736671387",
