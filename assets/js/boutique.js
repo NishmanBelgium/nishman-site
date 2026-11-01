@@ -170,6 +170,22 @@
     } catch (err) { /* vieux navigateur : on part du catalogue entier */ }
 
     if (champ) {
+      // L'invite longue apprend ce qu'on peut chercher — « une cire, une
+      // cologne, une poudre » — mais sur un téléphone le champ partage sa
+      // ligne avec le menu de tri et il ne reste qu'une quinzaine de
+      // caractères : l'invite se coupait au milieu d'un mot, « Chercher
+      // une ci… », ce qui donne l'air d'une page inachevée. En dessous du
+      // même point de rupture que la feuille de style, on en met une
+      // courte. Le seuil est relu à chaque rotation de l'écran.
+      var INVITE_LONGUE = champ.getAttribute("placeholder");
+      var INVITE_COURTE = "Chercher…";
+      var ajusterInvite = function () {
+        var etroit = window.matchMedia("(max-width: 620px)").matches;
+        champ.setAttribute("placeholder", etroit ? INVITE_COURTE : INVITE_LONGUE);
+      };
+      ajusterInvite();
+      window.addEventListener("resize", ajusterInvite);
+
       // Un léger délai : redessiner cent vignettes à chaque lettre fait
       // sauter le clavier sur un téléphone.
       var minuteurQ = null;

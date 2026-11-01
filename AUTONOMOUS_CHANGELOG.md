@@ -117,3 +117,47 @@ par nombre de références décroissant, puis relancer
 `python3 outils/index-catalogue.py`.
 
 **Statut : appliqué, testé en local, déployé.**
+
+### 3. L'invite de recherche se coupait au milieu d'un mot sur téléphone — APPLIQUÉ, TESTÉ
+
+**Problème.** Le champ de recherche de la boutique porte l'invite
+« Chercher une cire, une cologne, une poudre… ». Sur un téléphone il
+partage sa ligne avec le menu de tri et il ne reste qu'une quinzaine de
+caractères : l'invite s'affichait « Chercher une ci… ».
+
+**Pourquoi ça mérite d'être corrigé.** Un texte tronqué au milieu d'un mot
+donne l'air d'une page inachevée. C'est le premier élément que voit
+quelqu'un qui arrive avec un produit en tête.
+
+**Ce qui a été fait.** L'invite longue est conservée sur grand écran, où
+elle apprend ce qu'on peut chercher. En dessous de 620 px — le même point
+de rupture que la feuille de style — elle devient « Chercher… ». Le seuil
+est relu à chaque redimensionnement, donc la rotation de l'écran est
+gérée.
+
+La mise en page sur une seule ligne n'a pas été touchée : elle résulte
+d'un arbitrage documenté dans la feuille de style, où l'empiler coûtait
+plus d'un tiers de l'écran.
+
+**Fichiers concernés.**
+- `assets/js/boutique.js` — fonction `ajusterInvite` dans `brancherOutils`
+- `boutique/index.html` — version du script portée à 370
+
+**Tests réalisés.**
+- Rendu à 390 px : « Chercher… » entier, sans troncature.
+- Rendu à 1280 px : l'invite longue est intacte.
+- `node --check` sur le script : pas d'erreur de syntaxe.
+
+**Ce qui n'a pas été testé.** Le comportement sur un vrai appareil iOS, où
+le clavier virtuel modifie la hauteur de la fenêtre — `resize` s'y
+déclenche aussi, l'invite peut donc changer à l'ouverture du clavier. Sans
+conséquence : à ce moment-là le champ a le focus et l'invite est masquée
+par la saisie.
+
+**Risques et limites.** Aucun effet sur la recherche elle-même, qui lit la
+valeur du champ et non son invite.
+
+**Retour arrière.** Supprimer le bloc `ajusterInvite` dans
+`assets/js/boutique.js` et remettre la version du script à 360.
+
+**Statut : appliqué, testé en local, déployé.**
