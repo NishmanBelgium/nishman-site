@@ -32,25 +32,65 @@
   }
 
   // ---------- Code promo ----------
-  // Un seul code actif, sans date de fin ni minimum de commande, accepte
-  // aussi pour un client deja existant (decision du 23/09/2026).
+  //
+  // Les conditions de FIRST10 ne sont PAS décidées ici : elles le sont dans
+  // functions/_calcul.js, côté serveur, qui est seul juge au moment de la
+  // commande. Ce qui suit n'est qu'un reflet, et il doit rester fidèle :
+  // un devis qui annonce une remise que la commande refusera ensuite est
+  // pire que pas de remise du tout.
+  //
+  // Deux des trois conditions sont vérifiables ici :
+  //   — le code doit être reconnu ;
+  //   — la commande doit atteindre le franco de port de son pays, remise
+  //     déduite (même règle, même calcul que le serveur).
+  // La troisième ne l'est pas : le code est réservé à la PREMIÈRE commande,
+  // et cette page est publique, elle ne sait pas qui la consulte. Elle ne
+  // peut donc pas refuser le code à un client déjà installé — mais elle le
+  // dit, dans le message comme sur la ligne du document.
   const PROMO_CODE = "FIRST10";
   const PROMO_RATE = 0.10;
   const PROMO_T = {
-    fr: { label: "Code promo (facultatif)", ok: "Code FIRST10 appliqué : −10 % sur votre commande",
-          bad: "Ce code promo n'est pas reconnu", line: "Remise FIRST10 (−10 %)" },
-    en: { label: "Promo code (optional)", ok: "FIRST10 applied: −10% on your order",
-          bad: "This promo code is not recognised", line: "FIRST10 discount (−10%)" },
-    nl: { label: "Kortingscode (optioneel)", ok: "FIRST10 toegepast: −10% op uw bestelling",
-          bad: "Deze kortingscode is niet geldig", line: "Korting FIRST10 (−10%)" },
-    de: { label: "Aktionscode (optional)", ok: "FIRST10 angewendet: −10 % auf Ihre Bestellung",
-          bad: "Dieser Aktionscode ist ungültig", line: "Rabatt FIRST10 (−10 %)" },
-    tr: { label: "Promosyon kodu (isteğe bağlı)", ok: "FIRST10 uygulandı: siparişinizde −%10",
-          bad: "Bu promosyon kodu geçerli değil", line: "FIRST10 indirimi (−%10)" },
+    fr: { label: "Code promo (facultatif)",
+          ok: "Code FIRST10 appliqué : −10 % sur votre première commande",
+          small: (m) => "FIRST10 s'applique à partir de " + m + " HT de marchandise",
+          bad: "Ce code promo n'est pas reconnu", line: "Remise FIRST10 (−10 %, 1re commande)" },
+    en: { label: "Promo code (optional)",
+          ok: "FIRST10 applied: −10% on your first order",
+          small: (m) => "FIRST10 applies from " + m + " excl. VAT of goods",
+          bad: "This promo code is not recognised", line: "FIRST10 discount (−10%, first order)" },
+    nl: { label: "Kortingscode (optioneel)",
+          ok: "FIRST10 toegepast: −10% op uw eerste bestelling",
+          small: (m) => "FIRST10 geldt vanaf " + m + " excl. btw aan goederen",
+          bad: "Deze kortingscode is niet geldig", line: "Korting FIRST10 (−10%, 1e bestelling)" },
+    de: { label: "Aktionscode (optional)",
+          ok: "FIRST10 angewendet: −10 % auf Ihre erste Bestellung",
+          small: (m) => "FIRST10 gilt ab " + m + " netto Warenwert",
+          bad: "Dieser Aktionscode ist ungültig", line: "Rabatt FIRST10 (−10 %, 1. Bestellung)" },
+    tr: { label: "Promosyon kodu (isteğe bağlı)",
+          ok: "FIRST10 uygulandı: ilk siparişinizde −%10",
+          small: (m) => "FIRST10, " + m + " (KDV hariç) mal bedelinden itibaren geçerlidir",
+          bad: "Bu promosyon kodu geçerli değil", line: "FIRST10 indirimi (−%10, ilk sipariş)" },
   };
   function promoT() { return PROMO_T[LANG] || PROMO_T.fr; }
   function promoValide(v) {
     return String(v || "").trim().toUpperCase().replace(/[\s-]/g, "") === PROMO_CODE;
+  }
+  /* Le montant de marchandise à partir duquel le code devient utilisable.
+     Le seuil s'apprécie remise déduite : il faut donc commander seuil/0,9
+     pour que les 90 % restants atteignent le seuil. */
+  function promoMinimum(pays) {
+    const regle = PORT[PAYS_CODE[pays]] || PORT.BE;
+    return Math.round((regle.seuil / (1 - PROMO_RATE)) * 100) / 100;
+  }
+  /* L'état du code pour ce devis : "ok", "petit", "inconnu" ou "" (pas de
+     code saisi). Le serveur reste seul juge ; on ne fait que ne pas
+     promettre ce qu'il refusera. */
+  function promoEtat(code, brut, pays) {
+    const saisi = String(code || "").trim();
+    if (!saisi) return "";
+    if (!promoValide(saisi)) return "inconnu";
+    if (!(brut > 0)) return "petit";
+    return brut >= promoMinimum(pays) ? "ok" : "petit";
   }
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
@@ -434,8 +474,10 @@
       </tr>`).join("");
     const retrait = (client.shipmode || "livraison") === "retrait";
 
-    // Remise : appliquee seulement si le code est reconnu et les prix visibles.
-    const promoOk = showPrices && brut > 0 && promoValide(client.promo);
+    // Remise : code reconnu, prix visibles, et montant suffisant — les deux
+    // conditions que cette page peut vérifier. Voir promoEtat().
+    const etatPromo = promoEtat(client.promo, brut, client.country);
+    const promoOk = showPrices && etatPromo === "ok";
     const remise = promoOk ? Math.round(brut * PROMO_RATE * 100) / 100 : 0;
     const total = Math.round((brut - remise) * 100) / 100;
 
@@ -449,12 +491,18 @@
     }
     const avisPromo = $("promo-msg");
     if (avisPromo) {
-      const saisi = String(client.promo || "").trim();
-      avisPromo.hidden = !saisi;
-      if (saisi) {
-        avisPromo.textContent = promoValide(saisi) ? promoT().ok : promoT().bad;
-        avisPromo.classList.toggle("promo-ko", !promoValide(saisi));
+      avisPromo.hidden = !etatPromo;
+      if (etatPromo === "ok") {
+        avisPromo.textContent = promoT().ok;
+      } else if (etatPromo === "petit") {
+        /* Dire le montant plutôt que refuser sans expliquer : un devis qui
+           annonce « code non applicable » sans dire à partir de quand fait
+           écrire au service commercial. */
+        avisPromo.textContent = promoT().small(money(promoMinimum(client.country)));
+      } else if (etatPromo === "inconnu") {
+        avisPromo.textContent = promoT().bad;
       }
+      avisPromo.classList.toggle("promo-ko", etatPromo === "inconnu" || etatPromo === "petit");
     }
 
     // Frais de port : offerts au-delà du seuil du pays, forfaitaires en

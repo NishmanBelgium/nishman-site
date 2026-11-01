@@ -276,7 +276,88 @@ inchangé.
 **Statut : appliqué, testé par évaluation du module, non constaté sur le
 site rendu.**
 
-### 6. Le bandeau de consentement — EXAMINÉ, VOLONTAIREMENT NON MODIFIÉ
+### 6. Le devis promettait une remise que la commande refuse — APPLIQUÉ, PARTIELLEMENT TESTÉ
+
+**À lire : cette entrée touche à de l'affichage commercial. Elle mérite
+votre relecture, et la formulation est à valider.**
+
+**Problème.** La page de demande de devis (`/devis/`) décide toute seule
+si FIRST10 s'applique, et sa règle n'était plus celle du serveur. Elle
+accordait les −10 % dès que le code était reconnu : sans minimum de
+commande, et sans tenir compte du fait que le code est réservé à la
+première commande. Son commentaire le disait noir sur blanc, daté du
+23/09/2026.
+
+Or le serveur, lui, refuse le code dans deux cas : en dessous du franco
+de port du pays (règle du commit 216), et pour un client qui a déjà une
+commande confirmée (règle que vous avez fixée, commit 367). Le devis
+annonçait donc une remise que la commande allait retirer.
+
+**Pourquoi ça mérite d'être corrigé.** Un devis est un document qu'un
+salon imprime, montre à son associé et sur lequel il décide. Annoncer
+−10 % puis les retirer au moment de commander est la pire des trois
+situations possibles — pire que ne rien annoncer. Et c'est exactement
+le chemin qu'emprunteront les salons qui arrivent par les publications
+portant le code.
+
+**Ce qui a été fait.** La page ne décide plus : elle reflète. Des trois
+conditions du serveur, deux sont vérifiables ici et le sont désormais —
+code reconnu, et montant atteignant le franco du pays remise déduite,
+avec le même calcul et le même arrondi que le serveur. La troisième ne
+l'est pas : cette page est publique, elle ne sait pas qui la consulte,
+donc elle ne peut pas refuser le code à un client déjà installé. Elle ne
+le prétend plus non plus : le message dit « première commande » et la
+ligne du document porte « 1re commande ».
+
+En dessous du minimum, elle dit à partir de quel montant le code
+devient utilisable — 333,33 € HT en Belgique, 555,56 € au Luxembourg et
+en France — plutôt que de refuser sans expliquer. Les cinq langues sont
+traitées.
+
+**Fichiers concernés.**
+- `assets/js/quote.js` — `promoMinimum()`, `promoEtat()`, messages dans les cinq langues
+- `devis/index.html` — version du script portée à 373
+
+**Tests réalisés.**
+- La fonction de décision a été évaluée directement, aux bornes :
+  Belgique 333,33 € accepté / 333,32 € refusé ; France 555,56 € accepté
+  / 500 € refusé. Vérifié que ces bornes sont exactement celles du
+  serveur, en relisant `_calcul.js` : même seuil, même fonction
+  d'arrondi, même ordre des opérations.
+- Code vide, code inconnu, code en minuscules avec tiret et espaces :
+  les trois donnent le résultat attendu.
+- Les cinq objets de langue sont complets et leur message de minimum
+  s'affiche correctement.
+- `node --check` : pas d'erreur de syntaxe.
+
+**Ce qui n'a PAS été testé, et c'est important.** Je n'ai pas vu la page
+rendue. `/devis/` n'affiche ses prix qu'à une session professionnelle
+ouverte, et mon banc d'essai local n'est pas arrivé à faire passer la
+page de l'étape 1 à l'étape 2 — quatre tentatives, abandonnées pour ne
+pas y passer la nuit. **La logique est vérifiée, l'affichage ne l'est
+pas.** À contrôler en ouvrant un devis avec un compte pro : une
+sélection au-dessus de 333,33 € doit montrer la remise, une en dessous
+doit afficher le montant à atteindre.
+
+**Risques et limites.** Aucune condition commerciale n'est modifiée :
+les conditions restent celles du serveur, qui est seul juge au moment
+de la commande. Ce qui change, c'est ce que la page en dit. En
+contrepartie, un devis en dessous du minimum n'affiche plus de remise
+là où il en affichait une : des salons ont pu voir le montant remisé
+ces dernières semaines. Si l'un revient avec un devis en main, c'est de
+là que ça vient.
+
+**Formulation à valider.** « −10 % sur votre première commande » et
+« à partir de 333,33 € HT de marchandise » sont de moi. Le fond suit vos
+règles, les mots sont à vous.
+
+**Retour arrière.** Dans `assets/js/quote.js`, remplacer l'appel à
+`promoEtat(...)` par `promoValide(client.promo)` et remettre la version
+du script à 365 dans `devis/index.html`.
+
+**Statut : appliqué, logique testée, rendu non constaté.**
+
+### 7. Le bandeau de consentement — EXAMINÉ, VOLONTAIREMENT NON MODIFIÉ
 
 Sur un téléphone, le bandeau occupe environ un cinquième de la hauteur
 d'écran et recouvre la première rangée de produits. J'ai regardé s'il
