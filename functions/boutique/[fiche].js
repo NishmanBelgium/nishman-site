@@ -377,7 +377,7 @@ ${pied()}
 })();
 </script>
 <script src="/assets/js/mesure.js?v=278" defer></script>
-<script src="/assets/js/consentement.js?v=360" defer></script>
+<script src="/assets/js/consentement.js?v=361" defer></script>
 <script>
 /* La vue de fiche, pour la mesure publicitaire. Elle attend que le
    module de consentement soit chargé — « defer » garantit l'ordre, mais

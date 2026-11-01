@@ -25,7 +25,7 @@
   /* L'identifiant du pixel Meta. Il n'est pas secret : tout site qui en
      porte un l'expose dans son code source, c'est ainsi que le navigateur
      le trouve. Le laisser vide désactive toute la mesure. */
-  var PIXEL = "";
+  var PIXEL = "1566859308497027";
 
   /* La version du consentement. À incrémenter si les finalités changent :
      un visiteur qui a dit oui à la mesure publicitaire n'a pas dit oui à
