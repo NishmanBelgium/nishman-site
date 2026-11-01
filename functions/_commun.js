@@ -21,9 +21,9 @@ export const ENTETES_SECURITE = {
 };
 
 /* La politique de contenu des pages, identique à celle de _headers. */
-export const CSP_PAGE = "default-src 'self'; script-src 'self' 'unsafe-inline' https://embed.sendcloud.sc; "
+export const CSP_PAGE = "default-src 'self'; script-src 'self' 'unsafe-inline' https://embed.sendcloud.sc https://connect.facebook.net; "
   + "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; "
-  + "img-src 'self' data: https:; connect-src 'self' https://servicepoints.sendcloud.sc https://embed.sendcloud.sc https://panel.sendcloud.sc; "
+  + "img-src 'self' data: https:; connect-src 'self' https://servicepoints.sendcloud.sc https://embed.sendcloud.sc https://panel.sendcloud.sc https://www.facebook.com https://connect.facebook.net; "
   + "frame-src https://embed.sendcloud.sc https://servicepoints.sendcloud.sc; form-action 'self'; "
   + "frame-ancestors 'none'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests";
 

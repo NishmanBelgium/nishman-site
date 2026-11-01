@@ -185,6 +185,7 @@ function page(p, base, indexable, autres) {
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
+<link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 <style>
   .fiche-page { max-width: 1040px; margin: 0 auto; padding: 24px 16px 72px;
                 display: grid; gap: 32px; grid-template-columns: 1fr; }
@@ -362,6 +363,7 @@ ${pied()}
 })();
 </script>
 <script src="/assets/js/mesure.js?v=278" defer></script>
+<script src="/assets/js/consentement.js?v=359" defer></script>
 </body>
 </html>`;
 }

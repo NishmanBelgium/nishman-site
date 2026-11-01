@@ -346,6 +346,7 @@ function page(slug, f, produits, base, indexable) {
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
+<link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 <style>
   .fam-page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 72px; }
   .fam-retour { display: inline-block; margin-bottom: 14px; font-size: .9rem; }
@@ -453,6 +454,7 @@ function page(slug, f, produits, base, indexable) {
 ${pied()}
 
 <script src="/assets/js/mesure.js?v=278" defer></script>
+<script src="/assets/js/consentement.js?v=359" defer></script>
 </body>
 </html>`;
 }
@@ -516,6 +518,7 @@ export function pied() {
         <p>TVA BE 0817.750.283</p>
         <a href="/mentions-legales/">Mentions légales</a>
         <a href="/confidentialite/">Politique de confidentialité</a>
+        <a href="#" data-cons-rouvrir>Gérer mes cookies</a>
       </div>
     </div>
     <div class="pied-bas">

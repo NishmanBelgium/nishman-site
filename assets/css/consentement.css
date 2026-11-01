@@ -1,0 +1,99 @@
+/* ==========================================================================
+   LE BANDEAU DE CONSENTEMENT.
+
+   Autonome, comme familles.css et pour la même raison : les deux familles
+   de feuilles du site ne déclarent pas les mêmes variables, et ce bandeau
+   s'affiche sur toutes les pages. Chaque valeur est donc appelée avec son
+   repli.
+
+   Les deux boutons ont exactement le même poids visuel — même taille,
+   même graisse, même contraste. Ce n'est pas une préférence esthétique :
+   un refus rendu plus difficile qu'une acceptation vicie le consentement,
+   et la CNIL comme l'APD belge l'ont déjà sanctionné. Le bouton orange de
+   la marque est donc interdit ici.
+   ========================================================================== */
+
+.cons {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9000;
+  background: #101010;
+  color: #F7F6F2;
+  border-top: 2px solid var(--orange, #ED9B24);
+  box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.35);
+  animation: cons-monte 0.28s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cons { animation: none; }
+}
+@keyframes cons-monte {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.cons-in {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+}
+@media (min-width: 760px) {
+  .cons-in {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+  }
+}
+
+.cons-txt {
+  margin: 0;
+  max-width: 68ch;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: #DCD9D3;
+}
+.cons-txt a {
+  color: var(--orange, #ED9B24);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cons-choix {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+  width: 100%;
+}
+@media (min-width: 760px) {
+  .cons-choix { width: auto; }
+}
+
+.cons-btn {
+  flex: 1 1 0;
+  min-width: 118px;
+  padding: 11px 18px;
+  border: 1px solid #F7F6F2;
+  border-radius: 999px;
+  background: transparent;
+  color: #F7F6F2;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.cons-btn:hover {
+  background: #F7F6F2;
+  color: #101010;
+}
+.cons-btn:focus-visible {
+  outline: 2px solid var(--orange, #ED9B24);
+  outline-offset: 3px;
+}
