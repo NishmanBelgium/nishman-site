@@ -219,7 +219,64 @@ remettre les versions de feuilles à 367 et 354.
 
 **Statut : appliqué, testé en local, déployé.**
 
-### 5. Le bandeau de consentement — EXAMINÉ, VOLONTAIREMENT NON MODIFIÉ
+### 5. Le quatrième ordre de familles, côté serveur — APPLIQUÉ, TESTÉ
+
+**Problème.** Après avoir aligné le quadrillage, le menu de filtres et
+l'index, il restait un quatrième classement que je n'avais pas vu :
+`functions/boutique/famille/[nom].js` calculait son ordre avec
+`Object.keys(FAMILLES)`, c'est-à-dire l'ordre dans lequel les familles
+ont été écrites dans le fichier. Les colognes y passaient premières parce
+qu'elles ont été déclarées en premier.
+
+Cet ordre sert à deux endroits : la ligne « autres familles » en bas de
+chaque page de famille, et la liste des familles dans
+`functions/sitemap.xml.js`, qui importe la même constante.
+
+**Pourquoi ça mérite d'être corrigé.** Un salon qui arrive sur la page
+Mat Wax et descend trouve en bas une liste de familles rangée autrement
+que partout ailleurs sur le site. Et c'est aussi l'ordre dans lequel
+Google lit les familles dans le plan du site.
+
+**Ce qui a été fait.** Une liste explicite, `ORDRE_AFFICHAGE`, reprend
+celle d'`outils/trier.py` traduite en identifiants d'adresse. Elle ne
+peut pas être importée : ce module tourne chez Cloudflare, l'autre est un
+script Python. Les deux doivent donc être modifiées ensemble, et un
+commentaire au-dessus de la liste le dit.
+
+Une famille absente de la liste garde sa place de déclaration et se range
+à la suite. Ce n'est pas une précaution de principe : la même constante
+sert à `slugFamille()`, qui traduit un nom de famille en adresse pour les
+fiches produit. Une famille oubliée dans la liste et perdue en route
+aurait cassé le lien « retour à la famille » de ses fiches.
+
+**Fichiers concernés.**
+- `functions/boutique/famille/[nom].js` — `ORDRE_AFFICHAGE` et son repli
+
+**Tests réalisés.**
+- Évaluation du module : 16 familles déclarées, 16 dans l'ordre calculé,
+  aucun doublon, et l'ensemble est rigoureusement identique à celui des
+  familles déclarées. Aucune famille perdue, aucune dupliquée.
+- Ordre obtenu vérifié ligne à ligne : Mat Wax en premier, Coffrets en
+  dernier, conforme aux trois autres classements.
+- `node --check` : pas d'erreur de syntaxe.
+
+**Ce qui n'a pas été testé.** Ces pages sont rendues par Cloudflare et ne
+tournent pas en local : je n'ai pas vu la page de famille réelle avec son
+nouveau pied. La vérification porte sur la liste calculée, pas sur le
+HTML rendu. À contrôler sur le site après déploiement.
+
+**Risques et limites.** Les adresses ne changent pas, seul leur ordre
+d'apparition. Le plan du site contient les mêmes seize familles qu'avant.
+`slugFamille()` cherche par nom et non par position : son résultat est
+inchangé.
+
+**Retour arrière.** Remplacer les deux déclarations par
+`const ORDRE = Object.keys(FAMILLES);`.
+
+**Statut : appliqué, testé par évaluation du module, non constaté sur le
+site rendu.**
+
+### 6. Le bandeau de consentement — EXAMINÉ, VOLONTAIREMENT NON MODIFIÉ
 
 Sur un téléphone, le bandeau occupe environ un cinquième de la hauteur
 d'écran et recouvre la première rangée de produits. J'ai regardé s'il

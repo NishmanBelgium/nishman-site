@@ -160,7 +160,33 @@ const FAMILLES = {
   },
 };
 
-const ORDRE = Object.keys(FAMILLES);
+/* L'ordre d'affichage des familles, et pourquoi il est écrit ici.
+ *
+ * ORDRE valait `Object.keys(FAMILLES)`, c'est-à-dire l'ordre dans lequel
+ * les familles avaient été déclarées plus haut — un quatrième classement,
+ * après celui du quadrillage, du menu de filtres et de l'index. Les
+ * colognes y passaient premières parce qu'elles ont été écrites en
+ * premier, et le bas de chaque page de famille proposait donc les autres
+ * familles dans un ordre que le visiteur n'avait vu nulle part ailleurs.
+ *
+ * La liste ci-dessous reprend celle d'`outils/trier.py`, traduite en
+ * identifiants d'adresse. Elle ne peut pas être importée : ce module
+ * tourne chez Cloudflare, l'autre est un script Python. Les deux doivent
+ * donc être modifiées ensemble — d'où ce rappel.
+ *
+ * Une famille absente de la liste garde sa place de déclaration, à la
+ * suite : elle reste accessible, elle n'est pas perdue.
+ */
+const ORDRE_AFFICHAGE = [
+  "mat-wax", "aqua-wax", "spider", "poudres-coiffantes",
+  "cremes-coiffantes", "pommades-brillantine", "gels-mousses",
+  "colognes", "cream-cologne",
+  "soins-barbe", "rasage", "shampoings-apres-shampoings",
+  "coloration", "creme-bien-etre",
+  "consommables", "coffrets",
+];
+const ORDRE = ORDRE_AFFICHAGE.filter((s) => s in FAMILLES)
+  .concat(Object.keys(FAMILLES).filter((s) => !ORDRE_AFFICHAGE.includes(s)));
 
 /* L'étiquette courte d'un produit à l'intérieur de sa famille.
  *
