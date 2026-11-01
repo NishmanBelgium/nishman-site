@@ -75,9 +75,15 @@
    Le nom passe donc sous la vitrine plutôt que par-dessus : du texte
    blanc n'a plus où se poser une fois la vitrine claire, et sous la
    vitrine il reste lisible quelle que soit l'image. */
+/* « color: inherit » n'est pas décoratif : sans lui, la tuile est un lien
+   sans couleur déclarée, et tout texte qu'on y ajouterait un jour sans
+   penser à le styler sortirait dans le bleu par défaut du navigateur. Les
+   deux lignes actuelles ont la leur, mais la troisième qui viendra n'en
+   aura pas forcément. */
 .phare {
   display: block;
   text-decoration: none;
+  color: inherit;
 }
 .phare-vitrine {
   position: relative;

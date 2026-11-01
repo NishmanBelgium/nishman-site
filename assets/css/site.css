@@ -1806,6 +1806,27 @@ body.card-dark .label-row.primary .swatch {
   align-items: flex-start;
 }
 
+/* Les liens nus du pied de page — « Mentions légales », « Mon compte »,
+   « Gérer mes cookies » — n'avaient aucune couleur déclarée et sortaient
+   dans le bleu par défaut du navigateur. Sur ce fond sombre le contraste
+   tombe sous le seuil lisible, et trois liens bleus au milieu d'un pied
+   gris donnent l'impression d'une page oubliée.
+   Les boutons sociaux (.foot-btn) gardent leur propre style : la règle
+   les exclut explicitement. */
+.foot-line a,
+.foot-links > a:not(.foot-btn) {
+  color: rgba(255, 255, 255, 0.74);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.foot-line a:hover, .foot-line a:focus-visible,
+.foot-links > a:not(.foot-btn):hover,
+.foot-links > a:not(.foot-btn):focus-visible {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .foot-btn {
   display: inline-flex;
   align-items: center;
@@ -3722,3 +3743,17 @@ body.catalog-body { background: #0E0E0E; }
   font-size: 0.8125rem;
   line-height: 1.55;
 }
+/* Les liens de cette liste sortaient dans le bleu par défaut du
+   navigateur. Sur ce fond presque noir, le bleu tombe à un contraste de
+   l'ordre de 2:1 — en dessous du minimum lisible — et jure avec le reste
+   du site, où un lien est orange ou blanc. Le soulignement est conservé :
+   dans un paragraphe, la couleur seule ne suffit pas à désigner un lien,
+   et elle ne dit rien à qui ne distingue pas les teintes. */
+.preuves span a {
+  color: var(--orange, #ED9B24);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.preuves span a:hover,
+.preuves span a:focus-visible { color: var(--blanc, #FFFFFF); }

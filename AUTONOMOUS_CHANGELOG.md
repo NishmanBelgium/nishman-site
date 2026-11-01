@@ -161,3 +161,78 @@ valeur du champ et non son invite.
 `assets/js/boutique.js` et remettre la version du script à 360.
 
 **Statut : appliqué, testé en local, déployé.**
+
+### 4. Des liens en bleu de navigateur sur fond sombre — APPLIQUÉ, TESTÉ
+
+**Problème.** Plusieurs liens n'avaient aucune couleur déclarée et
+sortaient donc dans le bleu par défaut du navigateur, `rgb(0,0,238)` :
+les deux liens de la liste « Pourquoi passer par nous » sur l'accueil, et
+dans le pied du catalogue professionnel « Mentions légales »,
+« Confidentialité », « Gérer mes cookies », « Mon compte » et « Créer un
+compte ».
+
+**Pourquoi ça mérite d'être corrigé.** Sur ces fonds presque noirs, le
+bleu par défaut tombe autour de 2:1 de contraste, très en dessous du
+minimum lisible. Et trois liens bleus au milieu d'un pied gris donnent
+l'impression d'une page oubliée en cours de route. C'était d'autant plus
+visible sur l'accueil que ces deux liens mènent aux deux pages
+commerciales les plus importantes du site.
+
+**Comment ils ont été trouvés.** Un script Playwright parcourt treize
+pages, relève la couleur calculée de chaque lien visible et signale ceux
+dont la composante bleue domine nettement. Il reste disponible pour
+contrôler après coup.
+
+**Ce qui a été fait.**
+- `.preuves span a` passe à l'orange de la marque, souligné. Le
+  soulignement est conservé : dans un paragraphe, la couleur seule ne
+  désigne pas un lien, et elle ne dit rien à qui ne distingue pas les
+  teintes.
+- `.foot-line a` et `.foot-links > a:not(.foot-btn)` passent au blanc à
+  74 %, blanc plein et souligné au survol. Les boutons sociaux sont
+  explicitement exclus pour garder leur propre style.
+- `.phare` reçoit `color: inherit`. Les deux lignes de texte des tuiles
+  ont déjà leur couleur, mais la troisième qu'on ajoutera un jour n'en
+  aura pas forcément.
+
+**Fichiers concernés.**
+- `assets/css/site.css` — règles `.preuves span a` et pied de page
+- `assets/css/familles.css` — `color: inherit` sur `.phare`
+- `index.html`, `boutique/index.html`, `produits/index.html` — versions de feuilles
+
+**Tests réalisés.**
+- Audit automatique relancé après correction : plus aucun lien bleu sur
+  les treize pages testées, à une exception près — le lien du logo sur
+  `/produits/`, qui ne contient qu'une image et aucun texte.
+- Rendu visuel du bloc « Pourquoi passer par nous » à 390 px avant/après.
+
+**Ce qui n'a pas été testé.** Les pages rendues par le serveur — fiches
+produit et pages de famille — ne tournent pas en local. Elles partagent
+les mêmes feuilles, donc la correction les couvre, mais je ne l'ai pas
+constaté de mes yeux.
+
+**Risques et limites.** Changement purement visuel. Aucune cible de lien
+modifiée.
+
+**Retour arrière.** Supprimer les trois blocs de règles ajoutés et
+remettre les versions de feuilles à 367 et 354.
+
+**Statut : appliqué, testé en local, déployé.**
+
+### 5. Le bandeau de consentement — EXAMINÉ, VOLONTAIREMENT NON MODIFIÉ
+
+Sur un téléphone, le bandeau occupe environ un cinquième de la hauteur
+d'écran et recouvre la première rangée de produits. J'ai regardé s'il
+fallait le réduire.
+
+Non. Son texte tient en trois phrases : ce qu'on mesure, à qui les
+données sont transmises, et le fait que le site fonctionne pareil en cas
+de refus. Supprimer la troisième rendrait le refus moins évident, ce qui
+pousse mécaniquement à l'acceptation. Réduire le corps de texte rendrait
+l'information moins lisible. Les deux boutons ont déjà exactement le même
+poids visuel, ce qui est la condition d'un consentement valable.
+
+La hauteur est le coût honnête d'une information claire. Les quelques
+pixels à gagner ne valent pas de l'abîmer.
+
+**Statut : examiné, aucune modification.**
