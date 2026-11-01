@@ -707,6 +707,30 @@
     // Panier vidé : la demande est partie
     [SEL_KEY].concat(SEL_KEYS_FALLBACK).forEach((k) => localStorage.removeItem(k));
 
+    // La conversion professionnelle, c'est ici — pas l'ajout au panier,
+    // pas la visite du catalogue. Une demande de devis partie est le seul
+    // signal qui vaut la peine d'être acheté, et c'est sur lui que la
+    // campagne doit s'optimiser.
+    //
+    // L'événement passe par la porte de consentement : si le visiteur a
+    // refusé, rien n'est envoyé et la demande part quand même. Le garde
+    // en sessionStorage évite qu'un second envoi dans la même session
+    // compte deux fois — Meta facturerait une conversion imaginaire.
+    try {
+      var cons = window.nishmanConsentement;
+      if (cons && !sessionStorage.getItem("nishman-devis-envoye")) {
+        // Le garde ne se pose que si l'événement est réellement parti :
+        // un refus de consentement ne doit pas consommer le jeton et
+        // empêcher la mesure d'un envoi ultérieur.
+        var parti = cons.evenement("Lead", {
+          content_name: "Demande de devis professionnel",
+          content_category: "B2B",
+          num_items: data.lines.length,
+        });
+        if (parti) sessionStorage.setItem("nishman-devis-envoye", "1");
+      }
+    } catch (e) { /* la mesure ne doit jamais empêcher l'envoi */ }
+
     // Le document reste visible sous la confirmation : le client garde une
     // trace de sa demande et peut encore l'imprimer.
     $("step-done").hidden = false;
