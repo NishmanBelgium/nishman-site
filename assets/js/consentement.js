@@ -137,6 +137,43 @@
       var c = lire();
       return c ? (c.pub ? "accepté" : "refusé") : "sans réponse";
     },
+
+    /* Le point d'entrée des autres scripts du site. Une vue de fiche, un
+       ajout au panier, un achat passent tous par ici.
+
+       Un évènement émis avant le consentement est PERDU, pas mis en
+       file. Garder de côté ce qu'a fait un visiteur qui n'a pas encore
+       répondu, pour l'envoyer s'il finit par accepter, reviendrait à
+       mesurer d'abord et demander ensuite — exactement ce que ce
+       fichier existe pour éviter. */
+    evenement: function (nom, donnees) {
+      if (!PIXEL || !charge || !window.fbq) return false;
+      try {
+        window.fbq("track", nom, donnees || {});
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+
+    /* L'achat ne doit partir qu'une fois. La page de retour interroge le
+       serveur deux fois — une à l'arrivée, une après confirmation — et
+       peint « c'est payé » dans les deux cas ; sans ce garde-fou, Meta
+       compterait deux ventes pour une. La référence de commande sert de
+       clé, donc un rechargement de la page ne recompte pas non plus. */
+    achatUneFois: function (ref, donnees) {
+      if (!ref) return false;
+      var cle = "nishman-achat-" + ref;
+      try {
+        if (window.sessionStorage.getItem(cle)) return false;
+        window.sessionStorage.setItem(cle, "1");
+      } catch (e) {
+        /* Sans stockage on préfère envoyer une fois de trop que pas du
+           tout : une vente manquante fausse la mesure plus durablement
+           qu'une vente comptée deux fois, qui se voit. */
+      }
+      return window.nishmanConsentement.evenement("Purchase", donnees);
+    },
   };
 
   /* Le lien « Gérer mes cookies » du pied de page. Il est posé sur toutes

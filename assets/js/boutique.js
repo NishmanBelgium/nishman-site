@@ -75,7 +75,7 @@
     .catch(function () { /* on garde les valeurs de secours */ });
 
   // ── chargement ──────────────────────────────────────────────────────────
-  fetch("/assets/data/boutique.json?v=358")
+  fetch("/assets/data/boutique.json?v=360")
     .then(function (r) { return r.json(); })
     .then(function (d) {
       PRODUITS = d;
@@ -329,6 +329,19 @@
     // le panier pour vérifier que l'article y était ; voir la ligne
     // apparaître est la seule confirmation qui ne laisse aucun doute.
     if (n > 0) ouvrirPanier(true);
+
+    /* La mesure publicitaire, si et seulement si le visiteur l'a
+       acceptée. Le module s'en charge : ici on dit seulement ce qui
+       vient de se passer. */
+    if (n > 0 && fiche && window.nishmanConsentement) {
+      window.nishmanConsentement.evenement("AddToCart", {
+        content_type: "product",
+        content_ids: [ean],
+        content_name: fiche.nom_court || fiche.nom || "",
+        value: Number(fiche.ttc) * n,
+        currency: "EUR",
+      });
+    }
   }
 
   function lignes() {

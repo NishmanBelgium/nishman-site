@@ -144,6 +144,20 @@ function resume(texte) {
   return (espace > 80 ? coupe.slice(0, espace) : coupe).trim() + "…";
 }
 
+/* La charge utile de l'évènement « vue de fiche », prête à être insérée
+   dans une balise script. JSON.stringify échappe ce qu'il faut pour du
+   JavaScript ; reste à neutraliser la seule séquence qui fermerait la
+   balise par surprise. */
+function donneesVue(p, nom) {
+  return JSON.stringify({
+    content_type: "product",
+    content_ids: [String(p.ean)],
+    content_name: nom,
+    value: Number(Number(p.ttc).toFixed(2)),
+    currency: "EUR",
+  }).replace(/</g, "\\u003c");
+}
+
 function page(p, base, indexable, autres) {
   const url = base + "/boutique/" + p.slug + "/";
   const slugFam = slugFamille(p.famille);
@@ -363,7 +377,22 @@ ${pied()}
 })();
 </script>
 <script src="/assets/js/mesure.js?v=278" defer></script>
-<script src="/assets/js/consentement.js?v=359" defer></script>
+<script src="/assets/js/consentement.js?v=360" defer></script>
+<script>
+/* La vue de fiche, pour la mesure publicitaire. Elle attend que le
+   module de consentement soit chargé — « defer » garantit l'ordre, mais
+   pas que le visiteur ait déjà répondu : si ce n'est pas le cas, le
+   module ignore l'appel, et c'est exactement ce qu'on veut.
+
+   Les données passent par JSON.stringify et non par echapper() : cette
+   dernière protège du HTML, pas du JavaScript. Un nom comme « AQUA
+   D'ASIL » en ressortirait avec son apostrophe transformée en entité,
+   visible telle quelle dans le rapport Meta. */
+window.addEventListener("load", function () {
+  if (!window.nishmanConsentement) return;
+  window.nishmanConsentement.evenement("ViewContent", ${donneesVue(p, nom)});
+});
+</script>
 </body>
 </html>`;
 }

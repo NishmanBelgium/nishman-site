@@ -354,6 +354,7 @@
       }
 
       if (d.statut === "paye") {
+        mesurerAchat(d);
         viderPanier();
         peindre({
           icone: "&#10003;",
@@ -371,6 +372,7 @@
     } catch (e) {}
 
     if (fin && fin.statut === "paye") {
+      mesurerAchat(fin);
       viderPanier();
       peindre({
         icone: "&#10003;",
@@ -387,6 +389,19 @@
              + "écrivons dès qu'elle arrive."
       });
     }
+  }
+
+  /* Le montant envoyé à la mesure est celui du SERVEUR, jamais un total
+     recalculé dans le navigateur : c'est la même règle que pour le
+     paiement lui-même, et pour la même raison — un chiffre venu de la
+     page n'engage personne. */
+  function mesurerAchat(d) {
+    if (!d || !window.nishmanConsentement) return;
+    window.nishmanConsentement.achatUneFois(d.ref, {
+      value: Number(d.montant) || 0,
+      currency: d.devise || "EUR",
+      content_type: "product",
+    });
   }
 
   /* --- Mise en route ---------------------------------------------------- */
