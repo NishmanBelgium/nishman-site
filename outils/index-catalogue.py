@@ -74,7 +74,11 @@ lignes = [DEBUT,
           '  <div class="index-cat-cols">']
 
 for nom, liste in ordre:
-    liste = sorted(liste, key=lambda p: (p.get("nom_court") or p.get("nom") or "").lower())
+    # On garde l'ordre du fichier, qui est rangé par numéro de référence
+    # depuis outils/trier.py. Un tri alphabétique ici remettait la
+    # cologne no:10 entre la no:1 et la no:2, et donnait à cet index un
+    # classement différent de celui des deux portails, de la page de
+    # famille et du flux — quatre endroits, quatre ordres.
     lignes.append('    <details class="index-cat-fam">')
     lignes.append('      <summary>%s <span>%d</span></summary>'
                   % (echapper(nom), len(liste)))
