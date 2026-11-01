@@ -77,3 +77,43 @@ stock, conditionnement ni règle de compte n'est touché.
 familles reprennent leur ordre d'apparition.
 
 **Statut : appliqué, testé en local, déployé.**
+
+### 2. L'index « Tout le catalogue » rangeait les familles autrement — APPLIQUÉ, TESTÉ
+
+**Problème.** Trois ordres différents cohabitaient sur la page boutique :
+le quadrillage suivait l'ordre du fichier, le menu de filtres suivait le
+quadrillage, et le bloc « Tout le catalogue » en bas de page rangeait les
+familles de la plus fournie à la moins fournie. Les colognes y arrivaient
+premières parce qu'elles sont vingt, pas parce que c'est leur place.
+
+**Pourquoi ça mérite d'être corrigé.** Un visiteur qui descend la page
+retrouve le même catalogue rangé deux fois différemment. Chaque bloc est
+juste pris isolément, mais l'ensemble donne l'impression d'une boutique
+mal tenue — exactement le genre de détail qui se sent sans se formuler.
+
+**Ce qui a été fait.** `outils/index-catalogue.py` importe désormais
+`ORDRE_FAMILLES` depuis `outils/trier.py` au lieu de trier par nombre de
+références. La liste est importée et non recopiée : deux copies finissent
+toujours par diverger. Une famille absente de la liste se range à la
+suite, par ordre alphabétique, plutôt que de disparaître.
+
+**Fichiers concernés.**
+- `outils/index-catalogue.py` — import de la liste, nouvelle fonction `rang_famille`, ajout de `os` et `sys` aux imports
+- `boutique/index.html` — bloc d'index régénéré
+
+**Tests réalisés.**
+- Comparaison des liens avant/après : 140 liens dans les deux cas, et la
+  liste triée des adresses est rigoureusement identique. Aucun lien perdu,
+  aucun ajouté, seul l'ordre des blocs change.
+- Ordre vérifié : Mat Wax en premier, Coffrets en dernier, conforme au
+  quadrillage et au menu de filtres.
+
+**Risques et limites.** Ce bloc est aussi le chemin par lequel Google
+descend vers les fiches produit. L'ordre des liens change, leur nombre et
+leur cible non : le maillage interne est intact.
+
+**Retour arrière.** Remplacer l'appel à `rang_famille` par l'ancien tri
+par nombre de références décroissant, puis relancer
+`python3 outils/index-catalogue.py`.
+
+**Statut : appliqué, testé en local, déployé.**

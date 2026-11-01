@@ -18,7 +18,9 @@ n'est jamais touché.
 """
 import io
 import json
+import os
 import re
+import sys
 
 RACINE = "/home/claude/nishman-site"
 PAGE = RACINE + "/boutique/index.html"
@@ -26,8 +28,20 @@ DONNEES = RACINE + "/assets/data/boutique.json"
 DEBUT = "<!-- index-catalogue:début -->"
 FIN = "<!-- index-catalogue:fin -->"
 
-# L'ordre d'affichage : les familles les plus fournies d'abord, comme
-# dans le quadrillage, pour que l'œil retrouve le même classement.
+# L'ordre d'affichage. Cet index rangeait les familles de la plus fournie
+# à la moins fournie, ce qui faisait un troisième classement sur la même
+# page : le quadrillage suit l'ordre du fichier, le menu de filtres suit
+# le quadrillage, et l'index suivait le nombre de références. Trois ordres
+# pour un seul catalogue, c'est ce qui donne l'impression d'une boutique
+# mal rangée même quand chaque bloc est juste.
+#
+# On reprend donc la liste de trier.py, qui est la seule décision d'ordre
+# du projet. Elle est importée et non recopiée : deux copies finissent
+# toujours par diverger.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from trier import ORDRE_FAMILLES  # noqa: E402
+
+
 def echapper(t):
     return (str(t).replace("&", "&amp;").replace("<", "&lt;")
             .replace(">", "&gt;").replace('"', "&quot;"))
@@ -64,7 +78,17 @@ familles = {}
 for p in produits:
     familles.setdefault(p.get("famille") or "Autres", []).append(p)
 
-ordre = sorted(familles.items(), key=lambda kv: (-len(kv[1]), kv[0]))
+# Une famille absente de la liste de référence se range à la suite, par
+# ordre alphabétique : elle apparaît, elle n'est pas perdue, et sa place
+# définitive se décide en l'ajoutant à ORDRE_FAMILLES.
+def rang_famille(nom):
+    try:
+        return (0, ORDRE_FAMILLES.index(nom), "")
+    except ValueError:
+        return (1, 0, nom)
+
+
+ordre = sorted(familles.items(), key=lambda kv: rang_famille(kv[0]))
 
 lignes = [DEBUT,
           '<section class="wrap index-cat" aria-labelledby="index-cat-titre">',
