@@ -14,7 +14,7 @@ import { json, erreur, compteConnecte } from "../_commun.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
-import { configure as configureOdoo } from "../_odoo.js";
+import { configure as configureOdoo, aDejaCommande } from "../_odoo.js";
 import { configureMollie, paiementsAutorises } from "../_mollie.js";
 
 const PAYS_CONNUS = { BE: 1, FR: 1, LU: 1 };
@@ -60,12 +60,30 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, raison: "indisponible", souci: String(e.message || e) });
   }
 
+  // Le code de bienvenue est réservé à la première commande. On ne pose la
+  // question à Odoo que si le client a effectivement saisi un code : inutile
+  // d'ajouter un aller-retour à chaque recalcul de panier.
+  //
+  // Si Odoo ne répond pas, on considère le client comme déjà client, donc
+  // sans remise. C'est le sens prudent : une remise accordée à tort part
+  // en commande et ne se reprend pas, alors qu'une remise refusée à tort
+  // se répare par un mot au service commercial.
+  let dejaCommande = false;
+  if (compte && String(corps.promo || "").trim()) {
+    try {
+      dejaCommande = await aDejaCommande(env, compte.odoo_partner_id);
+    } catch (e) {
+      dejaCommande = true;
+    }
+  }
+
   const resultat = calculer({
     selection, produits, prix,
     pays: pays || "BE",
     tvaValide,
     mode: corps.mode === "retrait" ? "retrait" : "livraison",
     promo: corps.promo,
+    dejaCommande,
   });
 
   return json({

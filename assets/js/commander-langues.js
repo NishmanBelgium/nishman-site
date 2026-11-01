@@ -61,6 +61,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Appliquer",
     promo_ok: (code) => "Code " + code + " appliqué.",
     promo_non: "Ce code n'est pas reconnu.",
+    promo_deja_client: (code) => "Le code " + code + " est réservé à la première "
+      + "commande, et votre compte en a déjà une.",
     promo_trop_petit: (code, mini) => "Le code " + code + " s'applique à partir de "
       + mini.toFixed(2).replace(".", ",") + " € HT de commande.",
 
@@ -175,6 +177,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Apply",
     promo_ok: (code) => "Code " + code + " applied.",
     promo_non: "This code is not recognised.",
+    promo_deja_client: (code) => "Code " + code + " is reserved for a first "
+      + "order, and your account already has one.",
     promo_trop_petit: (code, mini) => "Code " + code + " applies from "
       + mini.toFixed(2) + " EUR excl. VAT upwards.",
 
@@ -288,6 +292,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Toepassen",
     promo_ok: (code) => "Code " + code + " toegepast.",
     promo_non: "Deze code wordt niet herkend.",
+    promo_deja_client: (code) => "Code " + code + " geldt alleen voor een eerste "
+      + "bestelling, en uw account heeft er al een.",
     promo_trop_petit: (code, mini) => "Code " + code + " geldt vanaf "
       + mini.toFixed(2).replace(".", ",") + " EUR excl. btw.",
 
@@ -401,6 +407,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Anwenden",
     promo_ok: (code) => "Code " + code + " angewendet.",
     promo_non: "Dieser Code wird nicht erkannt.",
+    promo_deja_client: (code) => "Der Code " + code + " gilt nur für die erste "
+      + "Bestellung, und Ihr Konto hat bereits eine.",
     promo_trop_petit: (code, mini) => "Code " + code + " gilt ab "
       + mini.toFixed(2).replace(".", ",") + " EUR netto.",
 
@@ -514,6 +522,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_btn: "Uygula",
     promo_ok: (code) => code + " kodu uyguland\u0131.",
     promo_non: "Bu kod tan\u0131nm\u0131yor.",
+    promo_deja_client: (code) => code + " kodu yaln\u0131zca ilk sipari\u015f i\u00e7in "
+      + "ge\u00e7erlidir ve hesab\u0131n\u0131z\u0131n zaten bir sipari\u015fi var.",
     promo_trop_petit: (code, mini) => code + " kodu "
       + mini.toFixed(2) + " EUR (KDV hariç) üzeri siparişlerde geçerlidir.",
 

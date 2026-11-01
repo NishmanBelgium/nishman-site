@@ -19,7 +19,7 @@ import { json, erreur, compteConnecte, prolongerSiBesoin, texteValide, paysValid
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
-import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
+import { configure as configureOdoo, appel as appelOdoo, aDejaCommande } from "../_odoo.js";
 import { creerCommandeOdoo } from "../_commande_odoo.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { enregistrer } from "../_paiements.js";
@@ -126,10 +126,24 @@ export async function onRequestPost({ request, env }) {
     stockNonVerifie = String((e && e.message) || e).slice(0, 160);
   }
 
+  // Le code de bienvenue ne vaut que pour la première commande, et c'est
+  // ici qu'on encaisse : la vérification doit être refaite au moment du
+  // paiement, pas seulement à l'affichage du panier. Odoo muet vaut
+  // « déjà client » — une remise encaissée à tort ne se reprend pas.
+  let dejaCommande = false;
+  if (String(corps.promo || "").trim()) {
+    try {
+      dejaCommande = await aDejaCommande(env, compte.odoo_partner_id);
+    } catch (e) {
+      dejaCommande = true;
+    }
+  }
+
   const resultat = calculer({
     selection, produits, prix,
     pays: compte.pays, tvaValide: tva.valide,
     mode, promo: corps.promo,
+    dejaCommande,
   });
   if (!resultat.lignes.length) return erreur("Aucun produit reconnu.", 400, "vide");
   if (!(resultat.total > 0)) return erreur("Le montant à payer est nul.", 400, "montant");

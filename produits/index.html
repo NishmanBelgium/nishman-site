@@ -33,7 +33,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
-  <link rel="stylesheet" href="/assets/css/site.css?v=354" />
+  <link rel="stylesheet" href="/assets/css/site.css?v=367" />
   <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 </head>
 <body class="catalog-body">
@@ -59,14 +59,12 @@
          porte d'entrée, et les faits restent dans le ruban juste dessous
          plutôt que d'être empilés sur l'image. -->
     <div class="bandeau">
-      <!-- Pas d'attribut poster : l'affiche fixe est le fond CSS du
-           bandeau, ce qui lui permet de changer au même point de rupture
-           que le film. Deux montages, l'un cadré pour la boîte presque
-           carrée du téléphone, l'autre pour la bande large. -->
-      <video class="bandeau-film" muted loop playsinline preload="none"
-             data-film="/assets/video/bandeau-pro.mp4?v=333"
-             data-film-haut="/assets/video/bandeau-pro-haut.mp4?v=333"
-             aria-hidden="true"></video>
+      <!-- Plus de film ici. La boucle vidéo donnait un rendu brouillon sur
+           une page de catalogue, et elle coûtait un téléchargement avant le
+           premier tarif. L'image fixe est le fond CSS du bandeau : elle
+           change au point de rupture, ce qu'un attribut poster ne sait pas
+           faire. Deux cadrages d'une même photo de showroom, l'un pour la
+           boîte haute du téléphone, l'autre pour la bande large. -->
       <div class="bandeau-voile" aria-hidden="true"></div>
       <div class="bandeau-texte">
         <p class="bandeau-sur">Catalogue professionnel</p>

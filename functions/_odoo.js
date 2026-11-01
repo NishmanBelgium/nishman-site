@@ -108,6 +108,36 @@ export async function commandesDuClient(env, partnerId, limite = 50) {
     { limit: limite, order: "date_order desc" });
 }
 
+/* Le client a-t-il déjà commandé ?
+ *
+ * Sert à réserver le code de bienvenue à la toute première commande. On
+ * compte au lieu de lire : une seule réponse, un seul entier, et la
+ * question est posée à chaque recalcul du panier.
+ *
+ * Les devis en brouillon ne comptent pas. Un panier abandonné au stade du
+ * devis n'est pas une commande, et le client qui revient le lendemain ne
+ * doit pas découvrir que son code a été consommé par une intention. Seuls
+ * comptent les états où la commande a été confirmée.
+ *
+ * En cas d'échec de l'appel, la fonction propage l'erreur : c'est à
+ * l'appelant de décider: refuser la remise plutôt que de l'accorder à
+ * l'aveugle est le seul choix prudent, puisqu'une remise accordée à tort
+ * ne se reprend pas.
+ */
+export async function aDejaCommande(env, partnerId) {
+  // Pas de fiche client : le compte n'a jamais été lié à Odoo, donc il n'a
+  // rien commandé. C'est le cas d'un compte tout juste créé, exactement
+  // celui que le code de bienvenue vise.
+  if (!partnerId) return false;
+  // Odoo non configuré : on ne peut pas répondre, et répondre « non » par
+  // défaut ouvrirait la remise à tout le monde. On lève, l'appelant tranche.
+  if (!configure(env)) throw new Error("Odoo non configuré : historique illisible.");
+  const n = await appel(env, "sale.order", "search_count",
+    [[["partner_id", "=", partnerId],
+      ["state", "in", ["sale", "done"]]]], {});
+  return Number(n) > 0;
+}
+
 // Relit une commande en exigeant qu'elle soit AU client demandé. Le filtre
 // porte sur les deux critères à la fois : une commande qui n'est pas la
 // sienne ne revient pas, plutôt que de revenir et d'être écartée ensuite.

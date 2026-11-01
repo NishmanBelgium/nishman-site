@@ -63,12 +63,13 @@ export function fraisDePort(pays, montant, retrait) {
  * @param tvaValide le numéro du client a-t-il été vérifié
  * @param mode      "livraison" | "retrait"
  * @param promo     le code saisi, tel quel
+ * @param dejaCommande  le client a-t-il déjà une commande confirmée
  *
  * Rien de ce que le navigateur envoie n'est cru sur parole, hormis les
  * références et les quantités — et encore : une référence inconnue ou une
  * quantité négative est écartée, pas facturée.
  */
-export function calculer({ selection, produits, prix, pays, tvaValide, mode, promo }) {
+export function calculer({ selection, produits, prix, pays, tvaValide, mode, promo, dejaCommande }) {
   const parEan = new Map();
   for (const p of produits || []) if (p && p.ean) parEan.set(String(p.ean), p);
 
@@ -108,11 +109,19 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
   // avant remise créerait des commandes où le site offre le port et où le
   // mode de livraison Odoo le facture — exactement la divergence de barème
   // qui avait déjà fait remonter des alertes.
+  //
+  // Et il est réservé à la PREMIÈRE commande. Le client qui a déjà une
+  // commande confirmée se le voit refuser, avec un motif distinct du
+  // refus pour montant insuffisant : les deux n'appellent pas la même
+  // phrase à l'écran, et un client qui ne comprend pas pourquoi son code
+  // est refusé écrit au service commercial.
   const codeDonne = sousTotal > 0 &&
     String(promo || "").trim().toUpperCase() === PROMO.code;
+  const dejaClient = dejaCommande === true;
   const remiseEventuelle = codeDonne ? sou(sousTotal * PROMO.taux) : 0;
   const seuilPays = (PORT[pays] || PORT.BE).seuil;
-  const promoOk = codeDonne && sou(sousTotal - remiseEventuelle) >= seuilPays;
+  const montantSuffisant = sou(sousTotal - remiseEventuelle) >= seuilPays;
+  const promoOk = codeDonne && !dejaClient && montantSuffisant;
   const remise = promoOk ? remiseEventuelle : 0;
 
   // Le minimum de commande à partir duquel le code devient utilisable, pour
@@ -135,6 +144,9 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
     promo: promoOk ? PROMO.code : "",
     // Le code a été donné mais écarté : la page doit pouvoir dire pourquoi.
     promo_refusee: codeDonne && !promoOk ? PROMO.code : "",
+    // « deja_client » ou « montant » : deux refus, deux phrases.
+    promo_motif: !codeDonne || promoOk ? ""
+      : dejaClient ? "deja_client" : "montant",
     promo_minimum: promoMinimum,
     remise,
     marchandise,

@@ -19,6 +19,7 @@ import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
 import { positionFiscale } from "../_fiscal.js";
 import { verifierStockPro } from "../_stock.js";
+import { aDejaCommande } from "../_odoo.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 
@@ -224,10 +225,24 @@ export async function onRequestPost({ request, env }) {
     stockNonVerifie = String((e && e.message) || e).slice(0, 160);
   }
 
+  // Le moment qui fait foi pour le code de bienvenue. Le panier a déjà posé
+  // la question, mais c'est ici que la commande part : un client qui aurait
+  // commandé entre-temps, ou qui rejouerait un ancien panier, est rattrapé.
+  // Odoo muet vaut « déjà client » : on ne concède pas une remise à l'aveugle.
+  let dejaCommande = false;
+  if (String(corps.promo || "").trim()) {
+    try {
+      dejaCommande = await aDejaCommande(env, compte.odoo_partner_id);
+    } catch (e) {
+      dejaCommande = true;
+    }
+  }
+
   const resultat = calculer({
     selection, produits, prix,
     pays: compte.pays, tvaValide: tva.valide,
     mode, promo: corps.promo,
+    dejaCommande,
   });
 
   if (!resultat.lignes.length) return erreur("Aucun produit reconnu.", 400, "vide");
