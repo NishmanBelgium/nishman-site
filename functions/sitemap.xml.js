@@ -23,6 +23,7 @@ const PAGES = [
   ["/", 1.0, "weekly"],
   ["/boutique/", 0.9, "daily"],
   ["/produits/", 0.9, "weekly"],
+  ["/importateur-officiel/", 0.8, "monthly"],
   ["/contact/", 0.6, "monthly"],
   ["/france/", 0.6, "monthly"],
   ["/liens/", 0.4, "monthly"],
