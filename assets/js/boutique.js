@@ -75,7 +75,7 @@
     .catch(function () { /* on garde les valeurs de secours */ });
 
   // ── chargement ──────────────────────────────────────────────────────────
-  fetch("/assets/data/boutique.json?v=349")
+  fetch("/assets/data/boutique.json?v=355")
     .then(function (r) { return r.json(); })
     .then(function (d) {
       PRODUITS = d;

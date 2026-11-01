@@ -12,11 +12,41 @@
    d'entrée du site, où Google n'envoie personne.
    ========================================================================== */
 
-import { parSlug, echapper, euros, origine } from "../_boutique.js";
+import { parSlug, catalogue, echapper, euros, origine } from "../_boutique.js";
 import { ENTETES_SECURITE, CSP_PAGE } from "../_commun.js";
 import { REGLES } from "../_calcul_b2c.js";
+import { FAMILLES, ODEURS, slugFamille, pied } from "./famille/[nom].js";
 
 const DESCRIPTION_MAX = 155;
+const VOISINS_MAX = 4;
+
+/* Les autres produits de la même famille.
+ *
+ * Quatre, pas davantage : une fiche sert à décider d'un produit, pas à
+ * en proposer douze. Et on prend les voisins immédiats dans l'ordre de
+ * la famille plutôt que les quatre premiers, sans quoi toutes les fiches
+ * d'une même famille renverraient vers les mêmes quatre têtes de liste.
+ *
+ * Le tri compte les chiffres comme des nombres. Sans cela « NO:10 » se
+ * range entre « NO:1 » et « NO:2 », et la cologne no:12 se retrouve
+ * voisine des no:2 et no:3 au lieu des no:11 et no:16. */
+function voisins(liste, p) {
+  const meme = liste
+    .filter((x) => x.famille === p.famille)
+    .sort((a, b) => String(a.nom).localeCompare(String(b.nom), "fr", { numeric: true }));
+  const i = meme.findIndex((x) => x.ean === p.ean);
+  if (i < 0) return meme.slice(0, VOISINS_MAX);
+  const avant = meme.slice(0, i);
+  const apres = meme.slice(i + 1);
+  const pris = [];
+  let g = avant.length - 1;
+  let d = 0;
+  while (pris.length < VOISINS_MAX && (g >= 0 || d < apres.length)) {
+    if (d < apres.length) pris.push(apres[d++]);
+    if (pris.length < VOISINS_MAX && g >= 0) pris.unshift(avant[g--]);
+  }
+  return pris;
+}
 
 /* Les données structurées, en JSON-LD.
  *
@@ -114,8 +144,12 @@ function resume(texte) {
   return (espace > 80 ? coupe.slice(0, espace) : coupe).trim() + "…";
 }
 
-function page(p, base, indexable) {
+function page(p, base, indexable, autres) {
   const url = base + "/boutique/" + p.slug + "/";
+  const slugFam = slugFamille(p.famille);
+  const fam = slugFam ? FAMILLES[slugFam] : null;
+  const lienFam = slugFam ? "/boutique/famille/" + slugFam + "/" : "/boutique/";
+  const odeur = ODEURS[String(p.ean)];
   const image = base + "/assets/img/products/" + p.image;
   const nom = p.nom_court || p.nom;
   const desc = p.desc_fr || "";
@@ -149,7 +183,7 @@ function page(p, base, indexable) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
-<link rel="stylesheet" href="/assets/css/base.css?v=289" />
+<link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
 <style>
   .fiche-page { max-width: 1040px; margin: 0 auto; padding: 24px 16px 72px;
@@ -175,8 +209,39 @@ function page(p, base, indexable) {
   .fiche-pro { margin-top: 28px; padding-top: 16px; border-top: 1px solid #e6e0d2;
                font-size: .85rem; color: #8a8070; }
   .fiche-pro a { color: #8a8070; }
-  .fiche-retour { display: inline-block; margin-bottom: 14px; font-size: .9rem; }
   .fiche-dispo { font-size: .85rem; color: #8a8070; margin-top: 10px; }
+
+  .fiche-fil { font-size: .8rem; color: #8a8070; margin-bottom: 12px; }
+  .fiche-fil a { color: #8a8070; text-decoration: none; }
+  .fiche-fil a:hover { color: var(--encre); text-decoration: underline; }
+  .fiche-fil span { margin: 0 7px; color: #c3bbab; }
+
+  .fiche-odeur { display: flex; gap: 14px; align-items: center; margin-top: 22px;
+                 padding: 12px; border-radius: 12px; background: #0b0b0c; }
+  .fiche-odeur img { width: 76px; height: 76px; border-radius: 8px; object-fit: cover;
+                     flex: 0 0 auto; display: block; }
+  .fiche-odeur b { display: block; font-family: var(--titre); font-weight: 700; font-size: .625rem;
+                   letter-spacing: .26em; text-transform: uppercase; color: var(--orange);
+                   margin-bottom: 5px; }
+  .fiche-odeur span { display: block; font-family: var(--titre); font-weight: 800; font-stretch: 86%;
+                      font-size: .95rem; line-height: 1.25; text-transform: uppercase; color: #fff; }
+
+  .fiche-suite { border-top: 1px solid var(--gris); padding: var(--e7) 0 var(--e8); }
+  .fiche-suite h2 { font-size: var(--t-sous); margin: 0 0 var(--e5); }
+  .fiche-voisins { display: grid; gap: var(--e4); grid-template-columns: 1fr 1fr; }
+  @media (min-width: 720px) { .fiche-voisins { grid-template-columns: repeat(4, 1fr); } }
+  .voisin { display: block; text-decoration: none; color: inherit; }
+  .voisin-img { display: grid; place-items: center; aspect-ratio: 1/1; padding: var(--e4);
+                background: var(--gris-fond); border-radius: var(--r-objet);
+                transition: background .22s ease; }
+  .voisin:hover .voisin-img { background: var(--gris-fond-appui); }
+  .voisin-img img { max-width: 100%; max-height: 100%; width: auto; height: auto;
+                    object-fit: contain; mix-blend-mode: multiply; }
+  .voisin-nom { display: block; font-family: var(--titre); font-stretch: 86%; font-weight: 700;
+                font-size: .8125rem; line-height: 1.25; margin: var(--e3) 0 2px; }
+  .voisin-prix { display: block; font-size: .8125rem; color: var(--encre-douce); }
+  .fiche-suite-tout { margin: var(--e5) 0 0; font-size: var(--t-petit); }
+  .fiche-suite-tout a { color: var(--orange-fonce); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -207,8 +272,15 @@ function page(p, base, indexable) {
          faire entrer dans le HTML visible, au prix de blocs cachés qui
          décalaient la mise en page. -->
 
-    <a class="fiche-retour" href="/boutique/">← Toute la boutique</a>
-    <div class="fiche-fam">${echapper(p.famille || "")}</div>
+    <!-- Le fil d'Ariane était déclaré à Google depuis le lot 318, mais
+         invisible à l'écran : le visiteur arrivé d'une recherche n'avait
+         qu'un « ← Toute la boutique » qui le renvoyait aux 125
+         références. Il voit maintenant sa famille, et peut y monter. -->
+    <nav class="fiche-fil" aria-label="Fil d'Ariane">
+      <a href="/boutique/">Boutique</a>
+      <span aria-hidden="true">›</span>
+      <a href="${echapper(lienFam)}">${echapper(fam ? fam.nom : p.famille || "Catalogue")}</a>
+    </nav>
     <h1 class="fiche-titre">${echapper(nom)}</h1>
     <div class="fiche-volume">${echapper(p.volume || "")}</div>
 
@@ -230,12 +302,42 @@ function page(p, base, indexable) {
     </div>`}
 
     <div class="fiche-texte">${echapper(desc)}</div>
+${odeur ? `
+    <!-- L'inspiration de la fragrance, avec la matière qui la porte.
+         C'est le même couple image + mot que sur la page de famille :
+         le visiteur qui a cliqué depuis la famille retrouve exactement
+         ce qui l'a fait cliquer. -->
+    <div class="fiche-odeur">
+      <img src="/assets/img/odeurs/${echapper(p.ean)}.webp" alt="" aria-hidden="true"
+           width="512" height="512" loading="lazy" decoding="async" />
+      <div><b>Inspiré par</b><span>${echapper(odeur)}</span></div>
+    </div>` : ""}
 
     <p class="fiche-pro">Vous êtes coiffeur ou barbier ?
       <a href="/">Le catalogue professionnel passe par l'accueil</a> — vente
       au carton, facture et livraison.</p>
   </div>
 </main>
+${autres.length ? `
+<!-- Les voisins de rayon. Une fiche sans sortie latérale oblige le
+     visiteur à revenir en arrière pour comparer, et beaucoup ne
+     reviennent pas. -->
+<section class="fiche-suite" aria-labelledby="fiche-suite-titre">
+  <div class="wrap">
+    <h2 id="fiche-suite-titre">Dans la même famille</h2>
+    <div class="fiche-voisins">
+      ${autres.map((v) => `<a class="voisin" href="/boutique/${echapper(v.slug)}/">
+        <span class="voisin-img"><img src="/assets/img/products/${echapper(v.image)}"
+              alt="${echapper(v.nom)}" width="600" height="600" loading="lazy" decoding="async" /></span>
+        <span class="voisin-nom">${echapper(v.nom_court || v.nom)}</span>
+        <span class="voisin-prix">${v.bientot ? "Bientôt disponible" : euros(v.ttc)}</span>
+      </a>`).join("\n      ")}
+    </div>
+    <p class="fiche-suite-tout"><a href="${echapper(lienFam)}">Voir toute la famille ${echapper(fam ? fam.nom : p.famille || "")} →</a></p>
+  </div>
+</section>` : ""}
+
+${pied()}
 
 <script>
 (function () {
@@ -307,7 +409,14 @@ export async function onRequestGet({ request, params, env }) {
 
   const indexable = String((env && env.INDEXER_BOUTIQUE) || "").trim().toLowerCase() === "oui";
 
-  return new Response(page(trouve.produit, base, indexable), {
+  /* Les voisins de rayon sont un agrément, pas la fiche. Si le catalogue
+     ne répond pas, la fiche sort quand même : un prix et un bouton
+     d'achat valent mieux qu'une page d'erreur. */
+  let autres = [];
+  try { autres = voisins(await catalogue(request), trouve.produit); }
+  catch (e) { autres = []; }
+
+  return new Response(page(trouve.produit, base, indexable, autres), {
     headers: {
       // _headers ne s'applique pas aux pages produites par une fonction.
       ...ENTETES_SECURITE,

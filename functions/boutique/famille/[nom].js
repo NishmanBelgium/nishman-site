@@ -344,7 +344,7 @@ function page(slug, f, produits, base, indexable) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
-<link rel="stylesheet" href="/assets/css/base.css?v=289" />
+<link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
 <style>
   .fam-page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 72px; }
@@ -450,6 +450,8 @@ function page(slug, f, produits, base, indexable) {
     carton, facture et livraison au salon.</p>
 </main>
 
+${pied()}
+
 <script src="/assets/js/mesure.js?v=278" defer></script>
 </body>
 </html>`;
@@ -486,4 +488,53 @@ export async function onRequestGet({ request, params, env }) {
 }
 
 /* Exporté pour le plan du site, qui doit lister ces adresses. */
-export { FAMILLES, ORDRE };
+/* Le pied de page est le même partout dans la boutique. Il vivait en
+   trois exemplaires — l'index statique, la famille, la fiche — ce qui
+   veut dire qu'une adresse corrigée l'était à un endroit sur trois. */
+export function pied() {
+  return `
+<footer class="pied">
+  <div class="wrap">
+    <div class="pied-cols">
+      <div>
+        <h3>Commander</h3>
+        <p>Livraison en point relais, offerte dès 29,90 €</p>
+        <p>Expédition sous 2 jours ouvrables</p>
+        <a href="/conditions-de-vente/">Conditions générales de vente</a>
+        <a href="/retractation/">Formulaire de rétractation</a>
+      </div>
+      <div>
+        <h3>Nous joindre</h3>
+        <a href="mailto:contact@nishman.be">contact@nishman.be</a>
+        <a href="https://www.instagram.com/nishman.be.fr/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.facebook.com/profile.php?id=61592867044572" target="_blank" rel="noopener">Facebook</a>
+        <a href="/">Accueil Nishman</a>
+      </div>
+      <div>
+        <h3>NBD Distribution SRL</h3>
+        <p>Siège social : Rue de la Poire d'Or 26, 7033 Mons<br />Showroom : Avenue Léopold III 21, 7134 Binche</p>
+        <p>TVA BE 0817.750.283</p>
+        <a href="/mentions-legales/">Mentions légales</a>
+        <a href="/confidentialite/">Politique de confidentialité</a>
+      </div>
+    </div>
+    <div class="pied-bas">
+      Importateur officiel NISHMAN pour la Belgique, la France et le Luxembourg.
+      Prix affichés toutes taxes comprises.
+    </div>
+  </div>
+</footer>`;
+}
+
+/* De quel slug relève un produit. La fiche en a besoin pour renvoyer
+   vers sa famille ; elle ne peut pas le deviner du nom affiché, qui
+   porte des esperluettes et des accents. */
+export function slugFamille(nomFamille) {
+  const voulu = String(nomFamille || "").trim();
+  for (const slug of ORDRE) {
+    if (FAMILLES[slug].nom === voulu) return slug;
+  }
+  return null;
+}
+
+export { FAMILLES, ORDRE, ODEURS };
