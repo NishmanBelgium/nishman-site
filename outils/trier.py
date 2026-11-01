@@ -41,6 +41,48 @@ SOURCES = [
 
 SANS_NOMBRE = 10 ** 6
 
+# L'ORDRE DES FAMILLES, et pourquoi celui-là.
+#
+# Avant ce lot, les familles sortaient dans l'ordre où elles tombaient
+# dans le fichier : alphabétique côté boutique, et côté pro les Coffrets
+# arrivaient carrément en tête. Un salon qui ouvre le catalogue voyait
+# donc cinq coffrets avant la première cire. Les coffrets sont une
+# référence d'appoint, pas un produit de réassort — les mettre en
+# vitrine donne une fausse idée de la maison.
+#
+# L'ordre retenu suit le métier plutôt que l'alphabet : d'abord ce qu'un
+# barbier rachète toutes les semaines (le coiffage), puis ce qui vient
+# après la coupe, puis le soin, puis l'entretien du salon, et en dernier
+# les coffrets. Les deux portails partagent cette liste même si leurs
+# familles ne se recouvrent pas exactement : chacun y pioche les siennes.
+#
+# Pour changer l'ordre : modifier cette liste, relancer `trier.py`,
+# régénérer l'index. Rien d'autre à toucher.
+ORDRE_FAMILLES = [
+    # Le coiffage : le cœur du réassort
+    "Mat Wax",
+    "Aqua Wax",
+    "Spider",
+    "Poudres coiffantes",
+    "Crèmes coiffantes",
+    "Pommades & Brillantine",
+    "Gels & Mousses",
+    # Après la coupe : la signature d'un barbershop
+    "Colognes",
+    "Cream Cologne",
+    # Le soin
+    "Soins barbe",
+    "Rasage",
+    "Shampoings & Après-shampoings",
+    "Coloration",
+    "Crème & Bien-être",
+    # L'équipement et l'entretien du salon
+    "Peignes & Brosses",
+    "Consommables",
+    # L'appoint, en dernier
+    "Coffrets",
+]
+
 # Un nombre, et ce qui le suit immédiatement. Le second groupe sert à
 # reconnaître ce qui n'est PAS un numéro de référence.
 NOMBRE = re.compile(r"(\d+)\s*([A-Za-zÀ-ÿ%]*)")
@@ -83,14 +125,18 @@ def numero(nom):
 
 
 def ranger(produits, champ_famille, champ_nom):
-    # L'ordre des familles est celui de leur première apparition : on le
-    # relève avant de toucher à quoi que ce soit, pour le rendre intact.
-    familles = []
+    # L'ordre des familles suit ORDRE_FAMILLES quand la famille y figure.
+    # Celles qui n'y sont pas gardent leur ordre d'apparition, à la suite :
+    # une famille ajoutée demain n'est pas perdue, elle atterrit en fin de
+    # liste et attend qu'on lui donne sa place.
+    inconnues = []
     for p in produits:
         f = p.get(champ_famille) or ""
-        if f not in familles:
-            familles.append(f)
-    rang = {f: i for i, f in enumerate(familles)}
+        if f not in ORDRE_FAMILLES and f not in inconnues:
+            inconnues.append(f)
+    rang = {f: i for i, f in enumerate(ORDRE_FAMILLES)}
+    for i, f in enumerate(inconnues):
+        rang[f] = len(ORDRE_FAMILLES) + i
 
     def cle(p):
         nom = p.get(champ_nom) or ""
