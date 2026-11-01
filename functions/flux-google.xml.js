@@ -78,6 +78,35 @@ function couper(t, max) {
   return s.length <= max ? s : s.slice(0, max - 1).trim() + "…";
 }
 
+/* Le prix à l'unité de mesure.
+ *
+ * Google le réclame pour les produits vendus au volume ou au poids, et
+ * Merchant Center signale son absence sur chaque référence. Ce n'est pas
+ * qu'un avertissement : en Belgique comme en France, le prix au litre ou
+ * au kilo doit être affiché à côté du prix de vente pour ce type de
+ * produits, et une annonce Shopping qui l'omet part avec un handicap.
+ *
+ * La base est fixée à 100 — 100 ml, 100 g — parce que c'est l'unité de
+ * comparaison usuelle en parfumerie et en cosmétique. Une cologne de
+ * 400 ml à 9,90 € s'affiche donc à 2,48 € les 100 ml.
+ *
+ * Les coffrets, les boîtes de 24 et les références sans contenance ne
+ * reçoivent rien : il n'y a pas de volume à rapporter, et inventer une
+ * unité serait pire que de se taire.
+ */
+const MESURE = /^\s*(\d+(?:[.,]\d+)?)\s*(ml|l|cl|g|gr)\s*$/i;
+
+function unitaire(volume) {
+  const m = MESURE.exec(String(volume || ""));
+  if (!m) return null;
+  const valeur = m[1].replace(",", ".");
+  const u = m[2].toLowerCase();
+  const unite = u === "gr" ? "g" : u;
+  const base = unite === "g" ? "100 g" : unite === "ml" ? "100 ml" : null;
+  if (!base) return null;
+  return { mesure: valeur + " " + unite, base: base };
+}
+
 function article(p, base) {
   const nom = p.nom_court || p.nom;
   const titre = couper(["NISHMAN", nom, p.volume].filter(Boolean).join(" "), TITRE_MAX);
@@ -96,6 +125,13 @@ function article(p, base) {
     "<g:condition>new</g:condition>",
   ];
   if (gtinValide(p.ean)) lignes.push("<g:gtin>" + echapper(p.ean) + "</g:gtin>");
+
+  const u = unitaire(p.volume);
+  if (u) {
+    lignes.push("<g:unit_pricing_measure>" + u.mesure + "</g:unit_pricing_measure>");
+    lignes.push("<g:unit_pricing_base_measure>" + u.base + "</g:unit_pricing_base_measure>");
+  }
+
   if (p.famille) lignes.push("<g:product_type>" + echapper(p.famille) + "</g:product_type>");
 
   const cat = categorie(p);
