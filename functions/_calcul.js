@@ -102,36 +102,34 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
 
   const sousTotal = sou(lignes.reduce((s, l) => s + l.total, 0));
 
-  // FIRST10 ne s'applique qu'aux commandes qui atteignent le franco de port,
-  // REMISE DÉDUITE. Deux raisons de le juger sur le montant remisé plutôt que
-  // sur le sous-total : c'est la règle demandée (pas de remise sur les
-  // petites commandes), et c'est le seul montant qu'Odoo connaisse. Juger
-  // avant remise créerait des commandes où le site offre le port et où le
-  // mode de livraison Odoo le facture — exactement la divergence de barème
-  // qui avait déjà fait remonter des alertes.
+  // FIRST10 : une seule condition, et c'est la PREMIÈRE COMMANDE. Pas de
+  // minimum. Dix euros ou mille, le client qui n'a jamais commandé a ses
+  // −10 % ; celui qui a déjà une commande confirmée ne les a pas.
   //
-  // Et il est réservé à la PREMIÈRE commande. Le client qui a déjà une
-  // commande confirmée se le voit refuser, avec un motif distinct du
-  // refus pour montant insuffisant : les deux n'appellent pas la même
-  // phrase à l'écran, et un client qui ne comprend pas pourquoi son code
-  // est refusé écrit au service commercial.
+  // (Décision du 2 novembre 2026, qui remplace celle du commit 216 : le
+  // code avait alors un minimum calé sur le franco de port. Il n'en a
+  // plus.)
   const codeDonne = sousTotal > 0 &&
     String(promo || "").trim().toUpperCase() === PROMO.code;
   const dejaClient = dejaCommande === true;
-  const remiseEventuelle = codeDonne ? sou(sousTotal * PROMO.taux) : 0;
-  const seuilPays = (PORT[pays] || PORT.BE).seuil;
-  const montantSuffisant = sou(sousTotal - remiseEventuelle) >= seuilPays;
-  const promoOk = codeDonne && !dejaClient && montantSuffisant;
-  const remise = promoOk ? remiseEventuelle : 0;
-
-  // Le minimum de commande à partir duquel le code devient utilisable, pour
-  // pouvoir le dire au client au lieu de refuser sans expliquer.
-  const promoMinimum = sou(seuilPays / (1 - PROMO.taux));
+  const promoOk = codeDonne && !dejaClient;
+  const remise = promoOk ? sou(sousTotal * PROMO.taux) : 0;
 
   const marchandise = sou(sousTotal - remise);
 
   const retrait = mode === "retrait";
-  const { port, seuil, manque } = fraisDePort(pays, marchandise, retrait);
+
+  // Le franco de port s'apprécie sur le montant COMMANDÉ, avant remise.
+  // Qui a commandé pour 300 € a gagné sa livraison : la remise vient
+  // après, en plus, et ne la lui reprend pas. Autrement le client qui
+  // utilise son code se verrait facturer un port que le même panier sans
+  // code lui offrait — il y perdrait à présenter son code.
+  //
+  // Cela ne crée aucune divergence avec Odoo : le site y écrit lui-même
+  // sa ligne de port (_commande_odoo.js, étape 4) et n'attache aucun mode
+  // de livraison quand le port est offert. Odoo enregistre ce qui a été
+  // annoncé, il ne le recalcule pas.
+  const { port, seuil, manque } = fraisDePort(pays, sousTotal, retrait);
 
   // Le transport suit le sort de la marchandise : même régime, même taux.
   const baseTva = sou(marchandise + port);
@@ -143,11 +141,11 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
     sous_total: sousTotal,
     promo: promoOk ? PROMO.code : "",
     // Le code a été donné mais écarté : la page doit pouvoir dire pourquoi.
+    // Il ne reste qu'un seul motif de refus possible, mais le champ est
+    // conservé : le jour où un deuxième code arrive avec ses conditions,
+    // les pages sauront déjà lire un motif.
     promo_refusee: codeDonne && !promoOk ? PROMO.code : "",
-    // « deja_client » ou « montant » : deux refus, deux phrases.
-    promo_motif: !codeDonne || promoOk ? ""
-      : dejaClient ? "deja_client" : "montant",
-    promo_minimum: promoMinimum,
+    promo_motif: codeDonne && !promoOk ? "deja_client" : "",
     remise,
     marchandise,
     port, port_seuil: seuil, port_manque: manque,

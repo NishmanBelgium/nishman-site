@@ -365,7 +365,77 @@ du script à 365 dans `devis/index.html`.
 
 **Statut : appliqué, testé, constaté en ligne. Formulation à valider.**
 
-### 7. Le bandeau de consentement — EXAMINÉ, VOLONTAIREMENT NON MODIFIÉ
+### 7. FIRST10 perd son minimum, le port se juge avant remise — DEMANDÉ PAR L'UTILISATRICE
+
+**Ceci n'est pas une initiative : c'est une décision commerciale prise le
+2 novembre 2026 et appliquée sur instruction.** Elle remplace celle du
+commit 216.
+
+**La nouvelle règle.** FIRST10 n'a plus aucun minimum de commande. Dix
+euros, cinquante, trois cents : le client qui n'a jamais commandé a ses
+−10 %. La seule condition restante est la première commande.
+
+Et le franco de port s'apprécie désormais sur le montant **commandé**,
+avant remise. Qui a commandé pour 300 € HT en Belgique a gagné sa
+livraison ; la remise vient ensuite, en plus, et ne la lui reprend pas.
+Autrement le client qui présente son code se verrait facturer un port
+que le même panier sans code lui offrait — il perdrait à l'utiliser.
+
+**Pourquoi c'est sans danger pour Odoo.** L'ancien commentaire craignait
+que le site offre un port qu'Odoo facturerait ensuite. Vérifié dans
+`_commande_odoo.js` (étape 4) : le site écrit lui-même sa ligne de port,
+avec son propre montant, et n'attache aucun mode de livraison quand le
+port est offert. Odoo enregistre ce qui a été annoncé au client, il ne le
+recalcule pas. La relecture de fin de commande n'est qu'un contrôle
+d'écart. Il n'y a donc pas de divergence de barème.
+
+**Fichiers concernés.**
+- `functions/_calcul.js` — suppression de `montantSuffisant` et de `promo_minimum` ; `fraisDePort` reçoit `sousTotal`
+- `assets/js/commander.js` — trois branches de message au lieu de quatre
+- `assets/js/commander-langues.js` — `promo_trop_petit` retiré des cinq langues
+- `assets/js/quote.js` — `promoEtat` simplifié, port calculé sur le brut
+- `commander/index.html`, `devis/index.html` — versions portées à 375
+
+**Tests réalisés.** Onze cas passés directement dans le calcul serveur :
+
+| Cas | Résultat |
+| --- | --- |
+| 10 € BE, premier client | remise 1 €, port 10 € facturé |
+| 50 € BE, premier client | remise 5 €, port 10 € facturé |
+| 100 € FR, premier client | remise 10 €, port 15 € facturé |
+| **300 € pile BE avec code** | **remise 30 €, marchandise 270 €, port offert** |
+| 300 € pile BE sans code | port offert (inchangé) |
+| 290 € BE avec code | remise 29 €, port 10 €, « il manque 10 € » |
+| 500 € pile FR avec code | remise 50 €, port offert |
+| 400 € BE, client qui a déjà commandé | refusé, motif `deja_client` |
+| 400 € BE, code inconnu | aucune remise, aucun motif |
+| 400 € BE, aucun code | aucune remise |
+| 50 € BE en retrait avec code | remise 5 €, port nul |
+
+Le quatrième est le cœur de la décision : la remise ne reprend pas une
+livraison déjà acquise.
+
+Vérifié aussi que le côté grand public (`_calcul_b2c.js`) n'a pas de code
+promo et juge déjà son franco de 29,90 € sur le montant commandé : rien à
+y changer, les deux côtés suivent maintenant le même principe.
+
+**Ce qui n'a pas été testé.** Une vraie commande de bout en bout avec
+écriture dans Odoo. Le raisonnement sur la ligne de port est tiré du
+code, pas d'une commande observée. **À confirmer sur la première
+commande réelle portant le code** : vérifier que la commande Odoo ne
+porte pas de ligne de livraison quand le site l'a offerte.
+
+**Risques et limites.** La remise s'applique maintenant à des commandes
+de n'importe quel montant : une première commande de 20 € coûte 2 € de
+remise. C'était l'intention.
+
+**Retour arrière.** Remettre `montantSuffisant` dans
+`functions/_calcul.js` et repasser `marchandise` à `fraisDePort`. Les
+messages supprimés sont dans l'historique git du commit 375.
+
+**Statut : appliqué sur instruction, testé sur le calcul serveur.**
+
+### 8. Le bandeau de consentement — EXAMINÉ, VOLONTAIREMENT NON MODIFIÉ
 
 Sur un téléphone, le bandeau occupe environ un cinquième de la hauteur
 d'écran et recouvre la première rangée de produits. J'ai regardé s'il

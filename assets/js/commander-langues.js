@@ -63,9 +63,6 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "Ce code n'est pas reconnu.",
     promo_deja_client: (code) => "Le code " + code + " est réservé à la première "
       + "commande, et votre compte en a déjà une.",
-    promo_trop_petit: (code, mini) => "Le code " + code + " s'applique à partir de "
-      + mini.toFixed(2).replace(".", ",") + " € HT de commande.",
-
     ecartees: (n) => n + " article(s) de votre panier ne sont plus disponibles et ont été retirés.",
 
     valid_titre: "Validation",
@@ -179,9 +176,6 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "This code is not recognised.",
     promo_deja_client: (code) => "Code " + code + " is reserved for a first "
       + "order, and your account already has one.",
-    promo_trop_petit: (code, mini) => "Code " + code + " applies from "
-      + mini.toFixed(2) + " EUR excl. VAT upwards.",
-
     ecartees: (n) => n + " item(s) in your basket are no longer available and have been removed.",
 
     valid_titre: "Confirmation",
@@ -294,9 +288,6 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "Deze code wordt niet herkend.",
     promo_deja_client: (code) => "Code " + code + " geldt alleen voor een eerste "
       + "bestelling, en uw account heeft er al een.",
-    promo_trop_petit: (code, mini) => "Code " + code + " geldt vanaf "
-      + mini.toFixed(2).replace(".", ",") + " EUR excl. btw.",
-
     ecartees: (n) => n + " artikel(en) in uw mandje zijn niet meer beschikbaar en werden verwijderd.",
 
     valid_titre: "Bevestiging",
@@ -409,9 +400,6 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "Dieser Code wird nicht erkannt.",
     promo_deja_client: (code) => "Der Code " + code + " gilt nur für die erste "
       + "Bestellung, und Ihr Konto hat bereits eine.",
-    promo_trop_petit: (code, mini) => "Code " + code + " gilt ab "
-      + mini.toFixed(2).replace(".", ",") + " EUR netto.",
-
     ecartees: (n) => n + " Artikel in Ihrem Warenkorb sind nicht mehr verfügbar und wurden entfernt.",
 
     valid_titre: "Bestätigung",
@@ -524,9 +512,6 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "Bu kod tan\u0131nm\u0131yor.",
     promo_deja_client: (code) => code + " kodu yaln\u0131zca ilk sipari\u015f i\u00e7in "
       + "ge\u00e7erlidir ve hesab\u0131n\u0131z\u0131n zaten bir sipari\u015fi var.",
-    promo_trop_petit: (code, mini) => code + " kodu "
-      + mini.toFixed(2) + " EUR (KDV hariç) üzeri siparişlerde geçerlidir.",
-
     ecartees: (n) => "Sepetinizdeki " + n + " \u00fcr\u00fcn art\u0131k mevcut de\u011fil ve kald\u0131r\u0131ld\u0131.",
 
     valid_titre: "Onay",

@@ -23,8 +23,8 @@
   };
   const PAYS_CODE = { Belgique: "BE", France: "FR", Luxembourg: "LU" };
 
-  // Le seuil s'apprécie sur le montant réellement dû pour la marchandise,
-  // remise déduite.
+  // Le seuil s'apprécie sur le montant commandé, AVANT remise : le code
+  // promo ne fait pas perdre une livraison déjà acquise.
   function fraisDePort(pays, montant, retrait) {
     if (retrait) return 0;
     const regle = PORT[PAYS_CODE[pays]] || PORT.BE;
@@ -39,58 +39,42 @@
   // un devis qui annonce une remise que la commande refusera ensuite est
   // pire que pas de remise du tout.
   //
-  // Deux des trois conditions sont vérifiables ici :
-  //   — le code doit être reconnu ;
-  //   — la commande doit atteindre le franco de port de son pays, remise
-  //     déduite (même règle, même calcul que le serveur).
-  // La troisième ne l'est pas : le code est réservé à la PREMIÈRE commande,
-  // et cette page est publique, elle ne sait pas qui la consulte. Elle ne
-  // peut donc pas refuser le code à un client déjà installé — mais elle le
-  // dit, dans le message comme sur la ligne du document.
+  // Il n'y a plus qu'une condition, et c'est la première commande : pas de
+  // minimum, dix euros suffisent. Cette page ne peut pas la vérifier — elle
+  // est publique, elle ne sait pas qui la consulte — mais elle la dit, dans
+  // le message comme sur la ligne du document. Le serveur tranche au moment
+  // de la commande.
   const PROMO_CODE = "FIRST10";
   const PROMO_RATE = 0.10;
   const PROMO_T = {
     fr: { label: "Code promo (facultatif)",
           ok: "Code FIRST10 appliqué : −10 % sur votre première commande",
-          small: (m) => "FIRST10 s'applique à partir de " + m + " HT de marchandise",
           bad: "Ce code promo n'est pas reconnu", line: "Remise FIRST10 (−10 %, 1re commande)" },
     en: { label: "Promo code (optional)",
           ok: "FIRST10 applied: −10% on your first order",
-          small: (m) => "FIRST10 applies from " + m + " excl. VAT of goods",
           bad: "This promo code is not recognised", line: "FIRST10 discount (−10%, first order)" },
     nl: { label: "Kortingscode (optioneel)",
           ok: "FIRST10 toegepast: −10% op uw eerste bestelling",
-          small: (m) => "FIRST10 geldt vanaf " + m + " excl. btw aan goederen",
           bad: "Deze kortingscode is niet geldig", line: "Korting FIRST10 (−10%, 1e bestelling)" },
     de: { label: "Aktionscode (optional)",
           ok: "FIRST10 angewendet: −10 % auf Ihre erste Bestellung",
-          small: (m) => "FIRST10 gilt ab " + m + " netto Warenwert",
           bad: "Dieser Aktionscode ist ungültig", line: "Rabatt FIRST10 (−10 %, 1. Bestellung)" },
     tr: { label: "Promosyon kodu (isteğe bağlı)",
           ok: "FIRST10 uygulandı: ilk siparişinizde −%10",
-          small: (m) => "FIRST10, " + m + " (KDV hariç) mal bedelinden itibaren geçerlidir",
           bad: "Bu promosyon kodu geçerli değil", line: "FIRST10 indirimi (−%10, ilk sipariş)" },
   };
   function promoT() { return PROMO_T[LANG] || PROMO_T.fr; }
   function promoValide(v) {
     return String(v || "").trim().toUpperCase().replace(/[\s-]/g, "") === PROMO_CODE;
   }
-  /* Le montant de marchandise à partir duquel le code devient utilisable.
-     Le seuil s'apprécie remise déduite : il faut donc commander seuil/0,9
-     pour que les 90 % restants atteignent le seuil. */
-  function promoMinimum(pays) {
-    const regle = PORT[PAYS_CODE[pays]] || PORT.BE;
-    return Math.round((regle.seuil / (1 - PROMO_RATE)) * 100) / 100;
-  }
-  /* L'état du code pour ce devis : "ok", "petit", "inconnu" ou "" (pas de
-     code saisi). Le serveur reste seul juge ; on ne fait que ne pas
-     promettre ce qu'il refusera. */
-  function promoEtat(code, brut, pays) {
+  /* L'état du code pour ce devis : "ok", "inconnu", ou "" quand aucun code
+     n'est saisi. Le serveur reste seul juge — il vérifie en plus que c'est
+     bien une première commande, ce que cette page ne peut pas savoir. */
+  function promoEtat(code, brut) {
     const saisi = String(code || "").trim();
     if (!saisi) return "";
     if (!promoValide(saisi)) return "inconnu";
-    if (!(brut > 0)) return "petit";
-    return brut >= promoMinimum(pays) ? "ok" : "petit";
+    return brut > 0 ? "ok" : "";
   }
   // Doit correspondre EXACTEMENT à STORAGE_KEY de catalog.js
   const SEL_KEY = "nishman_selection_v1";
@@ -474,9 +458,9 @@
       </tr>`).join("");
     const retrait = (client.shipmode || "livraison") === "retrait";
 
-    // Remise : code reconnu, prix visibles, et montant suffisant — les deux
-    // conditions que cette page peut vérifier. Voir promoEtat().
-    const etatPromo = promoEtat(client.promo, brut, client.country);
+    // Remise : code reconnu et prix visibles. La condition de première
+    // commande appartient au serveur. Voir promoEtat().
+    const etatPromo = promoEtat(client.promo, brut);
     const promoOk = showPrices && etatPromo === "ok";
     const remise = promoOk ? Math.round(brut * PROMO_RATE * 100) / 100 : 0;
     const total = Math.round((brut - remise) * 100) / 100;
@@ -492,23 +476,17 @@
     const avisPromo = $("promo-msg");
     if (avisPromo) {
       avisPromo.hidden = !etatPromo;
-      if (etatPromo === "ok") {
-        avisPromo.textContent = promoT().ok;
-      } else if (etatPromo === "petit") {
-        /* Dire le montant plutôt que refuser sans expliquer : un devis qui
-           annonce « code non applicable » sans dire à partir de quand fait
-           écrire au service commercial. */
-        avisPromo.textContent = promoT().small(money(promoMinimum(client.country)));
-      } else if (etatPromo === "inconnu") {
-        avisPromo.textContent = promoT().bad;
-      }
-      avisPromo.classList.toggle("promo-ko", etatPromo === "inconnu" || etatPromo === "petit");
+      if (etatPromo === "ok") avisPromo.textContent = promoT().ok;
+      else if (etatPromo === "inconnu") avisPromo.textContent = promoT().bad;
+      avisPromo.classList.toggle("promo-ko", etatPromo === "inconnu");
     }
 
     // Frais de port : offerts au-delà du seuil du pays, forfaitaires en
-    // dessous, nuls en retrait sur place.
-    const port = (showPrices && total > 0)
-      ? fraisDePort(client.country, total, retrait) : 0;
+    // dessous, nuls en retrait sur place. Le seuil se juge sur le montant
+    // COMMANDÉ (`brut`), avant remise : qui a commandé pour 300 € a gagné
+    // sa livraison, et le code promo ne la lui reprend pas.
+    const port = (showPrices && brut > 0)
+      ? fraisDePort(client.country, brut, retrait) : 0;
 
     const rowShip = $("doc-ship-row");
     if (rowShip) {

@@ -551,15 +551,16 @@
     if (!msg) return;
     if (!saisi) { msg.hidden = true; return; }
     msg.hidden = false;
-    // Quatre réponses possibles, et deux d'entre elles ne sont pas un refus
-    // du code : la commande est trop petite pour y avoir droit, ou le compte
-    // a déjà commandé. Le dire évite au client de croire que son code est
-    // mauvais — et lui évite d'écrire au service commercial pour le demander.
+    // Trois réponses possibles, et l'une d'elles n'est pas un refus du
+    // code : le compte a déjà commandé, et le code est réservé à la
+    // première. Le dire évite au client de croire que son code est mauvais
+    // — et lui évite d'écrire au service commercial pour le demander.
+    //
+    // Le motif est lu plutôt que supposé : c'est aujourd'hui le seul, mais
+    // un deuxième code viendra peut-être avec ses conditions.
     if (d.promo) msg.textContent = t("promo_ok")(d.promo);
-    else if (d.promo_refusee && d.promo_motif === "deja_client") {
+    else if (d.promo_refusee) {
       msg.textContent = t("promo_deja_client")(d.promo_refusee);
-    } else if (d.promo_refusee) {
-      msg.textContent = t("promo_trop_petit")(d.promo_refusee, d.promo_minimum);
     } else msg.textContent = t("promo_non");
   }
 
