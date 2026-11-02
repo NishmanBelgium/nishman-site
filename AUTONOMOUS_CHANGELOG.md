@@ -260,10 +260,10 @@ aurait cassé le lien « retour à la famille » de ses fiches.
   dernier, conforme aux trois autres classements.
 - `node --check` : pas d'erreur de syntaxe.
 
-**Ce qui n'a pas été testé.** Ces pages sont rendues par Cloudflare et ne
-tournent pas en local : je n'ai pas vu la page de famille réelle avec son
-nouveau pied. La vérification porte sur la liste calculée, pas sur le
-HTML rendu. À contrôler sur le site après déploiement.
+**Vérifié ensuite sur le site en ligne** (2 novembre, après déploiement) :
+`nishman.be/boutique/famille/mat-wax/` sort ses quinze autres familles
+dans l'ordre voulu, Aqua Wax en premier et Coffrets en dernier. Plus
+rien de théorique ici.
 
 **Risques et limites.** Les adresses ne changent pas, seul leur ordre
 d'apparition. Le plan du site contient les mêmes seize familles qu'avant.
@@ -273,8 +273,7 @@ inchangé.
 **Retour arrière.** Remplacer les deux déclarations par
 `const ORDRE = Object.keys(FAMILLES);`.
 
-**Statut : appliqué, testé par évaluation du module, non constaté sur le
-site rendu.**
+**Statut : appliqué, testé, constaté en ligne.**
 
 ### 6. Le devis promettait une remise que la commande refuse — APPLIQUÉ, PARTIELLEMENT TESTÉ
 
@@ -330,14 +329,23 @@ traitées.
   s'affiche correctement.
 - `node --check` : pas d'erreur de syntaxe.
 
-**Ce qui n'a PAS été testé, et c'est important.** Je n'ai pas vu la page
-rendue. `/devis/` n'affiche ses prix qu'à une session professionnelle
-ouverte, et mon banc d'essai local n'est pas arrivé à faire passer la
-page de l'étape 1 à l'étape 2 — quatre tentatives, abandonnées pour ne
-pas y passer la nuit. **La logique est vérifiée, l'affichage ne l'est
-pas.** À contrôler en ouvrant un devis avec un compte pro : une
-sélection au-dessus de 333,33 € doit montrer la remise, une en dessous
-doit afficher le montant à atteindre.
+**Vérifié ensuite sur le site en ligne** (2 novembre, session pro
+ouverte, quatre cas sur un devis réel non envoyé) :
+
+| Cas | Message affiché | Ligne de remise |
+| --- | --- | --- |
+| BE, 334,80 € (au-dessus de 333,33 €) | « Code FIRST10 appliqué : −10 % sur votre première commande » | −33,48 €, total 301,32 € HT, port offert |
+| BE, 332,10 € (un cran en dessous) | « FIRST10 s'applique à partir de 333,33 € HT de marchandise » | aucune |
+| Code FIRST20 | « Ce code promo n'est pas reconnu » | aucune |
+| Aucun code | message masqué | aucune |
+
+Le cas à 334,80 € confirme au passage l'intérêt de juger le seuil remise
+déduite : le total retombe à 301,32 €, soit au-dessus de 300 €, donc le
+port reste offert et il n'y a pas de divergence avec le barème d'Odoo.
+
+Pourquoi le banc d'essai local avait échoué : `/devis/` demande une
+connexion pour composer le formulaire. Ce n'était pas le banc d'essai,
+c'était la porte — et elle fait son travail.
 
 **Risques et limites.** Aucune condition commerciale n'est modifiée :
 les conditions restent celles du serveur, qui est seul juge au moment
@@ -355,7 +363,7 @@ règles, les mots sont à vous.
 `promoEtat(...)` par `promoValide(client.promo)` et remettre la version
 du script à 365 dans `devis/index.html`.
 
-**Statut : appliqué, logique testée, rendu non constaté.**
+**Statut : appliqué, testé, constaté en ligne. Formulation à valider.**
 
 ### 7. Le bandeau de consentement — EXAMINÉ, VOLONTAIREMENT NON MODIFIÉ
 
