@@ -26,6 +26,7 @@
 
 import { appel } from "./_odoo.js";
 import { produitsParEan, partenaireParEmail } from "./_odoo.js";
+import { rangerParDepot } from "./_commun.js";
 import { nomLivraison, echec, parNomInsensible, paysId } from "./_commande_odoo.js";
 import { nomsPossibles } from "./_fiscal.js";
 
@@ -176,7 +177,16 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref }) {
   }
   const taxes = [[6, 0, [taxe.id]]];
 
-  const lignes = resultat.lignes.map((l) => [0, 0, {
+  // Rangées dans l'ordre du dépôt, comme les commandes professionnelles :
+  // la préparation est la même, et l'ordre des clics du client n'a rien à
+  // y faire. Voir rangerParDepot() dans _commun.js.
+  const rangees = rangerParDepot(
+    resultat.lignes,
+    (l) => produits[l.ean].ref,
+    (l) => produits[l.ean].nom || l.nom);
+
+  const lignes = rangees.map((l, i) => [0, 0, {
+    sequence: (i + 1) * 10,
     product_id: produits[l.ean].id,
     product_uom_qty: l.quantite,
     price_unit: l.prix_unitaire,

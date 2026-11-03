@@ -187,10 +187,21 @@ export async function produitsParEan(env, eans) {
   const PAQUET = 100;
   for (let i = 0; i < codes.length; i += PAQUET) {
     const lot = codes.slice(i, i + PAQUET);
+    // « default_code » est la référence interne : A-11, B-01… C'est elle
+    // qui dit où le produit est rangé dans le dépôt, et donc dans quel
+    // ordre une commande doit être imprimée pour être préparée d'une
+    // seule marche. On la lit ici pour n'avoir qu'un aller-retour.
     const r = await appel(env, "product.product", "search_read",
-      [[["barcode", "in", lot]], ["id", "barcode", "name"]], { limit: lot.length });
+      [[["barcode", "in", lot]], ["id", "barcode", "name", "default_code"]],
+      { limit: lot.length });
     for (const p of r || []) {
-      if (p && p.barcode) table[String(p.barcode).trim()] = { id: p.id, nom: p.name };
+      if (p && p.barcode) {
+        table[String(p.barcode).trim()] = {
+          id: p.id,
+          nom: p.name,
+          ref: p.default_code || "",
+        };
+      }
     }
   }
   return table;

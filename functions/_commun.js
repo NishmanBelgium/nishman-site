@@ -525,3 +525,60 @@ export async function compteAdmin(request, env) {
   if (!compte || !compte.email) return null;
   return estAdresseAdmin(env, compte.email) ? compte : null;
 }
+
+/* --- L'ordre du dépôt ---------------------------------------------------
+ *
+ * Les produits portent dans Odoo une référence interne qui dit où ils sont
+ * rangés : A-11, B-01, B-13… C'est l'ordre dans lequel on marche dans le
+ * dépôt, et donc l'ordre dans lequel une commande doit être imprimée pour
+ * être préparée sans revenir deux fois au même rayon.
+ *
+ * Un tri alphabétique ordinaire ne convient pas : il met « A-11 » avant
+ * « A-2 », parce qu'il compare caractère par caractère. Et les codes ne
+ * sont pas tous rembourrés de la même façon — on voit « B-01 » à côté de
+ * « B-11 ». Il faut donc comparer les nombres comme des nombres.
+ *
+ * Un produit sans code ne casse rien : il part à la fin, rangé par nom,
+ * plutôt que de se glisser n'importe où au milieu du parcours.
+ */
+const MORCEAUX = /(\d+|\D+)/g;
+
+export function comparerCodesDepot(a, b) {
+  const ca = String(a == null ? "" : a).trim().toUpperCase();
+  const cb = String(b == null ? "" : b).trim().toUpperCase();
+  if (!ca && !cb) return 0;
+  if (!ca) return 1;          // sans code : à la fin
+  if (!cb) return -1;
+
+  const ma = ca.match(MORCEAUX) || [];
+  const mb = cb.match(MORCEAUX) || [];
+  const n = Math.min(ma.length, mb.length);
+  for (let i = 0; i < n; i++) {
+    const xa = ma[i], xb = mb[i];
+    const na = /^\d+$/.test(xa), nb = /^\d+$/.test(xb);
+    if (na && nb) {
+      const d = Number(xa) - Number(xb);
+      if (d) return d < 0 ? -1 : 1;
+    } else if (xa !== xb) {
+      return xa < xb ? -1 : 1;
+    }
+  }
+  return ma.length - mb.length;
+}
+
+/**
+ * Range des lignes dans l'ordre du dépôt.
+ *
+ * @param lignes   les lignes à ranger (non modifiées : une copie est rendue)
+ * @param codeDe   fonction qui donne le code de dépôt d'une ligne
+ * @param nomDe    fonction qui donne le nom, pour départager les sans-code
+ */
+export function rangerParDepot(lignes, codeDe, nomDe) {
+  return (lignes || []).slice().sort((x, y) => {
+    const d = comparerCodesDepot(codeDe(x), codeDe(y));
+    if (d) return d;
+    const nx = String(nomDe ? nomDe(x) || "" : "");
+    const ny = String(nomDe ? nomDe(y) || "" : "");
+    return nx.localeCompare(ny, "fr");
+  });
+}

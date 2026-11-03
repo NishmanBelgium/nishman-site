@@ -28,6 +28,7 @@
 
 import { appel, produitsParEan, partenaireParEmail, partenaireParTva } from "./_odoo.js";
 import { positionFiscale, nomsPossibles } from "./_fiscal.js";
+import { rangerParDepot } from "./_commun.js";
 
 /* --- Noms réglables ------------------------------------------------------
    Odoo compare les noms caractère par caractère ; NBD les renomme parfois.
@@ -184,11 +185,34 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
       "Certaines références n'existent pas dans Odoo.", manquants);
   }
 
-  // 3) Les lignes. La remise FIRST10 est uniforme : on la porte sur chaque
-  //    ligne plutôt qu'en ligne négative, pour qu'Odoo affiche un devis
-  //    lisible par le client et exploitable par la comptabilité.
+  // 3) Les lignes, RANGÉES DANS L'ORDRE DU DÉPÔT.
+  //
+  //    Le navigateur envoie le panier dans l'ordre où le client a cliqué,
+  //    ce qui n'a aucun sens une fois au dépôt : on repasse trois fois
+  //    devant le même rayon. On range donc les lignes sur la référence
+  //    interne Odoo (A-11, B-01…) avant de les écrire, et la commande, le
+  //    bon de livraison et la facture en héritent tous les trois.
+  //
+  //    Le tri est fait ici et non dans _calcul.js parce que c'est ici
+  //    qu'on connaît les références : le catalogue du site ne les porte
+  //    pas. Un produit sans référence interne finit en fin de liste
+  //    plutôt qu'au milieu du parcours.
+  //
+  //    La remise FIRST10 est uniforme : on la porte sur chaque ligne
+  //    plutôt qu'en ligne négative, pour qu'Odoo affiche un devis lisible
+  //    par le client et exploitable par la comptabilité.
   const tauxRemise = resultat.promo ? 10 : 0;
-  const lignes = resultat.lignes.map((l) => [0, 0, {
+  const rangees = rangerParDepot(
+    resultat.lignes,
+    (l) => produits[l.ean].ref,
+    (l) => produits[l.ean].nom || l.nom);
+  //    « sequence » est posée explicitement plutôt que laissée à Odoo :
+  //    sans elle, l'affichage retombe sur l'ordre des identifiants, qui
+  //    suit l'ordre d'écriture aujourd'hui mais n'est garanti nulle part.
+  //    Dix par dix, pour pouvoir intercaler une ligne à la main sans tout
+  //    renuméroter.
+  const lignes = rangees.map((l, i) => [0, 0, {
+    sequence: (i + 1) * 10,
     product_id: produits[l.ean].id,
     product_uom_qty: l.pieces,
     price_unit: l.prix_unitaire,
