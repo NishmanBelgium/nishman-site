@@ -528,50 +528,55 @@ export async function compteAdmin(request, env) {
 
 /* --- L'ordre du dépôt ---------------------------------------------------
  *
- * Les produits portent dans Odoo une référence interne qui dit où ils sont
- * rangés : A-11, B-01, B-13… C'est l'ordre dans lequel on marche dans le
- * dépôt, et donc l'ordre dans lequel une commande doit être imprimée pour
- * être préparée sans revenir deux fois au même rayon.
+ * Les produits portent dans Odoo une référence interne. Quand elle a la
+ * forme d'un emplacement — une lettre de rayon, puis un numéro de place :
+ * A-11, B-01, K-7 — elle dit où le produit est rangé, et donc dans quel
+ * ordre une commande doit sortir pour être préparée d'une seule marche.
+ * Le dépôt va du rayon A au rayon L.
  *
- * Un tri alphabétique ordinaire ne convient pas : il met « A-11 » avant
- * « A-2 », parce qu'il compare caractère par caractère. Et les codes ne
- * sont pas tous rembourrés de la même façon — on voit « B-01 » à côté de
- * « B-11 ». Il faut donc comparer les nombres comme des nombres.
+ * MAIS toutes les références internes ne sont pas des emplacements, et
+ * c'est le piège. Relevé dans Odoo le 3 novembre 2026 : sur 265 produits,
+ * 198 portent un vrai emplacement, 50 portent leur propre code-barres
+ * recopié dans la case (toute la gamme BARBERTIME), un porte
+ * « NISH-PACK-BBX », et seize n'ont rien.
  *
- * Un produit sans code ne casse rien : il part à la fin, rangé par nom,
- * plutôt que de se glisser n'importe où au milieu du parcours.
+ * Un tri qui prendrait ces codes au pied de la lettre ferait remonter les
+ * cinquante Barbertime AVANT le rayon A, puisque les chiffres précèdent
+ * les lettres. On ne reconnaît donc comme emplacement que ce qui en a la
+ * forme ; tout le reste est traité comme « pas de place connue » et part
+ * en fin de liste, rangé par nom. Une place inventée serait pire que pas
+ * de place du tout : elle enverrait le préparateur au mauvais rayon.
+ *
+ * Deuxième piège, pour les vrais emplacements : les numéros ne sont pas
+ * rembourrés de la même façon — « B-01 » côtoie « B-11 ». Un tri
+ * alphabétique mettrait « A-11 » avant « A-2 ». Le numéro est donc
+ * comparé comme un nombre, pas comme du texte.
  */
-const MORCEAUX = /(\d+|\D+)/g;
+const FORME_EMPLACEMENT = /^([A-Z]+)-?(\d+)$/;
+
+/** L'emplacement décrit par une référence interne, ou null si ce n'en est pas un. */
+export function emplacementDepot(code) {
+  const m = String(code == null ? "" : code).trim().toUpperCase().match(FORME_EMPLACEMENT);
+  return m ? { rayon: m[1], place: Number(m[2]) } : null;
+}
 
 export function comparerCodesDepot(a, b) {
-  const ca = String(a == null ? "" : a).trim().toUpperCase();
-  const cb = String(b == null ? "" : b).trim().toUpperCase();
-  if (!ca && !cb) return 0;
-  if (!ca) return 1;          // sans code : à la fin
-  if (!cb) return -1;
-
-  const ma = ca.match(MORCEAUX) || [];
-  const mb = cb.match(MORCEAUX) || [];
-  const n = Math.min(ma.length, mb.length);
-  for (let i = 0; i < n; i++) {
-    const xa = ma[i], xb = mb[i];
-    const na = /^\d+$/.test(xa), nb = /^\d+$/.test(xb);
-    if (na && nb) {
-      const d = Number(xa) - Number(xb);
-      if (d) return d < 0 ? -1 : 1;
-    } else if (xa !== xb) {
-      return xa < xb ? -1 : 1;
-    }
-  }
-  return ma.length - mb.length;
+  const ea = emplacementDepot(a);
+  const eb = emplacementDepot(b);
+  if (!ea && !eb) return 0;
+  if (!ea) return 1;          // pas d'emplacement connu : à la fin
+  if (!eb) return -1;
+  if (ea.rayon !== eb.rayon) return ea.rayon < eb.rayon ? -1 : 1;
+  return ea.place - eb.place;
 }
 
 /**
  * Range des lignes dans l'ordre du dépôt.
  *
  * @param lignes   les lignes à ranger (non modifiées : une copie est rendue)
- * @param codeDe   fonction qui donne le code de dépôt d'une ligne
- * @param nomDe    fonction qui donne le nom, pour départager les sans-code
+ * @param codeDe   fonction qui donne la référence interne d'une ligne
+ * @param nomDe    fonction qui donne le nom, pour départager à place égale
+ *                 et pour ranger celles qui n'ont pas d'emplacement
  */
 export function rangerParDepot(lignes, codeDe, nomDe) {
   return (lignes || []).slice().sort((x, y) => {
