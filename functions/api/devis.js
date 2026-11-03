@@ -16,7 +16,8 @@
    le contrôle ci-dessous qu'il faudra retirer, et lui seul.
    ========================================================================== */
 
-import { json, erreur, compteConnecte, freinerIp } from "../_commun.js";
+import { json, erreur, compteConnecte, freinerIp, rangerParDepot } from "../_commun.js";
+import { produitsParEan } from "../_odoo.js";
 import { codePortier, adressePortier } from "../_portier.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
@@ -143,7 +144,25 @@ export async function onRequestPost({ request, env }) {
   const offerts = (maintenant >= OFFRE.debut && maintenant < OFFRE.fin)
     ? Math.min(cadeauxDemandes, packs) : 0;
 
-  const lignes = r.lignes.map((l) => ({
+  // RANGÉES DANS L'ORDRE DU DÉPÔT avant de partir chez le portier.
+  //
+  // Le devis est le document sur lequel la commande est préparée : il doit
+  // suivre le parcours des rayons (A-11, B-01, D-05…), pas l'ordre où le
+  // client a cliqué. Les emplacements ne sont connus que d'Odoo, d'où
+  // l'aller-retour.
+  //
+  // Et surtout : si Odoo ne répond pas, on envoie l'ordre d'origine. Un
+  // devis mal rangé se prépare ; un devis refusé parce qu'une base est
+  // muette, non. Le tri est un confort, pas une condition.
+  let rangees = r.lignes;
+  try {
+    const refs = await produitsParEan(env, r.lignes.map((l) => l.ean));
+    rangees = rangerParDepot(r.lignes,
+      (l) => (refs[l.ean] || {}).ref,
+      (l) => l.nom);
+  } catch (e) { /* Odoo muet : l'ordre d'origine fera l'affaire. */ }
+
+  const lignes = rangees.map((l) => ({
     ean: l.ean, name: l.nom, units: l.unites, boxes: l.cartons, boxQty: l.par_carton,
     pieces: l.pieces, unitPrice: deux(l.prix_unitaire), subtotal: deux(l.total),
   }));

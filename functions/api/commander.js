@@ -13,13 +13,14 @@
    annoncé.
    ========================================================================== */
 
-import { json, erreur, compteConnecte, prolongerSiBesoin, texteValide, paysValide } from "../_commun.js";
+import { json, erreur, compteConnecte, prolongerSiBesoin, texteValide, paysValide,
+         rangerParDepot } from "../_commun.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
 import { positionFiscale } from "../_fiscal.js";
 import { verifierStockPro } from "../_stock.js";
-import { aDejaCommande } from "../_odoo.js";
+import { aDejaCommande, produitsParEan } from "../_odoo.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 
@@ -253,7 +254,25 @@ export async function onRequestPost({ request, env }) {
 
   const ref = reference();
   const langue = ["fr", "en", "nl", "de", "tr"].includes(corps.langue) ? corps.langue : "fr";
-  const charge = chargeUtile({ ref, compte, resultat, langue, livraison, tva, env });
+  // Les lignes partent RANGÉES DANS L'ORDRE DU DÉPÔT : c'est ce document
+  // qui devient la commande dans Odoo, et c'est dessus qu'on prépare le
+  // colis. L'ordre des clics du client n'a rien à y faire.
+  //
+  // Les emplacements (A-11, B-01, D-05…) ne sont connus que d'Odoo, d'où
+  // l'aller-retour. Si Odoo ne répond pas, on envoie l'ordre d'origine :
+  // une commande mal rangée se prépare, une commande refusée pour un
+  // problème de tri serait absurde.
+  let aEnvoyer = resultat;
+  try {
+    const refs = await produitsParEan(env, resultat.lignes.map((l) => l.ean));
+    aEnvoyer = Object.assign({}, resultat, {
+      lignes: rangerParDepot(resultat.lignes,
+        (l) => (refs[l.ean] || {}).ref,
+        (l) => l.nom),
+    });
+  } catch (e) { /* Odoo muet : l'ordre d'origine fera l'affaire. */ }
+
+  const charge = chargeUtile({ ref, compte, resultat: aEnvoyer, langue, livraison, tva, env });
 
   let reponse;
   try {
