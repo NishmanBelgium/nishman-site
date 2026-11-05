@@ -21,6 +21,7 @@ import { controlerSiBesoin } from "../_tva.js";
 import { positionFiscale } from "../_fiscal.js";
 import { verifierStockPro } from "../_stock.js";
 import { aDejaCommande, produitsParEan } from "../_odoo.js";
+import { avertirSiPlusieursColisParNom } from "../_etiquette.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 
@@ -297,6 +298,14 @@ export async function onRequestPost(ctx) {
       message: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité.",
     }, 502);
   }
+
+  /* L'avertissement « plusieurs colis », en arrière-plan.
+   *
+   * La commande n'est pas créée ici mais par le script Google, qui ne
+   * rend que son numéro : on la retrouve par son nom. En arrière-plan,
+   * parce que le client attend sa confirmation et que cet avertissement
+   * ne sert qu'à la préparation, plus tard, au dépôt. */
+  if (reponse.devis) attendre(avertirSiPlusieursColisParNom(env, reponse.devis));
 
   return json({
     ok: true,

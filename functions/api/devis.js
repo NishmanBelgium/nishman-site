@@ -22,6 +22,7 @@ import { codePortier, adressePortier } from "../_portier.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { ouvreDroitAExoneration } from "../_tva.js";
+import { avertirSiPlusieursColisParNom } from "../_etiquette.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 const LANGUES = ["fr", "en", "nl", "de", "tr"];
@@ -70,7 +71,10 @@ function lireReponse(texte) {
   return { ok: true, devis: m ? m[0] : "" };
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(ctx) {
+  const { request, env } = ctx;
+  // Lié à son contexte : waitUntil déstructuré perd son destinataire.
+  const attendre = (p) => { try { ctx.waitUntil(p); } catch (e) { /* tant pis */ } };
   if (!env.DB) return erreur("Service indisponible.", 503, "indisponible");
   const compte = await compteConnecte(request, env.DB);
   if (!compte) return erreur("Connectez-vous pour envoyer votre demande.", 401, "session");
@@ -227,6 +231,11 @@ export async function onRequestPost({ request, env }) {
   if (!reponse.ok) {
     return json({ ok: false, motif: reponse.motif }, 502);
   }
+  // L'avertissement « plusieurs colis », en arrière-plan : un devis de
+  // plus de vingt kilos se prépare en deux colis, et mieux vaut le lire
+  // sur le devis que le découvrir l'étiquette imprimée.
+  if (reponse.devis) attendre(avertirSiPlusieursColisParNom(env, reponse.devis));
+
   return json({ ok: true, devis: reponse.devis || "" });
 }
 

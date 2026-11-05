@@ -24,6 +24,7 @@ import { creerCommandeOdoo } from "../_commande_odoo.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { enregistrer } from "../_paiements.js";
 import { verifierStockPro } from "../_stock.js";
+import { avertirSiPlusieursColis } from "../_etiquette.js";
 
 /** Référence lisible, fabriquée ici : le navigateur n'en choisit pas. */
 function reference() {
@@ -163,6 +164,15 @@ export async function onRequestPost(ctx) {
       message: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité.",
     }, 502);
   }
+
+  /* L'AVERTISSEMENT « PLUSIEURS COLIS », en arrière-plan.
+   *
+   * Il demande deux allers-retours à Odoo, et le client attend devant
+   * son écran pour aller payer : on ne le lui fait pas payer en
+   * secondes. waitUntil laisse le travail se terminer après la réponse.
+   * Et s'il échoue, la commande existe quand même — c'est un confort de
+   * préparation, pas une condition de vente. */
+  attendre(avertirSiPlusieursColis(env, commande.id));
 
   // Un écart entre notre calcul et celui d'Odoo arrête tout. On ne fait pas
   // payer un montant qui ne correspond pas à la commande enregistrée.

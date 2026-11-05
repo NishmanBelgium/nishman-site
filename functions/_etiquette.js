@@ -266,3 +266,100 @@ export async function noterSuiviDansOdoo(env, orderId, suivi, detail) {
 
   return { ok: true, bon: cible.name };
 }
+
+
+/* ==========================================================================
+   L'AVERTISSEMENT « PLUSIEURS COLIS »
+
+   Le 5 novembre 2026, la commande de Studio 621 est partie avec une seule
+   étiquette pour 22,78 kg. Ce n'est pas un réglage qui manquait : le
+   connecteur SendCloud d'Odoo ne SAIT PAS faire plusieurs colis — il
+   recopie tous les articles dans chacun en déclarant un poids partiel,
+   SendCloud refuse l'incohérence, et il annule les étiquettes qu'il vient
+   de créer. Constaté le 27 octobre sur sept étiquettes successives.
+
+   Tant que le site ne prend pas entièrement la main sur les étiquettes
+   des livraisons à l'adresse, la seconde étiquette se crée à la main. Ce
+   qui manquait vraiment, c'est de le SAVOIR avant de valider le
+   transport, au lieu de s'en apercevoir l'étiquette imprimée.
+
+   D'où cette note, écrite au même endroit que les autres avertissements
+   du site — le champ « note » de la commande, celui qui porte déjà
+   « Demande web … » et « ECART DE PORT … », et qui se lit sur le devis
+   imprimé pour préparer la commande.
+
+   Le seuil vient de NBD : vingt kilos par colis.
+   ========================================================================== */
+
+export const COLIS_MAX_KG = 20;
+
+/** Combien de colis pour ce poids. Jamais moins d'un. */
+export function colisNecessaires(kg) {
+  const p = Number(kg) || 0;
+  return Math.max(1, Math.ceil(p / COLIS_MAX_KG));
+}
+
+/* Le repère qui évite d'écrire deux fois la même chose : une commande
+ * peut repasser ici (reprise d'une chaîne interrompue, devis relu), et
+ * trois avertissements empilés ne valent pas mieux qu'un. */
+const MARQUE = "PLUSIEURS COLIS";
+
+/**
+ * Pose l'avertissement sur la commande si elle dépasse le seuil.
+ *
+ * Ne lève jamais : une commande qui s'enregistre sans son avertissement
+ * reste une commande ; une commande refusée parce que l'avertissement n'a
+ * pas pu s'écrire serait une vente perdue.
+ *
+ * @returns { pose, kg, colis, motif }
+ */
+export async function avertirSiPlusieursColis(env, orderId) {
+  try {
+    const poids = await poidsCommande(env, orderId);
+    const colis = colisNecessaires(poids.kg);
+    if (colis < 2) return { pose: false, kg: poids.kg, colis: 1, motif: "sous le seuil" };
+
+    const lu = await appel(env, "sale.order", "read", [[orderId], ["note"]], {});
+    const avant = String((lu && lu[0] && lu[0].note) || "");
+    if (avant.indexOf(MARQUE) >= 0) {
+      return { pose: false, kg: poids.kg, colis, motif: "déjà averti" };
+    }
+
+    const texte = MARQUE + " : " + poids.kg + " kg"
+      + (poids.estime ? " (poids partiellement estimé)" : "")
+      + " — prévoir " + colis + " colis de " + COLIS_MAX_KG + " kg maximum. "
+      + "Odoo ne crée qu'une seule étiquette : les suivantes sont à faire "
+      + "dans SendCloud avant de valider le transport.";
+
+    // Le champ est en HTML, et il porte déjà du texte : on ajoute, on ne
+    // remplace pas.
+    const apres = avant.trim()
+      ? avant + "<p>" + texte + "</p>"
+      : "<p>" + texte + "</p>";
+
+    await appel(env, "sale.order", "write", [[orderId], { note: apres }], {});
+    return { pose: true, kg: poids.kg, colis, motif: "" };
+  } catch (e) {
+    return { pose: false, kg: 0, colis: 0, motif: String((e && e.message) || e).slice(0, 160) };
+  }
+}
+
+/**
+ * Même chose, mais à partir du NUMÉRO de la commande.
+ *
+ * Les devis et les commandes « à payer par virement » ne sont pas créés
+ * par le site : ils passent par le script Google, qui ne rend que le
+ * numéro (« S00169 »). On retrouve donc la commande par son nom.
+ */
+export async function avertirSiPlusieursColisParNom(env, nom) {
+  const propre = String(nom || "").trim();
+  if (!/^S\d{4,}$/.test(propre)) return { pose: false, motif: "numéro inexploitable" };
+  try {
+    const r = await appel(env, "sale.order", "search_read",
+      [[["name", "=", propre]], ["id"]], { limit: 1 });
+    if (!r || !r[0]) return { pose: false, motif: "commande introuvable" };
+    return await avertirSiPlusieursColis(env, r[0].id);
+  } catch (e) {
+    return { pose: false, motif: String((e && e.message) || e).slice(0, 160) };
+  }
+}
