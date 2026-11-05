@@ -118,6 +118,7 @@ window.NISHMAN_CMD_LANGUES = {
       refus: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité — contactez-nous et nous la saisissons pour vous.",
       reseau: "Connexion interrompue. Votre panier est conservé : réessayez.",
       serveur: "Notre serveur n'a pas répondu correctement. Rien ne vous a été débité et votre panier est conservé : réessayez dans un instant. L'incident a été enregistré de notre côté.",
+      delai: "Le serveur met trop de temps à répondre. Votre panier est conservé et rien ne vous a été débité : patientez une minute puis réessayez. Si cela se reproduit, écrivez-nous et nous enregistrons votre commande nous-mêmes.",
     },
   },
 
@@ -231,6 +232,7 @@ window.NISHMAN_CMD_LANGUES = {
       refus: "Your order could not be recorded. Nothing has been charged — contact us and we will enter it for you.",
       reseau: "Connection lost. Your basket is saved — please try again.",
       serveur: "Our server did not respond properly. You have not been charged and your basket is saved — please try again in a moment. The incident has been logged on our side.",
+      delai: "The server is taking too long to answer. Your basket is saved and you have not been charged — wait a minute and try again. If it happens again, write to us and we will place the order for you.",
     },
   },
 
@@ -344,6 +346,7 @@ window.NISHMAN_CMD_LANGUES = {
       refus: "Uw bestelling kon niet worden geregistreerd. Er werd niets afgeschreven — neem contact op, wij voeren ze voor u in.",
       reseau: "Verbinding onderbroken. Uw mandje blijft bewaard — probeer het opnieuw.",
       serveur: "Onze server heeft niet correct geantwoord. Er is niets afgeschreven en uw mandje blijft bewaard — probeer het zo meteen opnieuw. Het incident is bij ons geregistreerd.",
+      delai: "De server doet er te lang over om te antwoorden. Uw mandje blijft bewaard en er is niets afgeschreven — wacht een minuut en probeer opnieuw. Gebeurt het weer, schrijf ons dan en wij plaatsen de bestelling zelf.",
     },
   },
 
@@ -457,6 +460,7 @@ window.NISHMAN_CMD_LANGUES = {
       refus: "Ihre Bestellung konnte nicht erfasst werden. Es wurde nichts abgebucht — kontaktieren Sie uns, wir erfassen sie für Sie.",
       reseau: "Verbindung unterbrochen. Ihr Warenkorb bleibt erhalten — bitte versuchen Sie es erneut.",
       serveur: "Unser Server hat nicht richtig geantwortet. Es wurde nichts abgebucht und Ihr Warenkorb bleibt erhalten — bitte versuchen Sie es gleich erneut. Der Vorfall wurde bei uns protokolliert.",
+      delai: "Der Server braucht zu lange für eine Antwort. Ihr Warenkorb bleibt erhalten und es wurde nichts abgebucht — warten Sie eine Minute und versuchen Sie es erneut. Falls es wieder vorkommt, schreiben Sie uns und wir erfassen die Bestellung selbst.",
     },
   },
 
@@ -570,6 +574,7 @@ window.NISHMAN_CMD_LANGUES = {
       refus: "Sipari\u015finiz kaydedilemedi. Hi\u00e7bir tutar \u00e7ekilmedi — bize ula\u015f\u0131n, sizin i\u00e7in girelim.",
       reseau: "Ba\u011flant\u0131 kesildi. Sepetiniz saklan\u0131yor — l\u00fctfen tekrar deneyin.",
       serveur: "Sunucumuz d\u00fczg\u00fcn yan\u0131t vermedi. Hesab\u0131n\u0131zdan hi\u00e7bir tutar \u00e7ekilmedi ve sepetiniz saklan\u0131yor \u2014 l\u00fctfen birazdan tekrar deneyin. Olay taraf\u0131m\u0131zda kaydedildi.",
+      delai: "Sunucu yan\u0131t vermekte \u00e7ok gecikiyor. Sepetiniz saklan\u0131yor ve hesab\u0131n\u0131zdan hi\u00e7bir tutar \u00e7ekilmedi \u2014 bir dakika bekleyip tekrar deneyin. Yine olursa bize yaz\u0131n, sipari\u015finizi biz olu\u015ftural\u0131m.",
     },
   },
 };

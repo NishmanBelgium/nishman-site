@@ -63,14 +63,35 @@ export function decouper(numero, paysCompte) {
  *   invalide      le registre dément
  *   indisponible  on n'a pas pu savoir — on ne tranche pas à sa place
  */
-export async function verifier(numero, paysCompte, requerant) {
+export async function verifier(numero, paysCompte, requerant, options) {
   let dernier = null;
 
-  for (let essai = 0; essai < TENTATIVES; essai++) {
+  /* LE BUDGET DE TEMPS, parce que trois essais ne valent pas partout.
+   *
+   * Trois tentatives de huit secondes, pauses comprises, font vingt-cinq
+   * secondes. C'est raisonnable pour une inscription ou pour un contrôle
+   * lancé depuis une page d'administration : on attend, et on a la bonne
+   * réponse.
+   *
+   * C'est intenable au milieu d'une commande. Le 5 novembre 2026, une
+   * cliente française dont la TVA n'était pas validée est restée bloquée
+   * sur « Connexion interrompue » : chacun de ses clics relançait cette
+   * interrogation, et quand le registre européen est engorgé — ce qui est
+   * précisément la raison pour laquelle son numéro n'était pas validé —
+   * la requête dépassait le délai de Cloudflare avant d'avoir fini.
+   *
+   * D'où ce réglage. L'appelant qui a le temps garde les trois essais ;
+   * celui qui tient un client en ligne en demande un seul, et court. */
+  const essaisMax = Math.max(1, Math.min(TENTATIVES,
+    Math.floor(Number(options && options.tentatives) || TENTATIVES)));
+  const delai = Math.max(500, Math.min(DELAI_MS,
+    Math.floor(Number(options && options.delaiMs) || DELAI_MS)));
+
+  for (let essai = 0; essai < essaisMax; essai++) {
     const pause = ATTENTE_MS[essai];
     if (pause) await attendre(pause);
 
-    const r = await interroger(numero, paysCompte, requerant);
+    const r = await interroger(numero, paysCompte, requerant, delai);
 
     // Une réponse claire, dans un sens ou dans l'autre, met fin aux essais :
     // seule l'absence de réponse mérite d'insister.
@@ -82,11 +103,11 @@ export async function verifier(numero, paysCompte, requerant) {
     dernier = r;
   }
 
-  return { ...dernier, essais: TENTATIVES };
+  return { ...dernier, essais: essaisMax };
 }
 
 /** Un aller-retour avec le registre. Ne lève jamais. */
-async function interroger(numero, paysCompte, requerant) {
+async function interroger(numero, paysCompte, requerant, delaiMs) {
   const part = decouper(numero, paysCompte);
   if (!part || !part.numero) {
     return { statut: "invalide", motif: "format", verifie_le: new Date().toISOString() };
@@ -106,7 +127,7 @@ async function interroger(numero, paysCompte, requerant) {
 
   let reponse, donnees;
   const stop = new AbortController();
-  const minuteur = setTimeout(() => stop.abort(), DELAI_MS);
+  const minuteur = setTimeout(() => stop.abort(), delaiMs || DELAI_MS);
   try {
     reponse = await fetch(RACINE + "/check-vat-number", {
       method: "POST",
@@ -224,7 +245,30 @@ export function aRevalider(verifieLe, statut) {
   const minutes = VALIDITE_MINUTES[String(statut || "")];
   // Statut inconnu : on reste prudent et on revérifie.
   if (minutes === undefined) return true;
-  if (minutes === 0) return true;
 
-  return (Date.now() - d.getTime()) > minutes * 60 * 1000;
+  /* LE PLANCHER, et pourquoi il a fallu l'ajouter.
+   *
+   * Les statuts à zéro minute — « indisponible », « jamais »,
+   * « valide_ancien » — voulaient dire « retente dès que possible ».
+   * Lus à la lettre, ils voulaient dire « retente À CHAQUE REQUÊTE » :
+   * chaque affichage du panier, chaque changement de mode de livraison,
+   * chaque clic sur Payer repartait interroger le registre européen.
+   *
+   * Le cercle vicieux saute aux yeux une fois écrit : un compte se
+   * retrouve en « indisponible » précisément parce que le registre était
+   * engorgé, et c'est ce compte-là qu'on renvoie le harceler le plus
+   * souvent. Les clients les plus lents à servir étaient exactement ceux
+   * dont la vérification avait déjà échoué.
+   *
+   * Dix minutes. Assez pour qu'un client qui navigue ne déclenche qu'une
+   * interrogation, assez peu pour qu'un numéro fraîchement enregistré
+   * soit reconnu dans la minute où il revient.
+   *
+   * Les deux chemins où l'on veut un contrôle immédiat — l'inscription et
+   * le bouton de revérification — appellent controlerEtEnregistrer en
+   * direct et ne passent pas par ici. Ce plancher ne les gêne pas. */
+  const PLANCHER_MINUTES = 10;
+  const attente = minutes === 0 ? PLANCHER_MINUTES : minutes;
+
+  return (Date.now() - d.getTime()) > attente * 60 * 1000;
 }

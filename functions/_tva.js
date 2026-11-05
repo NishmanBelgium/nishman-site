@@ -43,13 +43,13 @@ export { STATUTS_EXONERANTS };
  *
  * @returns {statut, valide, verifie_le, preuve, nom, motif}
  */
-export async function controlerEtEnregistrer(db, compte, env) {
+export async function controlerEtEnregistrer(db, compte, env, options) {
   const numero = compte.tva || compte.siret || "";
   if (!numero) {
     return { statut: "jamais", valide: false, motif: "aucun_numero" };
   }
 
-  const r = await verifier(numero, compte.pays, notreNumero(env));
+  const r = await verifier(numero, compte.pays, notreNumero(env), options);
   const etaitManuel = String(compte.tva_statut || "") === "valide_manuel";
 
   // Une validation posée à la main par NBD n'est pas une donnée que le
@@ -113,12 +113,42 @@ export async function controlerEtEnregistrer(db, compte, env) {
 export async function controlerSiBesoin(db, compte, env) {
   const etaitValide = !!compte.tva_valide;
 
-  if (!aRevalider(compte.tva_verifiee_le, compte.tva_statut)) {
-    return { valide: etaitValide, statut: compte.tva_statut || "", rafraichi: false,
-             preuve: compte.tva_preuve || "" };
-  }
+  /* Ce que l'on rend quand on renonce à interroger le registre : l'état
+   * déjà connu du compte, tel qu'il est enregistré. */
+  const connu = () => ({
+    valide: etaitValide, statut: compte.tva_statut || "", rafraichi: false,
+    preuve: compte.tva_preuve || "",
+  });
 
-  const r = await controlerEtEnregistrer(db, compte, env);
+  if (!aRevalider(compte.tva_verifiee_le, compte.tva_statut)) return connu();
+
+  /* LE BUDGET, et pourquoi il prime sur l'exactitude.
+   *
+   * Les trois appelants de cette fonction — l'affichage du panier, la
+   * demande de devis, le paiement — ont tous un client qui attend devant
+   * son écran. Aucun ne peut se permettre les vingt-cinq secondes que le
+   * registre européen peut prendre quand il est engorgé.
+   *
+   * On lui accorde donc trois secondes, pas davantage, et on repart avec
+   * ce qu'on sait déjà si elles ne suffisent pas. Ce n'est pas un pis-
+   * aller : le pire que l'on risque est de facturer la TVA belge à un
+   * client qui aurait pu en être exonéré — une facture à corriger, ce
+   * qui se fait. L'autre branche de l'alternative était une commande
+   * perdue et un client devant un message d'erreur, ce qui ne se corrige
+   * pas.
+   *
+   * La vérification repartira d'elle-même au prochain passage, et le
+   * contrôle manuel depuis /pro/tva/ reste entier : il n'a pas de budget,
+   * lui, parce que personne n'attend derrière. */
+  const BUDGET_MS = 3000;
+
+  const course = Promise.race([
+    controlerEtEnregistrer(db, compte, env, { tentatives: 1, delaiMs: 2500 }),
+    new Promise((resoudre) => setTimeout(() => resoudre(null), BUDGET_MS)),
+  ]);
+
+  const r = await course;
+  if (!r) return connu();
 
   if (r.statut === "indisponible" && etaitValide) {
     return { valide: true, statut: "valide_ancien", rafraichi: false,

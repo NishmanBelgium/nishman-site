@@ -38,6 +38,63 @@ let cache = null;
 let cacheExpire = 0;
 let cacheEmplacement = null;
 
+/* --- Le cache partagé ---------------------------------------------------
+ *
+ * Le cache ci-dessus vit dans la mémoire d'UNE instance Cloudflare. Il y
+ * en a beaucoup, elles sont courtes, et chacune démarre à vide : mesuré le
+ * 5 novembre 2026, le premier appel à /api/prix prenait 7,1 secondes, les
+ * suivants 90 millisecondes. Avec notre volume, la plupart des visiteurs
+ * tombaient sur une instance froide — et attendaient sept secondes avant
+ * de voir un prix. Sur un téléphone en 4G, davantage.
+ *
+ * On range donc le résultat dans D1, que toutes les instances partagent.
+ * Le calcul complet n'est plus fait qu'une fois par minute pour tout le
+ * monde, au lieu d'une fois par visiteur.
+ *
+ * Une règle, et elle compte : SEUL un relevé portant sur une large part
+ * du catalogue est écrit dans le cache partagé. Un panier de trois
+ * articles le lit, ne l'écrit jamais. Sans cette règle, un petit relevé
+ * remplacerait le grand et prolongerait l'âge de valeurs anciennes de
+ * proche en proche, sans que rien ne le signale.
+ */
+const CACHE_PARTAGE_MS = 60 * 1000;
+const ASSEZ_LARGE = 50;
+let tableCache = false;
+
+async function preparerCache(db) {
+  if (tableCache || !db) return;
+  await db.exec(
+    "CREATE TABLE IF NOT EXISTS cache_stock (" +
+      "cle TEXT PRIMARY KEY, valeur TEXT NOT NULL, pose_le INTEGER NOT NULL)"
+  );
+  tableCache = true;
+}
+
+async function lireCachePartage(db) {
+  if (!db) return null;
+  try {
+    await preparerCache(db);
+    const r = await db.prepare(
+      "SELECT valeur, pose_le FROM cache_stock WHERE cle = 'vendable'"
+    ).first();
+    if (!r) return null;
+    if (Date.now() - Number(r.pose_le) > CACHE_PARTAGE_MS) return null;
+    const v = JSON.parse(r.valeur);
+    return v && typeof v === "object" ? v : null;
+  } catch (e) { return null; }
+}
+
+async function ecrireCachePartage(db, table) {
+  if (!db) return;
+  try {
+    await preparerCache(db);
+    await db.prepare(
+      "INSERT INTO cache_stock (cle, valeur, pose_le) VALUES ('vendable', ?, ?) " +
+      "ON CONFLICT (cle) DO UPDATE SET valeur = excluded.valeur, pose_le = excluded.pose_le"
+    ).bind(JSON.stringify(table), Date.now()).run();
+  } catch (e) { /* un cache perdu, jamais un stock faux */ }
+}
+
 /** L'identifiant de l'emplacement de vente, cherché par son nom complet. */
 async function idEmplacement(env) {
   if (cacheEmplacement) return cacheEmplacement;
@@ -62,21 +119,46 @@ export async function stockVendable(env, eans) {
   if (!codes.length) return {};
 
   const maintenant = Date.now();
-  const manquants = cache && maintenant < cacheExpire
+  let manquants = cache && maintenant < cacheExpire
     ? codes.filter((c) => cache[c] === undefined)
     : codes;
 
+  // Instance froide : avant de repartir vers Odoo, on regarde si une autre
+  // instance a déjà fait le travail il y a moins d'une minute.
   if (manquants.length) {
-    const lieu = await idEmplacement(env);
-    const produits = await produitsParEan(env, manquants);
+    const partage = await lireCachePartage(env && env.DB);
+    if (partage) {
+      if (!cache || maintenant >= cacheExpire) { cache = {}; cacheExpire = maintenant + CACHE_MS; }
+      for (const c of codes) {
+        if (cache[c] === undefined && partage[c] !== undefined) cache[c] = partage[c];
+      }
+      manquants = codes.filter((c) => cache[c] === undefined);
+    }
+  }
+
+  if (manquants.length) {
+    // Les deux premières questions ne dépendent pas l'une de l'autre :
+    // posées ensemble, elles coûtent un aller-retour au lieu de deux.
+    const [lieu, produits] = await Promise.all([
+      idEmplacement(env),
+      produitsParEan(env, manquants),
+    ]);
     const ids = Object.values(produits).map((p) => p.id);
     const parProduit = {};
     const PAQUET = 150;
-    for (let i = 0; i < ids.length; i += PAQUET) {
-      const lot = ids.slice(i, i + PAQUET);
-      const quants = await appel(env, "stock.quant", "search_read",
+
+    // Les lots de quants non plus ne dépendent pas les uns des autres.
+    // En file, deux cents références coûtaient plusieurs secondes ; en
+    // parallèle, le temps du lot le plus lent.
+    const lots = [];
+    for (let i = 0; i < ids.length; i += PAQUET) lots.push(ids.slice(i, i + PAQUET));
+    const reponses = await Promise.all(lots.map((lot) =>
+      appel(env, "stock.quant", "search_read",
         [[["product_id", "in", lot], ["location_id", "=", lieu]],
-         ["product_id", "quantity", "reserved_quantity"]], { limit: 2000 });
+         ["product_id", "quantity", "reserved_quantity"]], { limit: 2000 })
+    ));
+
+    for (const quants of reponses) {
       for (const q of quants || []) {
         const pid = q.product_id && q.product_id[0];
         if (!pid) continue;
@@ -93,6 +175,11 @@ export async function stockVendable(env, eans) {
       // ne sait pas compter.
       const brut = p ? (parProduit[p.id] || 0) : 0;
       cache[ean] = Math.max(0, Math.floor(brut - MARGE));
+    }
+
+    // On ne publie que les relevés larges : voir le commentaire plus haut.
+    if (codes.length >= ASSEZ_LARGE) {
+      await ecrireCachePartage(env && env.DB, cache);
     }
   }
 

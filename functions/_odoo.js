@@ -26,15 +26,33 @@ async function rpc(env, params) {
 }
 
 let uidCache = null;
+let uidEnCours = null;
 
+/* On garde la PROMESSE de connexion, pas seulement son résultat.
+ *
+ * Depuis que les lots partent en parallèle, trois appels peuvent arriver
+ * ici dans le même souffle, avant que le premier n'ait fini de se
+ * connecter. En ne retenant que le résultat, chacun ouvrait sa propre
+ * session : trois connexions pour rien, à chaque démarrage d'instance,
+ * et autant d'occasions de se faire freiner par Odoo. En retenant la
+ * promesse, les suivants attendent la première au lieu d'en lancer une.
+ */
 async function uid(env) {
   if (uidCache) return uidCache;
-  uidCache = await rpc(env, {
-    service: "common", method: "login",
-    args: [env.ODOO_DB, env.ODOO_USER, env.ODOO_KEY],
-  });
-  if (!uidCache) throw new Error("Odoo refuse ces identifiants.");
-  return uidCache;
+  if (uidEnCours) return uidEnCours;
+
+  uidEnCours = (async () => {
+    const r = await rpc(env, {
+      service: "common", method: "login",
+      args: [env.ODOO_DB, env.ODOO_USER, env.ODOO_KEY],
+    });
+    if (!r) throw new Error("Odoo refuse ces identifiants.");
+    uidCache = r;
+    return r;
+  })();
+
+  try { return await uidEnCours; }
+  finally { uidEnCours = null; }   // un échec doit pouvoir être retenté
 }
 
 export async function appel(env, modele, methode, args, kwargs) {
@@ -185,15 +203,25 @@ export async function produitsParEan(env, eans) {
 
   const table = {};
   const PAQUET = 100;
-  for (let i = 0; i < codes.length; i += PAQUET) {
-    const lot = codes.slice(i, i + PAQUET);
-    // « default_code » est la référence interne : A-11, B-01… C'est elle
-    // qui dit où le produit est rangé dans le dépôt, et donc dans quel
-    // ordre une commande doit être imprimée pour être préparée d'une
-    // seule marche. On la lit ici pour n'avoir qu'un aller-retour.
-    const r = await appel(env, "product.product", "search_read",
+
+  const lots = [];
+  for (let i = 0; i < codes.length; i += PAQUET) lots.push(codes.slice(i, i + PAQUET));
+
+  // Les lots sont indépendants : les poser en file coûtait une seconde
+  // par lot, et le catalogue en fait trois. Posés ensemble, l'attente est
+  // celle du lot le plus lent, pas leur somme.
+  //
+  // « default_code » est la référence interne : A-11, B-01… C'est elle qui
+  // dit où le produit est rangé dans le dépôt, et donc dans quel ordre une
+  // commande doit être imprimée pour être préparée d'une seule marche. On
+  // la lit ici pour n'avoir qu'un aller-retour.
+  const reponses = await Promise.all(lots.map((lot) =>
+    appel(env, "product.product", "search_read",
       [[["barcode", "in", lot]], ["id", "barcode", "name", "default_code"]],
-      { limit: lot.length });
+      { limit: lot.length })
+  ));
+
+  for (const r of reponses) {
     for (const p of r || []) {
       if (p && p.barcode) {
         table[String(p.barcode).trim()] = {

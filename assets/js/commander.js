@@ -145,19 +145,47 @@
    *   d      les données, si le serveur a répondu du JSON
    *   cause  "reseau" ou "reponse-illisible" quand il n'y en a pas
    */
+  /* Au-delà de ces durées, la requête est perdue et mieux vaut le dire.
+   *
+   * Cloudflare coupe la connexion de son côté aux alentours de la
+   * centaine de secondes, et rend alors une page d'erreur en HTML. Le
+   * client aura donc patienté une minute et demie devant un écran figé
+   * pour recevoir un message trompeur. Autant trancher plus tôt, nous-
+   * mêmes, avec un message juste.
+   *
+   * Le recalcul du panier ne fait que lire : on peut être expéditif. La
+   * commande et le paiement écrivent dans Odoo, alors on leur laisse de
+   * la marge — couper trop tôt une requête qui allait aboutir inviterait
+   * le client à recommencer, et à commander deux fois. */
+  const DELAIS = { panier: 20000, devis: 40000, paiement: 40000 };
+
   async function demander(url, corps, etape) {
+    const stop = typeof AbortController === "function" ? new AbortController() : null;
+    let coupe = false;
+    const minuteur = stop ? setTimeout(function () {
+      coupe = true;
+      stop.abort();
+    }, DELAIS[etape] || 40000) : null;
+
     let r;
     try {
       r = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(corps),
+        signal: stop ? stop.signal : undefined,
       });
     } catch (e) {
+      if (minuteur) clearTimeout(minuteur);
+      if (coupe) {
+        signaler(etape, "delai", 0, "abandon après " + ((DELAIS[etape] || 40000) / 1000) + " s");
+        return { d: null, cause: "delai" };
+      }
       // La requête n'est jamais partie, ou jamais revenue.
       signaler(etape, "reseau", 0, (e && e.message) || "fetch");
       return { d: null, cause: "reseau" };
     }
+    if (minuteur) clearTimeout(minuteur);
 
     let texte = "";
     try { texte = await r.text(); }
@@ -182,7 +210,9 @@
   /** Le message à montrer quand demander() n'a rien rapporté. */
   function messageEchec(cause) {
     const err = t("erreurs") || {};
-    return cause === "reponse-illisible" ? (err.serveur || err.reseau) : err.reseau;
+    if (cause === "reponse-illisible") return err.serveur || err.reseau;
+    if (cause === "delai") return err.delai || err.serveur || err.reseau;
+    return err.reseau;
   }
 
   /* --- Le calcul, demandé au serveur ---------------------------------- */
