@@ -210,7 +210,8 @@
     vide: "Votre panier est vide.",
     mollie: "Le paiement en ligne est momentanément indisponible.",
     sendcloud: "La livraison est momentanément indisponible.",
-    reseau: "Connexion interrompue. Votre panier est conservé : réessayez."
+    reseau: "Connexion interrompue. Votre panier est conservé : réessayez.",
+    serveur: "Notre serveur n'a pas répondu correctement. Rien ne vous a été débité et votre panier est conservé : réessayez dans un instant. L'incident a été enregistré de notre côté."
   };
 
   function erreurPage(m) {
@@ -248,14 +249,30 @@
     b.disabled = true;
     b.textContent = "Ouverture du paiement…";
 
+    /* Le serveur peut répondre autre chose que du JSON — page d'erreur
+     * Cloudflare, dépassement de délai, fonction plantée. Dans ce cas
+     * r.json() lève, et le client lisait « Connexion interrompue » alors
+     * que sa connexion allait très bien. On lit le texte d'abord, on
+     * tranche ensuite, et on nous le fait savoir. */
+    var statutRecu = 0;
     fetch("/api/payer-public", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(corps)
     })
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        if (!d || d.ok !== true || !d.paiement_url) {
+      .then(function (r) { statutRecu = r.status; return r.text(); })
+      .then(function (texte) {
+        var d = null;
+        try { d = JSON.parse(texte); } catch (e) { d = null; }
+        if (!d || typeof d !== "object") {
+          signaler("boutique", "reponse-illisible", statutRecu, texte.slice(0, 300));
+          envoiEnCours = false;
+          b.disabled = false;
+          b.textContent = "Payer ma commande";
+          erreurPage(MESSAGES.serveur || MESSAGES.reseau);
+          return;
+        }
+        if (d.ok !== true || !d.paiement_url) {
           envoiEnCours = false;
           b.disabled = false;
           b.textContent = "Payer ma commande";
@@ -273,12 +290,29 @@
         // sur un paiement reçu.
         window.location.href = d.paiement_url;
       })
-      .catch(function () {
+      .catch(function (e) {
+        signaler("boutique", "reseau", statutRecu, (e && e.message) || "fetch");
         envoiEnCours = false;
         b.disabled = false;
         b.textContent = "Payer ma commande";
         erreurPage(MESSAGES.reseau);
       });
+  }
+
+  /* Signaler un échec de commande. Écrit ailleurs que dans la console du
+   * client : c'est la seule façon de savoir qu'une vente s'est perdue. */
+  function signaler(etape, cause, statut, detail) {
+    try {
+      fetch("/api/incident", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          etape: etape, cause: cause,
+          statut: statut || 0, detail: detail || ""
+        }),
+        keepalive: true
+      }).catch(function () { /* un incident perdu, jamais une page cassée */ });
+    } catch (e) { /* idem */ }
   }
 
   /* --- Le retour de chez la banque ------------------------------------- */

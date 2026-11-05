@@ -23,6 +23,7 @@ import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "
 import { catalogue } from "../_tarifs.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { configureSendcloud, compteSendcloud } from "../_sendcloud.js";
+import { lireIncidents } from "../_incidents.js";
 
 
 function etatBase(db) {
@@ -337,6 +338,29 @@ export async function onRequestGet({ request, env }) {
 
   const tout = base.ok && portier.ok && vies.ok && odoo.ok && mollie.ok && produits.ok && sendcloud.ok;
 
+  /* LES ÉCHECS DE COMMANDE RÉCENTS.
+   *
+   * Les sept contrôles ci-dessus disent comment va le site MAINTENANT.
+   * Ils étaient tous au vert le 5 novembre, une heure après qu'une
+   * cliente eut été bloquée au paiement — et ils ne pouvaient rien en
+   * dire. Une panne transitoire ne se rattrape pas en interrogeant
+   * l'instant présent : il faut que quelqu'un ait écrit ce qui s'est
+   * passé au moment où ça s'est passé. C'est ce que le navigateur fait
+   * désormais, et c'est ce qu'on relit ici.
+   *
+   * La liste est courte à dessein : vingt lignes se lisent, deux cents
+   * ne se lisent pas. */
+  let incidents = [];
+  let incidentsSouci = "";
+  try { incidents = await lireIncidents(env.DB, 20); }
+  catch (e) { incidentsSouci = String((e && e.message) || "illisible"); }
+
+  if (incidents.length) {
+    consequences.push(incidents.length + " échec(s) de commande enregistré(s) récemment. "
+      + "Voir « echecs_de_commande » : chaque ligne porte l'heure, l'étape et le compte, "
+      + "ce qui permet de rappeler le client au lieu d'attendre qu'il se manifeste.");
+  }
+
   return json({
     ok: true,
     tout_va_bien: tout,
@@ -346,6 +370,9 @@ export async function onRequestGet({ request, env }) {
     liaisons: liaisons,
     consequences: consequences,
     alertes: alertes,
+    echecs_de_commande: incidentsSouci
+      ? { lisible: false, detail: incidentsSouci }
+      : { lisible: true, nombre: incidents.length, lignes: incidents },
     // Les NOMS des variables que ce déploiement reçoit réellement. Jamais
     // les valeurs. Quand une variable est bien posée chez Cloudflare mais
     // que le site jure ne pas la voir, c'est la seule façon de trancher

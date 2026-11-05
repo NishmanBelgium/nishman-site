@@ -112,6 +112,79 @@
     });
   }
 
+  /* --- Parler au serveur, et savoir quoi dire quand ça rate ------------ */
+
+  /* Pourquoi ce détour plutôt qu'un fetch direct.
+   *
+   * Le 5 novembre 2026, une cliente a envoyé la photo de son écran :
+   * « Connexion interrompue. Votre panier est conservé : réessayez. »
+   * Ce message s'affichait dans deux situations opposées — sa connexion
+   * avait lâché, ou notre serveur avait renvoyé autre chose que du JSON.
+   * Le premier cas ne nous regarde pas, le second est entièrement le
+   * nôtre, et rien ne permettait de les distinguer. Ni pour elle, ni
+   * pour nous : le site ne gardait aucune trace de l'échec.
+   *
+   * Ces deux fonctions règlent les deux moitiés du problème : dire au
+   * client ce qui s'est réellement passé, et nous le faire savoir. */
+
+  function signaler(etape, cause, statut, detail) {
+    try {
+      fetch("/api/incident", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ etape, cause, statut: statut || 0, detail: detail || "" }),
+        // La page part souvent juste après (vers la banque, ou en
+        // rechargement rageur) : keepalive laisse le signalement finir.
+        keepalive: true,
+      }).catch(function () { /* un incident perdu, jamais une page cassée */ });
+    } catch (e) { /* idem */ }
+  }
+
+  /**
+   * Envoie une demande et rend { d, cause }.
+   *   d      les données, si le serveur a répondu du JSON
+   *   cause  "reseau" ou "reponse-illisible" quand il n'y en a pas
+   */
+  async function demander(url, corps, etape) {
+    let r;
+    try {
+      r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(corps),
+      });
+    } catch (e) {
+      // La requête n'est jamais partie, ou jamais revenue.
+      signaler(etape, "reseau", 0, (e && e.message) || "fetch");
+      return { d: null, cause: "reseau" };
+    }
+
+    let texte = "";
+    try { texte = await r.text(); }
+    catch (e) {
+      signaler(etape, "reseau", r.status, "lecture interrompue");
+      return { d: null, cause: "reseau" };
+    }
+
+    let d = null;
+    try { d = JSON.parse(texte); } catch (e) { d = null; }
+
+    if (!d || typeof d !== "object") {
+      // Le serveur a répondu, mais pas du JSON : page d'erreur Cloudflare,
+      // dépassement de délai, fonction plantée. C'est chez nous.
+      signaler(etape, "reponse-illisible", r.status, texte.slice(0, 300));
+      return { d: null, cause: "reponse-illisible" };
+    }
+
+    return { d: d, cause: "" };
+  }
+
+  /** Le message à montrer quand demander() n'a rien rapporté. */
+  function messageEchec(cause) {
+    const err = t("erreurs") || {};
+    return cause === "reponse-illisible" ? (err.serveur || err.reseau) : err.reseau;
+  }
+
   /* --- Le calcul, demandé au serveur ---------------------------------- */
 
   async function recalculer() {
@@ -122,20 +195,11 @@
       langue: LANG,
     };
 
-    let r, d;
-    try {
-      r = await fetch("/api/panier", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(corps),
-      });
-      d = await r.json();
-    } catch (e) {
-      afficherErreur((t("erreurs") || {}).reseau);
-      return null;
-    }
+    const rep = await demander("/api/panier", corps, "panier");
+    const d = rep.d;
+    if (!d) { afficherErreur(messageEchec(rep.cause)); return null; }
 
-    if (!d || d.ok !== true) {
+    if (d.ok !== true) {
       afficherErreur((t("erreurs") || {}).tarifs || "");
       return null;
     }
@@ -298,17 +362,10 @@
 
     verrouiller(true, "cmd-payer", t("pay_envoi"));
 
-    let d = null;
-    try {
-      const r = await fetch("/api/payer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(corpsCommande()),
-      });
-      d = await r.json();
-    } catch (e) { d = null; }
+    const rep = await demander("/api/payer", corpsCommande(), "paiement");
+    const d = rep.d;
 
-    if (!d) { verrouiller(false); afficherErreur(err.reseau); return; }
+    if (!d) { verrouiller(false); afficherErreur(messageEchec(rep.cause)); return; }
 
     if (d.ok !== true || !d.paiement_url) {
       verrouiller(false);
@@ -347,21 +404,12 @@
 
     verrouiller(true, "cmd-envoyer", t("valid_envoi"));
 
-    let d = null;
-    try {
-      const r = await fetch("/api/commander", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(corps),
-      });
-      d = await r.json();
-    } catch (e) {
-      d = null;
-    }
+    const rep = await demander("/api/commander", corps, "devis");
+    const d = rep.d;
 
     verrouiller(false);
 
-    if (!d) { afficherErreur(err.reseau); return; }
+    if (!d) { afficherErreur(messageEchec(rep.cause)); return; }
 
     if (d.ok !== true) {
       // Un code connu donne un message traduit ; sinon on reprend celui du

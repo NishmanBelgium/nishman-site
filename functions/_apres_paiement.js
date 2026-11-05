@@ -217,6 +217,36 @@ async function envoyerFacture(env, factureIds, journal) {
     // second envoi si notre registre se perd.
     try { await appel(env, "account.move", "write", [[id], { is_move_sent: true }], {}); }
     catch (e) { /* champ inconnu : notre étape fera seule le travail */ }
+
+    // UNE TRACE DANS L'HISTORIQUE DE LA FACTURE.
+    //
+    // send_mail expédie sans rien écrire dans le fil de discussion, et
+    // Odoo efface sa file d'envoi une fois le mail parti. Résultat :
+    // après coup, plus personne ne peut dire si la facture est partie ni
+    // à qui — c'est exactement ce qui a rendu indéchiffrable la plainte
+    // du 5 novembre (« mes clients ne reçoivent pas leur facture »).
+    //
+    // On pose donc une note, qui ne remplace pas l'envoi mais qui le
+    // rend constatable. Son échec n'arrête rien : perdre la trace est
+    // ennuyeux, perdre la facture le serait davantage.
+    try {
+      let a = "";
+      try {
+        const lu = await appel(env, "account.move", "read",
+          [[id], ["partner_id"]], {});
+        const pid = lu && lu[0] && Array.isArray(lu[0].partner_id) ? lu[0].partner_id[0] : null;
+        if (pid) {
+          const p = await appel(env, "res.partner", "read", [[pid], ["email"]], {});
+          a = (p && p[0] && p[0].email) || "";
+        }
+      } catch (e) { /* on notera sans l'adresse */ }
+      await appel(env, "account.move", "message_post", [[id]], {
+        body: "Facture envoyée automatiquement par le site"
+            + (a ? " à " + a : "") + "."
+            + " (Envoi direct, sans passage par le bouton « Envoyer ».)",
+        message_type: "comment",
+      });
+    } catch (e) { /* la note a échoué : l'envoi, lui, a eu lieu */ }
   }
 
   ligne(journal, "envoi de la facture", true,
