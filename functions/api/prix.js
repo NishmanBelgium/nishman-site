@@ -15,7 +15,12 @@ import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
 import { donneesPortier, catalogue } from "../_tarifs.js";
 import { stockVendable } from "../_stock.js";
 
-export async function onRequestGet({ request, env }) {
+export async function onRequestGet(ctx) {
+  const { request, env } = ctx;
+  // Lié à son contexte : waitUntil déstructuré perd son destinataire et
+  // lève à l'appel. L'enveloppe garde aussi le site debout sur une
+  // plateforme qui ne l'offrirait pas.
+  const attendre = (p) => { try { ctx.waitUntil(p); } catch (e) { /* tant pis */ } };
   if (!env.DB) return json({ ok: false, raison: "base" });
 
   const compte = await compteConnecte(request, env.DB);
@@ -46,7 +51,8 @@ export async function onRequestGet({ request, env }) {
   let limits = data.limits || null;
   try {
     const produits = await catalogue(request);
-    const dispo = await stockVendable(env, (produits || []).map((p) => p && p.ean));
+    const dispo = await stockVendable(env, (produits || []).map((p) => p && p.ean),
+      { attendre: attendre });
     const calculees = {};
     for (const p of produits || []) {
       if (!p || !p.ean) continue;

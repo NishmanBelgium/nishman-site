@@ -21,7 +21,9 @@ import { calculerB2C, REGLES, paysValideB2C } from "../_calcul_b2c.js";
 import { configureSendcloud } from "../_sendcloud.js";
 import { stockVendable } from "../_stock.js";
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(ctx) {
+  const { request, env } = ctx;
+  const attendre = (p) => { try { ctx.waitUntil(p); } catch (e) { /* tant pis */ } };
   let corps;
   try { corps = await request.json(); }
   catch (e) { return erreur("Requête illisible.", 400, "illisible"); }
@@ -44,7 +46,8 @@ export async function onRequestPost({ request, env }) {
   let stock = null;
   let stock_erreur = null;
   try {
-    stock = await stockVendable(env, (produits || []).map((p) => p && p.ean));
+    stock = await stockVendable(env, (produits || []).map((p) => p && p.ean),
+      { attendre: attendre });
   } catch (e) {
     // La boutique reste utilisable et le contrôle de payer-public tient le
     // filet. Mais la raison est dite : une panne de stock muette est une

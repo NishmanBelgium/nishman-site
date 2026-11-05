@@ -142,7 +142,9 @@ function lireReponse(texte) {
   return { ok: true, devis: m ? m[0] : "", partiel, detail: t.slice(0, 300) };
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(ctx) {
+  const { request, env } = ctx;
+  const attendre = (p) => { try { ctx.waitUntil(p); } catch (e) { /* tant pis */ } };
   let corps;
   try { corps = await request.json(); }
   catch (e) { return erreur("Requête illisible.", 400, "illisible"); }
@@ -209,7 +211,8 @@ export async function onRequestPost({ request, env }) {
   // sur le dernier carton, et la commande passait quand même. C'est ici
   // que ça se décide, avec le stock d'Odoo au moment présent.
   try {
-    const stock = await verifierStockPro(env, selection, produits);
+    const stock = await verifierStockPro(env, selection, produits,
+      { attendre: attendre });
     if (stock.rupture) {
       return json({
         ok: false, motif: "stock",

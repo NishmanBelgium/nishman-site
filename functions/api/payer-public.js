@@ -101,7 +101,9 @@ function lireClient(brut) {
   return c;
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(ctx) {
+  const { request, env } = ctx;
+  const attendre = (p) => { try { ctx.waitUntil(p); } catch (e) { /* tant pis */ } };
   let corps;
   try { corps = await request.json(); }
   catch (e) { return erreur("Requête illisible.", 400, "illisible"); }
@@ -162,7 +164,7 @@ export async function onRequestPost({ request, env }) {
   let stock = { selection, rupture: false, retires: [], reduits: [] };
   let stockNonVerifie = null;
   try {
-    stock = await limiterAuStock(env, selection);
+    stock = await limiterAuStock(env, selection, { attendre: attendre });
   } catch (e) {
     stockNonVerifie = String((e && e.message) || e).slice(0, 160);
   }

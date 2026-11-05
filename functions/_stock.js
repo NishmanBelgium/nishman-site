@@ -70,6 +70,10 @@ async function preparerCache(db) {
   tableCache = true;
 }
 
+/* Rend { table, age } — l'âge en millisecondes — ou null si rien n'est
+ * lisible. On rend le relevé QUEL QUE SOIT son âge : c'est l'appelant qui
+ * décide s'il s'en contente, parce que la réponse dépend de ce qu'il en
+ * fait. */
 async function lireCachePartage(db) {
   if (!db) return null;
   try {
@@ -78,9 +82,9 @@ async function lireCachePartage(db) {
       "SELECT valeur, pose_le FROM cache_stock WHERE cle = 'vendable'"
     ).first();
     if (!r) return null;
-    if (Date.now() - Number(r.pose_le) > CACHE_PARTAGE_MS) return null;
     const v = JSON.parse(r.valeur);
-    return v && typeof v === "object" ? v : null;
+    if (!v || typeof v !== "object") return null;
+    return { table: v, age: Date.now() - Number(r.pose_le) };
   } catch (e) { return null; }
 }
 
@@ -114,78 +118,147 @@ async function idEmplacement(env) {
  *
  * @returns { [ean]: nombre }  déjà net de la marge, jamais négatif.
  */
-export async function stockVendable(env, eans) {
-  const codes = [...new Set((eans || []).map((e) => String(e || "").trim()).filter(Boolean))];
-  if (!codes.length) return {};
+/** Le relevé, demandé à Odoo pour de bon. Rend { ean: pièces nettes }. */
+async function relever(env, codes) {
+  // Les deux premières questions ne dépendent pas l'une de l'autre :
+  // posées ensemble, elles coûtent un aller-retour au lieu de deux.
+  const [lieu, produits] = await Promise.all([
+    idEmplacement(env),
+    produitsParEan(env, codes),
+  ]);
+  const ids = Object.values(produits).map((p) => p.id);
+  const parProduit = {};
+  const PAQUET = 150;
 
-  const maintenant = Date.now();
-  let manquants = cache && maintenant < cacheExpire
-    ? codes.filter((c) => cache[c] === undefined)
-    : codes;
+  // Les lots de quants non plus ne dépendent pas les uns des autres. En
+  // file, deux cents références coûtaient plusieurs secondes ; en
+  // parallèle, le temps du lot le plus lent.
+  const lots = [];
+  for (let i = 0; i < ids.length; i += PAQUET) lots.push(ids.slice(i, i + PAQUET));
+  const reponses = await Promise.all(lots.map((lot) =>
+    appel(env, "stock.quant", "search_read",
+      [[["product_id", "in", lot], ["location_id", "=", lieu]],
+       ["product_id", "quantity", "reserved_quantity"]], { limit: 2000 })
+  ));
 
-  // Instance froide : avant de repartir vers Odoo, on regarde si une autre
-  // instance a déjà fait le travail il y a moins d'une minute.
-  if (manquants.length) {
-    const partage = await lireCachePartage(env && env.DB);
-    if (partage) {
-      if (!cache || maintenant >= cacheExpire) { cache = {}; cacheExpire = maintenant + CACHE_MS; }
-      for (const c of codes) {
-        if (cache[c] === undefined && partage[c] !== undefined) cache[c] = partage[c];
-      }
-      manquants = codes.filter((c) => cache[c] === undefined);
+  for (const quants of reponses) {
+    for (const q of quants || []) {
+      const pid = q.product_id && q.product_id[0];
+      if (!pid) continue;
+      // Une même référence peut porter plusieurs lignes de quant au même
+      // endroit — Odoo les fusionne avec le temps, pas tout de suite.
+      parProduit[pid] = (parProduit[pid] || 0) +
+        (Number(q.quantity) || 0) - (Number(q.reserved_quantity) || 0);
     }
   }
 
-  if (manquants.length) {
-    // Les deux premières questions ne dépendent pas l'une de l'autre :
-    // posées ensemble, elles coûtent un aller-retour au lieu de deux.
-    const [lieu, produits] = await Promise.all([
-      idEmplacement(env),
-      produitsParEan(env, manquants),
-    ]);
-    const ids = Object.values(produits).map((p) => p.id);
-    const parProduit = {};
-    const PAQUET = 150;
+  const table = {};
+  for (const ean of codes) {
+    const p = produits[ean];
+    // Une référence inconnue d'Odoo vaut zéro : on ne vend pas ce qu'on ne
+    // sait pas compter.
+    const brut = p ? (parProduit[p.id] || 0) : 0;
+    table[ean] = Math.max(0, Math.floor(brut - MARGE));
+  }
+  return table;
+}
 
-    // Les lots de quants non plus ne dépendent pas les uns des autres.
-    // En file, deux cents références coûtaient plusieurs secondes ; en
-    // parallèle, le temps du lot le plus lent.
-    const lots = [];
-    for (let i = 0; i < ids.length; i += PAQUET) lots.push(ids.slice(i, i + PAQUET));
-    const reponses = await Promise.all(lots.map((lot) =>
-      appel(env, "stock.quant", "search_read",
-        [[["product_id", "in", lot], ["location_id", "=", lieu]],
-         ["product_id", "quantity", "reserved_quantity"]], { limit: 2000 })
-    ));
+/* Jusqu'à quel âge on se contente de ce qu'on a.
+ *
+ * En deçà de FRAIS_MS, le relevé est servi tel quel et on ne dérange
+ * personne. Entre FRAIS_MS et PERIME_MS, il est servi TOUT DE SUITE et le
+ * rafraîchissement part en arrière-plan : c'est là que se joue tout
+ * l'intérêt de ce module, parce que c'est le cas de figure le plus
+ * fréquent et que plus aucun client n'y attend Odoo. Au-delà de
+ * PERIME_MS, on ne sert plus : un chiffre d'un quart d'heure servi comme
+ * s'il valait quelque chose serait pire qu'une seconde d'attente.
+ *
+ * Quinze minutes supposent que deux commandes du dernier carton ne
+ * tombent pas dans le même quart d'heure — ce que NBD a confirmé le
+ * 5 novembre — et la marge de deux pièces couvre le reste. */
+const FRAIS_MS = 60 * 1000;
+const PERIME_MS = 15 * 60 * 1000;
 
-    for (const quants of reponses) {
-      for (const q of quants || []) {
-        const pid = q.product_id && q.product_id[0];
-        if (!pid) continue;
-        // Une même référence peut porter plusieurs lignes de quant au même
-        // endroit — Odoo les fusionne avec le temps, pas tout de suite.
-        parProduit[pid] = (parProduit[pid] || 0) +
-          (Number(q.quantity) || 0) - (Number(q.reserved_quantity) || 0);
-      }
-    }
+/**
+ * @param options.attendre  le waitUntil de Cloudflare, quand l'appelant
+ *   en dispose. C'est lui qui permet de rendre la réponse sans attendre
+ *   le rafraîchissement : la plateforme laisse le travail finir après que
+ *   le client est servi. Sans lui, on se contente du relevé connu et le
+ *   rafraîchissement attendra le prochain appel qui, lui, l'aura.
+ */
+export async function stockVendable(env, eans, options) {
+  const codes = [...new Set((eans || []).map((e) => String(e || "").trim()).filter(Boolean))];
+  if (!codes.length) return {};
+
+  const attendre = options && typeof options.attendre === "function"
+    ? options.attendre : null;
+  const maintenant = Date.now();
+
+  /* LA MÉMOIRE PÉRIMÉE EST JETÉE, PAS SEULEMENT IGNORÉE.
+   *
+   * Elle n'était qu'ignorée, et un essai l'a prise en faute : une
+   * instance dont la fenêtre avait expiré gardait ses anciens chiffres
+   * en mémoire. Quand le relevé partagé devenait périmé à son tour, le
+   * calcul de ce qui manque ne trouvait rien à demander — puisque tout
+   * était là — et l'instance servait indéfiniment des chiffres dont elle
+   * venait pourtant de décider qu'ils étaient trop vieux. Exactement ce
+   * qu'un cache ne doit jamais faire. */
+  if (cache && maintenant >= cacheExpire) cache = null;
+
+  const rendre = () => {
+    const sortie = {};
+    for (const c of codes) sortie[c] = cache && cache[c] !== undefined ? cache[c] : 0;
+    return sortie;
+  };
+  const poser = (table) => {
     if (!cache || maintenant >= cacheExpire) { cache = {}; cacheExpire = maintenant + CACHE_MS; }
-    for (const ean of manquants) {
-      const p = produits[ean];
-      // Une référence inconnue d'Odoo vaut zéro : on ne vend pas ce qu'on
-      // ne sait pas compter.
-      const brut = p ? (parProduit[p.id] || 0) : 0;
-      cache[ean] = Math.max(0, Math.floor(brut - MARGE));
-    }
+    for (const k of Object.keys(table)) if (cache[k] === undefined) cache[k] = table[k];
+  };
+  const couvert = () => cache && codes.every((c) => cache[c] !== undefined);
 
-    // On ne publie que les relevés larges : voir le commentaire plus haut.
+  // 1) La mémoire de cette instance, si elle est encore fraîche.
+  if (cache && maintenant < cacheExpire && couvert()) return rendre();
+
+  // 2) Le relevé partagé, écrit par n'importe quelle instance.
+  const partage = await lireCachePartage(env && env.DB);
+  const utilisable = partage
+    && partage.age <= PERIME_MS
+    && codes.every((c) => partage.table[c] !== undefined);
+
+  // L'ordre compte : on ne charge en mémoire que ce qu'on a décidé de
+  // servir. Charger d'abord et trancher ensuite reviendrait à servir un
+  // relevé périmé, puisque plus rien ne manquerait au moment de le
+  // constater.
+  if (utilisable) {
+    poser(partage.table);
+
+    if (partage.age > FRAIS_MS && attendre) {
+      // Le cœur du dispositif : on sert, puis on rafraîchit derrière.
+      const aRelever = Object.keys(partage.table);
+      attendre((async () => {
+        try {
+          const neuf = await relever(env, aRelever);
+          if (aRelever.length >= ASSEZ_LARGE) {
+            await ecrireCachePartage(env && env.DB, neuf);
+          }
+        } catch (e) { /* le relevé suivant réessaiera */ }
+      })());
+    }
+    return rendre();
+  }
+
+  // 3) Rien d'utilisable : il faut demander à Odoo, et attendre.
+  const manquants = codes.filter((c) => !cache || cache[c] === undefined);
+  if (manquants.length) {
+    const table = await relever(env, manquants);
+    poser(table);
+    // On ne publie que les relevés larges : voir plus haut.
     if (codes.length >= ASSEZ_LARGE) {
       await ecrireCachePartage(env && env.DB, cache);
     }
   }
 
-  const sortie = {};
-  for (const c of codes) sortie[c] = cache[c] !== undefined ? cache[c] : 0;
-  return sortie;
+  return rendre();
 }
 
 /**
@@ -198,11 +271,11 @@ export async function stockVendable(env, eans) {
  * @param selection  { ean: quantité }
  * @returns { selection, retires, reduits, rupture }
  */
-export async function limiterAuStock(env, selection) {
+export async function limiterAuStock(env, selection, options) {
   const eans = Object.keys(selection || {});
   if (!eans.length) return { selection: {}, retires: [], reduits: [], rupture: false };
 
-  const dispo = await stockVendable(env, eans);
+  const dispo = await stockVendable(env, eans, options);
   const propre = {};
   const retires = [];
   const reduits = [];
@@ -239,7 +312,7 @@ export async function limiterAuStock(env, selection) {
  * @param produits   le catalogue, pour connaître box_qty
  * @returns { rupture, manquants: [{ean, nom, demande, restant}] }
  */
-export async function verifierStockPro(env, selection, produits) {
+export async function verifierStockPro(env, selection, produits, options) {
   const eans = Object.keys(selection || {});
   if (!eans.length) return { rupture: false, manquants: [] };
 
@@ -257,7 +330,7 @@ export async function verifierStockPro(env, selection, produits) {
   }
   if (!Object.keys(demande).length) return { rupture: false, manquants: [] };
 
-  const dispo = await stockVendable(env, Object.keys(demande));
+  const dispo = await stockVendable(env, Object.keys(demande), options);
   const manquants = [];
   for (const ean of Object.keys(demande)) {
     const libre = dispo[ean] || 0;
