@@ -88,15 +88,57 @@ async function lireCachePartage(db) {
   } catch (e) { return null; }
 }
 
+/* Le dernier échec d'écriture, retenu pour pouvoir le lire.
+ *
+ * Cette écriture est volontairement silencieuse : un cache perdu ne doit
+ * jamais faire échouer une page. Mais silencieuse ne veut pas dire
+ * invisible. Le 5 novembre 2026, le relevé partagé ne s'écrivait pas et
+ * rien ne le disait : le site recalculait tout toutes les minutes en
+ * paraissant fonctionner, et il a fallu chronométrer pour s'en douter.
+ * La raison du refus est donc gardée, et /api/diagnostic la montre. */
+let dernierSouciCache = "";
+
 async function ecrireCachePartage(db, table) {
-  if (!db) return;
+  if (!db) { dernierSouciCache = "aucune base"; return; }
   try {
     await preparerCache(db);
     await db.prepare(
       "INSERT INTO cache_stock (cle, valeur, pose_le) VALUES ('vendable', ?, ?) " +
       "ON CONFLICT (cle) DO UPDATE SET valeur = excluded.valeur, pose_le = excluded.pose_le"
     ).bind(JSON.stringify(table), Date.now()).run();
-  } catch (e) { /* un cache perdu, jamais un stock faux */ }
+    dernierSouciCache = "";
+  } catch (e) {
+    dernierSouciCache = String((e && e.message) || e).slice(0, 200);
+  }
+}
+
+/** L'état du relevé partagé, pour la page de diagnostic. Ne lève jamais. */
+export async function etatCachePartage(db) {
+  if (!db) return { ok: false, detail: "pas de base" };
+  try {
+    await preparerCache(db);
+    const r = await db.prepare(
+      "SELECT valeur, pose_le FROM cache_stock WHERE cle = 'vendable'"
+    ).first();
+    if (!r) {
+      return {
+        ok: false,
+        detail: "Aucun relevé partagé enregistré"
+          + (dernierSouciCache ? " — dernière écriture refusée : " + dernierSouciCache : "")
+          + ". Chaque instance froide réinterroge donc Odoo.",
+      };
+    }
+    const age = Math.round((Date.now() - Number(r.pose_le)) / 1000);
+    let n = 0;
+    try { n = Object.keys(JSON.parse(r.valeur) || {}).length; } catch (e) {}
+    return {
+      ok: true, age_s: age, references: n,
+      detail: n + " référence(s), relevé il y a " + age + " s"
+        + (dernierSouciCache ? " — dernière écriture refusée : " + dernierSouciCache : ""),
+    };
+  } catch (e) {
+    return { ok: false, detail: "illisible : " + String((e && e.message) || e).slice(0, 160) };
+  }
 }
 
 /** L'identifiant de l'emplacement de vente, cherché par son nom complet. */

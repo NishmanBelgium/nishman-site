@@ -24,6 +24,7 @@ import { catalogue } from "../_tarifs.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { configureSendcloud, compteSendcloud } from "../_sendcloud.js";
 import { lireIncidents } from "../_incidents.js";
+import { etatCachePartage } from "../_stock.js";
 
 
 function etatBase(db) {
@@ -350,6 +351,12 @@ export async function onRequestGet({ request, env }) {
    *
    * La liste est courte à dessein : vingt lignes se lisent, deux cents
    * ne se lisent pas. */
+  // L'état du relevé de stock partagé : s'il ne s'écrit pas, le site
+  // recalcule tout en permanence en paraissant fonctionner.
+  let cacheStock = null;
+  try { cacheStock = await etatCachePartage(env.DB); }
+  catch (e) { cacheStock = { ok: false, detail: "illisible" }; }
+
   let incidents = [];
   let incidentsSouci = "";
   try { incidents = await lireIncidents(env.DB, 20); }
@@ -370,6 +377,7 @@ export async function onRequestGet({ request, env }) {
     liaisons: liaisons,
     consequences: consequences,
     alertes: alertes,
+    releve_de_stock_partage: cacheStock,
     echecs_de_commande: incidentsSouci
       ? { lisible: false, detail: incidentsSouci }
       : { lisible: true, nombre: incidents.length, lignes: incidents },
