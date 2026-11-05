@@ -49,6 +49,15 @@ export async function onRequestGet(ctx) {
   // qu'un catalogue sans aucune limite, et le contrôle serveur tient le
   // filet de toute façon.
   let limits = data.limits || null;
+  /* D'où viennent les limites servies, et ce qui a empêché les bonnes.
+   *
+   * Ce repli était muet. Le 5 novembre 2026, il a fallu comparer la forme
+   * des valeurs rendues pour s'apercevoir que le catalogue affichait les
+   * limites approximatives du script Google au lieu du stock réel d'Odoo
+   * — rien, dans la réponse, ne le disait. Un repli qui ne s'annonce pas
+   * est un repli qu'on découvre trop tard. */
+  let limitesSource = "portier";
+  let limitesSouci = "";
   try {
     const produits = await catalogue(request);
     const dispo = await stockVendable(env, (produits || []).map((p) => p && p.ean),
@@ -64,8 +73,16 @@ export async function onRequestGet(ctx) {
         state: u > 0 ? "ok" : "out",
       };
     }
-    if (Object.keys(calculees).length) limits = calculees;
-  } catch (e) { /* on garde celles du portier */ }
+    if (Object.keys(calculees).length) {
+      limits = calculees;
+      limitesSource = "odoo";
+    } else {
+      limitesSouci = "catalogue vide : " + ((produits || []).length) + " référence(s)";
+    }
+  } catch (e) {
+    // On garde celles du portier, mais on dit pourquoi.
+    limitesSouci = String((e && e.message) || e).slice(0, 200);
+  }
 
   // Le nom affiché est celui du compte, pas celui rattaché au code interne :
   // c'est le client qui regarde ses prix, pas NBD. Un visiteur anonyme n'a
@@ -75,6 +92,10 @@ export async function onRequestGet(ctx) {
     connecte: !!compte,
     prices: data.prices,
     limits,
+    // « odoo » = le stock réel ; « portier » = des limites approximatives,
+    // et limites_souci dit ce qui a empêché les vraies.
+    limites_source: limitesSource,
+    limites_souci: limitesSouci,
     societe: compte ? compte.salon : null,
     email: compte ? compte.email : null,
     // Le pays décide du seuil de port affiché dans le panier.
