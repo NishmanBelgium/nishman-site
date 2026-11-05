@@ -10,19 +10,78 @@ export function configure(env) {
   return !!(env.ODOO_URL && env.ODOO_DB && env.ODOO_USER && env.ODOO_KEY);
 }
 
+/* ------------------------------------------------------------------------
+   COMBIEN DE QUESTIONS À LA FOIS, ET QUE FAIRE QUAND ODOO DIT NON.
+
+   Le 5 novembre 2026, les lots de références ont été lancés en parallèle
+   pour accélérer le relevé de stock. Le relevé est devenu quatre fois
+   plus rapide — et Odoo s'est mis à répondre 429, « trop de requêtes ».
+   Le catalogue retombait alors sur les limites approximatives du script
+   Google, sans que rien ne le dise, et le stock réel n'était plus servi
+   du tout. Une optimisation qui casse ce qu'elle accélère.
+
+   La leçon n'est pas « revenir à la file ». Entre tout en série, qui
+   coûtait sept secondes, et tout d'un coup, qu'Odoo refuse, il y a une
+   file à deux guichets : deux questions en vol, pas davantage. On garde
+   l'essentiel du gain sans dépasser ce qu'Odoo accepte.
+
+   Et quand il dit non quand même, on attend et on redemande, en tenant
+   le guichet fermé pendant l'attente : se faire refuser et repartir
+   aussitôt à l'assaut ne ferait qu'aggraver l'engorgement.
+   ------------------------------------------------------------------------ */
+
+const SIMULTANES_MAX = 2;
+const REESSAIS_429 = 2;
+const ATTENTE_429_MS = [500, 1500];
+
+let enVol = 0;
+const fileDAttente = [];
+
+function prendreGuichet() {
+  if (enVol < SIMULTANES_MAX) { enVol++; return Promise.resolve(); }
+  return new Promise((libre) => fileDAttente.push(libre));
+}
+
+function rendreGuichet() {
+  const suivant = fileDAttente.shift();
+  if (suivant) suivant();        // le guichet passe directement au suivant
+  else enVol = Math.max(0, enVol - 1);
+}
+
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function rpc(env, params) {
-  const r = await fetch(env.ODOO_URL.replace(/\/+$/, "") + "/jsonrpc", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", method: "call", params, id: Date.now() }),
-  });
-  if (!r.ok) throw new Error("Odoo a répondu " + r.status);
-  const data = await r.json();
-  if (data.error) {
-    const m = data.error.data?.message || data.error.message || "erreur Odoo";
-    throw new Error(m);
+  await prendreGuichet();
+  try {
+    for (let essai = 0; ; essai++) {
+      const r = await fetch(env.ODOO_URL.replace(/\/+$/, "") + "/jsonrpc", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", method: "call", params, id: Date.now() }),
+      });
+
+      if (r.status === 429 && essai < REESSAIS_429) {
+        // Odoo indique parfois combien de temps attendre ; sinon, notre
+        // propre palier, croissant.
+        const dit = Number(r.headers.get("retry-after"));
+        const attente = dit > 0 && dit <= 10
+          ? dit * 1000
+          : ATTENTE_429_MS[Math.min(essai, ATTENTE_429_MS.length - 1)];
+        await pause(attente);
+        continue;
+      }
+
+      if (!r.ok) throw new Error("Odoo a répondu " + r.status);
+      const data = await r.json();
+      if (data.error) {
+        const m = data.error.data?.message || data.error.message || "erreur Odoo";
+        throw new Error(m);
+      }
+      return data.result;
+    }
+  } finally {
+    rendreGuichet();
   }
-  return data.result;
 }
 
 let uidCache = null;
