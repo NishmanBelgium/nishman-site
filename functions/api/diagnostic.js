@@ -177,14 +177,23 @@ async function etatPoids(env, request) {
 
   let avec = 0, sans = [];
   const PAQUET = 100;
-  for (let i = 0; i < codes.length; i += PAQUET) {
-    const lot = codes.slice(i, i + PAQUET);
-    const r = await appelOdoo(env, "product.product", "search_read",
-      [[["barcode", "in", lot]], ["barcode", "name", "weight"]], { limit: lot.length });
-    for (const p of r || []) {
-      if (Number(p.weight) > 0) avec++;
-      else sans.push(p.name);
+  try {
+    for (let i = 0; i < codes.length; i += PAQUET) {
+      const lot = codes.slice(i, i + PAQUET);
+      const r = await appelOdoo(env, "product.product", "search_read",
+        [[["barcode", "in", lot]], ["barcode", "name", "weight"]], { limit: lot.length });
+      for (const p of r || []) {
+        if (Number(p.weight) > 0) avec++;
+        else sans.push(p.name);
+      }
     }
+  } catch (e) {
+    // L'appelant rattrape déjà ce contrôle, mais il le fait avec un
+    // message générique. Ici on sait que c'est Odoo qui a refusé — un
+    // « 429, trop de requêtes » suffit — et le dire fait gagner le
+    // quart d'heure qu'il a fallu ce 5 novembre pour le comprendre.
+    return { ok: false, detail: "Odoo n'a pas répondu : "
+      + String((e && e.message) || "erreur").slice(0, 160) };
   }
   const total = avec + sans.length;
   return {
@@ -276,7 +285,31 @@ async function etatSendcloud(env) {
   }
 }
 
-export async function onRequestGet({ request, env }) {
+/* Une page de diagnostic ne doit JAMAIS tomber en panne.
+ *
+ * Le 5 novembre 2026, elle a répondu 500 pendant une dizaine de minutes :
+ * Cloudflare rendait sa page « Error 1101 » et l'exception restait dans
+ * ses journaux, invisible d'ici. La page dont le métier est de dire ce
+ * qui ne va pas était le seul endroit du site incapable de le dire.
+ *
+ * Elle rend désormais son erreur en clair, en JSON. Une erreur lisible
+ * vaut toujours mieux qu'une page blanche. */
+export async function onRequestGet(contexte) {
+  try {
+    return await rapport(contexte);
+  } catch (e) {
+    return json({
+      ok: false,
+      tout_va_bien: false,
+      resume: "La page de diagnostic a elle-même échoué.",
+      panne: String((e && e.message) || e).slice(0, 400),
+      ou: String((e && e.stack) || "").split("\n").slice(0, 4).join(" | ").slice(0, 600),
+      date: new Date().toISOString(),
+    }, 200);
+  }
+}
+
+async function rapport({ request, env }) {
   const compte = await compteAdmin(request, env);
   if (!compte) return erreur("Page réservée.", 404, "reservee");
 
