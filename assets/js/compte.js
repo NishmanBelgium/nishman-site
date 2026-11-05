@@ -303,6 +303,22 @@
               }));
             } catch (x) {}
           }
+
+          // La mesure publicitaire se fait sur la page suivante, pas ici.
+          // Un évènement émis juste avant une redirection part dans une
+          // requête que le navigateur annule en changeant de page : il
+          // serait perdu une fois sur deux, et le coût d'acquisition
+          // paraîtrait deux fois meilleur qu'il ne l'est. On dépose donc
+          // de quoi l'émettre, et la page de compte s'en charge.
+          try {
+            var cpt = r.donnees.compte || {};
+            sessionStorage.setItem("nishman-inscrit", JSON.stringify({
+              cle: cpt.email || String(Date.now()),
+              statut: cpt.tva_statut || "jamais",
+              pays: cpt.pays || "",
+            }));
+          } catch (x) {}
+
           location.href = retourSur() || "/pro/compte/";
           return;
         }
@@ -478,6 +494,22 @@
             code: avis.code, erreur: avis.texte,
           }), "erreur");
           montrerVue("coordonnees");
+        }
+      } catch (x) {}
+
+      // Le compte vient d'être créé : c'est le moment de le signaler à la
+      // mesure publicitaire, si et seulement si le visiteur l'a acceptée.
+      // Rien n'est mis en file d'attente : un inscrit qui a refusé n'est
+      // pas compté, et il ne le sera pas davantage plus tard.
+      try {
+        var neuf = sessionStorage.getItem("nishman-inscrit");
+        if (neuf) {
+          sessionStorage.removeItem("nishman-inscrit");
+          var i = JSON.parse(neuf);
+          if (window.nishmanConsentement) {
+            window.nishmanConsentement.compteProUneFois(i.cle, i.statut,
+              { country: i.pays || "" });
+          }
         }
       } catch (x) {}
     }

@@ -25,7 +25,7 @@
   /* L'identifiant du pixel Meta. Il n'est pas secret : tout site qui en
      porte un l'expose dans son code source, c'est ainsi que le navigateur
      le trouve. Le laisser vide désactive toute la mesure. */
-  var PIXEL = "1566859308497027";
+  var PIXEL = "1694763912240328";
 
   /* La version du consentement. À incrémenter si les finalités changent :
      un visiteur qui a dit oui à la mesure publicitaire n'a pas dit oui à
@@ -150,6 +150,57 @@
       if (!PIXEL || !charge || !window.fbq) return false;
       try {
         window.fbq("track", nom, donnees || {});
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+
+    /* Le compte professionnel à TVA validée.
+
+       Meta sait compter une inscription ; il ne sait pas faire la
+       différence entre un curieux et un salon. Nous, si : le numéro de
+       TVA est contrôlé en direct auprès de VIES à l'inscription, et un
+       particulier n'en a pas. C'est donc ce signal-là, et non le clic ni
+       l'inscription nue, que les campagnes cherchent à maximiser.
+
+       Deux évènements partent, et ce n'est pas une redondance :
+       « CompleteRegistration » est au catalogue de Meta et donne du
+       volume à l'algorithme ; « CompteProTvaValide » n'y est pas et ne
+       part que si VIES a confirmé, ce qui en fait l'objectif
+       d'optimisation. Le second seul serait trop rare pour apprendre, le
+       premier seul attirerait n'importe qui.
+
+       L'envoi est gardé par la clé du compte : la page d'accueil du
+       compte est rechargée souvent, et une inscription comptée trois
+       fois fausserait le coût d'acquisition dans le sens le plus
+       flatteur — donc le plus dangereux. */
+    compteProUneFois: function (cle, statut, donnees) {
+      if (!cle) return false;
+      var memoire = "nishman-compte-pro-" + cle;
+      try {
+        if (window.sessionStorage.getItem(memoire)) return false;
+        window.sessionStorage.setItem(memoire, "1");
+      } catch (e) {
+        /* Sans stockage, on préfère une inscription comptée deux fois à
+           une inscription perdue : l'excès se repère, le manque non. */
+      }
+      var d = donnees || {};
+      d.status = statut || "inconnu";
+      d.content_name = "compte-pro";
+      var parti = window.nishmanConsentement.evenement("CompleteRegistration", d);
+      if (statut === "valide") {
+        window.nishmanConsentement.evenementSurMesure("CompteProTvaValide", d);
+      }
+      return parti;
+    },
+
+    /* Un évènement qui n'est pas au catalogue de Meta. « track » refuse
+       les noms qu'il ne connaît pas ; « trackCustom » les accepte. */
+    evenementSurMesure: function (nom, donnees) {
+      if (!PIXEL || !charge || !window.fbq) return false;
+      try {
+        window.fbq("trackCustom", nom, donnees || {});
         return true;
       } catch (e) {
         return false;
