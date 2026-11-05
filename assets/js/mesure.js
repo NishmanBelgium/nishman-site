@@ -69,6 +69,65 @@
     return vue;
   }
 
+  /* L'origine publicitaire, pour la commande.
+   *
+   * Même mécanisme que l'étiquette ci-dessus, et pour la même raison :
+   * la première origine de la visite l'emporte. Mais elle ne sert pas au
+   * même usage, et c'est ce qui justifie de la garder à part.
+   *
+   * L'étiquette « c » compte des pages vues. Celle-ci sera écrite sur la
+   * COMMANDE, dans Odoo, à côté du montant facturé. C'est elle qui
+   * permettra de dire « la campagne de novembre a rapporté tant
+   * d'euros » plutôt que « tant de clics ».
+   *
+   * Pourquoi la première et pas la dernière : un barbier découvre la
+   * marque par une publicité, revient trois semaines plus tard en tapant
+   * « nishman » dans Google, et commande. En dernière origine, c'est
+   * Google qui empocherait le mérite et la publicité paraîtrait inutile
+   * — alors que sans elle, il n'aurait jamais su quoi taper.
+   *
+   * Comme l'étiquette, ces trois valeurs ne désignent personne :
+   * « meta / cpc / salons-novembre » est la même chaîne pour tous ceux
+   * qui ont cliqué sur la même annonce. Elle vit dans la mémoire de
+   * l'onglet et s'efface avec lui. */
+  var CLE_O = "nishman-origine";
+
+  function propre(v) {
+    if (!v) return "";
+    var s = String(v).trim().toLowerCase().slice(0, 60);
+    return /^[a-z0-9][a-z0-9 ._\-+/]*$/.test(s) ? s : "";
+  }
+
+  function origineAnnonce() {
+    var deja = null;
+    try { deja = sessionStorage.getItem(CLE_O); } catch (e) {}
+    if (deja) { try { return JSON.parse(deja); } catch (e) { return null; } }
+
+    var vue = null;
+    try {
+      var q = new URLSearchParams(location.search);
+      var o = {
+        source: propre(q.get("utm_source")),
+        medium: propre(q.get("utm_medium")),
+        campagne: propre(q.get("utm_campaign")),
+      };
+      if (o.source || o.medium || o.campagne) vue = o;
+    } catch (e) { /* adresse illisible : tant pis */ }
+
+    if (!vue) return null;
+    try { sessionStorage.setItem(CLE_O, JSON.stringify(vue)); } catch (e) {}
+    return vue;
+  }
+
+  /* Les pages de commande lisent l'origine par ici. Elles ne chargent pas
+     toutes ce fichier, d'où la lecture directe du stockage en secours. */
+  window.nishmanOrigine = function () {
+    try {
+      var brut = sessionStorage.getItem(CLE_O);
+      return brut ? JSON.parse(brut) : null;
+    } catch (e) { return null; }
+  };
+
   function premiere() {
     // Le stockage peut être refusé — navigation privée, réglages stricts.
     // Dans ce cas on compte la page vue et on renonce à la session : un
@@ -89,6 +148,10 @@
        drapeau de session. Sinon, sur la toute première page, le nettoyage
        de l'adresse partirait après coup. */
     var c = campagne();
+    // Retenue au passage, pour la commande qui viendra peut-être plus
+    // tard. Elle ne part pas dans la mesure d'audience : celle-ci compte
+    // des pages, pas des euros.
+    origineAnnonce();
     var charge = JSON.stringify({
       chemin: location.pathname,
       source: origine(document.referrer),

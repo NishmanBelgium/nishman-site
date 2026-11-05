@@ -244,6 +244,20 @@
       relais: { id: relais.id }
     };
 
+    /* D'où vient cet acheteur — retenu à son arrivée par mesure.js, écrit
+       ensuite sur la commande dans Odoo. Même code que côté
+       professionnel, même raison : mesurer ce qu'une campagne rapporte en
+       euros plutôt qu'en clics. */
+    try {
+      var venu = (typeof window.nishmanOrigine === "function")
+        ? window.nishmanOrigine() : null;
+      if (!venu) {
+        var brut = sessionStorage.getItem("nishman-origine");
+        venu = brut ? JSON.parse(brut) : null;
+      }
+      if (venu) corps.origine = venu;
+    } catch (e) { /* sans origine, la commande part quand même */ }
+
     envoiEnCours = true;
     var b = $("bc-payer");
     b.disabled = true;

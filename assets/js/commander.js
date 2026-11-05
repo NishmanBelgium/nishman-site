@@ -359,7 +359,27 @@
       if (memeAdresse()) corps.livraison_identique = true;
       else corps.livraison = adresseSaisie();
     }
+    const venu = origineDeLaVisite();
+    if (venu) corps.origine = venu;
     return corps;
+  }
+
+  /* D'où vient ce client. Retenu à son arrivée sur le site par mesure.js,
+     relu ici pour être écrit sur la commande dans Odoo — c'est ce qui
+     permettra de dire ce qu'une campagne a rapporté en euros, et pas
+     seulement en clics. La page de commande ne charge pas toujours
+     mesure.js, d'où la lecture directe du stockage en secours. */
+  function origineDeLaVisite() {
+    try {
+      if (typeof window.nishmanOrigine === "function") {
+        const o = window.nishmanOrigine();
+        if (o) return o;
+      }
+      const brut = sessionStorage.getItem("nishman-origine");
+      return brut ? JSON.parse(brut) : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   /** Les deux boutons se tiennent par la main : l'un travaille, l'autre attend. */

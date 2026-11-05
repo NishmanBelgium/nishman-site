@@ -21,6 +21,7 @@ import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
 import { configure as configureOdoo, appel as appelOdoo, aDejaCommande } from "../_odoo.js";
 import { creerCommandeOdoo } from "../_commande_odoo.js";
+import { origineDuCorps } from "../_utm.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { enregistrer } from "../_paiements.js";
 import { verifierStockPro } from "../_stock.js";
@@ -157,7 +158,9 @@ export async function onRequestPost(ctx) {
   // 1) La commande, en brouillon, avant le paiement.
   let commande;
   try {
-    commande = await creerCommandeOdoo(env, { compte, resultat, livraison, ref, tva });
+    commande = await creerCommandeOdoo(env, {
+      compte, resultat, livraison, ref, tva, origine: origineDuCorps(corps),
+    });
   } catch (e) {
     return json({
       ok: false, motif: e && e.code ? e.code : "odoo", ref,

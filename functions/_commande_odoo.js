@@ -28,6 +28,7 @@
 
 import { appel, produitsParEan, partenaireParEmail, partenaireParTva } from "./_odoo.js";
 import { positionFiscale, nomsPossibles } from "./_fiscal.js";
+import { champsOrigine } from "./_utm.js";
 import { rangerParDepot } from "./_commun.js";
 
 /* --- Noms réglables ------------------------------------------------------
@@ -166,7 +167,7 @@ export async function trouverOuCreerPartenaire(env, compte) {
  *   ecart : la différence entre notre total hors taxes et celui qu'Odoo a
  *   calculé. Zéro attendu ; non nul, c'est un signal, pas un détail.
  */
-export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref, tva }) {
+export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref, tva, origine }) {
   if (!resultat || !Array.isArray(resultat.lignes) || !resultat.lignes.length) {
     throw echec("panier_vide", "Aucune ligne à enregistrer.");
   }
@@ -280,6 +281,12 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
   };
   if (positionId) valeurs.fiscal_position_id = positionId;
   if (carrierId) valeurs.carrier_id = carrierId;
+
+  // D'où vient ce client. Posé ici, à la création, parce qu'une commande
+  // déjà enregistrée n'est plus jamais rouverte pour y ajouter une
+  // étiquette. Si l'origine est inconnue ou si Odoo refuse les
+  // étiquettes, l'objet est vide et la commande part sans elles.
+  Object.assign(valeurs, await champsOrigine(env, origine));
 
   const note = noteInterne({ resultat, livraison, tva });
   if (note) valeurs.note = note;

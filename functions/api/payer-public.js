@@ -25,6 +25,7 @@ import { calculerB2C, paysValideB2C } from "../_calcul_b2c.js";
 import { limiterAuStock } from "../_stock.js";
 import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
 import { creerCommandeB2C } from "../_commande_b2c.js";
+import { origineDuCorps } from "../_utm.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { configureSendcloud, pointRelais } from "../_sendcloud.js";
 import { enregistrer } from "../_paiements.js";
@@ -225,7 +226,9 @@ export async function onRequestPost(ctx) {
   // 1) La commande, en brouillon.
   let commande;
   try {
-    commande = await creerCommandeB2C(env, { client, relais, resultat, ref });
+    commande = await creerCommandeB2C(env, {
+      client, relais, resultat, ref, origine: origineDuCorps(corps),
+    });
   } catch (e) {
     return json({
       ok: false, motif: (e && e.code) || "odoo", ref,

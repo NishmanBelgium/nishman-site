@@ -29,6 +29,7 @@ import { produitsParEan, partenaireParEmail } from "./_odoo.js";
 import { rangerParDepot } from "./_commun.js";
 import { nomLivraison, echec, parNomInsensible, paysId } from "./_commande_odoo.js";
 import { nomsPossibles } from "./_fiscal.js";
+import { champsOrigine } from "./_utm.js";
 
 /**
  * Le client particulier. Retrouvé par son adresse e-mail, créé sinon.
@@ -135,7 +136,7 @@ function note({ resultat, relais, ref }) {
  * écart arrête tout : mieux vaut un client qui réessaie qu'un client débité
  * d'un montant qui ne correspond à aucune facture.
  */
-export async function creerCommandeB2C(env, { client, relais, resultat, ref }) {
+export async function creerCommandeB2C(env, { client, relais, resultat, ref, origine }) {
   if (!resultat || !Array.isArray(resultat.lignes) || !resultat.lignes.length) {
     throw echec("panier_vide", "Aucune ligne à enregistrer.");
   }
@@ -247,6 +248,11 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref }) {
     note: note({ resultat, relais, ref }),
   };
   if (carrierId) valeurs.carrier_id = carrierId;
+
+  // D'où vient cet acheteur. Même raison que côté professionnel : c'est
+  // à la création ou jamais, et une étiquette absente ne doit pas
+  // empêcher la vente.
+  Object.assign(valeurs, await champsOrigine(env, origine));
 
   if (relais && relais.nom) {
     valeurs.partner_shipping_id = await adresseDuRelais(env, fiche.id, client, relais);
