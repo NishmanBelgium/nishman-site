@@ -12,7 +12,7 @@
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
-<link rel="stylesheet" href="/assets/css/stats.css?v=341" />
+<link rel="stylesheet" href="/assets/css/stats.css?v=395" />
   <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 </head>
 <body data-palette="#ED9B24,#1F6FB2">
@@ -57,10 +57,23 @@
           <button type="button" data-vue="pro">Professionnel</button>
         </nav>
         <nav class="st-filtres" id="st-filtres" aria-label="Période">
+          <button type="button" data-jours="1">Aujourd'hui</button>
           <button type="button" data-jours="7">7 jours</button>
           <button type="button" data-jours="30" aria-pressed="true">30 jours</button>
           <button type="button" data-jours="90">90 jours</button>
         </nav>
+        <!-- Les deux dates. « Les N derniers jours » répond à « comment ça
+             va » ; il faut aussi pouvoir revenir au 14 du mois dernier,
+             justement les jours où quelque chose a cloché. -->
+        <div class="st-dates" id="st-dates">
+          <label for="st-du">Du</label>
+          <input type="date" id="st-du" name="du" />
+          <label for="st-au">au</label>
+          <input type="date" id="st-au" name="au" />
+          <button type="button" id="st-journee" class="st-lien-bouton">
+            Une seule journée
+          </button>
+        </div>
       </div>
     </div>
 
@@ -113,6 +126,42 @@
       <p class="st-vide" id="st-vide-commandes" hidden>Aucune commande sur la période.</p>
     </section>
 
+    <!-- Le détail jour par jour. Les courbes montrent la forme, ce tableau
+         donne les nombres : on ne pilote pas sur une pente, et « combien
+         exactement le 14 » est une question qu'on se pose tous les mois. -->
+    <section class="st-bloc" id="st-journal">
+      <div class="st-bloc-tete">
+        <h2>Jour par jour</h2>
+        <button type="button" class="st-lien-bouton" id="st-export">Exporter en CSV</button>
+      </div>
+      <div class="st-defile" id="st-journal-corps"></div>
+    </section>
+
+    <!-- Ce que le site a réellement produit : les commandes et les devis,
+         nommément. Jusqu'ici la page ne montrait que les commandes
+         bloquées — utile pour agir, muet sur ce qui s'est vendu. -->
+    <section class="st-bloc" id="st-commandes">
+      <div class="st-bloc-tete">
+        <h2>Commandes passées sur le site</h2>
+        <div class="st-filtres st-filtres-mini" id="st-cmd-filtres" aria-label="Statut">
+          <button type="button" data-statut="tout" aria-pressed="true">Toutes</button>
+          <button type="button" data-statut="paye">Payées</button>
+          <button type="button" data-statut="autre">Non abouties</button>
+        </div>
+      </div>
+      <div class="st-defile" id="st-commandes-corps"></div>
+    </section>
+
+    <section class="st-bloc" id="st-devis">
+      <div class="st-bloc-tete">
+        <h2>Devis émis depuis le site</h2>
+        <p class="st-aide">Les devis demandés par un salon connecté, envoyés dans Odoo.
+          Ils ne comptent pas dans le taux de transformation : un devis n'est pas
+          une vente tant qu'il n'est pas confirmé.</p>
+      </div>
+      <div class="st-defile" id="st-devis-corps"></div>
+    </section>
+
     <!-- Les salons. La boutique n'a pas de clients à compter : on y achète
          sans compte, et c'est voulu. -->
     <section class="st-bloc" id="st-clients" hidden>
@@ -147,7 +196,7 @@
 
 </main>
 
-<script src="/assets/js/stats.js?v=344" defer></script>
+<script src="/assets/js/stats.js?v=395" defer></script>
 <script src="/assets/js/consentement.js?v=394" defer></script>
 </body>
 </html>

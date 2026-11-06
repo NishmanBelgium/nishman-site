@@ -27,7 +27,14 @@
   var TRAIT = "rgba(10,10,10,0.10)";
 
   var $ = function (s) { return document.querySelector(s); };
-  var etat = { jours: 30, vue: "tout", donnees: null };
+
+  /* « jours » vaut pour les raccourcis, « depuis / jusqua » pour une
+     période choisie à la main. Les seconds l'emportent quand ils sont
+     remplis : c'est le geste le plus explicite des deux. */
+  var etat = {
+    jours: 30, depuis: null, jusqua: null,
+    vue: "tout", statut: "tout", donnees: null, journal: null,
+  };
 
   function ech(t) {
     return String(t == null ? "" : t)
@@ -47,6 +54,16 @@
   function jourCourt(iso) {
     var d = new Date(iso + "T00:00:00");
     return d.toLocaleDateString("fr-BE", { day: "numeric", month: "short" });
+  }
+  /* Le jour de la semaine est porté dans le journal : un creux le dimanche
+     n'est pas un creux, et sans le nom du jour on le relit chaque fois. */
+  function jourLong(iso) {
+    if (!iso) return "—";
+    var d = new Date(iso + "T00:00:00");
+    if (isNaN(d.getTime())) return String(iso);
+    return d.toLocaleDateString("fr-BE", {
+      weekday: "short", day: "2-digit", month: "2-digit",
+    });
   }
 
   /* --- Les cartes de chiffres ------------------------------------------ */
@@ -418,26 +435,269 @@
     }).join("");
   }
 
+  /* --- Le journal jour par jour ---------------------------------------- */
+
+  /* Le journal montre toujours l'ensemble du site, quelle que soit la vue
+     choisie plus haut. C'est volontaire : son intérêt est justement de
+     mettre les deux côtés sur la même ligne de date, pour qu'on voie
+     qu'un jour creux à la boutique était un gros jour côté salons. Le
+     découper par vue le ramènerait à ce que les courbes disent déjà. */
+
+  var COLONNES = [
+    { cle: "jour", titre: "Date", type: "date" },
+    { cle: "sessions", titre: "Visites", type: "nombre" },
+    { cle: "vues", titre: "Pages vues", type: "nombre" },
+    { cle: "cmd_boutique", titre: "Cmd boutique", type: "nombre" },
+    { cle: "ca_boutique", titre: "CA boutique", type: "euros" },
+    { cle: "cmd_pro", titre: "Cmd pro", type: "nombre" },
+    { cle: "ca_pro", titre: "CA pro", type: "euros" },
+    { cle: "devis", titre: "Devis", type: "nombre" },
+    { cle: "comptes", titre: "Comptes créés", type: "nombre" },
+  ];
+
+  function indexer(liste, cle) {
+    var m = {};
+    (liste || []).forEach(function (l) { m[l[cle || "jour"]] = l; });
+    return m;
+  }
+
+  /* Les lignes du journal, construites sur la suite complète des dates de
+     la période et non sur les jours qui ont des données : un jour à zéro
+     est une information, et le sauter décalerait la lecture. */
+  function lignesJournal(d) {
+    var jours = axeDuTemps(d);
+    var aud = indexer(d.audience && d.audience.par_jour);
+    var bout = indexer(d.boutique && d.boutique.commerce.par_jour);
+    var pro = indexer(d.pro && d.pro.commerce.par_jour);
+    var dev = indexer(d.devis && d.devis.par_jour);
+    var cpt = indexer(d.clients && d.clients.par_jour);
+
+    return jours.map(function (j) {
+      var a = aud[j] || {}, b = bout[j] || {}, p = pro[j] || {};
+      var v = dev[j] || {}, c = cpt[j] || {};
+      return {
+        jour: j,
+        sessions: Number(a.sessions || 0),
+        vues: Number(a.vues || 0),
+        cmd_boutique: Number(b.commandes || 0),
+        ca_boutique: Number(b.chiffre || 0),
+        cmd_pro: Number(p.commandes || 0),
+        ca_pro: Number(p.chiffre || 0),
+        devis: Number(v.n || 0),
+        comptes: Number(c.n || 0),
+      };
+    });
+  }
+
+  function cellule(l, col) {
+    if (col.type === "date") return ech(jourLong(l.jour));
+    if (col.type === "euros") return l[col.cle] ? euros(l[col.cle]) : "—";
+    return l[col.cle] ? nombre(l[col.cle]) : "—";
+  }
+
+  function journal(d) {
+    var lignes = lignesJournal(d);
+    etat.journal = lignes;
+
+    // Du plus récent au plus ancien : on ouvre cette page pour voir hier,
+    // pas pour redescendre trois mois.
+    var affichees = lignes.slice().reverse();
+
+    var totaux = { jour: null };
+    COLONNES.slice(1).forEach(function (c) {
+      totaux[c.cle] = lignes.reduce(function (s, l) { return s + l[c.cle]; }, 0);
+    });
+
+    var tete = COLONNES.map(function (c) {
+      return '<th' + (c.type === "date" ? "" : ' class="st-num"') + ">" + ech(c.titre) + "</th>";
+    }).join("");
+
+    var corps = affichees.map(function (l) {
+      var vide = !l.sessions && !l.vues && !l.cmd_boutique && !l.cmd_pro
+                 && !l.devis && !l.comptes;
+      return '<tr' + (vide ? ' class="st-ligne-vide"' : "") + ">"
+        + COLONNES.map(function (c) {
+            return "<td" + (c.type === "date" ? ' class="st-jour"' : ' class="st-num"') + ">"
+              + cellule(l, c) + "</td>";
+          }).join("")
+        + "</tr>";
+    }).join("");
+
+    var pied = "<tr><th>Total</th>"
+      + COLONNES.slice(1).map(function (c) {
+          return '<th class="st-num">'
+            + (c.type === "euros" ? euros(totaux[c.cle]) : nombre(totaux[c.cle])) + "</th>";
+        }).join("")
+      + "</tr>";
+
+    $("#st-journal-corps").innerHTML =
+      '<table class="st-table st-table-journal"><thead><tr>' + tete + "</tr></thead>"
+      + "<tbody>" + corps + "</tbody><tfoot>" + pied + "</tfoot></table>";
+  }
+
+  /* L'export. Le point-virgule et la virgule décimale parce que le fichier
+     s'ouvrira dans un tableur réglé en français : une virgule séparatrice
+     y collerait tout dans une seule colonne. */
+  function exporterCsv() {
+    var lignes = etat.journal || [];
+    if (!lignes.length) return;
+    var sep = ";";
+    var entete = COLONNES.map(function (c) { return c.titre; }).join(sep);
+    var corps = lignes.map(function (l) {
+      return COLONNES.map(function (c) {
+        if (c.type === "date") return l.jour;
+        if (c.type === "euros") return String(l[c.cle].toFixed(2)).replace(".", ",");
+        return String(l[c.cle]);
+      }).join(sep);
+    }).join("\r\n");
+
+    // Le BOM : sans lui, Excel lit l'UTF-8 comme du latin-1 et les accents
+    // des en-têtes arrivent en charabia.
+    var csv = "﻿" + entete + "\r\n" + corps + "\r\n";
+    var p = etat.donnees ? etat.donnees.periode : { depuis: "", jusqua: "" };
+    var nom = "nishman-chiffres-" + p.depuis + "_" + p.jusqua + ".csv";
+
+    var url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = nom;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  /* --- Les commandes et les devis réalisés ------------------------------ */
+
+  var ETAPES = {
+    rien: "à traiter", odoo: "créée dans Odoo", facture: "facturée",
+    etiquette: "étiquetée", fini: "terminée",
+  };
+  var STATUTS = {
+    paye: "payée", ouvert: "ouverte", echec: "échouée",
+    expire: "expirée", annule: "annulée",
+  };
+
+  function listeCommandes(d) {
+    var toutes = d.commandes_liste || [];
+    var lignes = toutes.filter(function (c) {
+      if (etat.statut === "paye") return c.statut === "paye";
+      if (etat.statut === "autre") return c.statut !== "paye";
+      return true;
+    }).filter(function (c) {
+      /* La vue choisie en haut de page s'applique aussi ici : regarder
+         « Boutique » et lire des commandes pro dans la liste ferait
+         douter de tout le reste. */
+      if (etat.vue === "boutique") return c.cote === "boutique";
+      if (etat.vue === "pro") return c.cote === "pro";
+      return true;
+    });
+
+    if (!lignes.length) {
+      $("#st-commandes-corps").innerHTML =
+        '<p class="st-vide">Aucune commande sur la période.</p>';
+      return;
+    }
+
+    var paye = lignes.filter(function (c) { return c.statut === "paye"; });
+    var somme = paye.reduce(function (s, c) { return s + Number(c.montant || 0); }, 0);
+
+    var corps = lignes.map(function (c) {
+      var ok = c.statut === "paye";
+      return "<tr>"
+        + '<td class="st-jour">' + ech(jourLong(String(c.cree_le).slice(0, 10))) + "</td>"
+        + "<td><strong>" + ech(c.odoo_nom || c.ref || "—") + "</strong></td>"
+        + '<td><span class="st-etiq st-etiq-' + (c.cote === "pro" ? "pro" : "bout") + '">'
+        + (c.cote === "pro" ? "Pro" : "Boutique") + "</span></td>"
+        + "<td>" + ech(c.client || "—") + "</td>"
+        + '<td class="st-num">' + euros(c.montant) + "</td>"
+        + '<td><span class="st-puce st-puce-' + (ok ? "ok" : "non") + '">'
+        + ech(STATUTS[c.statut] || c.statut || "—") + "</span></td>"
+        + "<td>" + ech(ok ? (ETAPES[c.etape] || c.etape || "—") : "—") + "</td>"
+        + "</tr>";
+    }).join("");
+
+    $("#st-commandes-corps").innerHTML =
+      '<p class="st-lead"><b>' + nombre(lignes.length) + "</b> commande(s) affichée(s), dont <b>"
+      + nombre(paye.length) + "</b> payée(s) pour <b>" + euros(somme) + "</b>.</p>"
+      + '<table class="st-table"><thead><tr><th>Date</th><th>Référence</th><th>Côté</th>'
+      + '<th>Client</th><th class="st-num">Montant</th><th>Statut</th><th>Étape</th>'
+      + "</tr></thead><tbody>" + corps + "</tbody></table>";
+  }
+
+  function listeDevis(d) {
+    var zone = $("#st-devis");
+    var v = d.devis || { liste: [], total: 0, montant: 0 };
+
+    /* La boutique n'émet pas de devis : on y achète directement. Montrer
+       un bloc vide dans cette vue laisserait croire à une panne. */
+    if (etat.vue === "boutique") { zone.hidden = true; return; }
+    zone.hidden = false;
+
+    if (!v.liste || !v.liste.length) {
+      $("#st-devis-corps").innerHTML =
+        '<p class="st-vide">Aucun devis sur la période. Les devis sont enregistrés '
+        + "depuis la mise en place de ce registre : ceux émis avant n'y figurent pas, "
+        + "ils sont dans Odoo.</p>";
+      return;
+    }
+
+    var corps = v.liste.map(function (l) {
+      return "<tr>"
+        + '<td class="st-jour">' + ech(jourLong(String(l.cree_le).slice(0, 10))) + "</td>"
+        + "<td><strong>" + ech(l.ref) + "</strong></td>"
+        + "<td>" + ech(l.client || "—") + "</td>"
+        + "<td>" + ech(l.pays || "—") + "</td>"
+        + '<td class="st-num">' + nombre(l.lignes) + "</td>"
+        + '<td class="st-num">' + euros(l.montant) + "</td>"
+        + "<td>" + (Number(l.retrait) ? "Retrait" : "Livraison") + "</td>"
+        + "</tr>";
+    }).join("");
+
+    var e = evolution(v.total, v.total_avant);
+    $("#st-devis-corps").innerHTML =
+      '<p class="st-lead"><b>' + nombre(v.total) + "</b> devis émis sur la période, "
+      + "pour <b>" + euros(v.montant) + "</b> demandés"
+      + (e ? " · " + ech(e.texte) + " vs période précédente" : "") + ".</p>"
+      + '<table class="st-table"><thead><tr><th>Date</th><th>Devis</th><th>Salon</th>'
+      + '<th>Pays</th><th class="st-num">Lignes</th><th class="st-num">Montant</th>'
+      + "<th>Envoi</th></tr></thead><tbody>" + corps + "</tbody></table>";
+  }
+
   /* --- Le chargement ---------------------------------------------------- */
 
-  function dessiner(d) {
-    etat.donnees = d;
-    var k = cote(d);
-
-    $("#st-periode").textContent =
-      "Du " + jourCourt(d.periode.depuis) + " au " + jourCourt(d.periode.jusqua)
-      + " · comparé aux " + d.periode.jours + " jours précédents";
-
-    dessinerCartes(d);
-
-    // L'axe du temps est le même pour les deux graphiques : on le
-    // construit une fois, à partir de la période, et pas à partir des
-    // jours qui ont des données — un trou doit se voir.
+  /* La suite complète des dates de la période. Construite à partir des
+     bornes et non des jours qui ont des données : un trou doit se voir. */
+  function axeDuTemps(d) {
     var jours = [], i;
     var debut = new Date(d.periode.depuis + "T00:00:00");
     for (i = 0; i < d.periode.jours; i++) {
       jours.push(new Date(debut.getTime() + i * 86400000).toISOString().slice(0, 10));
     }
+    return jours;
+  }
+
+  function dessiner(d) {
+    etat.donnees = d;
+    var k = cote(d);
+
+    /* Une journée seule ne se compare pas « aux 1 jours précédents » :
+       on le dit autrement plutôt que d'écrire une phrase fausse. */
+    $("#st-periode").textContent = d.periode.jours === 1
+      ? "Journée du " + jourLong(d.periode.depuis)
+        + " · comparée à la veille"
+      : "Du " + jourCourt(d.periode.depuis) + " au " + jourCourt(d.periode.jusqua)
+        + " · comparé aux " + d.periode.jours + " jours précédents";
+
+    // Les deux champs de date suivent la période réellement servie, même
+    // quand elle a été corrigée par le serveur.
+    $("#st-du").value = d.periode.depuis;
+    $("#st-au").value = d.periode.jusqua;
+
+    dessinerCartes(d);
+
+    // L'axe du temps est le même pour les deux graphiques et le journal.
+    var jours = axeDuTemps(d);
     var parJour = {}, parJourCmd = {};
     (k.audience.par_jour || []).forEach(function (l) { parJour[l.jour] = l; });
     (k.commerce.par_jour || []).forEach(function (l) { parJourCmd[l.jour] = l; });
@@ -486,11 +746,23 @@
     tableau("#st-pays", k.audience.par_pays, "pays", "Pays");
     tableau("#st-appareils", k.audience.par_appareil, "appareil", "Appareil");
     souffrance(d.en_souffrance);
+
+    journal(d);
+    listeCommandes(d);
+    listeDevis(d);
+  }
+
+  function requete() {
+    if (etat.depuis && etat.jusqua) {
+      return "/api/stats?depuis=" + encodeURIComponent(etat.depuis)
+        + "&jusqua=" + encodeURIComponent(etat.jusqua);
+    }
+    return "/api/stats?jours=" + etat.jours;
   }
 
   function charger() {
     $("#st-attente").hidden = false;
-    fetch("/api/stats?jours=" + etat.jours, { cache: "no-store" })
+    fetch(requete(), { cache: "no-store" })
       .then(function (r) {
         if (r.status === 404 || r.status === 401 || r.status === 403) {
           $("#st-attente").hidden = true;
@@ -510,14 +782,60 @@
       });
   }
 
+  function marquer(groupe, actif) {
+    Array.prototype.forEach.call(groupe.querySelectorAll("button"), function (x) {
+      x.setAttribute("aria-pressed", x === actif ? "true" : "false");
+    });
+  }
+
   $("#st-filtres").addEventListener("click", function (e) {
     var b = e.target.closest("button[data-jours]");
     if (!b) return;
     etat.jours = Number(b.dataset.jours);
-    Array.prototype.forEach.call(this.querySelectorAll("button"), function (x) {
-      x.setAttribute("aria-pressed", x === b ? "true" : "false");
-    });
+    // Un raccourci annule la période saisie à la main : les deux
+    // coexisteraient sinon, et l'affichage ne dirait plus laquelle gagne.
+    etat.depuis = null;
+    etat.jusqua = null;
+    marquer(this, b);
     charger();
+  });
+
+  /* Les deux champs de date. On recharge dès que les deux sont remplis,
+     sans bouton « valider » : le geste est déjà fait, en demander un
+     second n'apporte rien. */
+  function periodeSaisie() {
+    var du = $("#st-du").value, au = $("#st-au").value;
+    if (!du || !au) return;
+    etat.depuis = du;
+    etat.jusqua = au;
+    marquer($("#st-filtres"), null);
+    charger();
+  }
+
+  $("#st-du").addEventListener("change", periodeSaisie);
+  $("#st-au").addEventListener("change", periodeSaisie);
+
+  /* « Une seule journée » ramène la fin sur le début. C'est le geste le
+     plus fréquent quand on revient en arrière — on cherche un jour, pas
+     une plage — et le faire à la main oblige à saisir deux fois la même
+     date. */
+  $("#st-journee").addEventListener("click", function () {
+    var du = $("#st-du").value;
+    if (!du) return;
+    $("#st-au").value = du;
+    periodeSaisie();
+  });
+
+  $("#st-export").addEventListener("click", exporterCsv);
+
+  /* Le filtre de statut ne touche qu'à l'affichage d'une liste déjà
+     chargée : aucune raison de redemander au serveur. */
+  $("#st-cmd-filtres").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-statut]");
+    if (!b) return;
+    etat.statut = b.dataset.statut;
+    marquer(this, b);
+    if (etat.donnees) listeCommandes(etat.donnees);
   });
 
   /* Changer de vue ne recharge rien : tout est déjà là. Une requête de

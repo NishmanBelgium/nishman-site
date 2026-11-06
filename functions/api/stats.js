@@ -22,6 +22,7 @@
 import { json, erreur, compteAdmin } from "../_commun.js";
 import { preparerTable } from "../_paiements.js";
 import { lireMesure, preparerMesure, lireGestes, lireCampagnes } from "../_mesure.js";
+import { devisParJour, lireDevis } from "../_devis.js";
 
 const JOURS_DEFAUT = 30;
 const JOURS_MAX = 365;
@@ -30,8 +31,62 @@ function jour(d) {
   return new Date(d).toISOString().slice(0, 10);
 }
 
-function ilYA(n) {
-  return jour(Date.now() - n * 86400000);
+/* --- Les bornes de la période -------------------------------------------
+ *
+ * Longtemps la page n'a su regarder que « les N derniers jours », ce qui
+ * répond à « comment ça va » mais jamais à « que s'est-il passé le
+ * 14 ». Les deux questions se posent, et la seconde se pose justement
+ * les jours où quelque chose a cloché.
+ *
+ * Les dates arrivent du navigateur : on les relit entièrement plutôt que
+ * de les croire, et on les ramène dans ce qui a du sens — pas d'avenir,
+ * pas plus d'un an, et jamais une fin avant son début. */
+
+const JOUR_ISO = /^\d{4}-\d{2}-\d{2}$/;
+
+function jourValide(v) {
+  const s = String(v || "");
+  if (!JOUR_ISO.test(s)) return null;
+  const t = Date.parse(s + "T00:00:00Z");
+  if (!Number.isFinite(t)) return null;
+  // Une date comme 2026-02-31 passe le gabarit mais pas le calendrier :
+  // on la rejette en vérifiant qu'elle se réécrit à l'identique.
+  return jour(t) === s ? s : null;
+}
+
+function decaler(j, n) {
+  return jour(Date.parse(j + "T00:00:00Z") + n * 86400000);
+}
+
+function compterJours(depuis, jusqua) {
+  return Math.round(
+    (Date.parse(jusqua + "T00:00:00Z") - Date.parse(depuis + "T00:00:00Z")) / 86400000
+  ) + 1;
+}
+
+export function bornes(params, aujourdhui) {
+  const d = jourValide(params.get("depuis"));
+  const f = jourValide(params.get("jusqua"));
+
+  if (d && f) {
+    // Deux dates à l'envers sont une maladresse de saisie, pas une
+    // erreur : on les remet dans l'ordre plutôt que de refuser.
+    let depuis = d <= f ? d : f;
+    let jusqua = d <= f ? f : d;
+    if (jusqua > aujourdhui) jusqua = aujourdhui;
+    if (depuis > jusqua) depuis = jusqua;
+    let jours = compterJours(depuis, jusqua);
+    if (jours > JOURS_MAX) {
+      depuis = decaler(jusqua, -(JOURS_MAX - 1));
+      jours = JOURS_MAX;
+    }
+    return { depuis, jusqua, jours };
+  }
+
+  let jours = Number(params.get("jours")) || JOURS_DEFAUT;
+  if (!Number.isFinite(jours) || jours < 1) jours = JOURS_DEFAUT;
+  if (jours > JOURS_MAX) jours = JOURS_MAX;
+  return { depuis: decaler(aujourdhui, -(jours - 1)), jusqua: aujourdhui, jours };
 }
 
 /** Les chiffres de commerce d'une période, lus dans le registre des paiements.
@@ -102,6 +157,34 @@ export async function enSouffrance(db) {
   return (r && r.results) || [];
 }
 
+/** Tout ce que le site a encaissé sur la période, commande par commande.
+ *
+ * La page ne montrait jusqu'ici que les commandes bloquées. C'est utile
+ * pour agir, mais ça ne répond pas à « qu'est-ce qui s'est vendu » — et
+ * un tableau de bord dont il faut sortir pour voir les ventes n'est pas
+ * un tableau de bord.
+ *
+ * Les commandes non payées y figurent aussi, avec leur statut : un
+ * panier abandonné est une information commerciale, pas un déchet. */
+export async function commandes(db, depuis, jusqua, limite = 300) {
+  try {
+    const r = await db
+      .prepare(
+        "SELECT ref, odoo_nom, cree_le, montant, statut, etape, client, suivi, " +
+          "CASE WHEN compte_id = 0 THEN 'boutique' ELSE 'pro' END AS cote " +
+          "FROM paiements WHERE substr(cree_le, 1, 10) BETWEEN ? AND ? " +
+          "ORDER BY cree_le DESC LIMIT " + Number(limite)
+      )
+      .bind(depuis, jusqua)
+      .all();
+    return (r && r.results) || [];
+  } catch (e) {
+    /* Une colonne ajoutée après coup peut manquer sur une base ancienne.
+       Mieux vaut une liste vide qu'une page en panne. */
+    return [];
+  }
+}
+
 /** Les clients professionnels : qui s'est inscrit, et d'où.
  *
  * Le côté boutique n'a pas de clients à compter — on y achète sans
@@ -147,15 +230,11 @@ export async function onRequestGet({ request, env }) {
   await preparerMesure(env.DB);
 
   const url = new URL(request.url);
-  let jours = Number(url.searchParams.get("jours")) || JOURS_DEFAUT;
-  if (!Number.isFinite(jours) || jours < 1) jours = JOURS_DEFAUT;
-  if (jours > JOURS_MAX) jours = JOURS_MAX;
+  const { depuis, jusqua, jours } = bornes(url.searchParams, jour(Date.now()));
 
-  const jusqua = jour(Date.now());
-  const depuis = ilYA(jours - 1);
   // La période précédente, de même longueur, collée à la première.
-  const avantJusqua = ilYA(jours);
-  const avantDepuis = ilYA(jours * 2 - 1);
+  const avantJusqua = decaler(depuis, -1);
+  const avantDepuis = decaler(avantJusqua, -(jours - 1));
 
   const [
     audience, audienceAvant,
@@ -164,6 +243,7 @@ export async function onRequestGet({ request, env }) {
     vente, venteAvant,
     ventePro, venteProAvant,
     gens, gensAvant, portes, bloquees, campagnes,
+    journalDevis, listeDevis, listeCommandes, devisAvant,
   ] = await Promise.all([
     lireMesure(env.DB, depuis, jusqua),
     lireMesure(env.DB, avantDepuis, avantJusqua),
@@ -182,6 +262,15 @@ export async function onRequestGet({ request, env }) {
     /* Ce que chaque lien publié a réellement amené. C'est le seul chiffre
        qui relie un contenu à une visite, et donc à une commande. */
     lireCampagnes(env.DB, depuis, jusqua),
+
+    /* Les devis. Ils ne sont pas des commandes et ne doivent entrer dans
+       aucun taux de transformation — mais côté professionnel, c'est par
+       eux que presque tout passe, et une page qui les ignore donne du
+       site une image bien plus pauvre que la réalité. */
+    devisParJour(env.DB, depuis, jusqua),
+    lireDevis(env.DB, depuis, jusqua),
+    commandes(env.DB, depuis, jusqua),
+    lireDevis(env.DB, avantDepuis, avantJusqua, 1),
   ]);
 
   /* Le taux de transformation se calcule sur les sessions, pas sur les
@@ -238,6 +327,22 @@ export async function onRequestGet({ request, env }) {
     pro: cote("pro", ventePro, audiencePro, venteProAvant, audienceProAvant),
 
     clients: { ...gens, nouveaux_avant: gensAvant.nouveaux },
+
+    /* Les devis émis par le site, avec leur compte par jour pour le
+       journal et la liste pour la consultation. Le total de la période
+       précédente permet la même comparaison que partout ailleurs. */
+    devis: {
+      total: listeDevis.total,
+      montant: listeDevis.montant,
+      liste: listeDevis.liste,
+      par_jour: journalDevis,
+      total_avant: devisAvant.total,
+    },
+
+    /* Tout ce qui est passé en caisse sur la période, du plus récent au
+       plus ancien. C'est la réponse à « qu'est-ce qui s'est vendu », que
+       la seule liste des commandes bloquées ne donnait pas. */
+    commandes_liste: listeCommandes,
 
     /* Les deux portes de l'accueil. Comptées depuis le 29 octobre 2026 :
        avant cette date, il n'y a rien, et le tableau de bord doit le dire

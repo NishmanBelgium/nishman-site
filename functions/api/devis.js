@@ -23,6 +23,7 @@ import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { ouvreDroitAExoneration } from "../_tva.js";
 import { avertirSiPlusieursColisParNom } from "../_etiquette.js";
+import { noterDevis } from "../_devis.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 const LANGUES = ["fr", "en", "nl", "de", "tr"];
@@ -235,6 +236,27 @@ export async function onRequestPost(ctx) {
   // plus de vingt kilos se prépare en deux colis, et mieux vaut le lire
   // sur le devis que le découvrir l'étiquette imprimée.
   if (reponse.devis) attendre(avertirSiPlusieursColisParNom(env, reponse.devis));
+
+  /* Le devis est noté dans le registre local, en arrière-plan.
+   *
+   * Odoo en garde la trace, mais Odoo mêle les ventes faites hors du
+   * site ; sans cette ligne, le tableau de bord ne peut pas répondre à
+   * « combien de devis le site a-t-il sortis cette semaine ». L'écriture
+   * suit l'envoi et ne le conditionne jamais : le client a son numéro,
+   * un registre muet ne doit pas le lui retirer. */
+  if (reponse.devis) {
+    attendre(noterDevis(env.DB, {
+      ref: reponse.devis,
+      compte_id: compte.id,
+      client: charge.client.company || (charge.client.first + " " + charge.client.last).trim(),
+      email: charge.client.email,
+      pays,
+      montant: charge.total,
+      retrait,
+      lignes: lignes.length,
+      cree_le: charge.date,
+    }));
+  }
 
   return json({ ok: true, devis: reponse.devis || "" });
 }

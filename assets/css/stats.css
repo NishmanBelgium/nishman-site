@@ -228,3 +228,96 @@
   flex-wrap: wrap;
   gap: 8px 20px;
 }
+
+/* ==========================================================================
+   LA PÉRIODE CHOISIE À LA MAIN, LE JOURNAL ET LES LISTES
+
+   Ajoutés quand la page a cessé de ne savoir regarder que « les N derniers
+   jours ». Les trois tableaux peuvent être longs : ils défilent dans leur
+   cadre plutôt que d'allonger la page à l'infini, et leur en-tête reste
+   visible pendant qu'on descend — un tableau de chiffres dont on ne voit
+   plus les colonnes ne se lit pas.
+   ========================================================================== */
+
+.st-dates {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.st-dates label {
+  font: 600 12px/1 var(--font-body); color: var(--ink-faint);
+}
+.st-dates input[type="date"] {
+  padding: 8px 10px; border: 1px solid var(--line-strong); background: #fff;
+  border-radius: 10px; color: var(--ink);
+  font: 500 13px/1 var(--font-body);
+  transition: border-color .18s var(--ease);
+}
+.st-dates input[type="date"]:hover { border-color: var(--ink); }
+.st-dates input[type="date"]:focus-visible {
+  outline: 2px solid var(--ink); outline-offset: 1px; border-color: var(--ink);
+}
+
+/* Un bouton qui se lit comme un lien : son action est secondaire et il ne
+   doit pas rivaliser avec les filtres de période. */
+.st-lien-bouton {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  font: 600 13px/1.4 var(--font-body); color: var(--ink-soft);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.st-lien-bouton:hover { color: var(--ink); }
+
+.st-filtres-mini button { padding: 6px 12px; font-size: 12px; }
+
+/* --- Les tableaux longs ------------------------------------------------- */
+
+.st-defile {
+  max-height: 460px; overflow: auto;
+  border: 1px solid var(--line); border-radius: var(--radius-sm, 10px);
+}
+.st-defile .st-table { margin: 0; }
+.st-defile .st-table th {
+  position: sticky; top: 0; z-index: 1;
+  background: #fff; padding: 10px 12px;
+}
+.st-defile .st-table td { padding: 9px 12px; }
+.st-defile .st-table tbody tr:hover { background: rgba(10, 10, 10, 0.025); }
+
+.st-table-journal tfoot th {
+  position: sticky; bottom: 0; z-index: 1;
+  background: #fff; border-top: 1px solid var(--line-strong); border-bottom: 0;
+  color: var(--ink); text-transform: none; letter-spacing: 0;
+  font: 700 13px/1.3 var(--font-body); padding: 10px 12px;
+}
+.st-table-journal tfoot th.st-num { text-align: right; }
+
+/* Un jour sans rien reste lisible mais s'efface : la page doit montrer le
+   trou sans le mettre en avant. */
+.st-ligne-vide td { color: var(--ink-faint); }
+
+.st-jour { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.st-defile .st-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* --- Les marqueurs de côté et de statut --------------------------------- */
+
+.st-etiq {
+  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  font: 700 11px/1.6 var(--font-body); white-space: nowrap;
+}
+.st-etiq-pro { background: rgba(31, 111, 178, 0.12); color: #1a5c94; }
+.st-etiq-bout { background: rgba(237, 155, 36, 0.16); color: #8a5a06; }
+
+.st-puce {
+  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  font: 600 11.5px/1.6 var(--font-body); white-space: nowrap;
+}
+/* Le vert et le gris, jamais le rouge : une commande non aboutie n'est pas
+   une erreur du site, c'est quelqu'un qui a renoncé. */
+.st-puce-ok { background: rgba(26, 127, 74, 0.12); color: #146038; }
+.st-puce-non { background: rgba(10, 10, 10, 0.06); color: var(--ink-soft); }
+
+@media (max-width: 760px) {
+  .st-defile { max-height: 380px; }
+  .st-defile .st-table th,
+  .st-defile .st-table td { padding: 8px; font-size: 12.5px; }
+  .st-dates { width: 100%; }
+  .st-dates input[type="date"] { flex: 1 1 130px; min-width: 0; }
+}
