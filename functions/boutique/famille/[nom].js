@@ -480,7 +480,7 @@ function page(slug, f, produits, base, indexable) {
 ${pied()}
 
 <script src="/assets/js/mesure.js?v=391" defer></script>
-<script src="/assets/js/consentement.js?v=390" defer></script>
+<script src="/assets/js/consentement.js?v=394" defer></script>
 </body>
 </html>`;
 }

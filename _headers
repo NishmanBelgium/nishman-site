@@ -9,7 +9,10 @@
 #
 # Les choix ci-dessous suivent ce que le site charge réellement, relevé
 # dans les pages plutôt que recopié d'un modèle : les polices de Google,
-# le sélecteur de points relais de Sendcloud, et rien d'autre.
+# le sélecteur de points relais de Sendcloud, le pixel Meta et la balise
+# Google Ads, et rien d'autre. Ces deux derniers ne se chargent qu'après
+# consentement : les autoriser ici ne les fait pas apparaître, ça évite
+# seulement qu'ils soient bloqués quand le visiteur a dit oui.
 # ==========================================================================
 
 /*
@@ -45,7 +48,7 @@
   # frame-ancestors double X-Frame-Options pour les navigateurs qui ne
   # lisent plus que celui-ci ; base-uri 'none' empêche de détourner toutes
   # les adresses relatives de la page en injectant une balise <base>.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://embed.sendcloud.sc https://connect.facebook.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://servicepoints.sendcloud.sc https://embed.sendcloud.sc https://panel.sendcloud.sc https://www.facebook.com https://connect.facebook.net; frame-src https://embed.sendcloud.sc https://servicepoints.sendcloud.sc; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://embed.sendcloud.sc https://connect.facebook.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://servicepoints.sendcloud.sc https://embed.sendcloud.sc https://panel.sendcloud.sc https://www.facebook.com https://connect.facebook.net https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com; frame-src https://embed.sendcloud.sc https://servicepoints.sendcloud.sc; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests
 
 # Les réponses de l'API ne sont jamais des pages : rien à y charger, rien
 # à y encadrer, et surtout rien à garder en cache.

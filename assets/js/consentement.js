@@ -1,36 +1,62 @@
 /* ==========================================================================
    CONSENTEMENT AUX MESURES PUBLICITAIRES.
 
-   Ce que dit la loi, et qui s'applique ici. Le pixel Meta dépose un
-   identifiant sur l'appareil du visiteur et renvoie sa navigation à un
-   tiers. En Belgique et en France, cela exige un consentement préalable,
-   libre et éclairé : rien ne se charge avant le « oui », et refuser doit
-   être aussi simple qu'accepter — d'où deux boutons de même poids, et
-   non un bouton vert contre un lien gris.
+   Ce que dit la loi, et qui s'applique ici. Le pixel Meta et la balise
+   Google déposent chacun un identifiant sur l'appareil du visiteur et
+   renvoient sa navigation à un tiers. En Belgique et en France, cela
+   exige un consentement préalable, libre et éclairé : rien ne se charge
+   avant le « oui », et refuser doit être aussi simple qu'accepter —
+   d'où deux boutons de même poids, et non un bouton vert contre un lien
+   gris.
 
-   Ce que ça implique dans le code. Le pixel n'est PAS dans la page. Il
-   est injecté par ce fichier, après le clic, et jamais autrement. Un
-   visiteur qui refuse, ou qui ne répond pas, ne voit partir aucune
-   requête vers Meta — ce n'est pas une promesse d'intention, c'est la
-   seule chose que ce code sache faire.
+   Ce que ça implique dans le code. Ni le pixel ni la balise ne sont dans
+   la page. Ils sont injectés par ce fichier, après le clic, et jamais
+   autrement. Un visiteur qui refuse, ou qui ne répond pas, ne voit
+   partir aucune requête vers Meta ni vers Google — ce n'est pas une
+   promesse d'intention, c'est la seule chose que ce code sache faire.
 
-   L'interrupteur. Tant que PIXEL est vide, il n'y a rien à consentir :
-   aucun bandeau ne s'affiche, aucun stockage n'est touché, et le site se
-   comporte exactement comme avant. C'est volontaire — la mesure
-   s'allume en renseignant une seule ligne, et s'éteint en l'effaçant.
+   UN SEUL CHOIX POUR LES DEUX, et c'est délibéré. La finalité est la
+   même — savoir quelles publicités amènent des clients — et découper le
+   bandeau en deux questions ne donnerait pas plus de contrôle, juste
+   plus de fatigue. Le bandeau nomme donc les deux destinataires, et le
+   « oui » vaut pour les deux.
+
+   L'interrupteur. Chaque mesure s'allume en renseignant une ligne et
+   s'éteint en l'effaçant ; quand les deux sont vides, il n'y a rien à
+   consentir : aucun bandeau ne s'affiche, aucun stockage n'est touché,
+   et le site se comporte exactement comme avant.
    ========================================================================== */
 (function () {
   "use strict";
 
   /* L'identifiant du pixel Meta. Il n'est pas secret : tout site qui en
      porte un l'expose dans son code source, c'est ainsi que le navigateur
-     le trouve. Le laisser vide désactive toute la mesure. */
+     le trouve. Le laisser vide désactive la mesure Meta. */
   var PIXEL = "1694763912240328";
+
+  /* La balise Google Ads, et les deux conversions qu'elle rapporte.
+     Même remarque : ces identifiants sont publics par construction.
+
+     Les deux étiquettes correspondent aux actions créées dans le compte
+     Google Ads. Elles ne sont pas interchangeables : « Achat » porte un
+     montant, « Compte pro TVA validée » n'en porte pas et ne part que
+     lorsque VIES a confirmé le numéro — c'est ce signal-là, et non
+     l'inscription nue, qui sert à optimiser les enchères. */
+  var GOOGLE = "AW-18558846793";
+  var G_ACHAT = "AW-18558846793/xjOtCNm577IdEMmOxpFF";
+  var G_COMPTE_PRO = "AW-18558846793/XGwNCIbLk7MdEMmOxpFF";
+
+  /* Y a-t-il seulement quelque chose à consentir ? */
+  function mesureConfiguree() { return !!(PIXEL || GOOGLE); }
 
   /* La version du consentement. À incrémenter si les finalités changent :
      un visiteur qui a dit oui à la mesure publicitaire n'a pas dit oui à
-     autre chose, et devra être réinterrogé. */
-  var VERSION = 1;
+     autre chose, et devra être réinterrogé.
+
+     Version 2 : ajout de la balise Google Ads à côté du pixel Meta. Un
+     destinataire de plus est une finalité nouvelle, donc tout le monde
+     est réinterrogé — y compris ceux qui avaient déjà dit oui à Meta. */
+  var VERSION = 2;
   var CLE = "nishman-consentement";
 
   /* Le stockage peut échouer : navigation privée, cookies bloqués, mode
@@ -63,8 +89,7 @@
   var charge = false;
 
   function chargerPixel() {
-    if (charge || !PIXEL) return;
-    charge = true;
+    if (!PIXEL) return;
 
     /* L'amorce officielle de Meta, réduite à ce qu'elle fait vraiment :
        une file d'attente, puis le script qui la vide. */
@@ -83,6 +108,67 @@
     window.fbq("track", "PageView");
   }
 
+  /* La balise Google, montée à la main pour la même raison que celle de
+     Meta : on veut voir ce qui part, et quand.
+
+     Le mode consentement de Google est renseigné explicitement, bien que
+     le script ne soit chargé qu'après le « oui ». C'est redondant, et
+     c'est voulu : Google lit ces signaux pour décider de ce qu'il a le
+     droit de mesurer, et les lui laisser deviner d'après notre silence
+     serait s'en remettre à un défaut que nous ne contrôlons pas.
+
+     « allow_enhanced_conversions » n'est pas activé : le suivi avancé
+     renvoie à Google l'adresse e-mail du client, hachée mais bien
+     présente, et nous n'avons pas demandé cela aux visiteurs. */
+  function chargerGoogle() {
+    if (!GOOGLE) return;
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+
+    window.gtag("consent", "default", {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: "denied",
+    });
+    window.gtag("consent", "update", {
+      ad_storage: "granted",
+      ad_user_data: "granted",
+      ad_personalization: "granted",
+    });
+
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(GOOGLE);
+    var p = document.getElementsByTagName("script")[0];
+    p.parentNode.insertBefore(s, p);
+
+    window.gtag("js", new Date());
+    window.gtag("config", GOOGLE, { allow_enhanced_conversions: false });
+  }
+
+  function chargerMesures() {
+    if (charge || !mesureConfiguree()) return;
+    charge = true;
+    chargerPixel();
+    chargerGoogle();
+  }
+
+  /* Une conversion Google. Même porte que pour Meta : rien avant le oui,
+     et rien mis en file d'attente derrière. */
+  function conversionGoogle(etiquette, donnees) {
+    if (!GOOGLE || !charge || !window.gtag || !etiquette) return false;
+    try {
+      var d = donnees || {};
+      d.send_to = etiquette;
+      window.gtag("event", "conversion", d);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /* --- Le bandeau --------------------------------------------------- */
 
   var bandeau = null;
@@ -96,7 +182,7 @@
   function repondre(accepte) {
     ecrire(accepte);
     fermer();
-    if (accepte) chargerPixel();
+    if (accepte) chargerMesures();
   }
 
   function afficher() {
@@ -110,8 +196,8 @@
       '<div class="cons-in">' +
         '<p class="cons-txt">Nous aimerions mesurer quelles publicités amènent des ' +
         'visiteurs sur ce site. Cela suppose de transmettre votre navigation à Meta ' +
-        '(Facebook, Instagram). Le site fonctionne exactement pareil si vous refusez. ' +
-        '<a href="/confidentialite/#mesure">En savoir plus</a></p>' +
+        '(Facebook, Instagram) et à Google. Le site fonctionne exactement pareil si ' +
+        'vous refusez. <a href="/confidentialite/#mesure">En savoir plus</a></p>' +
         '<div class="cons-choix">' +
           '<button type="button" class="cons-btn" data-cons="non">Refuser</button>' +
           '<button type="button" class="cons-btn" data-cons="oui">Accepter</button>' +
@@ -131,7 +217,7 @@
   window.nishmanConsentement = {
     rouvrir: function () {
       try { window.localStorage.removeItem(CLE); } catch (e) {}
-      if (PIXEL) afficher();
+      if (mesureConfiguree()) afficher();
     },
     etat: function () {
       var c = lire();
@@ -191,6 +277,13 @@
       var parti = window.nishmanConsentement.evenement("CompleteRegistration", d);
       if (statut === "valide") {
         window.nishmanConsentement.evenementSurMesure("CompteProTvaValide", d);
+        /* Google ne reçoit que le compte à TVA validée, et pas
+           l'inscription nue. La raison est la même que pour Meta, mais
+           la conséquence est plus directe : cette action est déclarée
+           « principale » dans le compte Google Ads, donc elle pilote
+           les enchères. Lui donner des curieux reviendrait à payer
+           Google pour en trouver d'autres. */
+        conversionGoogle(G_COMPTE_PRO);
       }
       return parti;
     },
@@ -223,7 +316,18 @@
            tout : une vente manquante fausse la mesure plus durablement
            qu'une vente comptée deux fois, qui se voit. */
       }
-      return window.nishmanConsentement.evenement("Purchase", donnees);
+      var d = donnees || {};
+      /* La référence de commande part aussi à Google, comme
+         « transaction_id » : c'est elle qui lui permet d'écarter un
+         doublon si la page de retour repasse par ici malgré le garde-fou
+         ci-dessus. Le montant est celui du serveur, jamais un total
+         recalculé dans le navigateur. */
+      conversionGoogle(G_ACHAT, {
+        value: Number(d.value) || 0,
+        currency: d.currency || "EUR",
+        transaction_id: String(ref),
+      });
+      return window.nishmanConsentement.evenement("Purchase", d);
     },
   };
 
@@ -236,16 +340,16 @@
     var l = e.target.closest("[data-cons-rouvrir]");
     if (!l) return;
     e.preventDefault();
-    if (!PIXEL) {
+    if (!mesureConfiguree()) {
       window.location.href = "/confidentialite/#mesure";
       return;
     }
     window.nishmanConsentement.rouvrir();
   });
 
-  if (!PIXEL) return;
+  if (!mesureConfiguree()) return;
 
   var choix = lire();
-  if (choix && choix.pub) chargerPixel();
+  if (choix && choix.pub) chargerMesures();
   else if (!choix) afficher();
 })();
