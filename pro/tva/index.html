@@ -129,9 +129,18 @@
     if (c.nom_registre) h += '<div class="trace">Registre : ' + echappe(c.nom_registre) + '</div>';
 
     if (c.statut === "valide_manuel") {
-      h += '<div class="trace">Preuve ' + echappe(c.preuve)
-         + ' — posée par ' + echappe(c.manuel_par) + ' le ' + jour(c.manuel_le)
-         + (c.manuel_note ? ' · ' + echappe(c.manuel_note) : '') + '</div>'
+      /* Deux pièces justificatives possibles, et il faut les distinguer à
+         l'œil : le numéro de consultation, qui est la meilleure, et le
+         constat de registre, posé quand l'État membre refuse de délivrer
+         ce numéro. Afficher « Preuve  » suivi du vide, comme le faisait
+         la première version, aurait laissé croire à un bug. */
+      h += '<div class="trace">'
+         + (c.preuve
+             ? 'Numéro de consultation ' + echappe(c.preuve)
+             : 'Constaté au registre, sans numéro de consultation')
+         + ' — posé par ' + echappe(c.manuel_par) + ' le ' + jour(c.manuel_le)
+         + '</div>'
+         + (c.manuel_note ? '<div class="trace">' + echappe(c.manuel_note) + '</div>' : '')
          + '<form data-action="retirer"><button type="submit" class="danger">'
          + 'Retirer cette validation</button></form>';
     } else if (!c.exonere && c.numero) {

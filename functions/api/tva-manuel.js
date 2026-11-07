@@ -27,6 +27,84 @@ import { controlerEtEnregistrer, ouvreDroitAExoneration } from "../_tva.js";
 // comme stable — mais on refuse ce qui n'en a visiblement pas l'air.
 const CONSULTATION = /^[A-Za-z0-9_-]{6,64}$/;
 
+/* --------------------------------------------------------------------------
+   LE CONSTAT DE REGISTRE — la seconde forme de preuve, décidée le
+   7 novembre 2026.
+
+   Le numéro de consultation reste la meilleure pièce, et il reste
+   préféré. Mais la France refuse durablement l'appel qui le délivre :
+   l'exiger revenait à facturer indéfiniment la TVA belge à des sociétés
+   dont le numéro est parfaitement conforme. C'est l'erreur que NBD a
+   relevée sur la commande S00285, et elle se répétait à chaque commande
+   de ces clients.
+
+   La porte qui répond, elle, ne rend pas de numéro de consultation mais
+   rend la RAISON SOCIALE et l'ADRESSE enregistrées au registre. Un
+   constat horodaté qui porte ces éléments n'est pas une parole de
+   client : c'est le registre officiel qui a répondu, et ce qu'il a
+   répondu est consigné.
+
+   Le site ne peut pas interroger le registre lui-même depuis Cloudflare
+   — c'est tout le problème — et la page ne le peut pas non plus, le
+   registre n'autorisant pas les appels venus d'un autre domaine. C'est
+   donc le rapport quotidien, qui tourne sur la machine de NBD, qui fait
+   l'interrogation et dépose ici ce qu'il a lu.
+
+   D'où les garde-fous ci-dessous. Ils ne prouvent pas que l'appel a eu
+   lieu — rien ne le peut depuis ce serveur — mais ils empêchent les
+   fautes d'inattention qui, elles, arrivent vraiment :
+
+     - le numéro constaté doit être CELUI DU COMPTE. Sans ce contrôle,
+       la réponse du registre concernant une société pourrait être
+       enregistrée sur le compte d'une autre, et l'exonération partirait
+       au mauvais client.
+     - le constat doit être FRAIS. Une confirmation d'il y a trois
+       semaines ne dit rien de l'état du numéro aujourd'hui, et
+       l'autoliquidation se justifie au moment de la vente.
+     - la raison sociale est OBLIGATOIRE. C'est elle qui distingue un
+       constat d'une simple affirmation : le registre ne la rend que
+       lorsqu'il reconnaît le numéro.
+   -------------------------------------------------------------------------- */
+export const CONSTAT_FRAICHEUR_H = 36;
+
+export function lireConstat(brut, numeroDuCompte) {
+  const c = (brut && typeof brut === "object") ? brut : null;
+  if (!c) return { refus: "Constat absent." };
+
+  const propre = (v) => String(v == null ? "" : v).replace(/\s+/g, " ").trim();
+  const chiffres = (v) => String(v || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+  const interroge = chiffres(c.interroge);
+  const attendu = chiffres(numeroDuCompte);
+  if (!interroge) return { refus: "Le constat ne dit pas quel numéro a été interrogé." };
+  if (interroge !== attendu) {
+    return { refus: "Le constat porte sur " + interroge + " alors que ce compte "
+                  + "déclare " + attendu + ". Rien n'a été enregistré." };
+  }
+
+  const nom = propre(c.nom);
+  if (!nom) {
+    return { refus: "Le registre n'a rendu aucune raison sociale : sans elle, "
+                  + "ce n'est pas un constat." };
+  }
+
+  const quand = c.verifie_le ? new Date(c.verifie_le) : null;
+  if (!quand || isNaN(quand)) return { refus: "Date du constat illisible." };
+  const ageH = (Date.now() - quand.getTime()) / 3600000;
+  if (ageH > CONSTAT_FRAICHEUR_H) {
+    return { refus: "Ce constat date de plus de " + CONSTAT_FRAICHEUR_H
+                  + " heures. Refaites l'interrogation." };
+  }
+  if (ageH < -2) return { refus: "Date du constat dans le futur." };
+
+  return {
+    numero: interroge,
+    nom: nom.slice(0, 160),
+    adresse: propre(c.adresse).slice(0, 240),
+    verifie_le: quand.toISOString(),
+  };
+}
+
 async function gardien({ request, env }) {
   if (!env.DB) return { refus: erreur("Service indisponible.", 503, "indisponible") };
   const compte = await compteAdmin(request, env);
@@ -151,6 +229,64 @@ export async function onRequestPost(contexte) {
 
     return json({ ok: true, action: "retiree", email: cible.email,
                   statut: "jamais", exonere: false });
+  }
+
+  /* --- POSE PAR CONSTAT DE REGISTRE.
+   *
+   * Même statut que la validation manuelle — « valide_manuel » — et c'est
+   * voulu. Ce statut porte déjà tout ce qu'il faut : il exonère, il
+   * survit à un registre muet, il cède devant un démenti de la porte
+   * principale, il se retire d'un clic, et il n'est revérifié qu'au bout
+   * de trois mois. Inventer un statut de plus aurait obligé à réécrire
+   * ces quatre règles, et c'est précisément là qu'on se trompe.
+   *
+   * Ce qui change est la pièce justificative : pas de numéro de
+   * consultation, mais la réponse du registre consignée mot pour mot.
+   * tva_preuve reste donc vide, et la note dit ce qui a été constaté.
+   * La page de gestion distingue les deux à l'œil.                   --- */
+  if (corps.constat) {
+    if (cible.pays !== "FR" && cible.pays !== "LU") {
+      return erreur(
+        "Ce compte est belge : la vente est intérieure et porte la TVA belge.",
+        400, "pays");
+    }
+    const numeroDuCompte = cible.tva || cible.siret || "";
+    if (!numeroDuCompte) {
+      return erreur("Ce compte ne déclare aucun numéro de TVA.", 400, "numero");
+    }
+    const c = lireConstat(corps.constat, numeroDuCompte);
+    if (c.refus) return erreur(c.refus, 400, "constat");
+
+    const note = String((corps && corps.note) || "").trim();
+    if (note && !texteValide(note, 0, 400)) {
+      return erreur("Note trop longue.", 400, "note");
+    }
+
+    const trace = "Constaté au registre européen le "
+      + c.verifie_le.slice(0, 10) + " : " + c.nom
+      + (c.adresse ? " — " + c.adresse : "")
+      + ". Sans numéro de consultation, l'État membre refusant l'appel qui "
+      + "le délivre." + (note ? " " + note : "");
+
+    await env.DB.prepare(`
+      UPDATE comptes
+         SET tva_valide = 1, tva_statut = 'valide_manuel',
+             tva_verifiee_le = ?, tva_preuve = '', tva_nom = ?, tva_motif = ?,
+             tva_manuel_par = ?, tva_manuel_le = ?, tva_manuel_note = ?
+       WHERE id = ?
+    `).bind(
+      c.verifie_le, c.nom,
+      "constaté au registre, sans numéro de consultation",
+      g.compte.email, horodatage, trace.slice(0, 400),
+      cible.id,
+    ).run();
+
+    return json({
+      ok: true, action: "constatee", email: cible.email, societe: cible.salon,
+      statut: "valide_manuel", exonere: true, preuve: "",
+      nom_registre: c.nom, verifie_le: c.verifie_le,
+      pose_par: g.compte.email, pose_le: horodatage,
+    });
   }
 
   /* --- Pose : le pays doit ouvrir droit à l'autoliquidation.            --- */
