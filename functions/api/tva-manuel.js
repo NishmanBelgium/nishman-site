@@ -19,6 +19,7 @@
    ========================================================================== */
 
 import { json, erreur, compteAdmin, texteValide } from "../_commun.js";
+import { controlerEtEnregistrer, ouvreDroitAExoneration } from "../_tva.js";
 
 
 // Le numéro de consultation VIES ressemble à « WAPIAAAAXnAO0Hv0 » : des
@@ -105,11 +106,36 @@ export async function onRequestPost(contexte) {
   if (!email) return erreur("Compte non précisé.", 400, "compte");
 
   const cible = await env.DB.prepare(
-    "SELECT id, email, salon, pays, tva_statut FROM comptes WHERE email_cle = ?"
+    "SELECT id, email, salon, pays, tva, siret, tva_valide, tva_statut, " +
+    "tva_verifiee_le, tva_preuve, tva_nom, tva_motif " +
+    "FROM comptes WHERE email_cle = ?"
   ).bind(email).first();
   if (!cible) return erreur("Compte introuvable.", 404, "introuvable");
 
   const horodatage = new Date().toISOString();
+
+  /* --- RELANCER LE CONTRÔLE, sans budget de temps.
+   *
+   * Il manquait. Quand le registre européen refusait un numéro pour
+   * saturation, le compte restait « indisponible » et la seule issue
+   * offerte par cette page était la validation manuelle — qui exige un
+   * numéro de consultation que NBD doit aller chercher ailleurs. Pour
+   * quatre comptes français parfaitement valides, le 7 novembre 2026,
+   * c'était beaucoup de travail pour rien : il suffisait de redemander.
+   *
+   * Personne n'attend derrière cet appel, contrairement au tunnel de
+   * commande : controlerEtEnregistrer garde donc ses trois tentatives et
+   * son budget complet, et passe au besoin par la seconde porte du
+   * registre.                                                          --- */
+  if (corps.reverifier === true) {
+    const r = await controlerEtEnregistrer(env.DB, cible, env);
+    return json({
+      ok: true, action: "reverifiee", email: cible.email, societe: cible.salon,
+      statut: r.statut, exonere: ouvreDroitAExoneration(cible.pays, r.statut),
+      preuve: r.preuve || "", nom_registre: r.nom || "", motif: r.motif || "",
+      verifie_le: r.verifie_le || horodatage,
+    });
+  }
 
   /* --- Retrait : on revient à l'état « jamais vérifié », pas à « invalide ».
          Retirer une validation n'est pas un démenti du registre.          --- */

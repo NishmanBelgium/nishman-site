@@ -91,7 +91,11 @@
     valide_ancien: "validation récente conservée, registre momentanément muet",
     invalide:      "le registre a démenti ce numéro",
     indisponible:  "le registre n'a pas répondu",
-    jamais:        "jamais vérifié"
+    jamais:        "jamais vérifié",
+    /* La seconde porte du registre : elle confirme le numéro mais ne
+       délivre pas de numéro de consultation. Le libellé le dit, pour que
+       personne ne croie la preuve complète. */
+    valide_sans_preuve: "confirmé par le registre, sans numéro de consultation"
   };
 
   function echappe(t) {
@@ -131,7 +135,16 @@
          + '<form data-action="retirer"><button type="submit" class="danger">'
          + 'Retirer cette validation</button></form>';
     } else if (!c.exonere && c.numero) {
-      h += '<form data-action="poser">'
+      /* RELANCER LE CONTRÔLE, avant de proposer la saisie manuelle.
+       *
+       * C'est presque toujours la bonne réponse et il manquait. Le
+       * registre européen refuse régulièrement la porte qui délivre le
+       * numéro de consultation — la France surtout — et le site sait
+       * désormais passer par l'autre. Un clic suffit alors, là où cette
+       * page n'offrait que d'aller chercher soi-même une preuve. */
+      h += '<form data-action="reverifier"><button type="submit">'
+         + 'Relancer le contrôle</button></form>'
+         + '<form data-action="poser">'
          + '<input name="consultation" placeholder="Numéro de consultation" '
          + 'autocomplete="off" spellcheck="false" required />'
          + '<input name="note" placeholder="Note (facultatif)" autocomplete="off" />'
@@ -148,7 +161,9 @@
         var email = carte.getAttribute("data-email");
         var msg = carte.querySelector(".msg");
         var bouton = f.querySelector("button");
-        var retrait = f.getAttribute("data-action") === "retirer";
+        var action = f.getAttribute("data-action");
+        var retrait = action === "retirer";
+        var relance = action === "reverifier";
 
         // Deux temps plutôt qu'une fenêtre de confirmation : un retrait
         // remet la TVA sur les prochaines commandes du client.
@@ -158,14 +173,17 @@
           return;
         }
 
-        var charge = retrait
-          ? { email: email, retirer: true }
+        var charge = retrait ? { email: email, retirer: true }
+          : relance ? { email: email, reverifier: true }
           : { email: email,
               consultation: f.consultation.value.trim(),
               note: f.note.value.trim() };
 
         bouton.disabled = true;
-        msg.className = "msg"; msg.textContent = "Enregistrement…";
+        msg.className = "msg";
+        msg.textContent = relance
+          ? "Interrogation du registre européen… cela peut prendre une demi-minute."
+          : "Enregistrement…";
 
         fetch("/api/tva-manuel", {
           method: "POST",
@@ -175,11 +193,28 @@
         .then(function (r) { return r.json().then(function (d) { return { st: r.status, d: d }; }); })
         .then(function (rep) {
           if (rep.d && rep.d.ok) {
-            msg.className = "msg ok";
-            msg.textContent = retrait
-              ? "Validation retirée. Ce client sera de nouveau facturé avec TVA."
-              : "Enregistré. Ce client est désormais facturé hors taxe.";
-            setTimeout(charger, 900);
+            msg.className = rep.d.exonere === false && relance ? "msg ko" : "msg ok";
+            if (relance) {
+              /* On dit ce que le registre a répondu, pas « c'est fait » :
+                 un contrôle qui échoue de nouveau est une information
+                 utile, et elle oriente vers la validation manuelle. */
+              msg.textContent = rep.d.exonere
+                ? (rep.d.statut === "valide_sans_preuve"
+                    ? "Numéro confirmé par le registre — ce client est désormais "
+                      + "facturé hors taxe. Le numéro de consultation n'a pas pu "
+                      + "être délivré : à compléter ici quand le registre le rendra."
+                    : "Numéro confirmé, preuve à l'appui. Ce client est désormais "
+                      + "facturé hors taxe.")
+                : (rep.d.statut === "invalide"
+                    ? "Le registre dément ce numéro. La TVA belge reste due."
+                    : "Le registre n'a pas répondu (" + (rep.d.motif || "sans motif")
+                      + "). Réessayez, ou validez à la main ci-dessous.");
+            } else {
+              msg.textContent = retrait
+                ? "Validation retirée. Ce client sera de nouveau facturé avec TVA."
+                : "Enregistré. Ce client est désormais facturé hors taxe.";
+            }
+            setTimeout(charger, relance ? 1800 : 900);
           } else {
             bouton.disabled = false;
             msg.className = "msg ko";
