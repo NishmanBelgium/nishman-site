@@ -303,10 +303,115 @@ console.log("\nLe rattrapage ne doit jamais faire échouer une vente");
   verifier("un appel sans référence ne lève pas", !leve);
 }
 
+console.log("\nLe rattrapage de TVA est conforme : la bonne facture est "
+  + "réclamée, la mauvaise jamais.");
+
+/* ==========================================================================
+   LE SECOND CHEMIN DU REGISTRE.
+
+   Relevé le 7 novembre 2026 : pour un numéro français, POST
+   /check-vat-number renvoie MS_MAX_CONCURRENT_REQ à chaque appel, avec ou
+   sans champs requérant, tandis que GET /ms/FR/vat/{n} répond du premier
+   coup. Quatre sociétés aux numéros valides en étaient taxées.
+
+   Les vérifications ci-dessous portent sur la bascule : la bonne porte
+   d'abord, pour la preuve ; l'autre quand l'État membre referme la
+   première ; et jamais de confusion entre les deux formes de réponse —
+   l'une nomme son champ « valid », l'autre « isValid », et lire le mauvais
+   rendrait undefined, donc jamais d'exonération.
+   ========================================================================== */
+
+const vies = await import("../functions/_vies.js");
+const tvaMod = await import("../functions/_tva.js");
+
+/* Le faux registre : on choisit, par méthode, ce que chaque porte répond. */
+let porteePost = null, porteeGet = null, vus = [];
+globalThis.fetch = async (url, init) => {
+  const methode = (init && init.method) || "GET";
+  vus.push(methode + " " + String(url).replace(
+    "https://ec.europa.eu/taxation_customs/vies/rest-api", ""));
+  const corps = methode === "POST" ? porteePost : porteeGet;
+  return { ok: corps.ok !== false, status: corps.status || 200,
+           json: async () => corps.corps, text: async () => JSON.stringify(corps.corps) };
+};
+
+const POST_SATURE = { corps: { actionSucceed: false,
+  errorWrappers: [{ error: "MS_MAX_CONCURRENT_REQ" }] } };
+const POST_VALIDE = { corps: { valid: true, name: "SARL HAIR BODEGA",
+  address: "3 AV DE PARIS", requestIdentifier: "WAPIAAAAXnAO0Hv0",
+  requestDate: "2026-11-07T08:00:00Z" } };
+const GET_VALIDE = { corps: { isValid: true, userError: "VALID",
+  name: "SARL HAIR BODEGA", address: "3 AV DE PARIS\n28400 ARCISSES",
+  requestIdentifier: "", requestDate: "2026-11-07T08:00:00Z" } };
+const GET_INVALIDE = { corps: { isValid: false, userError: "INVALID",
+  name: "", address: "", requestDate: "2026-11-07T08:00:00Z" } };
+const GET_SATURE = { corps: { actionSucceed: false,
+  errorWrappers: [{ error: "MS_UNAVAILABLE" }] } };
+
+console.log("\nLes deux portes du registre européen");
+{
+  porteePost = POST_VALIDE; porteeGet = GET_VALIDE; vus = [];
+  const r = await vies.verifier("FR68934168154", "FR", "BE0817750283", { tentatives: 1 });
+  verifier("quand la bonne porte répond, on s'en contente", r.statut === "valide",
+    "lu « " + r.statut + " »");
+  verifier("et on garde son numéro de consultation, qui fait la preuve",
+    r.preuve === "WAPIAAAAXnAO0Hv0", "lu « " + r.preuve + " »");
+  verifier("la seconde porte n'a même pas été sollicitée",
+    vus.filter((v) => v.indexOf("GET /ms/") === 0).length === 0,
+    "appels : " + vus.join(", "));
+}
+{
+  porteePost = POST_SATURE; porteeGet = GET_VALIDE; vus = [];
+  const r = await vies.verifier("FR68934168154", "FR", "BE0817750283", { tentatives: 1 });
+  verifier("quand l'État membre referme la bonne porte, on frappe à l'autre",
+    vus.some((v) => v.indexOf("GET /ms/FR/vat/68934168154") === 0),
+    "appels : " + vus.join(", "));
+  verifier("le numéro est reconnu valide au lieu d'être taxé",
+    r.statut === "valide_sans_preuve", "lu « " + r.statut + " »");
+  verifier("le nom de la société est bien relu — la réponse nomme son champ "
+    + "« isValid », pas « valid »", r.nom === "SARL HAIR BODEGA",
+    "lu « " + r.nom + " »");
+  verifier("et l'absence de numéro de consultation est dite, pas cachée",
+    r.preuve === "" && /consultation/.test(r.motif || ""),
+    "preuve « " + r.preuve + " », motif « " + r.motif + " »");
+}
+{
+  porteePost = POST_SATURE; porteeGet = GET_INVALIDE;
+  const r = await vies.verifier("FR00988674727", "FR", "BE0817750283", { tentatives: 1 });
+  verifier("un démenti de la seconde porte est un démenti, pas une panne",
+    r.statut === "invalide" && r.motif === "inconnu_du_registre",
+    "lu « " + r.statut + " / " + r.motif + " »");
+}
+{
+  porteePost = POST_SATURE; porteeGet = GET_SATURE;
+  const r = await vies.verifier("FR68934168154", "FR", "BE0817750283", { tentatives: 1 });
+  verifier("les deux portes fermées donnent bien « indisponible », et non "
+    + "une exonération par défaut", r.statut === "indisponible",
+    "lu « " + r.statut + " »");
+}
+
+console.log("\nCe que le nouveau statut vaut pour la facture");
+verifier("« valide_sans_preuve » exonère un client français",
+  tvaMod.ouvreDroitAExoneration("FR", "valide_sans_preuve"));
+verifier("il exonère aussi un client luxembourgeois",
+  tvaMod.ouvreDroitAExoneration("LU", "valide_sans_preuve"));
+verifier("il n'exonère pas un client belge — la vente est intérieure",
+  !tvaMod.ouvreDroitAExoneration("BE", "valide_sans_preuve"));
+verifier("un numéro indisponible n'exonère jamais",
+  !tvaMod.ouvreDroitAExoneration("FR", "indisponible"));
+verifier("un numéro démenti n'exonère jamais",
+  !tvaMod.ouvreDroitAExoneration("FR", "invalide"));
+verifier("il est revérifié au bout d'un jour, pas d'une semaine : c'est en "
+  + "repassant par la bonne porte qu'on obtiendra la preuve",
+  vies.aRevalider(new Date(Date.now() - 25 * 3600 * 1000).toISOString(),
+                  "valide_sans_preuve")
+  && !vies.aRevalider(new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
+                      "valide_sans_preuve"));
+
 console.log("");
 if (rates) {
   console.log(rates + " vérification(s) en échec sur " + faits + ".");
   process.exit(1);
 }
-console.log("Le rattrapage de TVA est conforme : la bonne facture est "
-  + "réclamée, la mauvaise jamais. " + faits + " vérifications.");
+console.log("Les deux portes du registre sont bien départagées. "
+  + faits + " vérifications au total.");

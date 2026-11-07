@@ -28,6 +28,14 @@ const STATUTS_EXONERANTS = [
   "valide",          // le registre européen a confirmé, preuve à l'appui
   "valide_ancien",   // confirmé récemment, registre momentanément muet
   "valide_manuel",   // vérifié autrement par NBD, numéro de consultation saisi
+
+  /* Confirmé par la seconde porte du registre, celle qui ne délivre pas
+   * de numéro de consultation (voir _vies.js). Il exonère : c'est bien le
+   * registre officiel qui a confirmé la conformité du numéro, et la
+   * France refuse durablement la porte qui donne la preuve. Il reste
+   * distinct pour que NBD puisse compléter la preuve à loisir, et le
+   * tableau de bord les liste. */
+  "valide_sans_preuve",
 ];
 
 export function ouvreDroitAExoneration(pays, statut) {
@@ -68,7 +76,10 @@ export async function controlerEtEnregistrer(db, compte, env, options) {
     };
   }
 
-  const valide = r.statut === "valide" ? 1 : 0;
+  /* « valide_sans_preuve » vaut exonération, donc tva_valide à 1 : sans
+   * cela le compte serait exonéré par ouvreDroitAExoneration mais marqué
+   * non valide, et les deux lectures se contrediraient. */
+  const valide = (r.statut === "valide" || r.statut === "valide_sans_preuve") ? 1 : 0;
   const motif = (etaitManuel && r.statut === "invalide")
     ? "le registre a démenti une validation manuelle"
     : (r.motif || null);

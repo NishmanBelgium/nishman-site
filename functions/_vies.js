@@ -101,6 +101,17 @@ export async function verifier(numero, paysCompte, requerant, options) {
     if (r.motif === "INVALID_INPUT") return r;
 
     dernier = r;
+
+    /* L'État membre a refusé l'appel. Insister sur la même porte n'y
+     * changera rien — c'est ce que les trois tentatives nous ont appris à
+     * nos frais. On passe à l'autre, qui répond. */
+    if (REFUS_ETAT_MEMBRE.indexOf(String(r.motif || "")) !== -1) {
+      const part = decouper(numero, paysCompte);
+      if (part) {
+        const b = await interrogerSansPreuve(part, delai);
+        if (b.statut !== "indisponible") return { ...b, essais: essai + 1 };
+      }
+    }
   }
 
   return { ...dernier, essais: essaisMax };
@@ -176,6 +187,89 @@ async function interroger(numero, paysCompte, requerant, delaiMs) {
   return indisponible("reponse_inattendue");
 }
 
+/* --- LE SECOND CHEMIN, QUAND LE PREMIER EST FERMÉ ------------------------
+ *
+ * Le registre européen expose deux portes pour la même question.
+ *
+ *   POST /check-vat-number  accepte un requérant et rend, en échange, un
+ *                           NUMÉRO DE CONSULTATION — la preuve qu'on a bien
+ *                           vérifié, à telle date. C'est la bonne porte.
+ *   GET  /ms/{pays}/vat/{n} répond oui ou non, avec le nom et l'adresse de
+ *                           la société, mais sans numéro de consultation.
+ *
+ * Relevé le 7 novembre 2026, et reproductible à volonté : pour un numéro
+ * français, la porte POST renvoie MS_MAX_CONCURRENT_REQ à chaque appel,
+ * avec ou sans champs requérant, tandis que la porte GET répond du premier
+ * coup. Ce n'est donc pas la saturation passagère que nous avions supposée
+ * — c'est la France qui limite durement cette variante de l'appel.
+ *
+ * La conséquence était chère : quatre sociétés françaises aux numéros
+ * parfaitement valides — Hair bodega, Maison Haussmann, Oz barber, SAS
+ * Lumia — étaient facturées TVA comprise, et la commande S00285 l'a été
+ * pour de bon.
+ *
+ * On garde donc la bonne porte en premier, pour la preuve. Mais quand
+ * l'État membre la referme, on frappe à l'autre plutôt que de taxer un
+ * client à tort. Le résultat porte alors un statut distinct,
+ * « valide_sans_preuve » : il exonère, parce que le registre officiel a
+ * confirmé la conformité du numéro, et il se signale, parce que le numéro
+ * de consultation reste à obtenir. */
+
+async function interrogerSansPreuve(part, delaiMs) {
+  const stop = new AbortController();
+  const minuteur = setTimeout(() => stop.abort(), delaiMs || DELAI_MS);
+  let reponse;
+  try {
+    reponse = await fetch(
+      RACINE + "/ms/" + encodeURIComponent(part.pays)
+             + "/vat/" + encodeURIComponent(part.numero),
+      { headers: { accept: "application/json" }, signal: stop.signal });
+  } catch (e) {
+    clearTimeout(minuteur);
+    return indisponible("reseau_get");
+  }
+  clearTimeout(minuteur);
+
+  if (!reponse.ok) return indisponible("http_get_" + reponse.status);
+
+  let d;
+  try { d = await reponse.json(); }
+  catch (e) { return indisponible("illisible_get"); }
+  if (!d || typeof d !== "object") return indisponible("vide_get");
+
+  const souci = premiereErreur(d);
+  if (souci) return indisponible(souci);
+
+  /* Cette porte nomme le champ « isValid », et non « valid » comme
+   * l'autre. Le piège est discret et il coûterait cher : lire « valid »
+   * ici rendrait toujours undefined, donc jamais d'exonération. */
+  if (d.isValid === true) {
+    return {
+      statut: "valide_sans_preuve",
+      nom: texte(d.name),
+      adresse: texte(d.address),
+      preuve: "",
+      motif: "confirmé par le registre, numéro de consultation à obtenir",
+      verifie_le: dateDe(d.requestDate),
+    };
+  }
+  if (d.isValid === false) {
+    return { statut: "invalide", motif: "inconnu_du_registre",
+             verifie_le: dateDe(d.requestDate) };
+  }
+  return indisponible("reponse_inattendue_get");
+}
+
+/** Les refus qui viennent de l'État membre lui-même, et qui justifient
+ *  d'essayer l'autre porte plutôt que d'insister sur celle-ci. */
+const REFUS_ETAT_MEMBRE = [
+  "MS_MAX_CONCURRENT_REQ",
+  "GLOBAL_MAX_CONCURRENT_REQ",
+  "MS_UNAVAILABLE",
+  "SERVICE_UNAVAILABLE",
+  "TIMEOUT",
+];
+
 /* --- Outils ------------------------------------------------------------- */
 
 function indisponible(motif) {
@@ -222,6 +316,12 @@ const VALIDITE_MINUTES = {
   // mois : assez pour ne pas harceler le registre, assez peu pour qu'un
   // numéro radié entre-temps finisse par être repris.
   valide_manuel: 90 * 24 * 60,
+
+  /* Confirmé par la porte sans preuve. Un jour, et non une semaine comme
+   * un « valide » : la confirmation est solide, mais le numéro de
+   * consultation manque, et c'est en repassant par la porte principale
+   * qu'on finira par l'obtenir, le jour où l'État membre la rouvrira. */
+  valide_sans_preuve: 24 * 60,
 
   // Validation ancienne conservée faute de réponse : à retenter dès que
   // possible, d'où l'absence volontaire de délai.

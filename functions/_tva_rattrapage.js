@@ -190,7 +190,8 @@ export async function aRegulariser(db, limite = 100) {
         "statut_vente, motif_vente, statut_apres, preuve_apres, " +
         "verifie_apres_le, cree_le " +
         "FROM tva_rattrapage " +
-        "WHERE regle = 0 AND statut_apres IN ('valide', 'valide_manuel') " +
+        "WHERE regle = 0 AND statut_apres IN " +
+        "('valide', 'valide_manuel', 'valide_sans_preuve') " +
         "ORDER BY cree_le DESC LIMIT " + Math.min(500, Math.max(1, Number(limite) || 100))
     ).all();
     return (r && r.results) || [];
