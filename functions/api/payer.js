@@ -19,6 +19,7 @@ import { json, erreur, compteConnecte, prolongerSiBesoin, texteValide, paysValid
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
+import { rattraperApresVente } from "../_tva_rattrapage.js";
 import { configure as configureOdoo, appel as appelOdoo, aDejaCommande } from "../_odoo.js";
 import { creerCommandeOdoo } from "../_commande_odoo.js";
 import { origineDuCorps } from "../_utm.js";
@@ -176,6 +177,29 @@ export async function onRequestPost(ctx) {
    * Et s'il échoue, la commande existe quand même — c'est un confort de
    * préparation, pas une condition de vente. */
   attendre(avertirSiPlusieursColis(env, commande.id));
+
+  /* LE RATTRAPAGE DE TVA, en arrière-plan lui aussi.
+   *
+   * Si le registre européen n'a pas tranché le numéro de ce client, la
+   * TVA belge vient d'être appliquée par prudence — c'est le bon réflexe
+   * au moment de la vente, et les trois secondes accordées plus haut ne
+   * changeront pas : personne ne doit perdre une commande parce qu'un
+   * service administratif est engorgé.
+   *
+   * Mais le client a maintenant sa réponse, et plus personne n'attend.
+   * On peut donc reprendre le contrôle avec le temps qu'il faut, et
+   * laisser à NBD une liste nommée des factures à régulariser. C'est ce
+   * qui a manqué le 6 novembre 2026 : Hair bodega, numéro français
+   * valide, refusé par un MS_MAX_CONCURRENT_REQ, facturé TVA comprise,
+   * et personne averti. */
+  attendre(rattraperApresVente(env.DB, env, compte, {
+    ref,
+    odoo_nom: commande.nom || "",
+    client: compte.salon || compte.email,
+    montant: String(resultat.total),
+    statut_vente: tva.statut,
+    motif_vente: tva.motif,
+  }));
 
   // Un écart entre notre calcul et celui d'Odoo arrête tout. On ne fait pas
   // payer un montant qui ne correspond pas à la commande enregistrée.

@@ -118,6 +118,12 @@ export async function controlerSiBesoin(db, compte, env) {
   const connu = () => ({
     valide: etaitValide, statut: compte.tva_statut || "", rafraichi: false,
     preuve: compte.tva_preuve || "",
+    /* Le motif voyage avec le statut depuis le 7 novembre 2026. Sans lui,
+     * l'appelant savait que le registre n'avait pas tranché mais pas
+     * pourquoi — et donc pas s'il valait la peine de redemander. C'est
+     * exactement ce qui manquait pour rattraper la commande de Hair
+     * bodega, refusée par un MS_MAX_CONCURRENT_REQ. */
+    motif: compte.tva_motif || "",
   });
 
   if (!aRevalider(compte.tva_verifiee_le, compte.tva_statut)) return connu();
@@ -152,7 +158,8 @@ export async function controlerSiBesoin(db, compte, env) {
 
   if (r.statut === "indisponible" && etaitValide) {
     return { valide: true, statut: "valide_ancien", rafraichi: false,
-             preuve: compte.tva_preuve || "" };
+             preuve: compte.tva_preuve || "", motif: r.motif || "" };
   }
-  return { valide: r.valide, statut: r.statut, rafraichi: true, preuve: r.preuve };
+  return { valide: r.valide, statut: r.statut, rafraichi: true,
+           preuve: r.preuve, motif: r.motif || "" };
 }

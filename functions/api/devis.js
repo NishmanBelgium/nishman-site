@@ -21,7 +21,8 @@ import { produitsParEan } from "../_odoo.js";
 import { codePortier, adressePortier } from "../_portier.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
-import { ouvreDroitAExoneration } from "../_tva.js";
+import { ouvreDroitAExoneration, controlerSiBesoin } from "../_tva.js";
+import { rattraperApresVente } from "../_tva_rattrapage.js";
 import { avertirSiPlusieursColisParNom } from "../_etiquette.js";
 import { noterDevis } from "../_devis.js";
 
@@ -134,9 +135,27 @@ export async function onRequestPost(ctx) {
 
   const pays = ["BE", "FR", "LU"].indexOf(String(compte.pays || "")) >= 0 ? compte.pays : "BE";
   const retrait = String(corps.pickup || "") === "1";
+
+  /* LE CONTRÔLE DU NUMÉRO, QUI MANQUAIT ICI.
+   *
+   * Jusqu'au 7 novembre 2026, le devis se contentait du statut enregistré
+   * dans le compte, sans jamais redemander au registre. Un numéro validé
+   * six mois plus tôt et radié depuis ouvrait donc encore l'exonération,
+   * et un numéro resté « indisponible » parce que le registre était
+   * engorgé un soir restait taxé indéfiniment. Les deux erreurs coûtent,
+   * et un devis se transforme en facture.
+   *
+   * controlerSiBesoin applique les mêmes règles que le paiement : un
+   * budget de trois secondes, un plancher de dix minutes entre deux
+   * interrogations, et l'état connu si le registre se tait. */
+  let tva = { valide: !!compte.tva_valide, statut: compte.tva_statut || "",
+              motif: compte.tva_motif || "" };
+  try { tva = await controlerSiBesoin(env.DB, compte, env); }
+  catch (e) { /* le registre muet ne doit pas faire perdre le devis */ }
+
   const r = calculer({
     selection, produits, prix, pays,
-    tvaValide: ouvreDroitAExoneration(pays, compte.tva_statut),
+    tvaValide: ouvreDroitAExoneration(pays, tva.statut),
     mode: retrait ? "retrait" : "livraison",
     promo: corps.promo,
   });
@@ -244,6 +263,21 @@ export async function onRequestPost(ctx) {
    * « combien de devis le site a-t-il sortis cette semaine ». L'écriture
    * suit l'envoi et ne le conditionne jamais : le client a son numéro,
    * un registre muet ne doit pas le lui retirer. */
+  /* Le même rattrapage que pour le paiement : si le registre n'a pas
+   * tranché, le devis part avec la TVA belge, et l'on reprend le contrôle
+   * une fois le client servi. Un devis non confirmé se corrige facilement
+   * — c'est même le meilleur moment pour s'en apercevoir. */
+  if (reponse.devis) {
+    attendre(rattraperApresVente(env.DB, env, compte, {
+      ref: reponse.devis,
+      odoo_nom: reponse.devis,
+      client: compte.salon || compte.email,
+      montant: charge.total,
+      statut_vente: tva.statut,
+      motif_vente: tva.motif,
+    }));
+  }
+
   if (reponse.devis) {
     attendre(noterDevis(env.DB, {
       ref: reponse.devis,

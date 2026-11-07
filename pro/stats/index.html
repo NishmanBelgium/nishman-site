@@ -12,7 +12,7 @@
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
-<link rel="stylesheet" href="/assets/css/stats.css?v=396" />
+<link rel="stylesheet" href="/assets/css/stats.css?v=397" />
   <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 </head>
 <body data-palette="#ED9B24,#1F6FB2">
@@ -169,6 +169,30 @@
       <div id="st-clients-corps"></div>
     </section>
 
+    <!-- LA TVA À RÉGULARISER. Ce n'est pas une statistique, c'est un geste
+         à faire, d'où sa place avec les commandes en souffrance plutôt
+         qu'avec les courbes. Le 6 novembre 2026, une société française au
+         numéro valide a été facturée TVA comprise parce que le registre
+         européen avait refusé l'interrogation ; personne ne l'a su avant
+         que NBD ne relise la facture à la main. Cette liste existe pour
+         que cela ne se reproduise pas. -->
+    <section class="st-souffrance" id="st-tva" hidden>
+      <h2>TVA à régulariser</h2>
+      <p class="st-lead">Ventes facturées TVA comprise alors que le second contrôle,
+        fait après la commande, a confirmé le numéro intracommunautaire. Chacune
+        demande une note de crédit — le site n'y touche pas.</p>
+      <div id="st-tva-liste"></div>
+    </section>
+
+    <section class="st-souffrance" id="st-tva-muet" hidden>
+      <h2>Numéros que le registre n'a pas tranchés</h2>
+      <p class="st-lead">La TVA belge a été appliquée par prudence et le registre
+        européen reste muet. À vérifier à la main depuis
+        <a href="/pro/tva/">le contrôle TVA</a> : ni le site ni personne ne peut
+        trancher à la place du registre.</p>
+      <div id="st-tva-muet-liste"></div>
+    </section>
+
     <section class="st-souffrance" id="st-souffrance" hidden>
       <h2>Commandes à reprendre</h2>
       <p class="st-lead">Payées, mais arrêtées avant la fin de la chaîne. La note dit où et pourquoi.</p>
@@ -196,7 +220,7 @@
 
 </main>
 
-<script src="/assets/js/stats.js?v=396" defer></script>
+<script src="/assets/js/stats.js?v=397" defer></script>
 <script src="/assets/js/consentement.js?v=394" defer></script>
 </body>
 </html>

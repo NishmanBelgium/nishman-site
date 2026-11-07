@@ -438,6 +438,63 @@
     }).join("");
   }
 
+  /* --- La TVA à régulariser --------------------------------------------
+   *
+   * Deux listes, et la distinction entre elles est tout l'intérêt. D'un
+   * côté les ventes dont le numéro a FINI par être confirmé : la facture
+   * porte une TVA qui n'avait pas lieu d'être, et il faut une note de
+   * crédit. De l'autre celles dont le registre européen n'a toujours rien
+   * dit : peut-être que le numéro est mauvais, et là il n'y a rien à
+   * régulariser — seulement à vérifier par un autre chemin.
+   *
+   * Mélanger les deux produirait des notes de crédit sur des numéros
+   * fantaisistes, ce qui est exactement l'erreur inverse. */
+
+  function tvaRegulariser(d) {
+    var liste = (d.tva && d.tva.a_regulariser) || [];
+    var zone = $("#st-tva");
+    if (!liste.length) { zone.hidden = true; return; }
+    zone.hidden = false;
+    $("#st-tva-liste").innerHTML = liste.map(function (t) {
+      return '<div class="st-bloquee"><p class="st-bloquee-ref">'
+        + ech(t.odoo_nom || t.ref)
+        + ' <span>' + ech(t.client || "—") + " · " + ech(t.pays)
+        + " · " + ech(t.numero) + " · " + euros(Number(t.montant) || 0)
+        + " TVA comprise</span></p>"
+        + '<p class="st-bloquee-note">Au moment de la vente, le registre a répondu « '
+        + ech(t.motif_vente || "sans réponse") + " ». Au second contrôle, le "
+        + ech(jourCourt(t.verifie_apres_le)) + ", le numéro est "
+        + ech(t.statut_apres === "valide_manuel" ? "validé à la main" : "confirmé")
+        + ". Une note de crédit est à émettre.</p>"
+        + '<p><button type="button" class="st-lien-bouton" data-regle="'
+        + ech(t.ref) + '">Note de crédit émise</button></p></div>';
+    }).join("");
+  }
+
+  function tvaMuettes(d) {
+    var liste = (d.tva && d.tva.muettes) || [];
+    var zone = $("#st-tva-muet");
+    if (!liste.length) { zone.hidden = true; return; }
+    zone.hidden = false;
+    $("#st-tva-muet-liste").innerHTML = liste.map(function (t) {
+      return '<div class="st-bloquee"><p class="st-bloquee-ref">'
+        + ech(t.odoo_nom || t.ref)
+        + ' <span>' + ech(t.client || "—") + " · " + ech(t.pays)
+        + " · " + ech(t.numero) + "</span></p>"
+        + '<p class="st-bloquee-note">Motif du registre : « '
+        + ech(t.motif_vente || "sans réponse") + " ». Vente du "
+        + ech(jourCourt(t.cree_le)) + ".</p></div>";
+    }).join("");
+  }
+
+  /** Une date ISO en « 6 nov. », ou un tiret si elle manque. */
+  function jourCourt(iso) {
+    if (!iso) return "—";
+    var d = new Date(iso);
+    if (isNaN(d)) return "—";
+    return d.toLocaleDateString("fr-BE", { day: "numeric", month: "short" });
+  }
+
   /* --- Le journal jour par jour ---------------------------------------- */
 
   /* Le journal montre toujours l'ensemble du site, quelle que soit la vue
@@ -749,6 +806,8 @@
     tableau("#st-pays", k.audience.par_pays, "pays", "Pays");
     tableau("#st-appareils", k.audience.par_appareil, "appareil", "Appareil");
     souffrance(d.en_souffrance);
+    tvaRegulariser(d);
+    tvaMuettes(d);
 
     journal(d);
     listeCommandes(d);
@@ -830,6 +889,29 @@
   });
 
   $("#st-export").addEventListener("click", exporterCsv);
+
+  /* « Note de crédit émise ». La ligne sort de la liste, et c'est tout ce
+     que le site fait : la note elle-même est un acte comptable qui
+     appartient à NBD et se passe dans Odoo. Le bouton se verrouille
+     pendant l'appel — deux clics ne doivent pas valoir deux écritures. */
+  $("#st-tva-liste").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-regle]");
+    if (!b || b.disabled) return;
+    b.disabled = true;
+    var texteAvant = b.textContent;
+    b.textContent = "Enregistrement…";
+    fetch("/api/tva-regularise", {
+      method: "POST", credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ref: b.dataset.regle }),
+    }).then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j && j.ok) { var c = b.closest(".st-bloquee"); if (c) c.remove();
+                         if (!$("#st-tva-liste").children.length) $("#st-tva").hidden = true; }
+        else { b.disabled = false; b.textContent = "Échec, réessayer"; }
+      })
+      .catch(function () { b.disabled = false; b.textContent = texteAvant; });
+  });
 
   /* Le filtre de statut ne touche qu'à l'affichage d'une liste déjà
      chargée : aucune raison de redemander au serveur. */

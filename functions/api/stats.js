@@ -23,6 +23,7 @@ import { json, erreur, compteAdmin } from "../_commun.js";
 import { preparerTable } from "../_paiements.js";
 import { lireMesure, preparerMesure, lireGestes, lireCampagnes } from "../_mesure.js";
 import { devisParJour, lireDevis } from "../_devis.js";
+import { aRegulariser, encoreMuettes } from "../_tva_rattrapage.js";
 
 const JOURS_DEFAUT = 30;
 const JOURS_MAX = 365;
@@ -290,6 +291,7 @@ export async function onRequestGet({ request, env }) {
     ventePro, venteProAvant,
     gens, gensAvant, portes, bloquees, campagnes,
     journalDevis, listeDevis, listeCommandes, devisAvant,
+    tvaARegulariser, tvaMuettes,
   ] = await Promise.all([
     lireMesure(env.DB, depuis, jusqua),
     lireMesure(env.DB, avantDepuis, avantJusqua),
@@ -317,6 +319,17 @@ export async function onRequestGet({ request, env }) {
     lireDevis(env.DB, depuis, jusqua),
     commandes(env.DB, depuis, jusqua),
     lireDevis(env.DB, avantDepuis, avantJusqua, 1),
+
+    /* LA TVA À RÉGULARISER, et pourquoi elle est sur cette page.
+     *
+     * Ce n'est pas une statistique : c'est un geste à faire, comme les
+     * commandes en souffrance juste à côté. Une société exonérable
+     * facturée TVA comprise attend une note de crédit, et plus on la
+     * lui fait attendre, plus elle doute du fournisseur. La liste n'est
+     * donc pas bornée à la période affichée : une régularisation
+     * oubliée le mois dernier reste à faire aujourd'hui. */
+    aRegulariser(env.DB),
+    encoreMuettes(env.DB),
   ]);
 
   /* Le taux de transformation se calcule sur les sessions, pas sur les
@@ -416,6 +429,10 @@ export async function onRequestGet({ request, env }) {
     portes,
 
     en_souffrance: bloquees,
+
+    /* La TVA : ce qui attend une note de crédit, et ce qui attend un
+       coup d'œil humain parce que le registre européen reste muet. */
+    tva: { a_regulariser: tvaARegulariser, muettes: tvaMuettes },
     date: new Date().toISOString(),
   });
 }
