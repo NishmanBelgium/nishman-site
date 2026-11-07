@@ -124,8 +124,11 @@
                    nombre(seg.boutique || 0) + " · " + part(seg.boutique || 0, a.vues) + " %")
            + carte("Vues catalogue pro", seg.pro || 0, segAvant.pro,
                    nombre(seg.pro || 0) + " · " + part(seg.pro || 0, a.vues) + " %")
-           + carte("Commandes boutique", c.commandes, p.commerce.commandes, nombre(c.commandes))
-           + carte("Chiffre boutique", c.chiffre, p.commerce.chiffre, euros(c.chiffre));
+           /* Les deux côtés additionnés. « Combien le site a-t-il fait »
+              n'a qu'une réponse, et c'est celle-ci ; le détail par côté
+              est à un clic, dans les deux autres onglets. */
+           + carte("Commandes du site", c.commandes, p.commerce.commandes, nombre(c.commandes))
+           + carte("Chiffre du site", c.chiffre, p.commerce.chiffre, euros(c.chiffre));
     } else if (etat.vue === "pro") {
       out += carte("Comptes créés", d.clients.nouveaux, d.clients.nouveaux_avant,
                    nombre(d.clients.nouveaux))
@@ -732,7 +735,7 @@
     titreCmd.textContent = etat.vue === "pro"
       ? "Commandes professionnelles payées en ligne, par jour"
       : etat.vue === "boutique" ? "Commandes de la boutique, par jour"
-      : "Commandes de la boutique, par jour";
+      : "Commandes payées sur le site, par jour";
 
     repartition(d);
     portes(d);

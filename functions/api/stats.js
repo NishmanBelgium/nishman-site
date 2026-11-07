@@ -141,6 +141,52 @@ export async function commerce(db, depuis, jusqua, cote) {
   };
 }
 
+/** LES DEUX CÔTÉS ADDITIONNÉS, pour la vue d'ensemble.
+ *
+ * Jusqu'au 7 novembre, « Tout le site » reprenait les chiffres de la
+ * boutique seule, au nom d'un panier moyen honnête : vingt euros de cire
+ * et trois cents euros de carton ne se moyennent pas. L'intention était
+ * juste, la conséquence inacceptable — le 6 novembre, le site a encaissé
+ * cinq commandes et 1 242 €, et la vue d'ensemble affichait zéro.
+ *
+ * Un tableau de bord qui annonce zéro un jour de chiffre est un tableau
+ * de bord qu'on cesse de croire. La question « combien le site a-t-il
+ * fait » n'a qu'une réponse, et c'est la somme. Le panier moyen, lui,
+ * reste lu côté par côté : c'est là qu'il veut dire quelque chose, et
+ * les deux onglets Boutique et Professionnel sont là pour ça. */
+function fusionner(a, b) {
+  const commandes = a.commandes + b.commandes;
+  const chiffre = Math.round((a.chiffre + b.chiffre) * 100) / 100;
+
+  // Les séries par jour se recouvrent : un même jour peut porter une
+  // commande de chaque côté. On additionne par clé, puis on remet dans
+  // l'ordre — le graphique attend des jours croissants.
+  const jours = {};
+  for (const l of [...(a.par_jour || []), ...(b.par_jour || [])]) {
+    const j = jours[l.jour] || { jour: l.jour, commandes: 0, chiffre: 0 };
+    j.commandes += Number(l.commandes) || 0;
+    j.chiffre += Number(l.chiffre) || 0;
+    jours[l.jour] = j;
+  }
+
+  const etapes = {};
+  for (const l of [...(a.par_etape || []), ...(b.par_etape || [])]) {
+    etapes[l.etape] = (etapes[l.etape] || 0) + (Number(l.n) || 0);
+  }
+
+  return {
+    cote: "tout",
+    commandes,
+    chiffre,
+    panier_moyen: commandes ? Math.round((chiffre / commandes) * 100) / 100 : 0,
+    abandons: a.abandons + b.abandons,
+    par_jour: Object.values(jours)
+      .map((j) => ({ ...j, chiffre: Math.round(j.chiffre * 100) / 100 }))
+      .sort((x, y) => (x.jour < y.jour ? -1 : 1)),
+    par_etape: Object.keys(etapes).map((etape) => ({ etape, n: etapes[etape] })),
+  };
+}
+
 /** L'état de la chaîne, maintenant : ce qui est resté en route.
  *
  * Les deux côtés y figurent, avec la mention de celui dont il s'agit :
@@ -278,6 +324,24 @@ export async function onRequestGet({ request, env }) {
    * occasions d'acheter, c'est une. */
   const taux = (v, a) => (a.sessions ? Math.round((v.commandes / a.sessions) * 10000) / 100 : null);
 
+  /* La vente de tout le site, et l'audience à laquelle la rapporter.
+   *
+   * Le dénominateur mérite une ligne. L'audience totale du site compte
+   * l'accueil, les pages de marque, les mentions légales — des endroits
+   * où l'on ne peut rien acheter. Un taux calculé dessus ne mesure pas
+   * la capacité à vendre, il mesure la proportion de curieux. On retient
+   * donc les sessions des deux catalogues, là où il y a un panier. */
+  const toutVente = fusionner(vente, ventePro);
+  const toutVenteAvant = fusionner(venteAvant, venteProAvant);
+  const audienceVendeuse = {
+    vues: audienceBoutique.vues + audiencePro.vues,
+    sessions: audienceBoutique.sessions + audiencePro.sessions,
+  };
+  const audienceVendeuseAvant = {
+    vues: audienceBoutiqueAvant.vues + audienceProAvant.vues,
+    sessions: audienceBoutiqueAvant.sessions + audienceProAvant.sessions,
+  };
+
   /* Chaque côté se juge sur son propre public. Rapporter les commandes
      de la boutique à l'audience totale du site — catalogue professionnel
      compris — donnerait un taux de transformation artificiellement bas,
@@ -303,11 +367,13 @@ export async function onRequestGet({ request, env }) {
     campagnes,
 
     /* La vue d'ensemble. « audience » porte la répartition par moitié de
-       site, « commerce » reste la boutique : c'est le seul canal qui
-       encaisse en ligne sans compte, et le confondre avec le
-       professionnel ferait mentir le panier moyen. */
+       site ; « commerce » additionne les deux côtés, parce que « combien
+       le site a-t-il fait » n'a qu'une réponse. Le taux se rapporte à
+       l'audience des deux catalogues — pas à l'audience totale, qui
+       compte aussi l'accueil et les pages de marque où personne
+       n'achète. */
     audience,
-    commerce: { ...vente, taux_transformation: taux(vente, audienceBoutique) },
+    commerce: { ...toutVente, taux_transformation: taux(toutVente, audienceVendeuse) },
     precedent: {
       audience: {
         vues: audienceAvant.vues, sessions: audienceAvant.sessions,
@@ -317,9 +383,9 @@ export async function onRequestGet({ request, env }) {
         par_segment: audienceAvant.par_segment,
       },
       commerce: {
-        commandes: venteAvant.commandes, chiffre: venteAvant.chiffre,
-        panier_moyen: venteAvant.panier_moyen,
-        taux_transformation: taux(venteAvant, audienceBoutiqueAvant),
+        commandes: toutVenteAvant.commandes, chiffre: toutVenteAvant.chiffre,
+        panier_moyen: toutVenteAvant.panier_moyen,
+        taux_transformation: taux(toutVenteAvant, audienceVendeuseAvant),
       },
     },
 

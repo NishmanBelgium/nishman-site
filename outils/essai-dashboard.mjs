@@ -94,6 +94,15 @@ function reponse(periode) {
     par_jour: [{ jour: "2026-11-05", commandes: 1, chiffre: 240 }],
     par_etape: [], taux_transformation: 20,
   };
+  /* La vue d'ensemble additionne les deux côtés — c'est le contrat de
+     l'API depuis le 7 novembre. Les totaux restent vérifiables à la
+     main : 2 + 1 = 3 commandes, 59,80 + 240 = 299,80 €. */
+  const tout = {
+    cote: "tout", commandes: 3, chiffre: 299.8, panier_moyen: 99.93, abandons: 1,
+    par_jour: [{ jour: "2026-10-20", commandes: 2, chiffre: 59.8 },
+               { jour: "2026-11-05", commandes: 1, chiffre: 240 }],
+    par_etape: [], taux_transformation: 20,
+  };
   const avant = { audience: { vues: 20, sessions: 8, par_segment: [] },
                   commerce: { commandes: 1, chiffre: 30, panier_moyen: 30,
                               taux_transformation: 12.5 } };
@@ -104,7 +113,7 @@ function reponse(periode) {
     periode_precedente: { depuis: "2026-09-08", jusqua: "2026-10-07" },
     campagnes: { par_campagne: [], atterrissage: [] },
     audience: a,
-    commerce: boutique,
+    commerce: tout,
     precedent: avant,
     boutique: { audience: a, commerce: boutique, precedent: avant },
     pro: { audience: vide, commerce: pro, precedent: avant },
@@ -206,6 +215,22 @@ verifier("six cartes de chiffres", await page.locator(".st-carte").count() === 6
 verifier("les deux champs de date reprennent la période",
   (await page.locator("#st-du").inputValue()) === DEPUIS
   && (await page.locator("#st-au").inputValue()) === JUSQUA);
+
+/* LA VUE D'ENSEMBLE ANNONCE LA SOMME DES DEUX CÔTÉS.
+ *
+ * Le 6 novembre, le site a encaissé cinq commandes et 1 242 € et cette
+ * vue affichait zéro : elle reprenait la boutique seule. Un tableau de
+ * bord qui annonce zéro un jour de chiffre est un tableau de bord qu'on
+ * cesse de croire, et c'est le genre de défaut qui revient sans un test
+ * pour le retenir. */
+const cartes = await page.locator(".st-carte").allTextContents();
+const cartesTexte = cartes.join(" | ");
+verifier("la vue d'ensemble compte les commandes des deux côtés",
+  /Commandes du site3[^0-9]/.test(cartesTexte),
+  "lu « " + cartesTexte + " »");
+verifier("la vue d'ensemble additionne le chiffre des deux côtés",
+  /Chiffre du site/.test(cartesTexte) && /299,80/.test(cartesTexte),
+  "lu « " + cartesTexte + " »");
 
 console.log("\nLe journal jour par jour");
 const nbLignes = await page.locator("#st-journal-corps tbody tr").count();
