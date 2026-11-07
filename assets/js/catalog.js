@@ -1343,6 +1343,31 @@
     // avant de voir le catalogue.
     await loadProducts();
     montrerQui();
+
+    /* ARRIVER DIRECTEMENT SUR UNE FAMILLE.
+     *
+     * Jusqu'au 7 novembre 2026, le catalogue ne pouvait s'ouvrir que sur
+     * « Tous » : les filtres n'existaient que dans le tiroir, à deux
+     * clics. Conséquence mesurée sur la page d'arrivée des publicités —
+     * 247 sessions sur /grossiste-barbier/, 51 seulement jusqu'ici — un
+     * barbier qui vient pour des poudres coiffantes atterrissait sur
+     * deux cents références et repartait.
+     *
+     * On accepte donc ?famille=<nom exact de la catégorie>, ce qui
+     * permet à une page, une publicité ou un courriel de viser juste.
+     * Le nom doit correspondre à une catégorie réellement présente :
+     * une valeur inventée laisse le catalogue entier plutôt qu'une
+     * grille vide, parce qu'un lien un peu faux vaut mieux qu'une page
+     * qui a l'air cassée. */
+    try {
+      const demandee = new URLSearchParams(window.location.search).get("famille");
+      if (demandee) {
+        const connue = Object.keys(categoryCounts())
+          .find((c) => c.toLowerCase() === String(demandee).toLowerCase().trim());
+        if (connue) activeCategory = connue;
+      }
+    } catch (e) { /* une adresse illisible laisse le catalogue entier */ }
+
     renderCatButton();
     renderGrid();
     renderFloatBar();

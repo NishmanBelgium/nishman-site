@@ -20,6 +20,7 @@
   color: #F7F6F2;
   padding: 32px 0 64px;
 }
+.phares h1,
 .phares h2 {
   font-family: var(--titre, "Archivo", "Helvetica Neue", Arial, sans-serif);
   font-size: clamp(1.4rem, 2.4vw, 1.9rem);
@@ -159,3 +160,59 @@
   .phare:hover .phare-objet { transform: none; }
 }
 .phare:focus-visible { outline: 2px solid var(--orange, #ED9B24); outline-offset: 3px; }
+
+
+/* ─────────── LA PAGE D'ARRIVÉE DES PUBLICITÉS ───────────
+ *
+ * /grossiste-barbier/ reçoit les publicités Meta et s'ouvrait sur un mur
+ * de texte : 247 sessions, 51 jusqu'au catalogue. Ce qui suit habille le
+ * premier écran qu'on lui a donné — une promesse, un bouton dominant, un
+ * second plus discret.
+ *
+ * Un seul bouton est plein, et c'est volontaire. Deux boutons de même
+ * poids ne sont pas un choix offert, c'est une hésitation : le visiteur
+ * qui doit arbitrer entre deux appels identiques n'en suit aucun. Le
+ * catalogue est la bonne porte par défaut ; le devis attend ceux qui
+ * savent déjà ce qu'ils veulent. */
+
+.gb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 28px;
+}
+
+.gb-cta {
+  display: inline-block;
+  background: var(--orange, #ED9B24);
+  color: #101010;
+  font-family: var(--titre, "Archivo", "Helvetica Neue", Arial, sans-serif);
+  font-stretch: 85%;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  padding: 14px 24px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.gb-cta:hover { background: var(--orange-fonce, #C9841F); }
+.gb-cta:active { transform: translateY(1px); }
+
+.gb-cta-second {
+  background: transparent;
+  color: #F7F6F2;
+  box-shadow: inset 0 0 0 1px rgba(247, 246, 242, 0.38);
+}
+.gb-cta-second:hover {
+  background: rgba(247, 246, 242, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(247, 246, 242, 0.6);
+}
+
+/* Sur téléphone, les deux boutons prennent toute la largeur et se
+   superposent : côte à côte, ils tomberaient à deux lignes de texte
+   chacun et perdraient leur allure de bouton. */
+@media (max-width: 560px) {
+  .gb-actions { flex-direction: column; gap: 10px; }
+  .gb-cta { text-align: center; padding: 15px 20px; }
+}

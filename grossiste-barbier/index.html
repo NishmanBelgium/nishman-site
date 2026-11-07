@@ -24,6 +24,9 @@
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
+<!-- Les tuiles de familles, reprises de l'accueil. familles.css ne dépend
+     que des variables de base.css : rien d'autre à charger. -->
+<link rel="stylesheet" href="/assets/css/familles.css?v=400" />
 <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 <!-- Cette page vise une recherche que personne n'occupe : « grossiste
      produit barbier Belgique » et ses variantes. Le concurrent qui
@@ -109,16 +112,102 @@
   <div class="wrap bar-in">
     <a class="logo" href="/" aria-label="Nishman, accueil"><img src="/assets/img/nishman.svg" alt="Nishman" /></a>
     <div class="bar-sp"></div>
+    <!-- Sur cette page, et sur elle seule, la pastille du devis n'est pas
+         dorée. Ailleurs c'est le bon réglage ; ici elle entrait en
+         concurrence directe avec le bouton doré du premier écran, qui dit
+         autre chose — « voir le catalogue ». Deux appels dorés qui ne
+         mènent pas au même endroit, c'est le visiteur qui arbitre, et il
+         arbitre en partant. Une seule chose brille par écran. -->
     <a class="pill" href="/produits/">Catalogue pro</a>
-    <a class="pill pill-gold" href="/devis/">Demander un devis</a>
+    <a class="pill" href="/devis/">Demander un devis</a>
   </div>
 </header>
 
+<!-- ======================================================================
+     LE PREMIER ÉCRAN, et pourquoi il a fallu l'écrire.
+
+     Cette page est l'arrivée des publicités Meta. Mesuré sur les trois
+     jours du 5 au 7 novembre 2026 : 247 sessions y atterrissent,
+     51 seulement atteignent le catalogue professionnel. Quatre visiteurs
+     sur cinq lisent l'argumentaire et repartent.
+
+     La cause était sous les yeux. La page s'ouvrait sur un « ← Accueil »,
+     puis sur un mur de texte : un article, avec pour seules actions deux
+     pastilles dans l'en-tête. Un barbier qui arrive d'Instagram ne lit
+     pas un article, il regarde des produits. Le lien de retour, placé
+     juste sous le titre, lui proposait même de partir au moment exact où
+     il fallait l'inviter à entrer.
+
+     Ce qui suit ne retire pas une ligne du texte — il travaille pour le
+     référencement et il dit vrai. On place devant lui ce qui manquait :
+     une promesse en une phrase, un bouton dominant vers le catalogue, et
+     les cinq familles en photos de produits réels. Les tuiles mènent au
+     catalogue PRO déjà filtré, pas à la boutique grand public : la page
+     s'adresse aux salons.
+     ====================================================================== -->
+<section class="phares" aria-labelledby="gb-titre">
+  <div class="wrap">
+    <h1 id="gb-titre">Grossiste en produits barbier pour la Belgique, la France et le Luxembourg</h1>
+    <p class="phares-lead">Importateur officiel NISHMAN. Cent vingt-cinq références
+      en stock à Binche, au tarif professionnel et au carton, expédiées le jour même
+      vers la Belgique, la France et le Luxembourg.</p>
+    <p class="gb-actions">
+      <a class="gb-cta" href="/produits/">Voir le catalogue professionnel</a>
+      <a class="gb-cta gb-cta-second" href="/devis/">Demander un devis</a>
+    </p>
+
+    <ul class="phares-piste">
+      <li><a class="phare" href="/produits/?famille=Poudres%20coiffantes">
+        <span class="phare-vitrine">
+          <span class="phare-objet"><img src="/assets/img/products/8684736670991.webp" alt=""
+                width="900" height="900" loading="lazy" decoding="async" /></span>
+          <span class="phare-fond"><img src="/assets/img/familles/poudres-coiffantes.webp?v=354" alt=""
+                width="800" height="1067" loading="lazy" decoding="async" /></span>
+        </span>
+        <span class="phare-txt"><em>11 références</em><b>Poudres coiffantes</b></span>
+      </a></li>
+      <li><a class="phare" href="/produits/?famille=Mat%20Wax">
+        <span class="phare-vitrine">
+          <span class="phare-objet"><img src="/assets/img/products/8682035081074.webp" alt=""
+                width="900" height="900" loading="lazy" decoding="async" /></span>
+          <span class="phare-fond"><img src="/assets/img/familles/mat-wax.webp?v=354" alt=""
+                width="800" height="1067" loading="lazy" decoding="async" /></span>
+        </span>
+        <span class="phare-txt"><em>23 références</em><b>Mat Wax</b></span>
+      </a></li>
+      <li><a class="phare" href="/produits/?famille=Aqua%20Wax">
+        <span class="phare-vitrine">
+          <span class="phare-objet"><img src="/assets/img/products/8682035088455.webp" alt=""
+                width="900" height="900" loading="lazy" decoding="async" /></span>
+          <span class="phare-fond"><img src="/assets/img/familles/aqua-wax.webp?v=354" alt=""
+                width="800" height="1067" loading="lazy" decoding="async" /></span>
+        </span>
+        <span class="phare-txt"><em>18 références</em><b>Aqua Wax</b></span>
+      </a></li>
+      <li><a class="phare" href="/produits/?famille=Colognes">
+        <span class="phare-vitrine">
+          <span class="phare-objet"><img src="/assets/img/products/8682035088004.webp" alt=""
+                width="900" height="900" loading="lazy" decoding="async" /></span>
+          <span class="phare-fond"><img src="/assets/img/familles/colognes.webp?v=354" alt=""
+                width="800" height="1067" loading="lazy" decoding="async" /></span>
+        </span>
+        <span class="phare-txt"><em>25 références</em><b>Eaux de Cologne</b></span>
+      </a></li>
+      <li><a class="phare" href="/produits/?famille=Soins%20barbe">
+        <span class="phare-vitrine">
+          <span class="phare-objet"><img src="/assets/img/products/8682035084563.webp" alt=""
+                width="900" height="900" loading="lazy" decoding="async" /></span>
+          <span class="phare-fond"><img src="/assets/img/familles/soins-barbe.webp?v=354" alt=""
+                width="800" height="1067" loading="lazy" decoding="async" /></span>
+        </span>
+        <span class="phare-txt"><em>10 références</em><b>Soins barbe</b></span>
+      </a></li>
+    </ul>
+  </div>
+</section>
+
 <main class="doc">
 
-<a class="doc-retour" href="/">← Accueil</a>
-
-<h1>Grossiste en produits barbier pour la Belgique, la France et le Luxembourg</h1>
 <p class="maj">NBD Distribution SRL · Importateur officiel pour la Belgique, la France et le Luxembourg</p>
 
 <p>Nous vendons en gros aux salons de coiffure et aux barbershops la gamme
