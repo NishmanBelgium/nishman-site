@@ -191,6 +191,40 @@ await pageCat.waitForFunction(
 verifier("sans paramètre, rien ne change pour les visiteurs habituels",
   !(await pageCat.locator("#cat-btn").evaluate((e) => e.classList.contains("filtered"))));
 
+/* --- LA BANDE BLANCHE SOUS L'AFFICHE ------------------------------------
+ *
+ * Signalée par NBD le 7 novembre 2026, présente depuis des semaines : un
+ * rectangle blanc en travers de la page, entre l'affiche du catalogue et
+ * la barre de recherche. Cause unique, une marge basse de 20 px sur le
+ * bandeau, héritée d'une époque où ce qui suivait était clair. La barre
+ * de recherche étant devenue sombre, ces 20 px ne séparaient plus deux
+ * blocs : ils laissaient voir la feuille blanche entre deux noirs.
+ *
+ * Le test mesure l'écart réel entre les deux, sur les deux tailles
+ * d'écran. C'est le genre de défaut qu'un remaniement de mise en page
+ * fait revenir sans qu'on s'en aperçoive. */
+
+console.log("\nLe catalogue : pas de bande claire sous l'affiche");
+for (const [nom, vp] of [["téléphone", { width: 430, height: 932 }],
+                         ["bureau", { width: 1280, height: 900 }]]) {
+  const ctxCat = await navigateur.newContext({ viewport: vp, hasTouch: nom === "téléphone" });
+  await ctxCat.route("**://fonts.googleapis.com/**", (r) => r.abort());
+  await ctxCat.route("**://fonts.gstatic.com/**", (r) => r.abort());
+  const pc = await ctxCat.newPage();
+  await pc.goto(BASE + "/produits/", { waitUntil: "load" });
+  await pc.waitForSelector(".search-sticky", { timeout: 15000 }).catch(() => {});
+
+  const ecart = await pc.evaluate(() => {
+    const b = document.querySelector(".bandeau");
+    const s = document.querySelector(".search-sticky");
+    if (!b || !s) return null;
+    return Math.round(s.getBoundingClientRect().top - b.getBoundingClientRect().bottom);
+  });
+  verifier("sur " + nom + ", l'affiche et la barre de recherche se touchent",
+    ecart === 0, ecart === null ? "éléments introuvables" : "écart de " + ecart + " px");
+  await ctxCat.close();
+}
+
 /* --- Rien de cassé ----------------------------------------------------- */
 
 console.log("\nAucune erreur en cours de route");

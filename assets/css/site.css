@@ -3572,11 +3572,23 @@ body.catalog-body { background: #0E0E0E; }
    largeur et s'empilent sans décrochement. Le -34px en haut annule le
    rembourrage de la feuille, pour que le bandeau affleure le haut de
    page au lieu de flotter sur une bande de crème. */
+/* LA MARGE DU BAS EST À ZÉRO, ET C'EST VOLONTAIRE.
+ *
+ * Elle valait 20 px, d'une époque où ce qui suivait le bandeau était
+ * clair. La barre de recherche est devenue sombre depuis, et ces 20 px
+ * ne séparaient plus deux blocs : ils laissaient voir la feuille blanche
+ * entre deux noirs. Un rectangle blanc en travers de la page, juste sous
+ * l'affiche — signalé par NBD, et présent depuis des semaines.
+ *
+ * À zéro, le bandeau et la barre de recherche se touchent et se lisent
+ * comme un seul bloc sombre. Si une respiration est souhaitée un jour,
+ * elle devra être du rembourrage DANS la barre, pas une marge qui
+ * découvre ce qu'il y a derrière. */
 .bandeau {
   position: relative;
   overflow: hidden;
   height: clamp(300px, calc(100svh - 310px), 440px);
-  margin: -34px calc(-1 * var(--coque)) 20px;
+  margin: -34px calc(-1 * var(--coque)) 0;
   /* L'affiche fixe vit ici et non dans l'attribut poster de la vidéo :
      un attribut ne connaît pas les points de rupture, un fond si. Elle
      est pré-assombrie au même taux que le filtre appliqué au film, pour
