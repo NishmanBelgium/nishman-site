@@ -110,6 +110,12 @@ export async function verifier(numero, paysCompte, requerant, options) {
       if (part) {
         const b = await interrogerSansPreuve(part, delai);
         if (b.statut !== "indisponible") return { ...b, essais: essai + 1 };
+        /* La seconde porte n'a rien tranché non plus. On garde SON motif
+         * plutôt que celui de la première : c'est elle qui a parlé en
+         * dernier, et sans cela on ne saurait jamais lequel des deux
+         * chemins a échoué. Le diagnostic du 7 novembre a buté là-dessus
+         * pendant une demi-heure. */
+        dernier = { ...b, chemin: "seconde porte" };
       }
     }
   }
@@ -246,6 +252,7 @@ async function interrogerSansPreuve(part, delaiMs) {
   if (d.isValid === true) {
     return {
       statut: "valide_sans_preuve",
+      chemin: "seconde porte",
       nom: texte(d.name),
       adresse: texte(d.address),
       preuve: "",
@@ -253,11 +260,28 @@ async function interrogerSansPreuve(part, delaiMs) {
       verifie_le: dateDe(d.requestDate),
     };
   }
-  if (d.isValid === false) {
-    return { statut: "invalide", motif: "inconnu_du_registre",
-             verifie_le: dateDe(d.requestDate) };
-  }
-  return indisponible("reponse_inattendue_get");
+  /* LA SECONDE PORTE PEUT CONFIRMER, JAMAIS CONDAMNER.
+   *
+   * Écrit après coup, et la leçon a coûté. Le 7 novembre 2026, cette
+   * porte a été interrogée depuis Cloudflare pour quatre numéros
+   * français que la même porte, interrogée depuis un navigateur
+   * ordinaire quelques minutes plus tôt, confirmait tous les quatre.
+   * Elle a répondu « inconnu » aux quatre, et le site les a marqués
+   * invalides — c'est-à-dire qu'un correctif censé cesser de taxer des
+   * clients à tort a commencé par les déclarer en faute.
+   *
+   * On ne sait pas pourquoi la réponse dépend de l'appelant, et tant
+   * qu'on ne le sait pas, on n'en tire pas de conclusion défavorable.
+   * Le rôle de cette porte est de SAUVER des numéros valides que la
+   * porte principale n'a pas pu confirmer ; il n'est pas de condamner.
+   * Un démenti ne vaut que de la porte principale, celle qui engage le
+   * registre avec un requérant identifié.
+   *
+   * Asymétrie assumée : le pire qu'elle produise est une vérification
+   * remise à plus tard. L'inverse produisait une facture fausse. */
+  return indisponible(d.isValid === false
+    ? "seconde_porte_dement_sans_confirmer"
+    : "reponse_inattendue_get");
 }
 
 /** Les refus qui viennent de l'État membre lui-même, et qui justifient

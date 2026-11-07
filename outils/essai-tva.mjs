@@ -376,9 +376,33 @@ console.log("\nLes deux portes du registre européen");
     "preuve « " + r.preuve + " », motif « " + r.motif + " »");
 }
 {
+  /* LA RÈGLE QUI A COÛTÉ CHER, ET QU'IL FAUT RETENIR ICI.
+   *
+   * Le 7 novembre 2026, la seconde porte interrogée depuis Cloudflare a
+   * répondu « inconnu » pour quatre numéros français que la même porte,
+   * interrogée depuis un navigateur quelques minutes plus tôt,
+   * confirmait tous les quatre. Le site les a marqués invalides : un
+   * correctif censé cesser de taxer des clients à tort avait commencé
+   * par les déclarer en faute.
+   *
+   * La seconde porte peut donc confirmer, jamais condamner. Son rôle est
+   * de sauver un numéro valide que la porte principale n'a pas pu
+   * confirmer ; un démenti ne vaut que de la porte principale. */
   porteePost = POST_SATURE; porteeGet = GET_INVALIDE;
   const r = await vies.verifier("FR00988674727", "FR", "BE0817750283", { tentatives: 1 });
-  verifier("un démenti de la seconde porte est un démenti, pas une panne",
+  verifier("la seconde porte ne peut JAMAIS condamner un numéro : un démenti "
+    + "d'elle seule laisse « indisponible », pas « invalide »",
+    r.statut === "indisponible", "lu « " + r.statut + " »");
+  verifier("et son motif dit lequel des deux chemins a parlé en dernier",
+    r.motif === "seconde_porte_dement_sans_confirmer",
+    "lu « " + r.motif + " »");
+}
+{
+  // Un démenti de la porte principale, lui, fait foi.
+  porteePost = { corps: { valid: false, requestDate: "2026-11-07T08:00:00Z" } };
+  porteeGet = GET_VALIDE;
+  const r = await vies.verifier("FR00988674727", "FR", "BE0817750283", { tentatives: 1 });
+  verifier("un démenti de la porte principale, lui, tranche",
     r.statut === "invalide" && r.motif === "inconnu_du_registre",
     "lu « " + r.statut + " / " + r.motif + " »");
 }

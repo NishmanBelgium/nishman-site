@@ -133,6 +133,7 @@ export async function onRequestPost(contexte) {
       ok: true, action: "reverifiee", email: cible.email, societe: cible.salon,
       statut: r.statut, exonere: ouvreDroitAExoneration(cible.pays, r.statut),
       preuve: r.preuve || "", nom_registre: r.nom || "", motif: r.motif || "",
+      chemin: r.chemin || "",
       verifie_le: r.verifie_le || horodatage,
     });
   }

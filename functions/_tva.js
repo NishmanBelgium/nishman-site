@@ -107,6 +107,10 @@ export async function controlerEtEnregistrer(db, compte, env, options) {
     preuve: r.preuve || "",
     nom: r.nom || "",
     motif: motif || "",
+    /* Par quelle porte du registre la réponse est arrivée. Sans cette
+     * ligne, un diagnostic revient à deviner : les deux portes rendent
+     * des motifs qui se ressemblent, et l'on cherche longtemps. */
+    chemin: r.chemin || "porte principale",
   };
 }
 
