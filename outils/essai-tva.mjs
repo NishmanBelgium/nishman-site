@@ -432,10 +432,48 @@ verifier("il est revérifié au bout d'un jour, pas d'une semaine : c'est en "
   && !vies.aRevalider(new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
                       "valide_sans_preuve"));
 
+
+console.log("\nQuand faut-il frapper à la seconde porte ?");
+{
+  /* La première version listait les refus connus de l'État membre et
+   * laissait passer « reseau » — le cas où la requête n'est même pas
+   * revenue, qui est pourtant celui où changer de porte sert le plus.
+   * Observé dès la mise en production. */
+  porteePost = { ok: false, status: 0, corps: {} };
+  porteeGet = GET_VALIDE;
+  globalThis.fetch = async (url, init) => {
+    const methode = (init && init.method) || "GET";
+    if (methode === "POST") throw new Error("coupure réseau");
+    return { ok: true, status: 200, json: async () => GET_VALIDE.corps,
+             text: async () => JSON.stringify(GET_VALIDE.corps) };
+  };
+  const r = await vies.verifier("FR68934168154", "FR", "BE0817750283", { tentatives: 1 });
+  verifier("une coupure réseau sur la porte principale fait basculer aussi — "
+    + "c'est le cas où changer de porte sert le plus",
+    r.statut === "valide_sans_preuve", "lu « " + r.statut + " »");
+}
+{
+  // Une saisie que le registre refuse de lire ne sera pas mieux lue ailleurs.
+  let getAppele = false;
+  globalThis.fetch = async (url, init) => {
+    const methode = (init && init.method) || "GET";
+    if (methode !== "POST") { getAppele = true; }
+    const corps = methode === "POST"
+      ? { actionSucceed: false, errorWrappers: [{ error: "INVALID_INPUT" }] }
+      : GET_VALIDE.corps;
+    return { ok: true, status: 200, json: async () => corps,
+             text: async () => JSON.stringify(corps) };
+  };
+  const r = await vies.verifier("FRnimportequoi", "FR", "BE0817750283", { tentatives: 1 });
+  verifier("une saisie illisible s'arrête à la première porte",
+    r.statut === "invalide" && r.motif === "format" && !getAppele,
+    "lu « " + r.statut + " / " + r.motif + " », seconde porte appelée : " + getAppele);
+}
+
 console.log("");
 if (rates) {
   console.log(rates + " vérification(s) en échec sur " + faits + ".");
   process.exit(1);
 }
-console.log("Les deux portes du registre sont bien départagées. "
+console.log("La bascule entre les deux portes est réglée. "
   + faits + " vérifications au total.");

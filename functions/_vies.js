@@ -105,7 +105,7 @@ export async function verifier(numero, paysCompte, requerant, options) {
     /* L'État membre a refusé l'appel. Insister sur la même porte n'y
      * changera rien — c'est ce que les trois tentatives nous ont appris à
      * nos frais. On passe à l'autre, qui répond. */
-    if (REFUS_ETAT_MEMBRE.indexOf(String(r.motif || "")) !== -1) {
+    if (vautLaSecondePorte(r.motif)) {
       const part = decouper(numero, paysCompte);
       if (part) {
         const b = await interrogerSansPreuve(part, delai);
@@ -284,15 +284,24 @@ async function interrogerSansPreuve(part, delaiMs) {
     : "reponse_inattendue_get");
 }
 
-/** Les refus qui viennent de l'État membre lui-même, et qui justifient
- *  d'essayer l'autre porte plutôt que d'insister sur celle-ci. */
-const REFUS_ETAT_MEMBRE = [
-  "MS_MAX_CONCURRENT_REQ",
-  "GLOBAL_MAX_CONCURRENT_REQ",
-  "MS_UNAVAILABLE",
-  "SERVICE_UNAVAILABLE",
-  "TIMEOUT",
-];
+/** Faut-il essayer l'autre porte ?
+ *
+ * La première version listait les refus connus de l'État membre —
+ * MS_MAX_CONCURRENT_REQ et consorts. Elle a laissé passer « reseau »,
+ * c'est-à-dire le cas où la requête n'est même pas revenue, qui est
+ * pourtant celui où changer de porte sert le plus. Observé dès la mise
+ * en production : la porte principale rendait tantôt un refus de l'État
+ * membre, tantôt une coupure réseau, et seul le premier déclenchait la
+ * bascule.
+ *
+ * La règle est donc renversée. Si la porte principale n'a RIEN tranché,
+ * on frappe à l'autre, quelle qu'en soit la raison. La seule exception
+ * est une saisie que le registre refuse de lire : celle-là ne sera pas
+ * mieux lue ailleurs. Une liste de cas connus se trompe toujours sur le
+ * cas suivant ; une règle générale, non. */
+function vautLaSecondePorte(motif) {
+  return String(motif || "") !== "INVALID_INPUT";
+}
 
 /* --- Outils ------------------------------------------------------------- */
 
