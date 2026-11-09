@@ -20,7 +20,7 @@ import { json, erreur, compteAdmin } from "../_commun.js";
 import { interrogerPortier, codePortier, adressePortier } from "../_portier.js";
 import { verifier as verifierTva } from "../_vies.js";
 import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "../_odoo.js";
-import { catalogue } from "../_tarifs.js";
+import { catalogue, donneesPortier, etatFilet } from "../_tarifs.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { configureSendcloud, compteSendcloud } from "../_sendcloud.js";
 import { lireIncidents } from "../_incidents.js";
@@ -390,6 +390,38 @@ async function rapport({ request, env }) {
   try { cacheStock = await etatCachePartage(env.DB); }
   catch (e) { cacheStock = { ok: false, detail: "illisible" }; }
 
+  /* Les fiches publiées qu'aucun prix ne couvre.
+   *
+   * C'est le défaut le plus silencieux du site : la fiche s'affiche,
+   * l'article est en stock, et le bouton ne s'arme jamais parce que la
+   * commande écarte toute référence sans prix. Depuis que le filet Odoo
+   * existe, ce compte doit rester à zéro — s'il remonte, c'est qu'Odoo
+   * ne répond plus ET que le portier n'a pas été mis à jour. */
+  let sansPrix = { lisible: false, detail: "non vérifié" };
+  try {
+    const [produits, tarifs] = await Promise.all([
+      catalogue(request), donneesPortier(env),
+    ]);
+    const manquants = (produits || [])
+      .filter((p) => p && p.ean && tarifs.prices[String(p.ean)] === undefined)
+      .map((p) => String(p.ean) + " " + String(p.name || "").slice(0, 44));
+    const filet = etatFilet();
+    sansPrix = {
+      lisible: true,
+      nombre: manquants.length,
+      lignes: manquants.slice(0, 20),
+      comblees_par_odoo: filet.ajoutes,
+      souci_filet: filet.souci,
+    };
+    if (manquants.length) {
+      consequences.push(manquants.length + " fiche(s) publiée(s) sans prix : elles "
+        + "s'affichent au catalogue mais ne peuvent pas être commandées. "
+        + "Voir « fiches_sans_prix ».");
+    }
+  } catch (e) {
+    sansPrix = { lisible: false, detail: String((e && e.message) || "illisible").slice(0, 160) };
+  }
+
   let incidents = [];
   let incidentsSouci = "";
   try { incidents = await lireIncidents(env.DB, 20); }
@@ -411,6 +443,7 @@ async function rapport({ request, env }) {
     consequences: consequences,
     alertes: alertes,
     releve_de_stock_partage: cacheStock,
+    fiches_sans_prix: sansPrix,
     echecs_de_commande: incidentsSouci
       ? { lisible: false, detail: incidentsSouci }
       : { lisible: true, nombre: incidents.length, lignes: incidents },
