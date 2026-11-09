@@ -35,7 +35,8 @@
   "tagline_de": "Stylingpomade",
   "description_de": "Stylingpomade für strukturierte, elegante Looks: Seitenscheitel, Pompadour, Slick Back. Fester Halt, gepflegtes Finish, kann tagsüber nachgekämmt werden.",
   "tagline_tr": "Şekillendirici pomat",
-  "description_tr": "Yapılandırılmış ve şık görünümler için şekillendirici pomat: yan ayrım, pompadour, slick back. Sağlam tutuş, bakımlı bitiş, gün içinde yeniden taranabilir."
+  "description_tr": "Yapılandırılmış ve şık görünümler için şekillendirici pomat: yan ayrım, pompadour, slick back. Sağlam tutuş, bakımlı bitiş, gün içinde yeniden taranabilir.",
+  "retire": true
  },
  {
   "ean": "8682035084686",
@@ -75,7 +76,8 @@
   "tagline_de": "Stylingpomade",
   "description_de": "Stylingpomade für strukturierte, elegante Looks: Seitenscheitel, Pompadour, Slick Back. Fester Halt, gepflegtes Finish, kann tagsüber nachgekämmt werden.",
   "tagline_tr": "Şekillendirici pomat",
-  "description_tr": "Yapılandırılmış ve şık görünümler için şekillendirici pomat: yan ayrım, pompadour, slick back. Sağlam tutuş, bakımlı bitiş, gün içinde yeniden taranabilir."
+  "description_tr": "Yapılandırılmış ve şık görünümler için şekillendirici pomat: yan ayrım, pompadour, slick back. Sağlam tutuş, bakımlı bitiş, gün içinde yeniden taranabilir.",
+  "retire": true
  },
  {
   "ean": "8682035086437",
@@ -558,8 +560,7 @@
   "tagline_de": "Web-Effekt — Blue Web",
   "description_de": "Das Kult-Spinnennetz-Wachs von Nishman: eine einzigartige faserige Textur, die Dichte und Fülle verleiht, mit starkem, aber flexiblem Halt den ganzen Tag. Auf Wasserbasis, gepflegtes glänzendes Finish, lässt sich leicht mit Shampoo auswaschen.",
   "tagline_tr": "Örümcek ağı efekti — Blue Web",
-  "description_tr": "Nishman'ın kült örümcek ağı efektli wax'ı: hacim ve dolgunluk veren eşsiz lifli doku, gün boyu güçlü ama esnek tutuş. Su bazlı, bakımlı parlak bitiş, şampuanla kolayca durulanır.",
-  "soon": true
+  "description_tr": "Nishman'ın kült örümcek ağı efektli wax'ı: hacim ve dolgunluk veren eşsiz lifli doku, gün boyu güçlü ama esnek tutuş. Su bazlı, bakımlı parlak bitiş, şampuanla kolayca durulanır."
  },
  {
   "ean": "8682035088462",
@@ -692,8 +693,7 @@
   "tagline_de": "Web-Effekt — Keratin",
   "description_de": "Das Kult-Spinnennetz-Wachs von Nishman: eine einzigartige faserige Textur, die Dichte und Fülle verleiht, mit starkem, aber flexiblem Halt den ganzen Tag. Auf Wasserbasis, mit Keratin angereichert, maximale Kontrolle, lässt sich leicht mit Shampoo auswaschen.",
   "tagline_tr": "Örümcek ağı efekti — Keratin",
-  "description_tr": "Nishman'ın kült örümcek ağı efektli wax'ı: hacim ve dolgunluk veren eşsiz lifli doku, gün boyu güçlü ama esnek tutuş. Su bazlı, keratin ile zenginleştirilmiş, maksimum kontrol, şampuanla kolayca durulanır.",
-  "soon": true
+  "description_tr": "Nishman'ın kült örümcek ağı efektli wax'ı: hacim ve dolgunluk veren eşsiz lifli doku, gün boyu güçlü ama esnek tutuş. Su bazlı, keratin ile zenginleştirilmiş, maksimum kontrol, şampuanla kolayca durulanır."
  },
  {
   "ean": "8682035088493",
@@ -2413,8 +2413,7 @@
   "tagline_de": "Salongröße — intensive Nutzung",
   "description_de": "Profi-Shampoo im Großformat, für die intensive Nutzung: für den intensiven Einsatz am Waschbecken entwickelt, reinigt sanft, ohne behandeltes Haar anzugreifen.",
   "tagline_tr": "Salon boyu — yoğun kullanım",
-  "description_tr": "Büyük boy profesyonel şampuan, yoğun kullanım için: yıkama ünitesinde yoğun kullanım için tasarlandı, işlem görmüş saçı yıpratmadan nazikçe temizler.",
-  "soon": true
+  "description_tr": "Büyük boy profesyonel şampuan, yoğun kullanım için: yıkama ünitesinde yoğun kullanım için tasarlandı, işlem görmüş saçı yıpratmadan nazikçe temizler."
  },
  {
   "ean": "8684736672278",
@@ -2433,7 +2432,8 @@
   "description_de": "Schwarzes Farbshampoo — frischt dunkles Haar auf, in einzelnen 25-ml-Sachets. Lässt weiße Haare in wenigen Minuten verschwinden, natürliches und graduelles Ergebnis. Box mit 10 Sachets.",
   "tagline_tr": "Renk saşeleri (10'lu kutu)",
   "description_tr": "Siyah renklendirici şampuan — koyu saçları canlandırır, tekli 25 ml saşelerde. Beyaz kılları dakikalar içinde kapatır, doğal ve kademeli sonuç. 10 saşelik kutu.",
-  "soon": true
+  "soon": true,
+  "retire": true
  },
  {
   "ean": "8684736672285",
@@ -2547,8 +2547,7 @@
   "tagline_de": "Verdichtungsfasern Mittelbraun",
   "description_de": "Keratinfasern Mittelbraun: kaschieren lichter werdende Stellen sofort und verdichten das Haar sichtbar. Natürliches Ergebnis, hält den ganzen Tag, windbeständig.",
   "tagline_tr": "Dolgunlaştırıcı lif — orta kahve",
-  "description_tr": "Orta kahve keratin lifleri: seyrelen bölgeleri anında gizler ve saçı gözle görülür şekilde dolgunlaştırır. Doğal sonuç, gün boyu kalıcılık, rüzgâra dayanıklı.",
-  "soon": true
+  "description_tr": "Orta kahve keratin lifleri: seyrelen bölgeleri anında gizler ve saçı gözle görülür şekilde dolgunlaştırır. Doğal sonuç, gün boyu kalıcılık, rüzgâra dayanıklı."
  },
  {
   "ean": "8682035082408",
@@ -2586,7 +2585,8 @@
   "tagline_de": "Braunes Farbshampoo",
   "description_de": "Braunes Farbshampoo für Haar und Bart: lässt weiße Haare nach und nach verschwinden, für ein natürliches Ergebnis ohne Ansatz. Je nach gewünschter Intensität dosieren.",
   "tagline_tr": "Kahverengi renklendirici şampuan",
-  "description_tr": "Saç ve sakal için kahverengi renklendirici şampuan: beyaz kılları kademeli olarak kapatır, dip izi olmayan doğal bir sonuç verir. İstenen yoğunluğa göre dozlayın."
+  "description_tr": "Saç ve sakal için kahverengi renklendirici şampuan: beyaz kılları kademeli olarak kapatır, dip izi olmayan doğal bir sonuç verir. İstenen yoğunluğa göre dozlayın.",
+  "retire": true
  },
  {
   "ean": "8684736672841",
@@ -2625,7 +2625,8 @@
   "description_de": "Kontur-Puder Dunkelbraun: zeichnet die Haarlinie nach, verdichtet die Schläfen und perfektioniert Fades. Die Geheimwaffe für makellose Finishes, mit Schwammapplikator.",
   "tagline_tr": "Kontur pudrası — koyu kahve",
   "description_tr": "Koyu kahve kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı.",
-  "soon": true
+  "soon": true,
+  "retire": true
  },
  {
   "ean": "8684736672865",
@@ -2645,7 +2646,8 @@
   "description_de": "Kontur-Puder Mittelbraun: zeichnet die Haarlinie nach, verdichtet die Schläfen und perfektioniert Fades. Die Geheimwaffe für makellose Finishes, mit Schwammapplikator.",
   "tagline_tr": "Kontur pudrası — orta kahve",
   "description_tr": "Orta kahve kontur pudrası: saç çizgisini yeniden çizer, şakakları dolgunlaştırır ve fade'leri kusursuzlaştırır. Süngerli aplikatörüyle, kusursuz bitişlerin gizli silahı.",
-  "soon": true
+  "soon": true,
+  "retire": true
  },
  {
   "ean": "8682035084327",
@@ -2919,7 +2921,8 @@
   "description_de": "Tonerde-Maske für das Gesicht: absorbiert überschüssigen Talg, reinigt tiefenwirksam und verfeinert die Poren. Großzügiges Format für den professionellen Einsatz.",
   "tagline_tr": "Kil maskesi",
   "description_tr": "yüz için kil maskesi: fazla sebumu emer, derinlemesine arındırır ve gözenekleri sıkılaştırır. Profesyonel kullanım için geniş boy.",
-  "soon": true
+  "soon": true,
+  "retire": true
  },
  {
   "ean": "8682035086024",
@@ -3739,8 +3742,7 @@
   "tagline_de": "Servicehygiene",
   "description_de": "Einweg-Nackenpapier schwarz, passend zu dunklen Umhängen: schützt den Kragen des Kunden vor Schnitthaar und garantiert bei jedem Service einwandfreie Hygiene.",
   "tagline_tr": "Servis hijyeni",
-  "description_tr": "Tek kullanımlık siyah ense kâğıdı, koyu renk pelerinlerle uyumlu: müşterinin yakasını kesilen kıllardan korur ve her serviste kusursuz hijyen sağlar.",
-  "soon": true
+  "description_tr": "Tek kullanımlık siyah ense kâğıdı, koyu renk pelerinlerle uyumlu: müşterinin yakasını kesilen kıllardan korur ve her serviste kusursuz hijyen sağlar."
  },
  {
   "ean": "8682035089100",
@@ -3872,7 +3874,8 @@
   "tagline_de": "Servicehygiene",
   "description_de": "Einweg-Nackenpapier klassisch weiß: schützt den Kragen des Kunden vor Schnitthaar und garantiert bei jedem Service einwandfreie Hygiene.",
   "tagline_tr": "Servis hijyeni",
-  "description_tr": "Tek kullanımlık klasik beyaz ense kâğıdı: müşterinin yakasını kesilen kıllardan korur ve her serviste kusursuz hijyen sağlar."
+  "description_tr": "Tek kullanımlık klasik beyaz ense kâğıdı: müşterinin yakasını kesilen kıllardan korur ve her serviste kusursuz hijyen sağlar.",
+  "retire": true
  },
  {
   "ean": "8684736670441",

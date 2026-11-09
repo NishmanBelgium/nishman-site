@@ -599,6 +599,27 @@
     return !!l && l.state === "out";
   }
 
+  /* « Bientôt disponible » ne survit plus à l'arrivée du stock.
+   *
+   * Ce drapeau est posé à la main dans le catalogue, le jour où une
+   * référence est annoncée mais pas encore reçue. Personne ne pense à le
+   * retirer quand le camion arrive : le 9 novembre 2026, cinq articles
+   * l'affichaient encore, dont le Black Neck Strip avec 1 498 pièces sur
+   * l'étagère. Invendables, et rien ne le signalait — le drapeau passe
+   * avant le stock partout où il est lu, fiche comprise.
+   *
+   * Il ne l'emporte donc plus que tant qu'il n'y a rien à vendre. Dès
+   * qu'Odoo voit du stock, c'est le stock qui parle. Le drapeau garde son
+   * usage — annoncer ce qui n'est pas encore là — et perd son pouvoir de
+   * mentir. Si les limites ne sont pas arrivées, on s'en tient au
+   * drapeau : mieux vaut annoncer à tort que proposer un article qu'on
+   * n'a peut-être pas. */
+  function estAnnonce(p) {
+    if (!p || !p.soon) return false;
+    const l = limitOf(p.ean);
+    return !l || !(l.u > 0);
+  }
+
   // Vente au carton désactivée (stock faible) ?
   function boxDisabled(p) {
     const l = limitOf(p.ean);
@@ -750,7 +771,7 @@
             <div class="product-footer">
               ${priceZone(p, "")}
               ${
-                p.soon
+                estAnnonce(p)
                   ? `<span class="card-soon">${T.soon}</span>`
                   : !unlocked()
                   ? ""
@@ -944,7 +965,7 @@
 
     // Produit annoncé mais pas encore en stock : consultable, non commandable.
     const prod = PRODUCTS.find((x) => x.ean === ean);
-    if (prod && prod.soon) {
+    if (estAnnonce(prod)) {
       zone.innerHTML = `<p class="sheet-soon">${T.soon}</p>`;
       return;
     }
