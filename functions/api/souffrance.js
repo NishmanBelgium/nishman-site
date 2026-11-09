@@ -27,6 +27,13 @@
           ce que Mollie et Odoo en disent réellement aujourd'hui. C'est le
           diagnostic : une note du registre peut dater de treize jours.
    POST : la reprise. Toutes, ou une seule avec ?ref=.
+          Avec &classer=oui&motif=..., l'autre issue : sortir de la liste un
+          cas que la reprise ne peut pas traiter. Un essai à 1,33 € dont la
+          commande a été supprimée n'est pas un incident à surveiller, et le
+          laisser sonner chaque matin devant les vrais problèmes est la plus
+          sûre façon qu'on finisse par ne plus lire l'alarme du tout. Le
+          motif est obligatoire et s'écrit au registre : classer, ce n'est
+          pas effacer.
 
    Réservée au compte de NBD.
    ========================================================================== */
@@ -35,7 +42,7 @@ import { json, erreur, compteAdmin, origineSure } from "../_commun.js";
 import { configure as configureOdoo, appel as appelOdoo } from "../_odoo.js";
 import { configureMollie, appelMollie } from "../_mollie.js";
 import {
-  preparerTable, lire, prendreLaMain, rendreLaMain, montantConcorde,
+  preparerTable, lire, prendreLaMain, rendreLaMain, montantConcorde, noterEtape,
 } from "../_paiements.js";
 import { poursuivre } from "../_apres_paiement.js";
 
@@ -167,12 +174,38 @@ export async function onRequestPost({ request, env }) {
 
   const url = new URL(request.url);
   const seule = String(url.searchParams.get("ref") || "").trim();
+  const classer = url.searchParams.get("classer") === "oui";
+  const motif = String(url.searchParams.get("motif") || "").trim();
 
   let lignes;
   try { lignes = await arretees(env.DB); }
   catch (e) { return erreur("Registre indisponible.", 503, "registre"); }
 
   if (seule) lignes = lignes.filter((p) => String(p.ref) === seule);
+
+  /* Le classement. Une référence à la fois, un motif obligatoire, et
+     seulement sur un cas que la reprise a déjà déclaré hors de sa portée :
+     une chaîne encore reprenable se reprend, elle ne se classe pas. */
+  if (classer) {
+    if (!seule) return erreur("Classer demande une référence précise.", 400, "ref");
+    if (motif.length < 8) return erreur("Classer demande un motif écrit.", 400, "motif");
+    if (!lignes.length) return erreur("Référence inconnue parmi les chaînes arrêtées.", 404, "inconnue");
+
+    const p = lignes[0];
+    const c = await constater(env, p);
+    if (!c.souci) {
+      return json({ ok: false, message:
+        "Cette chaîne est encore reprenable : reprenez-la plutôt que de la classer." });
+    }
+
+    await noterEtape(env.DB, p.mollie_id, "abandon", {
+      note: "Classé sans suite — " + motif + " (constat : " + c.souci + ").",
+    });
+    return json({
+      ok: true, classe: p.ref, montant: p.montant, etait: p.etape, motif,
+      message: "Sortie de la liste des chaînes arrêtées. Le motif est au registre.",
+    });
+  }
   if (!lignes.length) {
     return json({ ok: true, reprises: [], message: seule
       ? "Aucune chaîne arrêtée sous cette référence."
