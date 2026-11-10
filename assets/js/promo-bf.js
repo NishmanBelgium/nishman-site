@@ -28,7 +28,7 @@
 
   // Bruxelles est à UTC+1 en novembre : minuit ici, 23 h la veille en UTC.
   var HABILLAGE_DEBUT = Date.UTC(2026, 10, 9, 23, 0, 0);   // 10 nov. 00h00
-  var REMISE_DEBUT    = Date.UTC(2026, 10, 10, 23, 0, 0);  // 11 nov. 00h00
+  var REMISE_DEBUT    = Date.UTC(2026, 10, 9, 23, 0, 0);   // 10 nov. 00h00 (avancé par NBD)
   var FIN             = Date.UTC(2026, 10, 30, 23, 0, 0);  // 30 nov. 23h59'59
 
   var ELIGIBLES = [
@@ -90,7 +90,7 @@
    * page ne s'affiche pas une fraction de seconde en version normale.
    */
   var CIBLE = "/boutique/famille/colognes/";
-  var DATES = "Du 11 au 30 novembre 2026";
+  var DATES = "Du 10 au 30 novembre 2026";
   var LIBELLE = "sur toutes les eaux de Cologne Nishman";
 
   if (habillageActif()) {
