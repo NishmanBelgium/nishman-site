@@ -66,6 +66,7 @@ window.NISHMAN_LANGUES = {
   "b_oubli": "Recevoir le lien",
   "b_oubli_cours": "Envoi…",
   "retour_connexion": "Retour à la connexion",
+  "lien_creer_compte": "Pas encore de compte ? Créez-le en deux minutes",
   "echec_envoi": "L'envoi a échoué.",
   "titre_reinit": "Nouveau mot de passe — NISHMAN",
   "h_reinit": "Nouveau mot de passe",
@@ -168,7 +169,7 @@ window.NISHMAN_LANGUES = {
     "cp_requis": "Indiquez le code postal.",
     "email_identique": "C'est déjà votre adresse.",
     "email_invalide": "Cette adresse e-mail n'est pas valide.",
-    "email_pris": "Cette adresse est déjà utilisée par un autre compte.",
+    "email_pris": "Un compte existe déjà avec cette adresse. Connectez-vous, ou passez par « mot de passe oublié ». Si vous ne recevez rien, écrivez-nous à contact@nishman.be.",
     "identifiants_faux": "Adresse e-mail ou mot de passe incorrect.",
     "identifiants_requis": "Adresse e-mail et mot de passe requis.",
     "illisible": "Requête illisible.",
@@ -191,7 +192,7 @@ window.NISHMAN_LANGUES = {
     "tva_longueur": "Ce numéro compte {attendu} chiffres. Vous en avez saisi {saisi}.",
     "tva_incoherente": "Ce numéro ne passe pas le contrôle de cohérence. Vérifiez-le : une erreur empêcherait la facturation hors TVA.",
     "tva_incoherente_inscription": "Ce numéro ne passe pas le contrôle de cohérence. Vérifiez-le depuis votre compte : une erreur empêcherait la facturation hors TVA.",
-    "lien_envoye": "Si un compte existe avec cette adresse, vous allez recevoir un lien dans quelques instants. Pensez à regarder vos courriers indésirables."
+    "lien_envoye": "Si un compte existe avec cette adresse, vous allez recevoir un lien dans quelques instants. Pensez à regarder vos courriers indésirables. Si rien n'arrive, c'est que vous n'avez pas encore de compte sur le site : créez-le en deux minutes, même si vous êtes déjà client chez nous."
   }
 },
 /* ───────────────────────────── EN ───────────────────────────── */
@@ -247,6 +248,7 @@ window.NISHMAN_LANGUES = {
   "b_oubli": "Send me the link",
   "b_oubli_cours": "Sending…",
   "retour_connexion": "Back to sign-in",
+  "lien_creer_compte": "No account yet? Create one in two minutes",
   "echec_envoi": "The message could not be sent.",
   "titre_reinit": "New password — NISHMAN",
   "h_reinit": "New password",
@@ -349,7 +351,7 @@ window.NISHMAN_LANGUES = {
     "cp_requis": "Please enter the postcode.",
     "email_identique": "That is already your address.",
     "email_invalide": "This e-mail address is not valid.",
-    "email_pris": "This address is already used by another account.",
+    "email_pris": "An account already exists with this address. Sign in, or use \"forgot password\". If nothing arrives, write to us at contact@nishman.be.",
     "identifiants_faux": "Incorrect e-mail address or password.",
     "identifiants_requis": "E-mail address and password are required.",
     "illisible": "The request could not be read.",
@@ -372,7 +374,7 @@ window.NISHMAN_LANGUES = {
     "tva_longueur": "This number has {attendu} digits. You entered {saisi}.",
     "tva_incoherente": "This number does not pass the consistency check. Please verify it: an error would prevent VAT-exempt invoicing.",
     "tva_incoherente_inscription": "This number does not pass the consistency check. Please verify it from your account: an error would prevent VAT-exempt invoicing.",
-    "lien_envoye": "If an account exists with this address, you will receive a link shortly. Remember to check your spam folder."
+    "lien_envoye": "If an account exists with this address, you will receive a link shortly. Remember to check your spam folder. If nothing arrives, you do not have an account on the site yet: create one in two minutes, even if you are already a customer of ours."
   }
 },
 /* ───────────────────────────── NL ───────────────────────────── */
@@ -428,6 +430,7 @@ window.NISHMAN_LANGUES = {
   "b_oubli": "Stuur mij de link",
   "b_oubli_cours": "Versturen…",
   "retour_connexion": "Terug naar aanmelden",
+  "lien_creer_compte": "Nog geen account? Maak er een aan in twee minuten",
   "echec_envoi": "Het versturen is mislukt.",
   "titre_reinit": "Nieuw wachtwoord — NISHMAN",
   "h_reinit": "Nieuw wachtwoord",
@@ -530,7 +533,7 @@ window.NISHMAN_LANGUES = {
     "cp_requis": "Vul de postcode in.",
     "email_identique": "Dat is al uw adres.",
     "email_invalide": "Dit e-mailadres is niet geldig.",
-    "email_pris": "Dit adres is al in gebruik bij een ander account.",
+    "email_pris": "Er bestaat al een account met dit adres. Meld u aan, of gebruik \"wachtwoord vergeten\". Ontvangt u niets, mail ons op contact@nishman.be.",
     "identifiants_faux": "E-mailadres of wachtwoord is onjuist.",
     "identifiants_requis": "E-mailadres en wachtwoord zijn verplicht.",
     "illisible": "De aanvraag kon niet worden gelezen.",
@@ -553,7 +556,7 @@ window.NISHMAN_LANGUES = {
     "tva_longueur": "Dit nummer bestaat uit {attendu} cijfers. U heeft er {saisi} ingevuld.",
     "tva_incoherente": "Dit nummer komt niet door de controle. Kijk het na: een fout verhindert facturatie zonder btw.",
     "tva_incoherente_inscription": "Dit nummer komt niet door de controle. Kijk het na via uw account: een fout verhindert facturatie zonder btw.",
-    "lien_envoye": "Als er een account met dit adres bestaat, ontvangt u binnenkort een link. Kijk ook in uw map ongewenste e-mail."
+    "lien_envoye": "Als er een account met dit adres bestaat, ontvangt u binnenkort een link. Kijk ook in uw map ongewenste e-mail. Komt er niets aan, dan hebt u nog geen account op de site: maak er een aan in twee minuten, ook als u al klant bij ons bent."
   }
 },
 /* ───────────────────────────── DE ───────────────────────────── */
@@ -609,6 +612,7 @@ window.NISHMAN_LANGUES = {
   "b_oubli": "Link zusenden",
   "b_oubli_cours": "Wird gesendet…",
   "retour_connexion": "Zurück zur Anmeldung",
+  "lien_creer_compte": "Noch kein Konto? Legen Sie es in zwei Minuten an",
   "echec_envoi": "Der Versand ist fehlgeschlagen.",
   "titre_reinit": "Neues Passwort — NISHMAN",
   "h_reinit": "Neues Passwort",
@@ -711,7 +715,7 @@ window.NISHMAN_LANGUES = {
     "cp_requis": "Bitte Postleitzahl angeben.",
     "email_identique": "Das ist bereits Ihre Adresse.",
     "email_invalide": "Diese E-Mail-Adresse ist ungültig.",
-    "email_pris": "Diese Adresse wird bereits von einem anderen Konto verwendet.",
+    "email_pris": "Mit dieser Adresse besteht bereits ein Konto. Melden Sie sich an oder nutzen Sie \"Passwort vergessen\". Kommt nichts an, schreiben Sie an contact@nishman.be.",
     "identifiants_faux": "E-Mail-Adresse oder Passwort ist falsch.",
     "identifiants_requis": "E-Mail-Adresse und Passwort sind erforderlich.",
     "illisible": "Die Anfrage konnte nicht gelesen werden.",
@@ -734,7 +738,7 @@ window.NISHMAN_LANGUES = {
     "tva_longueur": "Diese Nummer hat {attendu} Ziffern. Sie haben {saisi} eingegeben.",
     "tva_incoherente": "Diese Nummer besteht die Prüfung nicht. Bitte überprüfen Sie sie: ein Fehler verhindert die Rechnung ohne USt.",
     "tva_incoherente_inscription": "Diese Nummer besteht die Prüfung nicht. Bitte überprüfen Sie sie in Ihrem Konto: ein Fehler verhindert die Rechnung ohne USt.",
-    "lien_envoye": "Falls ein Konto mit dieser Adresse besteht, erhalten Sie in Kürze einen Link. Prüfen Sie auch Ihren Spam-Ordner."
+    "lien_envoye": "Falls ein Konto mit dieser Adresse besteht, erhalten Sie in Kürze einen Link. Prüfen Sie auch Ihren Spam-Ordner. Kommt nichts an, haben Sie noch kein Konto auf der Website: Legen Sie es in zwei Minuten an, auch wenn Sie bereits Kunde bei uns sind."
   }
 },
 /* ───────────────────────────── TR ───────────────────────────── */
@@ -790,6 +794,7 @@ window.NISHMAN_LANGUES = {
   "b_oubli": "Bağlantıyı gönder",
   "b_oubli_cours": "Gönderiliyor…",
   "retour_connexion": "Girişe dön",
+  "lien_creer_compte": "Henüz hesabınız yok mu? İki dakikada oluşturun",
   "echec_envoi": "Gönderim başarısız oldu.",
   "titre_reinit": "Yeni şifre — NISHMAN",
   "h_reinit": "Yeni şifre",
@@ -892,7 +897,7 @@ window.NISHMAN_LANGUES = {
     "cp_requis": "Posta kodunu girin.",
     "email_identique": "Bu zaten sizin adresiniz.",
     "email_invalide": "Bu e-posta adresi geçerli değil.",
-    "email_pris": "Bu adres başka bir hesap tarafından kullanılıyor.",
+    "email_pris": "Bu adresle zaten bir hesap var. Giriş yapın veya \"şifremi unuttum\" seçeneğini kullanın. Hiçbir şey gelmezse contact@nishman.be adresine yazın.",
     "identifiants_faux": "E-posta adresi veya şifre hatalı.",
     "identifiants_requis": "E-posta adresi ve şifre gereklidir.",
     "illisible": "İstek okunamadı.",
@@ -915,7 +920,7 @@ window.NISHMAN_LANGUES = {
     "tva_longueur": "Bu numara {attendu} haneden oluşur. Siz {saisi} hane girdiniz.",
     "tva_incoherente": "Bu numara tutarlılık kontrolünden geçmiyor. Lütfen kontrol edin: bir hata KDV'siz faturalandırmayı engeller.",
     "tva_incoherente_inscription": "Bu numara tutarlılık kontrolünden geçmiyor. Hesabınızdan kontrol edin: bir hata KDV'siz faturalandırmayı engeller.",
-    "lien_envoye": "Bu adresle bir hesap varsa, kısa süre içinde bir bağlantı alacaksınız. Spam klasörünüzü de kontrol edin."
+    "lien_envoye": "Bu adresle bir hesap varsa, kısa süre içinde bir bağlantı alacaksınız. Spam klasörünüzü de kontrol edin. Hiçbir şey gelmezse, sitede henüz hesabınız yok demektir: zaten müşterimiz olsanız bile, iki dakikada hesap oluşturun."
   }
 }
 };

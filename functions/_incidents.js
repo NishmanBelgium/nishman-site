@@ -38,6 +38,7 @@ const ETAPES = [
   "devis",           // tunnel pro, « Recevoir un devis à payer par virement »
   "panier",          // recalcul du panier pro
   "boutique",        // caisse grand public
+  "reinitialisation", // lien de mot de passe oublié, envoyé par le portier
 ];
 
 /* Ce qu'on a compris de l'échec. Liste fermée elle aussi. */
