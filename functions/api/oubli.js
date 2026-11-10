@@ -48,17 +48,65 @@ export async function onRequestPost({ request, env }) {
 
   const cle = cleEmail(email);
 
+  /* LES TROIS SORTIES MUETTES.
+   *
+   * Hier, on a rendu visible l'échec d'ENVOI du lien. C'était la moitié du
+   * problème. Le 10 novembre 2026, un coiffeur n'a rien reçu — et le
+   * journal des incidents était vide. L'envoi n'avait pas échoué : le code
+   * s'était arrêté avant, par l'un des trois chemins ci-dessous, qui
+   * rendaient tous la même réponse rassurante sans laisser la moindre
+   * trace. Impossible de dire lequel.
+   *
+   * Le silence vers le CLIENT est voulu et ne change pas : dire « cette
+   * adresse n'existe pas » ferait de ce formulaire un moyen de savoir qui
+   * est client chez NBD. Mais rien n'oblige à être aveugle de notre côté.
+   * On note donc la raison dans le journal, sans jamais la renvoyer.
+   *
+   * Même leçon que pour les prix et pour la TVA : une protection posée sur
+   * une partie du chemin laisse croire qu'on voit tout, et c'est pire que
+   * de savoir qu'on ne voit rien. */
+
   // Même freinage que la connexion : on ne laisse pas quelqu'un déclencher
-  // des centaines d'envois sur l'adresse d'un tiers.
-  if (await tropDeTentatives(db, "oubli:" + cle)) return json(REPONSE);
+  // des centaines d'envois sur l'adresse d'un tiers. Mais quelqu'un qui ne
+  // reçoit rien réessaie — c'est le réflexe de tout le monde — et à la
+  // huitième tentative il est freiné sans le savoir, donc il ne recevra
+  // plus rien quoi qu'il fasse. Il fallait que ça se voie.
+  if (await tropDeTentatives(db, "oubli:" + cle)) {
+    await noterIncident(db, {
+      etape: "reinitialisation", cause: "delai",
+      detail: "demandes trop rapprochées pour " + cle + " — freinage, aucun lien envoyé",
+    });
+    return json(REPONSE);
+  }
   await noterTentative(db, "oubli:" + cle);
 
   const compte = await db.prepare(
     "SELECT id, email, salon, etat FROM comptes WHERE email_cle = ?"
   ).bind(cle).first();
 
-  // Compte inexistant ou suspendu : on s'arrête là, sans rien dire de plus.
-  if (!compte || compte.etat !== "actif") return json(REPONSE);
+  /* Compte inexistant : le cas le plus fréquent et le plus coûteux. 68
+   * comptes sur le site pour 119 clients qui ont déjà commandé — des
+   * dizaines de clients fidèles tapent leur adresse ici et attendent un
+   * mail qui ne peut pas exister. C'est exactement ce qu'il faut voir
+   * venir, pour les inviter à créer leur compte au lieu d'attendre qu'ils
+   * se manifestent. */
+  if (!compte) {
+    await noterIncident(db, {
+      etape: "reinitialisation", cause: "serveur",
+      detail: "aucun compte pour " + cle + " — probablement un client sans compte sur le site",
+    });
+    return json(REPONSE);
+  }
+
+  // Compte existant mais suspendu ou en attente : lui non plus ne recevra
+  // rien, et lui non plus ne peut le deviner.
+  if (compte.etat !== "actif") {
+    await noterIncident(db, {
+      etape: "reinitialisation", cause: "serveur", compte_id: compte.id,
+      detail: "compte « " + compte.etat + " » pour " + cle + " — aucun lien envoyé",
+    });
+    return json(REPONSE);
+  }
 
   const jeton = await creerLienReinit(db, compte.id);
   const origine = new URL(request.url).origin;
