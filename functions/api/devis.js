@@ -24,6 +24,7 @@ import { catalogue, tableDePrix } from "../_tarifs.js";
 import { ouvreDroitAExoneration, controlerSiBesoin } from "../_tva.js";
 import { rattraperApresVente } from "../_tva_rattrapage.js";
 import { avertirSiPlusieursColisParNom } from "../_etiquette.js";
+import { controlerTvaDuDevis } from "../_controle_tva.js";
 import { noterDevis } from "../_devis.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
@@ -255,6 +256,23 @@ export async function onRequestPost(ctx) {
   // plus de vingt kilos se prépare en deux colis, et mieux vaut le lire
   // sur le devis que le découvrir l'étiquette imprimée.
   if (reponse.devis) attendre(avertirSiPlusieursColisParNom(env, reponse.devis));
+
+  /* LE CONTRÔLE DE TVA, en arrière-plan.
+   *
+   * Le devis est parti, le client a son numéro : rien ici ne doit le lui
+   * retirer. Mais la commande que le script Google vient de créer dans
+   * Odoo n'a jamais été relue par personne, alors que le tunnel « payer »
+   * relit la sienne et refuse le paiement au moindre écart.
+   *
+   * Le 9 novembre 2026, deux commandes belges sont ainsi sorties à 0 % de
+   * TVA sans qu'aucun signal ne s'allume. Voir _controle_tva.js. */
+  if (reponse.devis) {
+    attendre(controlerTvaDuDevis(env, env.DB, {
+      nom: reponse.devis,
+      attendu: r,
+      compte_id: compte.id,
+    }));
+  }
 
   /* Le devis est noté dans le registre local, en arrière-plan.
    *

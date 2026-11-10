@@ -21,6 +21,7 @@ import { interrogerPortier, codePortier, adressePortier } from "../_portier.js";
 import { verifier as verifierTva } from "../_vies.js";
 import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "../_odoo.js";
 import { catalogue, donneesPortier, etatFilet } from "../_tarifs.js";
+import { veillerSurLaTva } from "../_veille_tva.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { configureSendcloud, compteSendcloud } from "../_sendcloud.js";
 import { lireIncidents } from "../_incidents.js";
@@ -422,6 +423,25 @@ async function rapport({ request, env }) {
     sansPrix = { lisible: false, detail: String((e && e.message) || "illisible").slice(0, 160) };
   }
 
+  /* LA VEILLE TVA. Ajoutée le 10 novembre 2026, après deux commandes
+   * belges sorties à 0 % sans qu'aucun signal ne s'allume. Elle ne regarde
+   * pas le site : elle regarde Odoo, y compris les commandes saisies à la
+   * main, parce que c'est là que l'erreur se produit et que c'est la seule
+   * place d'où on la voit. Voir _veille_tva.js. */
+  let tva = { lisible: false, examinees: 0, anomalies: [], detail: "non exécutée" };
+  try { tva = await veillerSurLaTva(env); }
+  catch (e) { tva = { lisible: false, examinees: 0, anomalies: [], detail: String((e && e.message) || "illisible").slice(0, 160) }; }
+
+  if (tva.lisible && tva.anomalies.length) {
+    const du = tva.anomalies.reduce((s, a) => s + (a.tva_en_jeu > 0 ? a.tva_en_jeu : 0), 0);
+    alertes.push(tva.anomalies.length + " commande(s) dont la TVA ne tient pas debout"
+      + (du > 0 ? ", dont " + du.toFixed(2) + " € de TVA manquante" : "")
+      + ". Voir « veille_tva ».");
+    consequences.push("Une TVA mal posée se répare à la main : il faut décider qui a "
+      + "raison avant d'écrire. Les commandes déjà facturées relèvent du comptable, "
+      + "les devis non confirmés se corrigent directement.");
+  }
+
   let incidents = [];
   let incidentsSouci = "";
   try { incidents = await lireIncidents(env.DB, 20); }
@@ -444,6 +464,7 @@ async function rapport({ request, env }) {
     alertes: alertes,
     releve_de_stock_partage: cacheStock,
     fiches_sans_prix: sansPrix,
+    veille_tva: tva,
     echecs_de_commande: incidentsSouci
       ? { lisible: false, detail: incidentsSouci }
       : { lisible: true, nombre: incidents.length, lignes: incidents },
