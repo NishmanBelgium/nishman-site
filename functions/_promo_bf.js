@@ -93,23 +93,35 @@ export const ELIGIBLES = [
 
 const JEU = new Set(ELIGIBLES);
 
-/* L'ARRONDI, ET POURQUOI IL VA VERS LE BAS.
+/* LES PRIX BLACK FRIDAY : ARRÊTÉS PAR NBD, PAS CALCULÉS.
  *
- * Les deux prix de la gamme tombent sur un demi-centime : 9,90 × 0,65 =
- * 6,435 et 12,90 × 0,65 = 8,385. L'arrondi habituel les remonterait à
- * 6,44 et 8,39 — et la remise ne ferait plus que 34,95 %. On annoncerait
- * alors « −35 % » en en accordant un peu moins, ce qui est précisément ce
- * qu'une affiche de prix n'a pas le droit de faire.
+ * Au lancement, le prix sortait du calcul : 9,90 × 0,65 = 6,435 et
+ * 12,90 × 0,65 = 8,385, descendus au centime inférieur (6,43 et 8,38)
+ * pour que la remise fasse au moins 35 %.
  *
- * On descend donc au centime inférieur : 6,43 et 8,38, soit 35,05 % de
- * remise. L'annonce devient vraie au sens strict — au moins 35 % — et le
- * demi-centime d'écart va au client, ce qui est le bon sens pour l'erreur.
+ * Décision NBD du 10 novembre 2026, 15 h 30 : des prix ronds, plus
+ * lisibles en publicité.
  *
- * Le passage par quatre décimales avant la troncature évite qu'un prix
- * stocké comme 6,4299999 ne tombe à 6,42 : on arrondit d'abord le bruit
- * du calcul en virgule flottante, on tronque ensuite seulement.
+ *     prix plein  9,90 €  →  6,50 €   (remise réelle 34,3 %)
+ *     prix plein 12,90 €  →  8,50 €   (remise réelle 34,1 %)
+ *
+ * NBD garde l'annonce « −35 % » (vidéo, pub, bannières, fiches) en sachant
+ * que la remise réelle est un peu inférieure : c'est son choix, pesé.
+ * Ne pas le défaire d'ici sans lui en reparler.
+ *
+ * La table est lue par le prix plein en centimes, pour qu'un 9,90 stocké
+ * comme 9,8999999 tombe quand même sur la bonne ligne.
+ *
+ * Un prix plein ABSENT de la table — si un tarif changeait en cours
+ * d'opération — retombe sur l'ancienne règle : −35 % au centime
+ * inférieur. Le passage par quatre décimales avant la troncature évite
+ * qu'un 6,4299999 ne tombe à 6,42.
  */
+const PRIX_ARRETES = { 990: 6.5, 1290: 8.5 };
+
 export function prixRemise(ttc) {
+  const arrete = PRIX_ARRETES[Math.round(Number(ttc) * 100)];
+  if (arrete !== undefined) return arrete;
   const brut = Number(ttc) * (1 - TAUX);
   return Math.floor(Math.round(brut * 10000) / 100) / 100;
 }

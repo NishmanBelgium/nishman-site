@@ -39,10 +39,14 @@
     "8684736674913", "8684736674920", "8684736674937", "8684736676047"
   ];
 
-  /* Au centime INFÉRIEUR, pour que la remise soit toujours d'au moins
-     35 % : 9,90 × 0,65 = 6,435 et l'arrondi habituel donnerait 6,44, soit
-     34,95 % seulement. Voir functions/_promo_bf.js, qui fait foi. */
+  /* Prix arrêtés par NBD le 10 novembre 2026 : 9,90 → 6,50 et
+     12,90 → 8,50. Tout autre prix plein retombe sur −35 % au centime
+     inférieur. Voir functions/_promo_bf.js, qui fait foi. */
+  var PRIX_ARRETES = { 990: 6.5, 1290: 8.5 };
+
   function prixRemise(ttc) {
+    var arrete = PRIX_ARRETES[Math.round(Number(ttc) * 100)];
+    if (arrete !== undefined) return arrete;
     var brut = Number(ttc) * (1 - TAUX);
     return Math.floor(Math.round(brut * 10000) / 100) / 100;
   }
