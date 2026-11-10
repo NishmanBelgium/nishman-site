@@ -46,9 +46,46 @@ export async function onRequestGet({ request, env }) {
   const db = env.DB;
   if (!db) return erreur("La base de données n'est pas branchée.", 500, "base_absente");
 
-  const email = String(new URL(request.url).searchParams.get("email") || "").trim();
+  const params = new URL(request.url).searchParams;
+
+  /* LA RECHERCHE PAR NOM.
+   *
+   * Ajoutée le 10 novembre 2026, une heure après la page elle-même, parce
+   * qu'elle ne servait à rien sans. Un coiffeur ne recevait pas son lien ;
+   * son adresse chez NBD ne correspondait à aucun compte, et il a bien
+   * fallu constater l'évidence : on connaît toujours le NOM du client, et
+   * presque jamais l'adresse exacte qu'il a saisie en créant son compte.
+   * Chercher par adresse exacte, c'était demander la réponse pour pouvoir
+   * poser la question.
+   *
+   * Elle rend les comptes qui ressemblent, jamais un mot de passe. */
+  const q = String(params.get("q") || "").trim();
+  if (q) {
+    if (q.length < 3) return erreur("Cherchez avec au moins trois lettres.", 400, "trop_court");
+    const motif = "%" + q.toLowerCase() + "%";
+    const r = await db.prepare(
+      "SELECT id, email, salon, prenom, nom, ville, etat, cree_le FROM comptes " +
+      "WHERE lower(email) LIKE ? OR lower(salon) LIKE ? OR lower(prenom) LIKE ? " +
+      "   OR lower(nom) LIKE ? OR lower(ville) LIKE ? " +
+      "ORDER BY cree_le DESC LIMIT 25"
+    ).bind(motif, motif, motif, motif, motif).all();
+    const lignes = (r && r.results) || [];
+    return json({
+      ok: true, recherche: q, trouves: lignes.length,
+      comptes: lignes.map((x) => ({
+        email: x.email, salon: x.salon, prenom: x.prenom, nom: x.nom,
+        ville: x.ville, etat: x.etat, cree: ilYA(x.cree_le),
+      })),
+      a_faire: lignes.length
+        ? "Reprenez l'adresse exacte ci-dessus et relancez avec ?email= pour le détail."
+        : "Aucun compte ne correspond. S'il est client, c'est qu'il n'a jamais créé "
+          + "de compte sur le site : invitez-le à le faire.",
+    });
+  }
+
+  const email = String(params.get("email") || "").trim();
   if (!emailValide(email)) {
-    return erreur("Indiquez une adresse e-mail valide dans ?email=", 400, "email_invalide");
+    return erreur("Indiquez une adresse dans ?email= , ou un nom dans ?q=", 400, "email_invalide");
   }
   const cle = cleEmail(email);
 
