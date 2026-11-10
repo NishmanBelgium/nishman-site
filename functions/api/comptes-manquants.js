@@ -37,6 +37,28 @@
 import { json, erreur, compteAdmin, cleEmail } from "../_commun.js";
 import { appel, configure } from "../_odoo.js";
 
+/* LA DATE QUI CHANGE TOUT, ET QUE LA PREMIÈRE VERSION IGNORAIT.
+ *
+ * Écrite le 10 novembre 2026, cette page raisonnait ainsi : « il a commandé
+ * par le site, donc il avait un compte ». Elle en concluait que 78 clients
+ * avaient perdu le leur, pour 60 078 € de chiffre, et annonçait une perte
+ * de données qui n'a jamais eu lieu.
+ *
+ * C'était faux, et NBD l'a dit tout de suite : avant la mi-octobre, le
+ * tunnel professionnel fonctionnait au CODE D'ACCÈS, envoyé par courriel,
+ * sans aucun compte ni mot de passe. Les comptes sont arrivés ensuite — le
+ * plus ancien date du 15 octobre 2026. Une commande d'août ou de septembre
+ * ne prouve donc rien du tout.
+ *
+ * La leçon est plus large que cette page : un raisonnement juste
+ * aujourd'hui peut être faux appliqué à hier, et un système qui a changé
+ * de règles en cours de route rend les déductions sur son passé
+ * trompeuses. Il fallait une date, et la voici.
+ *
+ * Seules les commandes passées APRÈS cette date impliquent qu'un compte
+ * existait. */
+const COMPTES_DEPUIS = "2026-10-15";
+
 export async function onRequestGet({ request, env }) {
   const admin = await compteAdmin(request, env);
   if (!admin) return erreur("Réservé à NBD.", 403, "reserve");
@@ -65,12 +87,18 @@ export async function onRequestGet({ request, env }) {
     const id = c.partner_id[0];
     const e = (parClient[id] = parClient[id] || {
       id, nom: c.partner_id[1], commandes: 0, total: 0,
-      par_le_site: 0, derniere: "",
+      par_le_site: 0, par_le_site_depuis_comptes: 0, derniere: "",
     });
     e.commandes += 1;
     e.total += Number(c.amount_total || 0);
-    if (String(c.client_order_ref || "").indexOf("DEV-") === 0) e.par_le_site += 1;
-    if (String(c.date_order || "") > e.derniere) e.derniere = String(c.date_order || "");
+    const date = String(c.date_order || "");
+    const duSite = String(c.client_order_ref || "").indexOf("DEV-") === 0;
+    if (duSite) {
+      e.par_le_site += 1;
+      // Seules celles-ci prouvent qu'un compte a existé.
+      if (date.slice(0, 10) >= COMPTES_DEPUIS) e.par_le_site_depuis_comptes += 1;
+    }
+    if (date > e.derniere) e.derniere = date;
   }
 
   const ids = Object.keys(parClient).map(Number);
@@ -101,6 +129,7 @@ export async function onRequestGet({ request, env }) {
       client: f.name || e.nom, email: email || null,
       telephone: f.phone || null, ville: f.city || null,
       commandes: e.commandes, par_le_site: e.par_le_site,
+      par_le_site_depuis_comptes: e.par_le_site_depuis_comptes,
       chiffre: Math.round(e.total * 100) / 100,
       derniere_commande: e.derniere.slice(0, 10),
     };
@@ -109,7 +138,10 @@ export async function onRequestGet({ request, env }) {
     const etat = comptes.get(cleEmail(email));
     if (etat) { avecCompte += 1; ligne.etat_compte = etat; if (etat !== "actif") perdus.push(ligne); continue; }
 
-    if (e.par_le_site > 0) perdus.push(ligne);
+    /* Le compte n'existe pas. Est-ce une perte, ou n'y en a-t-il jamais eu ?
+     * Seule une commande passée par le site APRÈS l'arrivée des comptes
+     * tranche. Avant, le code d'accès suffisait. */
+    if (e.par_le_site_depuis_comptes > 0) perdus.push(ligne);
     else aInviter.push(ligne);
   }
 
@@ -120,22 +152,25 @@ export async function onRequestGet({ request, env }) {
 
   return json({
     ok: true,
+    comptes_depuis: COMPTES_DEPUIS,
     comptes_existants: comptes.size,
     clients_ayant_commande: ids.length,
     clients_avec_compte: avecCompte,
     perdus: {
       combien: perdus.length,
       chiffre: Math.round(perdus.reduce((s, x) => s + x.chiffre, 0) * 100) / 100,
-      quoi: "Ils ont commandé par le site, donc ils avaient un compte, et ce "
-        + "compte n'existe plus ou n'est plus actif. « Mot de passe oublié » ne "
-        + "leur renvoie rien. Ce sont des accès à rétablir, pas des gens à inviter.",
+      quoi: "Ils ont commandé par le site APRÈS le " + COMPTES_DEPUIS + ", donc "
+        + "avec un compte, et ce compte n'existe plus ou n'est plus actif. "
+        + "« Mot de passe oublié » ne leur renvoie rien. Ce sont des accès à "
+        + "rétablir, pas des gens à inviter. Une liste vide est le cas normal.",
       clients: perdus,
     },
     a_inviter: {
       combien: aInviter.length,
       chiffre: Math.round(aInviter.reduce((s, x) => s + x.chiffre, 0) * 100) / 100,
-      quoi: "Ils ont commandé autrement et n'ont jamais eu de compte. "
-        + "Rien d'anormal : il suffit de les inviter à en créer un.",
+      quoi: "Ils n'ont jamais eu de compte : commandes passées autrement, ou "
+        + "par le site avant le " + COMPTES_DEPUIS + ", à l'époque où le code "
+        + "d'accès suffisait. Rien d'anormal : il suffit de les inviter.",
       clients: aInviter,
     },
     sans_adresse: {
