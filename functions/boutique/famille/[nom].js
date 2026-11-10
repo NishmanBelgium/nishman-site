@@ -301,7 +301,10 @@ function feuille(p, retirer) {
       <div class="fam-nom">${echapper(etiquette(p, retirer))}</div>
       <div class="fam-vol">${echapper(p.volume || "")}</div>
       ${a ? `<p class="fam-accroche">${echapper(a)}</p>` : ""}
-      <div class="fam-prix">${p.bientot ? "Bientôt disponible" : euros(p.ttc)}</div>
+      <div class="fam-prix">${p.bientot ? "Bientôt disponible"
+        : (p.ttc_plein
+          ? `<s class="prix-plein">${euros(p.ttc_plein)}</s> <span class="prix-promo">${euros(p.ttc)}</span>`
+          : euros(p.ttc))}</div>
     </a>`;
 }
 
@@ -373,6 +376,7 @@ function page(slug, f, produits, base, indexable) {
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
 <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
+<link rel="stylesheet" href="/assets/css/promo-bf.css?v=417" />
 <style>
   .fam-page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 72px; }
   .fam-retour { display: inline-block; margin-bottom: 14px; font-size: .9rem; }
@@ -479,6 +483,7 @@ function page(slug, f, produits, base, indexable) {
 
 ${pied()}
 
+<script src="/assets/js/promo-bf.js?v=417"></script>
 <script src="/assets/js/mesure.js?v=391" defer></script>
 <script src="/assets/js/consentement.js?v=394" defer></script>
 </body>

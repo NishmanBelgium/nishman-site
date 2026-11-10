@@ -78,7 +78,11 @@
   fetch("/assets/data/boutique.json?v=360")
     .then(function (r) { return r.json(); })
     .then(function (d) {
-      PRODUITS = d;
+      /* La remise Black Friday, appliquée dès la lecture : la grille, la
+       * fiche et le panier affiché descendent tous de PRODUITS, donc une
+       * seule application ici suffit. Le serveur refait le même calcul de
+       * son côté et c'est lui qui encaisse — voir assets/js/promo-bf.js. */
+      PRODUITS = (window.PROMO_BF ? window.PROMO_BF.appliquer(d) : d);
       lirePanier();
       dessinerFiltres();
       brancherOutils();
@@ -242,6 +246,7 @@
         '<a class="carte-lien" href="/boutique/' + echappe(p.slug || p.ean) + '/">' +
         '<div class="carte-img">' +
           (hs ? '<span class="bientot">' + (p.bientot ? "Bientôt" : "Épuisé") + "</span>" : "") +
+          (p.promo ? '<span class="badge-bf">−' + Math.round(p.promo * 100) + " %</span>" : "") +
           '<img src="/assets/img/products/' + echappe(p.image) +
           '" alt="' + echappe(p.nom) + '" loading="lazy" width="900" height="900" /></div>' +
         '<div class="carte-fam">' + echappe(p.famille) + "</div>" +
@@ -249,7 +254,10 @@
         '<div class="carte-vol">' + echappe(p.volume) + "</div>" +
         "</a>" +
         '<div class="carte-bas">' +
-          '<span class="prix">' + euros(p.ttc) + "</span>" +
+          '<span class="prix">' +
+            (p.ttc_plein ? '<s class="prix-plein">' + euros(p.ttc_plein) + "</s> " : "") +
+            '<span class="prix-du' + (p.ttc_plein ? " prix-promo" : "") + '">' + euros(p.ttc) + "</span>" +
+          "</span>" +
           (hs
             ? '<button class="carte-add" disabled aria-label="' +
               (p.bientot ? "Bientôt disponible" : "Épuisé") + '">+</button>'
@@ -427,7 +435,9 @@
               '" alt="" loading="lazy" /></div>' +
             '<div class="ligne-txt">' +
               '<div class="ligne-nom">' + echappe(l.p.nom_court || l.p.nom) + "</div>" +
-              '<div class="ligne-pu">' + euros(l.p.ttc) + " l'unité</div>" +
+              '<div class="ligne-pu">' +
+                (l.p.ttc_plein ? '<s>' + euros(l.p.ttc_plein) + "</s> " : "") +
+                euros(l.p.ttc) + " l'unité</div>" +
               '<div class="compte">' +
                 '<button data-moins="' + l.p.ean + '" aria-label="Retirer un">−</button>' +
                 "<span>" + l.q + "</span>" +

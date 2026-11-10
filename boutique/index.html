@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
 <link rel="stylesheet" href="/assets/css/familles.css?v=400" />
+<link rel="stylesheet" href="/assets/css/promo-bf.css?v=417" />
   <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 </head>
 <body>
@@ -464,7 +465,10 @@
 <!-- fenêtre d'orientation : professionnel ou particulier -->
 <div class="toast" id="toast"></div>
 
-<script src="/assets/js/boutique.js?v=370"></script>
+<!-- Avant boutique.js : la règle de remise doit exister quand le catalogue
+     est lu. Sans `defer`, pour la même raison. -->
+<script src="/assets/js/promo-bf.js?v=417"></script>
+<script src="/assets/js/boutique.js?v=417"></script>
 <script src="/assets/js/bandeau.js?v=333" defer></script>
 <script src="/assets/js/porte.js?v=219"></script>
 <script src="/assets/js/mesure.js?v=391" defer></script>

@@ -22,6 +22,11 @@ import { verifier as verifierTva } from "../_vies.js";
 import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "../_odoo.js";
 import { catalogue, donneesPortier, etatFilet } from "../_tarifs.js";
 import { veillerSurLaTva } from "../_veille_tva.js";
+import { etatPromo, ELIGIBLES } from "../_promo_bf.js";
+/* Le `catalogue` importé plus haut est celui du tunnel professionnel.
+   La promotion Black Friday ne concerne que la boutique grand public,
+   qui a son propre catalogue — d'où ce second import, nommé. */
+import { catalogue as catalogueBoutique } from "../_boutique.js";
 import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "../_mollie.js";
 import { configureSendcloud, compteSendcloud } from "../_sendcloud.js";
 import { lireIncidents } from "../_incidents.js";
@@ -442,6 +447,51 @@ async function rapport({ request, env }) {
       + "les devis non confirmés se corrigent directement.");
   }
 
+  /* LA PROMOTION BLACK FRIDAY, ET SES DEUX PIÈGES.
+   *
+   * 1) La règle est écrite deux fois — serveur et navigateur — parce que
+   *    le catalogue a deux lecteurs. Le serveur fait foi, mais si le
+   *    navigateur affichait un autre prix, le client lirait un montant et
+   *    en paierait un autre. On compare donc les deux fichiers.
+   *
+   * 2) Les 20 références éligibles sont nommées une par une, volontairement.
+   *    Si NBD ajoute une eau de Cologne (les numéros 20 et 21 ne sont pas
+   *    encore importés), elle n'entrera pas dans la promotion toute seule.
+   *    Mieux vaut qu'on le dise que de la remiser ou de l'oublier en
+   *    silence. */
+  let promo = { lisible: false, detail: "non exécutée" };
+  try {
+    promo = etatPromo();
+    const tous = await catalogueBoutique(request);
+    const famille = (tous || []).filter((p) => p && p.famille === "Colognes");
+    const jeu = new Set(ELIGIBLES);
+    const horsPromo = famille.filter((p) => !jeu.has(String(p.ean)));
+    const disparues = ELIGIBLES.filter(
+      (e) => !famille.some((p) => String(p.ean) === e));
+    const remisees = (tous || []).filter((p) => p && p.ttc_plein);
+
+    promo = {
+      ...promo, lisible: true,
+      famille_colognes: famille.length,
+      fiches_remisees: remisees.length,
+      colognes_hors_promotion: horsPromo.map((p) => p.nom),
+      eligibles_absentes_du_catalogue: disparues,
+    };
+
+    if (promo.remise && remisees.length !== ELIGIBLES.length) {
+      alertes.push("La remise Black Friday est active mais porte sur "
+        + remisees.length + " fiche(s) au lieu de " + ELIGIBLES.length
+        + ". Voir « black_friday ».");
+    }
+    if (horsPromo.length) {
+      consequences.push(horsPromo.length + " eau(x) de Cologne du catalogue ne sont pas "
+        + "dans la liste des éligibles : elles resteront au prix plein. "
+        + "Voir « black_friday ».");
+    }
+  } catch (e) {
+    promo = { lisible: false, detail: String((e && e.message) || "illisible").slice(0, 160) };
+  }
+
   let incidents = [];
   let incidentsSouci = "";
   try { incidents = await lireIncidents(env.DB, 20); }
@@ -465,6 +515,7 @@ async function rapport({ request, env }) {
     releve_de_stock_partage: cacheStock,
     fiches_sans_prix: sansPrix,
     veille_tva: tva,
+    black_friday: promo,
     echecs_de_commande: incidentsSouci
       ? { lisible: false, detail: incidentsSouci }
       : { lisible: true, nombre: incidents.length, lignes: incidents },

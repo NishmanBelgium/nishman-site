@@ -1,0 +1,219 @@
+/* ==========================================================================
+   BLACK FRIDAY 2026 — l'habillage temporaire de la boutique.
+
+   Tout est sous [data-bf] : l'attribut n'est posé sur <html> que pendant
+   la fenêtre de l'opération. Le 30 novembre à 23h59, il cesse d'être
+   posé et cette feuille entière redevient inerte, sans qu'il y ait quoi
+   que ce soit à retirer. C'est ce qui rend le retour arrière instantané.
+
+   La direction vient de la vidéo de référence : noir profond, un orange
+   vif unique en accent, une typographie blanche lourde et penchée. Rien
+   ne clignote et il n'y a ni compte à rebours ni stock fictif — l'offre
+   est assez forte pour se passer de pression inventée, et une fausse
+   urgence est de toute façon interdite.
+   ========================================================================== */
+
+:root {
+  --bf-noir: #0b0b0d;
+  --bf-orange: #ED9B24;
+  --bf-blanc: #ffffff;
+}
+
+/* ── Le prix barré, partout où un prix s'affiche ─────────────────────── */
+
+.prix-plein {
+  color: #8a8070;
+  font-weight: 500;
+  text-decoration-thickness: 2px;
+  margin-right: .35em;
+}
+
+.prix-promo { color: #c2410c; font-weight: 800; }
+
+/* Un montant ne doit jamais se couper entre le chiffre et l'euro, même
+   dans une colonne étroite : « 9,90 » sur une ligne et « € » sur la
+   suivante se lit mal et fait douter du prix. */
+.prix-plein, .prix-promo, .prix-du { white-space: nowrap; }
+
+[data-bf] .prix-promo { color: #b4560a; }
+
+/* ── Le badge sur la vignette ─────────────────────────────────────────── */
+
+/* La vignette n'est pas positionnée en temps normal. On la positionne
+   seulement pendant l'opération, pour que le badge s'accroche à elle et
+   non à la page — et pour ne rien changer au reste de l'année. Le badge
+   étant hors flux, il ne décale pas l'image dans sa grille. */
+[data-bf] .carte-img { position: relative; }
+
+.badge-bf {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  background: var(--bf-noir);
+  color: var(--bf-orange);
+  font-weight: 800;
+  font-style: italic;
+  font-size: .8125rem;
+  letter-spacing: .02em;
+  padding: 5px 10px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+/* ── La bannière d'accueil ────────────────────────────────────────────── */
+
+.bf-banniere {
+  position: relative;
+  overflow: hidden;
+  background: var(--bf-noir);
+  color: var(--bf-blanc);
+  text-align: center;
+  /* Les deux tickers sont posés en absolu dans ces marges : sans elles,
+     la bande du bas passe par-dessus la ligne de livraison. */
+  padding: 52px 16px 62px;
+}
+
+/* Le ticker diagonal de la vidéo. Purement décoratif, donc caché aux
+   lecteurs d'écran : il répète une information déjà écrite en clair. */
+.bf-ticker {
+  position: absolute;
+  left: -12%;
+  width: 124%;
+  background: var(--bf-orange);
+  color: var(--bf-noir);
+  font-weight: 800;
+  font-style: italic;
+  font-size: .8rem;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  padding: 7px 0;
+  transform: rotate(-2.4deg);
+}
+.bf-ticker-haut { top: 10px; }
+.bf-ticker-bas { bottom: 10px; transform: rotate(2.4deg); }
+
+.bf-banniere h2 {
+  margin: 26px 0 0;
+  font-weight: 900;
+  font-style: italic;
+  line-height: .92;
+  letter-spacing: -.02em;
+  font-size: clamp(2.3rem, 11vw, 4.6rem);
+  text-transform: uppercase;
+}
+.bf-banniere h2 .bf-or { color: var(--bf-orange); display: block; }
+
+.bf-taux {
+  font-weight: 900;
+  font-style: italic;
+  font-size: clamp(2.6rem, 13vw, 5.4rem);
+  line-height: 1;
+  margin: 10px 0 2px;
+}
+.bf-taux sup { font-size: .45em; vertical-align: super; margin-left: .04em; }
+
+.bf-sous {
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: clamp(.9rem, 3.4vw, 1.15rem);
+  margin: 0 0 4px;
+}
+
+.bf-dates {
+  color: #a9a29a;
+  font-size: .82rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+}
+
+.bf-bouton {
+  display: inline-block;
+  background: var(--bf-blanc);
+  color: var(--bf-noir);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .95rem;
+  text-decoration: none;
+  padding: 14px 30px;
+  border-radius: 999px;
+}
+.bf-bouton:hover { background: var(--bf-orange); }
+
+.bf-livraison { color: #a9a29a; font-size: .8rem; margin: 16px 0 0; }
+
+/* Sur grand écran, les tailles fluides atteignent leur plafond et le bloc
+   finit par occuper presque tout l'écran d'accueil. On le resserre : la
+   bannière doit annoncer l'offre, pas repousser la boutique hors de vue. */
+@media (min-width: 900px) {
+  .bf-banniere { padding: 46px 16px 54px; }
+  .bf-banniere h2 { margin-top: 12px; font-size: 3.5rem; }
+  .bf-taux { font-size: 4.2rem; margin: 4px 0 2px; }
+}
+
+/* ── Le pop-up ────────────────────────────────────────────────────────── */
+
+.bf-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, .72);
+}
+
+.bf-pop-carte {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 410px;
+  background: var(--bf-noir);
+  color: var(--bf-blanc);
+  border-radius: 14px;
+  padding: 44px 26px 30px;
+  text-align: center;
+}
+
+.bf-pop-fermer {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: 0;
+  color: #a9a29a;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.bf-pop-fermer:hover { color: var(--bf-blanc); }
+
+.bf-pop-carte h2 {
+  margin: 8px 0 0;
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -.01em;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+.bf-pop-carte h2 .bf-or { color: var(--bf-orange); display: block; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .bf-pop { animation: bf-fondu .18s ease-out; }
+}
+@keyframes bf-fondu { from { opacity: 0 } to { opacity: 1 } }
+
+/* Le pop-up ne doit jamais empêcher d'atteindre le site sur un petit
+   écran : sous 420 px de haut il défile au lieu de déborder. */
+@media (max-height: 420px) {
+  .bf-pop { align-items: flex-start; overflow: auto; }
+}

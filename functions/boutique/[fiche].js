@@ -200,6 +200,7 @@ function page(p, base, indexable, autres) {
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
 <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
+<link rel="stylesheet" href="/assets/css/promo-bf.css?v=417" />
 <style>
   .fiche-page { max-width: 1040px; margin: 0 auto; padding: 24px 16px 72px;
                 display: grid; gap: 32px; grid-template-columns: 1fr; }
@@ -300,8 +301,12 @@ function page(p, base, indexable, autres) {
     <div class="fiche-volume">${echapper(p.volume || "")}</div>
 
     <div>
-      <div class="fiche-prix">${euros(p.ttc)}</div>
-      <div class="fiche-prix-note">Prix particulier, TVA comprise</div>
+      <div class="fiche-prix">${p.ttc_plein
+        ? `<s class="prix-plein">${euros(p.ttc_plein)}</s> <span class="prix-promo">${euros(p.ttc)}</span>`
+        : euros(p.ttc)}</div>
+      <div class="fiche-prix-note">${p.ttc_plein
+        ? `Black Friday · −${Math.round(p.promo * 100)} % jusqu'au 30 novembre · prix de référence ${euros(p.ttc_plein)}`
+        : "Prix particulier, TVA comprise"}</div>
     </div>
 
     ${p.bientot
@@ -345,7 +350,8 @@ ${autres.length ? `
         <span class="voisin-img"><img src="/assets/img/products/${echapper(v.image)}"
               alt="${echapper(v.nom)}" width="600" height="600" loading="lazy" decoding="async" /></span>
         <span class="voisin-nom">${echapper(v.nom_court || v.nom)}</span>
-        <span class="voisin-prix">${v.bientot ? "Bientôt disponible" : euros(v.ttc)}</span>
+        <span class="voisin-prix">${v.bientot ? "Bientôt disponible"
+          : (v.ttc_plein ? `<s>${euros(v.ttc_plein)}</s> ${euros(v.ttc)}` : euros(v.ttc))}</span>
       </a>`).join("\n      ")}
     </div>
     <p class="fiche-suite-tout"><a href="${echapper(lienFam)}">Voir toute la famille ${echapper(fam ? fam.nom : p.famille || "")} →</a></p>
@@ -376,6 +382,7 @@ ${pied()}
   });
 })();
 </script>
+<script src="/assets/js/promo-bf.js?v=417"></script>
 <script src="/assets/js/mesure.js?v=391" defer></script>
 <script src="/assets/js/consentement.js?v=394" defer></script>
 <script>

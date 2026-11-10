@@ -8,12 +8,23 @@
    C'est le motif de refus « prix incohérent », et il est automatique.
    ========================================================================== */
 
+import { appliquer as appliquerPromo } from "./_promo_bf.js";
+
 let cache = null;
 let cacheExpire = 0;
 const DUREE_MS = 60 * 1000;
 
 export async function catalogue(request) {
-  if (cache && Date.now() < cacheExpire) return cache;
+  /* LA REMISE EST APPLIQUÉE À LA SORTIE DU CACHE, PAS À L'ENTRÉE.
+   *
+   * Le cache garde les prix pleins ; la remise est recalculée à chaque
+   * appel, en fonction de l'heure. C'est ce qui permet à la promotion de
+   * s'allumer et de s'éteindre toute seule à la minute dite, au lieu
+   * d'attendre que le cache expire — et surtout ce qui empêche une double
+   * remise, puisqu'on ne remise jamais un prix déjà remisé.
+   *
+   * appliquer() rend une nouvelle liste et ne touche pas au cache. */
+  if (cache && Date.now() < cacheExpire) return appliquerPromo(cache);
   const r = await fetch(new URL("/assets/data/boutique.json", request.url));
   if (!r.ok) throw new Error("catalogue boutique injoignable");
   /* Les références marquées « retire » sortent de tout ce qui s'affiche :
@@ -29,7 +40,7 @@ export async function catalogue(request) {
   const tout = await r.json();
   cache = tout.filter((p) => !p.retire);
   cacheExpire = Date.now() + DUREE_MS;
-  return cache;
+  return appliquerPromo(cache);
 }
 
 export async function parSlug(request, slug) {
