@@ -29,8 +29,9 @@
 
    Les bornes sont en UTC parce que c'est la seule horloge dont un serveur
    dispose. En novembre, Bruxelles est à UTC+1 : minuit chez nous est 23 h
-   la veille en UTC. L'habillage ouvre un jour avant la remise, comme NBD
-   l'a demandé — le site s'habille le 10, les prix tombent le 11.
+   la veille en UTC. Prévu d'abord en deux temps (habillage le 10, prix le
+   11), le lancement a été avancé par NBD le 10 novembre : l'habillage et
+   la remise partent ensemble, le 10.
    ========================================================================== */
 
 /* L'INTERRUPTEUR. Passé à false, tout s'éteint au prochain chargement :
@@ -42,7 +43,7 @@ export const TAUX = 0.35;
 
 /* Bruxelles est à UTC+1 en novembre. */
 const HABILLAGE_DEBUT = Date.UTC(2026, 10, 9, 23, 0, 0);   // 10 nov. 00h00
-const REMISE_DEBUT    = Date.UTC(2026, 10, 10, 23, 0, 0);  // 11 nov. 00h00
+const REMISE_DEBUT    = Date.UTC(2026, 10, 9, 23, 0, 0);   // 10 nov. 00h00 (avancé par NBD)
 const FIN             = Date.UTC(2026, 10, 30, 23, 0, 0);  // 30 nov. 23h59'59
 
 /* LES 20 ÉLIGIBLES, PAR CODE-BARRES ET NOMMÉMENT.

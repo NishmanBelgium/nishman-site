@@ -382,7 +382,7 @@ ${pied()}
   });
 })();
 </script>
-<script src="/assets/js/promo-bf.js?v=417"></script>
+<script src="/assets/js/promo-bf.js?v=418"></script>
 <script src="/assets/js/mesure.js?v=391" defer></script>
 <script src="/assets/js/consentement.js?v=394" defer></script>
 <script>
