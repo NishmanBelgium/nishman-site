@@ -23,6 +23,7 @@ import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "
 import { catalogue, donneesPortier, etatFilet } from "../_tarifs.js";
 import { veillerSurLaTva } from "../_veille_tva.js";
 import { etatPromo, ELIGIBLES } from "../_promo_bf.js";
+import { etatOffre as etatOffreP1 } from "../_offre_p1.js";
 /* Le `catalogue` importé plus haut est celui du tunnel professionnel.
    La promotion Black Friday ne concerne que la boutique grand public,
    qui a son propre catalogue — d'où ce second import, nommé. */
@@ -516,6 +517,8 @@ async function rapport({ request, env }) {
     fiches_sans_prix: sansPrix,
     veille_tva: tva,
     black_friday: promo,
+    // Black Friday pro : le carton de 12 poudres P1 offert dès 300 € HT.
+    black_friday_pro: etatOffreP1(),
     echecs_de_commande: incidentsSouci
       ? { lisible: false, detail: incidentsSouci }
       : { lisible: true, nombre: incidents.length, lignes: incidents },

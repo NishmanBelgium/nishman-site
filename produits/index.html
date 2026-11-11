@@ -34,6 +34,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png" />
   <link rel="apple-touch-icon" href="/assets/img/favicon-192.png" />
   <link rel="stylesheet" href="/assets/css/site.css?v=404" />
+  <link rel="stylesheet" href="/assets/css/bf-pro.css?v=424" />
   <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 </head>
 <body class="catalog-body">
@@ -153,6 +154,11 @@
     </div>
 
     <div data-offre-flash data-offre-popup></div>
+
+    <!-- Black Friday pro (11–30 novembre 2026) : la bannière et le pop-up
+         d'accueil sont posés ici par offre-p1.js, et s'effacent seuls le
+         30 novembre à minuit. -->
+    <div data-bf-pro="catalogue"></div>
 
     <p class="result-count" id="result-count"></p>
     <p class="prix-indispo" id="prix-indispo" role="status" hidden></p>
@@ -277,7 +283,8 @@
   </div>
 
   <script src="/assets/js/config.js?v=303"></script>
-  <script src="/assets/js/catalog.js?v=400"></script>
+  <script src="/assets/js/offre-p1.js?v=424"></script>
+  <script src="/assets/js/catalog.js?v=424"></script>
   <script src="/assets/js/offre.js?v=205"></script>
   <script src="/assets/js/ruban-pro.js?v=303" defer></script>
   <script src="/assets/js/bandeau.js?v=333" defer></script>

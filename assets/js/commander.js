@@ -65,7 +65,19 @@
     [SEL_KEY].concat(SEL_KEYS_FALLBACK).forEach((k) => {
       try { localStorage.removeItem(k); } catch (e) {}
     });
+    // Le parfum offert suit le panier : la prochaine commande le redemande.
+    if (window.NishmanP1) window.NishmanP1.oublier();
   }
+
+  /* --- Black Friday pro : le carton de 12 poudres P1 offert ------------ */
+
+  /* Le parfum retenu, tel que le catalogue ou cette page l'ont noté. Le
+     serveur le vérifie et décide seul si la ligne offerte existe. */
+  function choixP1() {
+    return window.NishmanP1 ? window.NishmanP1.choix() : "";
+  }
+
+  function P1() { return window.NishmanP1 ? window.NishmanP1.textes() : null; }
 
   /* --- État de la page ------------------------------------------------ */
 
@@ -223,6 +235,7 @@
       mode: mode(),
       promo: promoAppliquee,
       langue: LANG,
+      cadeau: choixP1(),
     };
 
     const rep = await demander("/api/panier", corps, "panier");
@@ -274,7 +287,7 @@
         + '<td class="num">' + euros(l.prix_unitaire) + "</td>"
         + '<td class="num">' + euros(l.total) + "</td>"
         + "</tr>";
-    }).join("");
+    }).join("") + ligneOffreP1(d);
 
     const n = (d.ignorees || []).length;
     const el = $("cmd-ecartees");
@@ -327,9 +340,85 @@
     }
   }
 
+  /* La ligne offerte, telle que le SERVEUR l'a validée : elle n'apparaît
+     que s'il l'a renvoyée, jamais sur la seule foi du choix local. */
+  function ligneOffreP1(d) {
+    const o = d && d.offre_p1;
+    const x = P1();
+    if (!o || !o.ligne || !x) return "";
+    const l = o.ligne;
+    return '<tr class="bfp-ligne">'
+      + '<td><span class="bfp-ligne-nom"><img src="' + window.NishmanP1.image(l.ean) + '" alt="" />'
+      + "<span>" + echapper(l.nom) + '<br /><span class="bfp-ligne-tag">' + echapper(x.cmdLigne) + "</span></span></span></td>"
+      + '<td class="num">' + l.pieces + "</td>"
+      + '<td class="num">' + euros(0) + "</td>"
+      + '<td class="num bfp-offert">' + echapper(x.cmdOffert) + "</td>"
+      + "</tr>";
+  }
+
+  /* Le bloc du carton offert : faire choisir le parfum quand le seuil est
+     atteint, dire ce qu'il manque sinon. Rien quand l'offre est fermée. */
+  function rendreOffreP1(d) {
+    const zone = $("cmd-p1");
+    if (!zone) return;
+    const o = d && d.offre_p1;
+    const x = P1();
+    if (!o || !o.ouverte || !x) { zone.hidden = true; zone.innerHTML = ""; return; }
+
+    zone.hidden = false;
+    zone.classList.remove("est-en-defaut");
+    if (!o.atteinte) {
+      zone.innerHTML = '<p class="bfp-cmd-manque">'
+        + echapper(x.cmdManque(Number(o.manque).toFixed(2).replace(".", ",") + " €"))
+        + ' <a href="/produits/">' + echapper(x.cmdCompleter) + "</a></p>";
+      return;
+    }
+
+    const choisi = o.choix || "";
+    zone.innerHTML =
+      '<p class="bfp-cmd-titre">' + echapper(x.cmdTitre).replace(/^Black Friday (pro|Pro)/, "Black Friday <span>$1</span>") + "</p>"
+      + '<p class="bfp-cmd-sous">' + echapper(x.cmdChoix) + "</p>"
+      + '<div class="bfp-parfums" role="radiogroup" aria-label="' + echapper(x.cmdChoix) + '">'
+      + (o.parfums || []).map((p) => {
+          const vu = window.NishmanP1.poudre(p.ean) || {};
+          return '<button type="button" role="radio" aria-checked="' + (p.ean === choisi) + '"'
+            + ' class="bfp-parfum' + (p.ean === choisi ? " est-choisi" : "") + '" data-ean="' + echapper(p.ean) + '"'
+            + ' style="--teinte:' + (vu.teinte || "#ED9B24") + '">'
+            + '<img class="bfp-parfum-img" src="' + window.NishmanP1.image(p.ean) + '" alt="" />'
+            + '<span class="bfp-parfum-nom">' + echapper(p.parfum) + "</span></button>";
+        }).join("")
+      + "</div>"
+      + '<p class="bfp-cmd-erreur" id="cmd-p1-erreur" hidden></p>';
+
+    zone.querySelectorAll(".bfp-parfum").forEach((b) => {
+      b.addEventListener("click", async () => {
+        if (envoiEnCours) return;
+        window.NishmanP1.retenir(b.getAttribute("data-ean"));
+        const r = await recalculer();
+        if (r) rendre(r);
+      });
+    });
+  }
+
+  /** Avant d'envoyer : le seuil est atteint mais aucun parfum n'est choisi. */
+  function p1AChoisir(message) {
+    const o = dernier && dernier.offre_p1;
+    if (!message && !(o && o.ouverte && o.a_choisir)) return false;
+    const zone = $("cmd-p1");
+    const x = P1();
+    if (zone) {
+      zone.classList.add("est-en-defaut");
+      const e = $("cmd-p1-erreur");
+      if (e && x) { e.textContent = message || x.cmdErreurChoix; e.hidden = false; }
+      zone.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    return true;
+  }
+
   function rendre(d) {
     rendreIdentite(d);
     rendreLignes(d);
+    rendreOffreP1(d);
     rendreTotaux(d);
     montrer("cmd-livraison-zone", !d.retrait);
   }
@@ -354,6 +443,7 @@
       promo: promoAppliquee,
       langue: LANG,
       cgv: true,
+      cadeau: choixP1(),
     };
     if (enLivraison) {
       if (memeAdresse()) corps.livraison_identique = true;
@@ -408,6 +498,7 @@
     afficherErreur("");
 
     const err = t("erreurs") || {};
+    if (p1AChoisir()) return;
     if (!$("cmd-cgv") || !$("cmd-cgv").checked) { afficherErreur(err.cgv); return; }
 
     verrouiller(true, "cmd-payer", t("pay_envoi"));
@@ -420,6 +511,7 @@
     if (d.ok !== true || !d.paiement_url) {
       verrouiller(false);
       const code = d.code || d.motif || "";
+      if (code === "cadeau_stock" && P1()) { p1AChoisir(P1().cmdStock); return; }
       afficherErreur(err[code] || d.message || d.erreur || err.refus);
       if (code === "session") renvoyerVersConnexion();
       return;
@@ -448,6 +540,7 @@
 
     const err = t("erreurs") || {};
 
+    if (p1AChoisir()) return;
     if (!$("cmd-cgv") || !$("cmd-cgv").checked) { afficherErreur(err.cgv); return; }
 
     const corps = corpsCommande();
@@ -465,6 +558,7 @@
       // Un code connu donne un message traduit ; sinon on reprend celui du
       // serveur, qui est déjà en français et lisible.
       const code = d.code || d.motif || "";
+      if (code === "cadeau_stock" && P1()) { p1AChoisir(P1().cmdStock); return; }
       afficherErreur(err[code] || d.message || d.erreur || err.refus);
       // Session perdue en route : le panier reste, on renvoie se connecter.
       if (code === "session") renvoyerVersConnexion();
@@ -474,7 +568,9 @@
     // Enregistrée : le panier n'a plus de raison d'être.
     viderPanier();
     const texte = $("cmd-fini-texte");
-    if (texte) texte.textContent = t("fini_texte")(d.ref, d.email || "");
+    const offert = d.offre_p1 && d.offre_p1.ligne && P1()
+      ? " " + P1().cmdFini(d.offre_p1.ligne.parfum) : "";
+    if (texte) texte.textContent = t("fini_texte")(d.ref, d.email || "") + offert;
     montrer("cmd-fini-partiel", !!d.partiel);
     if (d.partiel) {
       const p = $("cmd-fini-partiel");

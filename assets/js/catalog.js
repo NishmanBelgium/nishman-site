@@ -895,11 +895,36 @@
 
   // ---------- Barre flottante ----------
 
+  // Le total HT du panier, calculé comme le serveur (_calcul.js) : prix
+  // × pièces, arrondi au centime par ligne. null tant qu'un prix manque.
+  // Il ne sert qu'à l'affichage — le serveur recalcule tout à la commande.
+  function totalHT() {
+    if (!unlocked()) return null;
+    let total = 0;
+    for (const ean of Object.keys(selection)) {
+      const p = PRODUCTS.find((x) => x.ean === ean);
+      const price = p ? priceOf(p) : null;
+      if (price === null) return null;
+      const q = selection[ean];
+      const pieces = (q.u || 0) + (q.b || 0) * (p.box_qty || 0);
+      total += Math.round(price * pieces * 100) / 100;
+    }
+    return Math.round(total * 100) / 100;
+  }
+
+  // Black Friday pro : le carton de 12 poudres P1 offert dès 300 € HT. Le
+  // choix du parfum s'ouvre de lui-même au moment où le panier passe le
+  // seuil (assets/js/offre-p1.js).
+  function majOffreP1() {
+    if (window.NishmanP1) window.NishmanP1.majTotal(totalHT());
+  }
+
   function renderFloatBar() {
     const bar = document.getElementById("float-bar");
     const u = unitCount();
     const b = boxCount();
     document.body.classList.toggle("has-float", u + b > 0);
+    majOffreP1();
     if (u + b === 0) {
       bar.hidden = true;
       majOffreBarre();
@@ -1221,6 +1246,13 @@
         } else {
           list.innerHTML += `<div class="ship-note ship-ok">${T.portOffert}</div>`;
         }
+
+        // Black Friday pro : où en est le panier par rapport au carton de
+        // poudres P1 offert. Posé APRÈS les « innerHTML += », qui
+        // recréeraient le bloc et lui feraient perdre son bouton.
+        if (window.NishmanP1) {
+          window.NishmanP1.poserDansTiroir(list, totalHT(), () => renderDrawer());
+        }
       }
     }
 
@@ -1357,6 +1389,10 @@
     showSkeleton();
     loadSelection();
     applyStaticI18n();
+
+    // Black Friday pro : un parfum choisi (depuis le pop-up des 300 € HT
+    // ou depuis le tiroir) se voit aussitôt dans le tiroir.
+    if (window.NishmanP1) window.NishmanP1.surChoix(() => renderDrawer());
 
     // Les produits s'affichent dès qu'ils sont là. La validation du code
     // d'accès (aller-retour réseau vers Google, 1 à 3 s) se fait EN PARALLÈLE

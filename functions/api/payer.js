@@ -27,6 +27,7 @@ import { configureMollie, modeMollie, appelMollie, paiementsAutorises } from "..
 import { enregistrer } from "../_paiements.js";
 import { verifierStockPro } from "../_stock.js";
 import { avertirSiPlusieursColis } from "../_etiquette.js";
+import { selectionAvecCadeau, ruptureDuCadeau } from "../_offre_p1.js";
 
 /** Référence lisible, fabriquée ici : le navigateur n'en choisit pas. */
 function reference() {
@@ -107,15 +108,31 @@ export async function onRequestPost(ctx) {
 
   let stockNonVerifie = null;
 
+  // Le carton offert du Black Friday pro, s'il est gagné : son seuil ne
+  // dépend que du montant commandé avant remise, on peut donc le connaître
+  // dès maintenant, sans attendre la question du code de bienvenue.
+  const offreP1 = calculer({
+    selection, produits, prix, pays: compte.pays, tvaValide: tva.valide,
+    mode, promo: "", dejaCommande: true, cadeau: corps.cadeau,
+  }).offre_p1;
+
   // Le stock, avant d'engager quoi que ce soit.
   //
   // Le catalogue limite déjà les quantités à l'écran, mais dans le
   // navigateur seulement : un onglet resté ouvert une heure, deux salons
   // sur le dernier carton, et la commande passait quand même. C'est ici
-  // que ça se décide, avec le stock d'Odoo au moment présent.
+  // que ça se décide, avec le stock d'Odoo au moment présent. Le carton
+  // offert y est compté : il sort du même rayon.
   try {
-    const stock = await verifierStockPro(env, selection, produits,
+    const stock = await verifierStockPro(env, selectionAvecCadeau(selection, offreP1), produits,
       { attendre: attendre });
+    if (ruptureDuCadeau(stock, offreP1)) {
+      return json({
+        ok: false, motif: "cadeau_stock",
+        message: "Le parfum choisi pour vos poudres offertes n'est plus disponible en quantité suffisante. "
+               + "Choisissez-en un autre : le reste de votre panier est intact.",
+      }, 409);
+    }
     if (stock.rupture) {
       return json({
         ok: false, motif: "stock",
@@ -150,6 +167,7 @@ export async function onRequestPost(ctx) {
     pays: compte.pays, tvaValide: tva.valide,
     mode, promo: corps.promo,
     dejaCommande,
+    cadeau: corps.cadeau,
   });
   if (!resultat.lignes.length) return erreur("Aucun produit reconnu.", 400, "vide");
   if (!(resultat.total > 0)) return erreur("Le montant à payer est nul.", 400, "montant");

@@ -26,6 +26,9 @@ import { rattraperApresVente } from "../_tva_rattrapage.js";
 import { avertirSiPlusieursColisParNom } from "../_etiquette.js";
 import { controlerTvaDuDevis } from "../_controle_tva.js";
 import { noterDevis } from "../_devis.js";
+import { ligneScript } from "../_offre_p1.js";
+import { assurerCadeauDansDevis } from "../_commande_odoo.js";
+import { noterIncident } from "../_incidents.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 const LANGUES = ["fr", "en", "nl", "de", "tr"];
@@ -159,8 +162,14 @@ export async function onRequestPost(ctx) {
     tvaValide: ouvreDroitAExoneration(pays, tva.statut),
     mode: retrait ? "retrait" : "livraison",
     promo: corps.promo,
+    cadeau: corps.cadeau,
   });
   if (!r.lignes.length) return erreur("Aucun produit valable dans la demande.", 400, "vide");
+
+  // Black Friday pro : le carton de 12 poudres P1 offert dès 300 € HT. Le
+  // navigateur n'envoie que le parfum ; seuil, période et ligne à 0 € sont
+  // décidés ici (_offre_p1.js), comme pour une commande.
+  const offertP1 = r.offre_p1 && r.offre_p1.ligne ? r.offre_p1.ligne : null;
 
   // Les cartons offerts : jamais plus que de packs achetés, et seulement
   // pendant l'offre.
@@ -179,15 +188,16 @@ export async function onRequestPost(ctx) {
   // Et surtout : si Odoo ne répond pas, on envoie l'ordre d'origine. Un
   // devis mal rangé se prépare ; un devis refusé parce qu'une base est
   // muette, non. Le tri est un confort, pas une condition.
-  let rangees = r.lignes;
+  const aRanger = offertP1 ? r.lignes.concat([offertP1]) : r.lignes;
+  let rangees = aRanger;
   try {
-    const refs = await produitsParEan(env, r.lignes.map((l) => l.ean));
-    rangees = rangerParDepot(r.lignes,
+    const refs = await produitsParEan(env, aRanger.map((l) => l.ean));
+    rangees = rangerParDepot(aRanger,
       (l) => (refs[l.ean] || {}).ref,
       (l) => l.nom);
   } catch (e) { /* Odoo muet : l'ordre d'origine fera l'affaire. */ }
 
-  const lignes = rangees.map((l) => ({
+  const lignes = rangees.map((l) => (l.offert ? ligneScript(l) : {
     ean: l.ean, name: l.nom, units: l.unites, boxes: l.cartons, boxQty: l.par_carton,
     pieces: l.pieces, unitPrice: deux(l.prix_unitaire), subtotal: deux(l.total),
   }));
@@ -256,6 +266,26 @@ export async function onRequestPost(ctx) {
   // plus de vingt kilos se prépare en deux colis, et mieux vaut le lire
   // sur le devis que le découvrir l'étiquette imprimée.
   if (reponse.devis) attendre(avertirSiPlusieursColisParNom(env, reponse.devis));
+
+  // Le carton offert, relu dans Odoo et remis d'aplomb si le script l'a mal
+  // écrit (voir assurerCadeauDansDevis). En arrière-plan ; un échec part au
+  // journal d'incidents avec le numéro du devis.
+  if (offertP1) {
+    const signaler = (detail) => noterIncident(env.DB, {
+      etape: "devis", cause: "serveur", compte_id: compte.id, pays,
+      detail: "Black Friday pro — " + detail,
+    }).catch(() => {});
+    attendre(reponse.devis
+      ? assurerCadeauDansDevis(env, reponse.devis, offertP1, r)
+          .then((x) => {
+            if (!x.ok) return signaler(x.motif + " — " + offertP1.pieces + " × P1 " + offertP1.parfum + " à ajouter à la main");
+            if (x.repare) return signaler("carton offert remis d'aplomb sur " + reponse.devis + " (le script l'avait mal écrit)");
+            return null;
+          })
+          .catch((e) => signaler("relecture du carton offert impossible sur " + reponse.devis
+            + " : " + String((e && e.message) || e).slice(0, 120)))
+      : signaler("devis sans numéro : vérifier à la main les " + offertP1.pieces + " × P1 " + offertP1.parfum + " offertes"));
+  }
 
   /* LE CONTRÔLE DE TVA, en arrière-plan.
    *

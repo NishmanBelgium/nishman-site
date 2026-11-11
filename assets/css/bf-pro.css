@@ -1,0 +1,461 @@
+/* ==========================================================================
+   BLACK FRIDAY PRO 2026 — l'habillage temporaire du site professionnel.
+
+   Même direction que la boutique (assets/css/promo-bf.css) : noir profond,
+   un seul orange vif en accent, une typographie lourde et penchée. Mais
+   l'offre n'est pas la même — ici, un carton de 12 poudres P1 offert dès
+   300 € HT — et ce sont les VRAIS produits qui portent la bannière : les
+   cinq P1, en photo, au premier plan.
+
+   Rien ne clignote, aucun compte à rebours, aucun stock fictif : l'offre se
+   suffit, et une fausse urgence est de toute façon interdite.
+
+   Les éléments n'existent que pendant l'opération (offre-p1.js ne les pose
+   qu'entre le 11 et le 30 novembre) : cette feuille redevient inerte le
+   1er décembre sans qu'il y ait rien à retirer.
+   ========================================================================== */
+
+:root {
+  --bfp-noir: #0b0b0d;
+  --bfp-gris: #17171a;
+  --bfp-orange: #ED9B24;
+  --bfp-blanc: #ffffff;
+  --bfp-doux: #a9a29a;
+}
+
+/* ── Le ticker diagonal ──────────────────────────────────────────────── */
+
+.bfp-ticker {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  background: var(--bfp-orange);
+  color: var(--bfp-noir);
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-weight: 800;
+  font-style: italic;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 7px 0;
+  transform: rotate(-2deg);
+  pointer-events: none;
+  z-index: 1;
+}
+.bfp-ticker-haut { top: 12px; }
+.bfp-ticker-bas { bottom: 12px; transform: rotate(1.6deg); }
+
+/* ── La bannière du catalogue ────────────────────────────────────────── */
+
+.bfp-banniere {
+  position: relative;
+  overflow: hidden;
+  background: var(--bfp-noir);
+  color: var(--bfp-blanc);
+  border-radius: var(--radius-md, 18px);
+  /* Les deux tickers sont posés en absolu dans ces marges : sans elles,
+     la bande du haut mord sur le titre et celle du bas sur la mention. */
+  padding: 84px 22px 82px;
+  margin: 0 0 22px;
+}
+
+.bfp-banniere-corps {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  align-items: center;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.bfp-banniere-texte { text-align: center; }
+
+.bfp-titre {
+  margin: 0;
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  line-height: .92;
+  letter-spacing: -.02em;
+  font-size: clamp(2.2rem, 9vw, 3.6rem);
+}
+.bfp-titre span { color: var(--bfp-orange); }
+
+.bfp-offre {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px 0 4px;
+}
+.bfp-douze {
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-weight: 900;
+  font-style: italic;
+  font-size: clamp(3.4rem, 15vw, 5.4rem);
+  line-height: .85;
+  color: var(--bfp-orange);
+}
+.bfp-offre-mots {
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: clamp(1.05rem, 4.4vw, 1.5rem);
+  line-height: 1.02;
+  max-width: 9.5em;
+  text-align: left;
+}
+
+.bfp-cond {
+  margin: 6px 0 2px;
+  font-weight: 700;
+  font-size: .98rem;
+}
+
+.bfp-dates {
+  margin: 0 0 18px;
+  color: var(--bfp-doux);
+  font-size: .8rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.bfp-bouton {
+  display: inline-block;
+  background: var(--bfp-blanc);
+  color: var(--bfp-noir);
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .92rem;
+  text-decoration: none;
+  padding: 13px 28px;
+  border-radius: 999px;
+  transition: background .15s ease;
+}
+.bfp-bouton:hover, .bfp-bouton:focus-visible { background: var(--bfp-orange); }
+
+.bfp-fin {
+  position: relative;
+  z-index: 2;
+  margin: 18px auto 0;
+  max-width: 640px;
+  text-align: center;
+  color: var(--bfp-doux);
+  font-size: .78rem;
+  line-height: 1.45;
+}
+
+/* Les cinq P1, côte à côte, légèrement chevauchés : les vrais produits au
+   premier plan, comme sur les visuels de la marque. */
+.bfp-rangee {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 0 6px;
+}
+.bfp-pot {
+  width: 22%;
+  max-width: 128px;
+  height: auto;
+  margin: 0 -2.2%;
+  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .55));
+}
+.bfp-rangee .bfp-pot:nth-child(3) { width: 25%; max-width: 146px; position: relative; z-index: 2; }
+.bfp-rangee .bfp-pot:nth-child(2),
+.bfp-rangee .bfp-pot:nth-child(4) { position: relative; z-index: 1; }
+
+@media (min-width: 860px) {
+  .bfp-banniere { padding: 80px 40px 78px; }
+  .bfp-pot { max-width: 158px; }
+  .bfp-rangee .bfp-pot:nth-child(3) { max-width: 178px; }
+  .bfp-banniere-corps { grid-template-columns: 1.05fr 1fr; gap: 30px; }
+  .bfp-banniere-texte { text-align: left; }
+  .bfp-offre { justify-content: flex-start; }
+}
+
+/* ── La bande des autres pages (commande) ────────────────────────────── */
+
+.bfp-ruban {
+  background: var(--bfp-noir);
+  color: var(--bfp-blanc);
+  border-radius: 12px;
+  padding: 11px 16px;
+  margin: 0 0 16px;
+  text-align: center;
+  font-size: .86rem;
+  line-height: 1.4;
+}
+.bfp-ruban p { margin: 0; }
+.bfp-ruban strong {
+  color: var(--bfp-orange);
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+
+/* ── Les pop-ups (accueil et choix du parfum) ────────────────────────── */
+
+.bfp-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, .72);
+}
+body.bfp-bloque { overflow: hidden; }
+
+.bfp-carte {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--bfp-noir);
+  color: var(--bfp-blanc);
+  border-radius: 16px;
+  padding: 66px 24px 26px;
+  text-align: center;
+}
+.bfp-pop-choix .bfp-carte { max-width: 620px; }
+
+.bfp-carte .bfp-titre { font-size: 2rem; }
+.bfp-carte .bfp-rangee { margin: 16px 0 4px; }
+.bfp-carte .bfp-pot { max-width: 92px; }
+.bfp-carte .bfp-rangee .bfp-pot:nth-child(3) { max-width: 104px; }
+
+/* La croix passe AU-DESSUS du ticker, sur une pastille noire : posée
+   directement sur la bande orange, elle disparaissait. */
+.bfp-fermer {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bfp-noir);
+  border: 1px solid #2c2c31;
+  border-radius: 50%;
+  color: #d9d4cd;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.bfp-fermer:hover, .bfp-fermer:focus-visible { color: var(--bfp-blanc); border-color: var(--bfp-orange); }
+
+.bfp-surtitre {
+  margin: 0;
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: .85rem;
+}
+.bfp-surtitre span { color: var(--bfp-orange); }
+
+.bfp-gagne {
+  margin: 6px 0 6px;
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: clamp(1.9rem, 7vw, 2.5rem);
+  line-height: .95;
+}
+
+.bfp-texte { margin: 0 auto 18px; max-width: 30em; color: #e9e5df; font-size: .95rem; line-height: 1.45; }
+
+.bfp-parfums {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+@media (min-width: 560px) { .bfp-parfums { grid-template-columns: repeat(5, 1fr); } }
+
+.bfp-parfum {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px 12px;
+  background: var(--bfp-gris);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  color: var(--bfp-blanc);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color .15s ease, transform .15s ease, background .15s ease;
+}
+.bfp-parfum:hover, .bfp-parfum:focus-visible {
+  border-color: var(--teinte, var(--bfp-orange));
+  background: #1f1f23;
+  outline: none;
+}
+.bfp-parfum.est-choisi { border-color: var(--teinte, var(--bfp-orange)); box-shadow: 0 0 0 3px rgba(237, 155, 36, .25); }
+@media (prefers-reduced-motion: no-preference) {
+  .bfp-parfum:hover { transform: translateY(-3px); }
+}
+.bfp-parfum-img { width: 100%; max-width: 96px; height: auto; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .5)); }
+.bfp-parfum-nom {
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: .78rem;
+  letter-spacing: .02em;
+  line-height: 1.1;
+}
+
+.bfp-plus-tard {
+  margin-top: 16px;
+  background: none;
+  border: 0;
+  color: var(--bfp-doux);
+  font: inherit;
+  font-size: .88rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.bfp-plus-tard:hover { color: var(--bfp-blanc); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .bfp-pop { animation: bfp-fondu .18s ease-out; }
+}
+@keyframes bfp-fondu { from { opacity: 0 } to { opacity: 1 } }
+
+@media (max-height: 520px) {
+  .bfp-pop { align-items: flex-start; overflow: auto; }
+}
+
+/* ── Le message après le choix ───────────────────────────────────────── */
+
+.bfp-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  z-index: 9100;
+  max-width: calc(100vw - 32px);
+  transform: translate(-50%, 12px);
+  opacity: 0;
+  pointer-events: none;
+  background: var(--bfp-noir);
+  color: var(--bfp-blanc);
+  border-left: 4px solid var(--bfp-orange);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 700;
+  font-size: .9rem;
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, .5);
+  transition: opacity .2s ease, transform .2s ease;
+}
+.bfp-toast.est-visible { opacity: 1; transform: translate(-50%, 0); }
+
+/* ── Le tiroir de sélection du catalogue ─────────────────────────────── */
+
+.bfp-tiroir {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bfp-noir);
+  color: var(--bfp-blanc);
+  font-size: 13px;
+}
+.bfp-tiroir-manque { flex-direction: column; align-items: stretch; gap: 8px; }
+.bfp-tiroir-txt { display: flex; flex-direction: column; gap: 2px; flex: 1; line-height: 1.35; }
+.bfp-tiroir-txt strong { color: var(--bfp-blanc); }
+.bfp-tiroir-ok { border-left: 4px solid var(--teinte, var(--bfp-orange)); }
+.bfp-tiroir-img { width: 46px; height: 46px; object-fit: contain; flex: none; }
+.bfp-tiroir-prix { font-weight: 800; white-space: nowrap; color: var(--bfp-orange); }
+
+.bfp-jauge { display: block; height: 6px; border-radius: 99px; background: #2a2a2e; overflow: hidden; }
+.bfp-jauge span { display: block; height: 100%; background: var(--bfp-orange); border-radius: 99px; }
+
+.bfp-lien {
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--bfp-orange);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.bfp-bouton-mini {
+  flex: none;
+  background: var(--bfp-orange);
+  color: var(--bfp-noir);
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.bfp-tiroir-choisir { flex-wrap: wrap; }
+
+/* ── La page de commande ─────────────────────────────────────────────── */
+
+.bfp-cmd {
+  margin: 14px 0 6px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--bfp-noir);
+  color: var(--bfp-blanc);
+}
+.bfp-cmd-titre {
+  margin: 0 0 4px;
+  font-family: var(--font-display, "Archivo", sans-serif);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: 1.05rem;
+}
+.bfp-cmd-titre span { color: var(--bfp-orange); }
+.bfp-cmd-sous { margin: 0 0 12px; color: #e9e5df; font-size: .9rem; }
+.bfp-cmd .bfp-parfums { gap: 8px; }
+.bfp-cmd .bfp-parfum-img { max-width: 70px; }
+.bfp-cmd-manque { margin: 0; font-size: .92rem; line-height: 1.45; }
+.bfp-cmd-manque a { color: var(--bfp-orange); font-weight: 700; }
+.bfp-cmd.est-en-defaut { box-shadow: 0 0 0 3px #e11d48; }
+.bfp-cmd-erreur { margin: 10px 0 0; color: #fda4af; font-weight: 700; font-size: .9rem; }
+
+tr.bfp-ligne td { background: #fff7ea; }
+tr.bfp-ligne .bfp-ligne-nom { display: flex; align-items: center; gap: 10px; }
+tr.bfp-ligne img { width: 38px; height: 38px; object-fit: contain; flex: none; }
+tr.bfp-ligne .bfp-ligne-tag {
+  display: inline-block;
+  margin-top: 2px;
+  background: var(--bfp-noir);
+  color: var(--bfp-orange);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+tr.bfp-ligne .bfp-offert { color: #b4560a; font-weight: 800; }

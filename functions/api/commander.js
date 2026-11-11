@@ -22,6 +22,9 @@ import { positionFiscale } from "../_fiscal.js";
 import { verifierStockPro } from "../_stock.js";
 import { aDejaCommande, produitsParEan } from "../_odoo.js";
 import { avertirSiPlusieursColisParNom } from "../_etiquette.js";
+import { selectionAvecCadeau, ruptureDuCadeau, ligneScript } from "../_offre_p1.js";
+import { assurerCadeauDansDevis } from "../_commande_odoo.js";
+import { noterIncident } from "../_incidents.js";
 
 const PAYS_NOM = { BE: "Belgique", FR: "France", LU: "Luxembourg" };
 
@@ -110,7 +113,10 @@ function chargeUtile({ ref, compte, resultat, langue, livraison, tva, env }) {
     grandTotal: resultat.total.toFixed(2),
     viesStatus: (tva && tva.statut) || "",
     viesProof: (tva && tva.preuve) || "",
-    lines: resultat.lignes.map((l) => ({
+    // Le carton offert du Black Friday pro voyage avec les autres lignes,
+    // au format du carton d'Aqua Wax de l'offre MCB, que le script écrit
+    // déjà à 0 € dans Odoo. Le devis envoyé au client le montre donc.
+    lines: resultat.lignes.map((l) => (l.offert ? ligneScript(l) : {
       ean: l.ean,
       name: l.nom,
       units: l.unites,
@@ -205,15 +211,31 @@ export async function onRequestPost(ctx) {
 
   let stockNonVerifie = null;
 
+  // Le carton offert du Black Friday pro, s'il est gagné : son seuil ne
+  // dépend que du montant commandé avant remise, on peut donc le connaître
+  // dès maintenant, sans attendre la question du code de bienvenue.
+  const offreP1 = calculer({
+    selection, produits, prix, pays: compte.pays, tvaValide: tva.valide,
+    mode, promo: "", dejaCommande: true, cadeau: corps.cadeau,
+  }).offre_p1;
+
   // Le stock, avant d'engager quoi que ce soit.
   //
   // Le catalogue limite déjà les quantités à l'écran, mais dans le
   // navigateur seulement : un onglet resté ouvert une heure, deux salons
   // sur le dernier carton, et la commande passait quand même. C'est ici
-  // que ça se décide, avec le stock d'Odoo au moment présent.
+  // que ça se décide, avec le stock d'Odoo au moment présent. Le carton
+  // offert y est compté : il sort du même rayon.
   try {
-    const stock = await verifierStockPro(env, selection, produits,
+    const stock = await verifierStockPro(env, selectionAvecCadeau(selection, offreP1), produits,
       { attendre: attendre });
+    if (ruptureDuCadeau(stock, offreP1)) {
+      return json({
+        ok: false, motif: "cadeau_stock",
+        message: "Le parfum choisi pour vos poudres offertes n'est plus disponible en quantité suffisante. "
+               + "Choisissez-en un autre : le reste de votre panier est intact.",
+      }, 409);
+    }
     if (stock.rupture) {
       return json({
         ok: false, motif: "stock",
@@ -248,9 +270,12 @@ export async function onRequestPost(ctx) {
     pays: compte.pays, tvaValide: tva.valide,
     mode, promo: corps.promo,
     dejaCommande,
+    cadeau: corps.cadeau,
   });
 
   if (!resultat.lignes.length) return erreur("Aucun produit reconnu.", 400, "vide");
+
+  const offert = resultat.offre_p1 && resultat.offre_p1.ligne ? resultat.offre_p1.ligne : null;
 
   // 4) Envoi, lu pour de vrai.
   const url = env.PORTIER_URL || env.ORDER_LOG_URL;
@@ -266,11 +291,15 @@ export async function onRequestPost(ctx) {
   // l'aller-retour. Si Odoo ne répond pas, on envoie l'ordre d'origine :
   // une commande mal rangée se prépare, une commande refusée pour un
   // problème de tri serait absurde.
-  let aEnvoyer = resultat;
+  //
+  // Le carton offert prend sa place dans ce parcours : il se prend dans le
+  // même rayon que les autres P1.
+  const aRanger = offert ? resultat.lignes.concat([offert]) : resultat.lignes;
+  let aEnvoyer = Object.assign({}, resultat, { lignes: aRanger });
   try {
-    const refs = await produitsParEan(env, resultat.lignes.map((l) => l.ean));
+    const refs = await produitsParEan(env, aRanger.map((l) => l.ean));
     aEnvoyer = Object.assign({}, resultat, {
-      lignes: rangerParDepot(resultat.lignes,
+      lignes: rangerParDepot(aRanger,
         (l) => (refs[l.ean] || {}).ref,
         (l) => l.nom),
     });
@@ -306,6 +335,32 @@ export async function onRequestPost(ctx) {
    * parce que le client attend sa confirmation et que cet avertissement
    * ne sert qu'à la préparation, plus tard, au dépôt. */
   if (reponse.devis) attendre(avertirSiPlusieursColisParNom(env, reponse.devis));
+
+  /* Le carton offert, relu dans Odoo, en arrière-plan.
+   *
+   * Le script l'a reçu avec les autres lignes ; on vérifie qu'il l'a
+   * écrit comme prévu (12 pièces à 0 €) et on corrige sinon. Ce n'est
+   * pas au client d'attendre cette relecture, mais si elle échoue, NBD
+   * doit le savoir : le journal d'incidents le dit, avec le numéro. */
+  if (offert) {
+    const signaler = (detail) => noterIncident(env.DB, {
+      etape: "devis", cause: "serveur", compte_id: compte.id, pays: compte.pays,
+      detail: "Black Friday pro — " + detail,
+    }).catch(() => {});
+    if (!reponse.devis) {
+      attendre(signaler("devis sans numéro (" + ref + ") : vérifier à la main les "
+        + offert.pieces + " × P1 " + offert.parfum + " offertes"));
+    } else {
+      attendre(assurerCadeauDansDevis(env, reponse.devis, offert, resultat)
+        .then((r) => {
+          if (!r.ok) return signaler(r.motif + " — " + offert.pieces + " × P1 " + offert.parfum + " à ajouter à la main");
+          if (r.repare) return signaler("carton offert remis d'aplomb sur " + reponse.devis + " (le script l'avait mal écrit)");
+          return null;
+        })
+        .catch((e) => signaler("relecture du carton offert impossible sur " + reponse.devis
+          + " : " + String((e && e.message) || e).slice(0, 120))));
+    }
+  }
 
   return json({
     ok: true,

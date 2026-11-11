@@ -30,6 +30,7 @@ import { appel, produitsParEan, partenaireParEmail, partenaireParTva } from "./_
 import { positionFiscale, nomsPossibles } from "./_fiscal.js";
 import { champsOrigine } from "./_utm.js";
 import { rangerParDepot } from "./_commun.js";
+import { libelleOdoo, noteOdoo } from "./_offre_p1.js";
 
 /* --- Noms réglables ------------------------------------------------------
    Odoo compare les noms caractère par caractère ; NBD les renomme parfois.
@@ -179,12 +180,20 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
   //    amputée d'une ligne est pire qu'une commande refusée, parce que
   //    personne ne s'en aperçoit avant la livraison.
   const eans = resultat.lignes.map((l) => l.ean);
-  const produits = await produitsParEan(env, eans);
+  //    Le carton offert du Black Friday pro est cherché avec les autres,
+  //    mais il n'arrête rien : une commande payante ne se refuse pas parce
+  //    qu'un cadeau est introuvable. Il manquerait alors au devis, et la
+  //    note interne le dit en toutes lettres pour que NBD l'ajoute.
+  const offert = resultat.offre_p1 && resultat.offre_p1.ligne ? resultat.offre_p1.ligne : null;
+  const aChercher = offert && !eans.includes(offert.ean) ? eans.concat([offert.ean]) : eans;
+  const produits = await produitsParEan(env, aChercher);
   const manquants = eans.filter((e) => !produits[e]);
   if (manquants.length) {
     throw echec("produits_inconnus",
       "Certaines références n'existent pas dans Odoo.", manquants);
   }
+  const cadeau = offert && produits[offert.ean] ? offert : null;
+  const cadeauPerdu = !!offert && !cadeau;
 
   // 3) Les lignes, RANGÉES DANS L'ORDRE DU DÉPÔT.
   //
@@ -203,8 +212,13 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
   //    plutôt qu'en ligne négative, pour qu'Odoo affiche un devis lisible
   //    par le client et exploitable par la comptabilité.
   const tauxRemise = resultat.promo ? 10 : 0;
+  //    Le carton offert est rangé AVEC les autres : il se prend dans le
+  //    même rayon (C-01 à C-05), sur le même parcours. Il se distingue par
+  //    son prix à zéro et par son libellé, qui dit « OFFERT » sur le devis,
+  //    le bon de livraison et la facture. Ligne de stock ordinaire, il sort
+  //    du stock à la validation du bon de livraison, comme le reste.
   const rangees = rangerParDepot(
-    resultat.lignes,
+    cadeau ? resultat.lignes.concat([cadeau]) : resultat.lignes,
     (l) => produits[l.ean].ref,
     (l) => produits[l.ean].nom || l.nom);
   //    « sequence » est posée explicitement plutôt que laissée à Odoo :
@@ -212,13 +226,22 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
   //    suit l'ordre d'écriture aujourd'hui mais n'est garanti nulle part.
   //    Dix par dix, pour pouvoir intercaler une ligne à la main sans tout
   //    renuméroter.
-  const lignes = rangees.map((l, i) => [0, 0, {
-    sequence: (i + 1) * 10,
-    product_id: produits[l.ean].id,
-    product_uom_qty: l.pieces,
-    price_unit: l.prix_unitaire,
-    discount: tauxRemise,
-  }]);
+  const lignes = rangees.map((l, i) => [0, 0, l.offert
+    ? {
+        sequence: (i + 1) * 10,
+        product_id: produits[l.ean].id,
+        product_uom_qty: l.pieces,
+        price_unit: 0,
+        discount: 0,
+        name: libelleOdoo(l),
+      }
+    : {
+        sequence: (i + 1) * 10,
+        product_id: produits[l.ean].id,
+        product_uom_qty: l.pieces,
+        price_unit: l.prix_unitaire,
+        discount: tauxRemise,
+      }]);
 
   // 4) Le port, s'il y en a. On emprunte le produit du mode de livraison
   //    pour que la ligne tombe dans le même compte comptable que les ports
@@ -288,7 +311,7 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
   // étiquettes, l'objet est vide et la commande part sans elles.
   Object.assign(valeurs, await champsOrigine(env, origine));
 
-  const note = noteInterne({ resultat, livraison, tva });
+  const note = noteInterne({ resultat, livraison, tva, cadeau, cadeauPerdu });
   if (note) valeurs.note = note;
 
   const id = await appel(env, "sale.order", "create", [valeurs], {});
@@ -317,7 +340,76 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
     }
   } catch (e) { /* la commande existe ; la relecture est un contrôle, pas une condition */ }
 
-  return { id, nom, client, montant_odoo: montantOdoo, ecart };
+  return { id, nom, client, montant_odoo: montantOdoo, ecart, cadeau_perdu: cadeauPerdu };
+}
+
+/**
+ * Le carton offert est-il bien dans le devis que le script Google a créé ?
+ *
+ * Le chemin « devis par virement » passe par le script, qui écrit lui-même
+ * les lignes dans Odoo. Il a déjà posé des cadeaux à 0 € (le carton
+ * d'Aqua Wax de l'offre MCB), mais toujours sur une fiche à part, jamais
+ * achetée en même temps. Ici, le client peut acheter six Sport P1 ET
+ * recevoir douze Sport P1 : deux lignes pour un même code-barres, ce que
+ * le script n'a jamais reçu. Plutôt que de parier sur sa façon de faire,
+ * on relit le devis et on le remet d'aplomb si besoin :
+ *
+ *   - une ligne à 0 € de 12 pièces existe          → rien à faire ;
+ *   - les 12 pièces ont été fondues dans la ligne
+ *     payante (6 + 12 = 18 au prix normal)          → on la ramène à 6 ;
+ *   - la ligne offerte a reçu le prix du catalogue  → on la retire ;
+ *   - et dans ces deux cas, ou si elle manque, on écrit la ligne à 0 €.
+ *
+ * Un devis déjà confirmé n'est jamais touché : on le signale.
+ */
+export async function assurerCadeauDansDevis(env, nomDevis, offert, resultat) {
+  const cmds = await appel(env, "sale.order", "search_read",
+    [[["name", "=", String(nomDevis || "")]], ["id", "state"]], { limit: 1 });
+  const cmd = cmds && cmds[0];
+  if (!cmd) return { ok: false, motif: "devis " + nomDevis + " introuvable" };
+
+  const fiches = await produitsParEan(env, [offert.ean]);
+  const fiche = fiches[offert.ean];
+  if (!fiche) return { ok: false, motif: "fiche " + offert.ean + " introuvable" };
+
+  const lignes = (await appel(env, "sale.order.line", "search_read",
+    [[["order_id", "=", cmd.id], ["product_id", "=", fiche.id]],
+     ["id", "product_uom_qty", "price_unit"]], {})) || [];
+
+  const pieces = Number(offert.pieces);
+  const vendues = (resultat.lignes || [])
+    .filter((l) => l.ean === offert.ean)
+    .reduce((s, l) => s + Number(l.pieces || 0), 0);
+
+  if (lignes.some((l) => Number(l.price_unit) === 0 && Number(l.product_uom_qty) === pieces)) {
+    return { ok: true, repare: false, id: cmd.id };
+  }
+
+  if (cmd.state !== "draft" && cmd.state !== "sent") {
+    return { ok: false, motif: "devis " + nomDevis + " déjà confirmé, carton offert absent" };
+  }
+
+  const ops = [];
+  const payantes = lignes.filter((l) => Number(l.price_unit) > 0);
+  const fondue = payantes.find((l) => Number(l.product_uom_qty) === vendues + pieces);
+  if (fondue) {
+    ops.push(vendues > 0 ? [1, fondue.id, { product_uom_qty: vendues }] : [2, fondue.id, 0]);
+  } else {
+    const facturee = payantes.find((l) => Number(l.product_uom_qty) === pieces
+      && payantes.filter((x) => x.id !== l.id)
+                 .reduce((s, x) => s + Number(x.product_uom_qty), 0) === vendues);
+    if (facturee) ops.push([2, facturee.id, 0]);
+  }
+  ops.push([0, 0, {
+    product_id: fiche.id,
+    product_uom_qty: pieces,
+    price_unit: 0,
+    discount: 0,
+    name: libelleOdoo(offert),
+  }]);
+
+  await appel(env, "sale.order", "write", [[cmd.id], { order_line: ops }], {});
+  return { ok: true, repare: true, id: cmd.id, operations: ops.length };
 }
 
 /**
@@ -325,8 +417,14 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
  * et la preuve de contrôle du numéro de TVA. Ce sont les deux choses qu'on
  * regrette de ne pas trouver quand on rouvre une commande six mois après.
  */
-function noteInterne({ resultat, livraison, tva }) {
+function noteInterne({ resultat, livraison, tva, cadeau, cadeauPerdu }) {
   const bouts = [];
+  if (cadeau) bouts.push(noteOdoo(cadeau));
+  if (cadeauPerdu) {
+    const o = resultat.offre_p1.ligne;
+    bouts.push("À AJOUTER À LA MAIN : " + o.pieces + " × P1 " + o.parfum
+      + " offertes (Black Friday pro) — la fiche " + o.ean + " est introuvable dans Odoo.");
+  }
   if (livraison) {
     bouts.push("Livraison : " + [
       livraison.nom, livraison.adresse,

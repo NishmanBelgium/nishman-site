@@ -694,6 +694,12 @@
       discountRate: data.promo ? String(Math.round(PROMO_RATE * 100)) : "",
       discount: data.showPrices ? data.discount.toFixed(2) : "",
       currency: "EUR",
+      // Black Friday pro : le parfum des 12 poudres P1 offertes, choisi au
+      // catalogue. Le serveur décide seul si le carton est dû (seuil,
+      // période, parfum) et l'ajoute lui-même au devis, à 0 €.
+      cadeau: (function () {
+        try { return localStorage.getItem("nishman_cadeau_p1") || ""; } catch (e) { return ""; }
+      })(),
       lines: data.lines.map((l) => ({
         ean: l.ean, name: l.name, units: l.units, boxes: l.boxes,
         boxQty: l.boxQty, pieces: l.pieces,
@@ -731,7 +737,7 @@
     }
 
     // Panier vidé : la demande est partie
-    [SEL_KEY].concat(SEL_KEYS_FALLBACK).forEach((k) => localStorage.removeItem(k));
+    [SEL_KEY].concat(SEL_KEYS_FALLBACK).concat(["nishman_cadeau_p1"]).forEach((k) => localStorage.removeItem(k));
 
     // La conversion professionnelle, c'est ici — pas l'ajout au panier,
     // pas la visite du catalogue. Une demande de devis partie est le seul

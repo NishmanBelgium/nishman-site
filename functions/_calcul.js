@@ -10,6 +10,8 @@
    qui le rend vérifiable ligne à ligne, sans Cloudflare et sans Odoo.
    ========================================================================== */
 
+import { evaluerOffre } from "./_offre_p1.js";
+
 /* --- Barèmes ------------------------------------------------------------ */
 
 // Frais de port HT par pays de livraison : offerts au-delà du seuil,
@@ -64,12 +66,15 @@ export function fraisDePort(pays, montant, retrait) {
  * @param mode      "livraison" | "retrait"
  * @param promo     le code saisi, tel quel
  * @param dejaCommande  le client a-t-il déjà une commande confirmée
+ * @param cadeau    le code-barres de la poudre P1 choisie (Black Friday pro)
+ * @param maintenant    l'heure qui fait foi, pour les essais ; sinon l'horloge
  *
  * Rien de ce que le navigateur envoie n'est cru sur parole, hormis les
  * références et les quantités — et encore : une référence inconnue ou une
  * quantité négative est écartée, pas facturée.
  */
-export function calculer({ selection, produits, prix, pays, tvaValide, mode, promo, dejaCommande }) {
+export function calculer({ selection, produits, prix, pays, tvaValide, mode, promo, dejaCommande,
+                           cadeau, maintenant }) {
   const parEan = new Map();
   for (const p of produits || []) if (p && p.ean) parEan.set(String(p.ean), p);
 
@@ -136,8 +141,15 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
   const { taux, regime } = regimeTva(pays, tvaValide);
   const tva = sou(baseTva * taux);
 
+  // Black Friday pro : le carton de poudres P1 offert. Il se lit, comme le
+  // franco, sur le montant commandé avant remise (_offre_p1.js). Il ne
+  // touche à aucun montant : la ligne offerte vit à part, dans offre_p1,
+  // et `lignes` reste la liste de ce qui se paie.
+  const offreP1 = evaluerOffre(sousTotal, cadeau, produits, maintenant);
+
   return {
     lignes, ignorees,
+    offre_p1: offreP1,
     sous_total: sousTotal,
     promo: promoOk ? PROMO.code : "",
     // Le code a été donné mais écarté : la page doit pouvoir dire pourquoi.

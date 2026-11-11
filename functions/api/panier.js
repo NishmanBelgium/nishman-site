@@ -84,6 +84,7 @@ export async function onRequestPost({ request, env }) {
     mode: corps.mode === "retrait" ? "retrait" : "livraison",
     promo: corps.promo,
     dejaCommande,
+    cadeau: corps.cadeau,
   });
 
   return json({
