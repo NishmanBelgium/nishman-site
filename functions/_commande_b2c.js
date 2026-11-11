@@ -28,7 +28,7 @@ import { appel } from "./_odoo.js";
 import { produitsParEan, partenaireParEmail } from "./_odoo.js";
 import { rangerParDepot } from "./_commun.js";
 import { nomLivraison, echec, parNomInsensible, paysId } from "./_commande_odoo.js";
-import { nomsPossibles } from "./_fiscal.js";
+import { regimeB2C } from "./_oss.js";
 import { champsOrigine } from "./_utm.js";
 
 /**
@@ -166,7 +166,14 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref, ori
   // changée. Les ventes professionnelles, elles, continuent en hors taxe.
   // Recherche sur le nom exact : « 21% TTC » contient un %, qui serait un
   // joker dans une recherche « ilike ».
-  const nomTaxe = String((env && env.TAXE_TTC) || "21% TTC").trim();
+  //
+  // LE PAYS DÉCIDE. Le régime vient de _oss.js, qui tient ensemble le taux
+  // utilisé pour calculer le prix, la taxe posée ici, et la position
+  // fiscale posée plus bas. Tant que l'interrupteur OSS est à false, les
+  // trois pays reçoivent le régime belge — « 21% TTC » et « National » —
+  // c'est-à-dire exactement ce que ce fichier faisait avant.
+  const regime = regimeB2C(client.pays, env);
+  const nomTaxe = regime.taxe;
   const trouvees = await appel(env, "account.tax", "search_read",
     [[["name", "=", nomTaxe], ["type_tax_use", "=", "sale"]], ["id", "name"]],
     { limit: 2 });
@@ -218,17 +225,19 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref, ori
     }]);
   }
 
-  // LA POSITION FISCALE. Aujourd'hui « National » pour les trois pays : la
-  // TVA belge s'applique aux ventes à distance tant que NBD reste sous le
-  // seuil de 10 000 € et n'est pas inscrite à l'OSS.
+  // LA POSITION FISCALE, celle du même régime que la taxe ci-dessus.
   //
-  // LE JOUR DE L'INSCRIPTION À L'OSS, c'est ici que ça change : la France
-  // et le Luxembourg devront passer sur « UE B2C » et le taux devra devenir
-  // celui du pays du client, dans _calcul_b2c.js. Les deux vont ensemble —
-  // changer l'un sans l'autre facturerait un taux et en déclarerait un
-  // autre.
+  // Avant l'OSS : « National » pour les trois pays, la TVA belge s'applique
+  // aux ventes à distance tant que NBD reste sous le seuil de 10 000 €.
+  // Après : « OSS B2C France » et « OSS B2C Luxembourg », qui disent à Odoo
+  // de déclarer au guichet unique.
+  //
+  // Le danger qu'annonçait l'ancien commentaire ici — changer la position
+  // sans changer le taux, et facturer un taux tout en en déclarant un autre
+  // — n'existe plus : les deux sortent du même appel à regimeB2C(), fait
+  // une seule fois plus haut.
   let positionId = null;
-  for (const candidat of nomsPossibles("national", env)) {
+  for (const candidat of regime.positions) {
     const fp = await parNomInsensible(env, "account.fiscal.position", candidat);
     if (fp) { positionId = fp.id; break; }
   }
@@ -236,8 +245,8 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref, ori
     const toutes = await appel(env, "account.fiscal.position", "search_read",
       [[], ["id", "name"]], { limit: 40 });
     throw echec("position_introuvable",
-      "La position fiscale « National » n'a pas été trouvée dans Odoo.",
-      (toutes || []).map((f) => f.name));
+      "La position fiscale « " + regime.positions[0] + " » n'a pas été trouvée dans Odoo.",
+      { cherchees: regime.positions, vues_par_le_site: (toutes || []).map((f) => f.name) });
   }
 
   const valeurs = {
