@@ -305,12 +305,33 @@ async function poserTransporteur(env, p, journal) {
   const destId = cmd && cmd[0] && cmd[0].partner_shipping_id
     ? cmd[0].partner_shipping_id[0] : null;
   let pays = "";
+  let modeClient = null;
   if (destId) {
-    const dest = await appel(env, "res.partner", "read", [[destId], ["country_id"]], {});
+    const dest = await appel(env, "res.partner", "read",
+      [[destId], ["country_id", "property_delivery_carrier_id"]], {});
     const c = dest && dest[0] && dest[0].country_id;
     if (c) {
       const pc = await appel(env, "res.country", "read", [[c[0]], ["code"]], {});
       pays = (pc && pc[0] && pc[0].code) || "";
+    }
+    modeClient = dest && dest[0] && dest[0].property_delivery_carrier_id;
+  }
+
+  // La fiche client peut porter un mode de livraison par défaut. Quand ce
+  // mode n'est pas un transporteur SendCloud, c'est une livraison que NBD
+  // assure elle-même : il n'y a pas d'étiquette à imprimer, et poser un
+  // transporteur par-dessus ferait exactement le dégât qu'on a constaté sur
+  // WH/OUT/00186 — un plafond de poids de 31,5 kg opposé à un bon de 39 kg
+  // qui partait en camionnette. On respecte donc le choix porté par la fiche.
+  if (modeClient) {
+    const mc = await appel(env, "delivery.carrier", "read",
+      [[modeClient[0]], ["name", "delivery_type"]], {});
+    const type = mc && mc[0] && mc[0].delivery_type;
+    if (type && type !== "sendcloud") {
+      ligne(journal, "transporteur", true,
+        "livraison assurée par NBD (« " + (mc[0].name || modeClient[1]) +
+        " ») : aucun transporteur posé, aucune étiquette");
+      return;
     }
   }
 
