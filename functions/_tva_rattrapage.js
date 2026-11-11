@@ -173,6 +173,94 @@ export async function rattraperApresVente(db, env, compte, info) {
   }
 }
 
+/* ==========================================================================
+   LA BOUCLE QU'IL MANQUAIT — relue le 11 novembre 2026.
+
+   Constat ce jour-là : neuf ventes françaises, 2 348,07 €, en attente
+   depuis le 7 novembre. Aucune ne demandait de note de crédit, aucune ne
+   bougeait, et chacune produisait une notification de plus sur /pro/stats/.
+
+   La cause n'est pas le registre européen, et c'est ce qui rendait le
+   diagnostic trompeur. Le rapport quotidien interroge déjà le registre
+   chaque matin DEPUIS LA MACHINE DE NBD — le seul endroit d'où il répond
+   correctement — et dépose le constat sur le COMPTE. Ce travail-là se
+   fait, et il se fait bien.
+
+   Mais statut_apres est écrit une seule fois, dans la minute qui suit la
+   vente, et plus rien ne le relit. Un compte confirmé le lendemain matin
+   laissait donc sa vente de la veille en « indisponible » pour toujours :
+   la preuve existait, à côté, et personne ne la rapprochait.
+
+   D'où cette fonction. Elle n'interroge rien — ce serait refaire depuis
+   Cloudflare un appel qui échoue depuis Cloudflare — elle se contente de
+   reporter sur la vente ce que le compte a appris depuis. Les lignes
+   passent alors d'elles-mêmes dans la liste des régularisations, avec la
+   preuve, ou restent muettes si le compte l'est resté.
+
+   LE GARDE-FOU. On ne reporte que si le compte porte TOUJOURS le numéro
+   qui figure sur la vente. Un client qui change de numéro entre-temps
+   fait valider le nouveau ; l'ancienne facture, elle, portait l'autre, et
+   l'exonérer sur cette preuve-là serait faux. Même esprit que le contrôle
+   du constat dans /api/tva-manuel.
+   ========================================================================== */
+
+const STATUTS_CONFIRMES = ["valide", "valide_manuel", "valide_sans_preuve"];
+
+/** Les chiffres et lettres d'un numéro, pour comparer deux écritures. */
+function noyau(v) {
+  return String(v || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+/**
+ * Reporte sur les ventes en attente ce que leur compte a appris depuis.
+ * Ne rend rien d'utile : elle prépare les deux listes ci-dessous.
+ */
+export async function reexaminerMuettes(db) {
+  if (!db) return 0;
+  let reportees = 0;
+  try {
+    await preparerRattrapage(db);
+
+    /* Les ventes encore muettes, avec l'état ACTUEL de leur compte. Une
+       jointure plutôt que deux requêtes : la liste est courte, et on veut
+       les deux versions du numéro côte à côte pour le garde-fou. */
+    const r = await db.prepare(
+      "SELECT t.ref AS ref, t.numero AS numero_vente, " +
+        "       c.tva AS tva_compte, c.siret AS siret_compte, " +
+        "       c.tva_statut AS statut, c.tva_preuve AS preuve, " +
+        "       c.tva_nom AS nom, c.tva_verifiee_le AS verifiee_le " +
+        "  FROM tva_rattrapage t " +
+        "  JOIN comptes c ON c.id = t.compte_id " +
+        " WHERE t.regle = 0 " +
+        "   AND (t.statut_apres IS NULL " +
+        "        OR t.statut_apres IN ('indisponible', 'jamais', ''))"
+    ).all();
+
+    for (const l of (r && r.results) || []) {
+      if (STATUTS_CONFIRMES.indexOf(String(l.statut || "")) === -1) continue;
+
+      const surLaVente = noyau(l.numero_vente);
+      const surLeCompte = noyau(l.tva_compte || l.siret_compte);
+      if (!surLaVente || surLaVente !== surLeCompte) continue;
+
+      await db.prepare(
+        "UPDATE tva_rattrapage SET statut_apres = ?, preuve_apres = ?, " +
+          "nom_apres = ?, verifie_apres_le = ? WHERE ref = ?"
+      ).bind(
+        String(l.statut).slice(0, 20), String(l.preuve || "").slice(0, 64),
+        String(l.nom || "").slice(0, 160),
+        String(l.verifiee_le || new Date().toISOString()).slice(0, 40),
+        l.ref,
+      ).run();
+      reportees++;
+    }
+  } catch (e) {
+    /* Comme le reste du module : un filet qui casse ne doit rien casser
+       d'autre. Les listes restent lisibles, simplement pas rafraîchies. */
+  }
+  return reportees;
+}
+
 /**
  * Ce qu'il reste à régulariser : les ventes où le second contrôle a fini
  * par confirmer le numéro, et où la facture porte donc une TVA qui n'avait
@@ -185,6 +273,7 @@ export async function aRegulariser(db, limite = 100) {
   if (!db) return [];
   try {
     await preparerRattrapage(db);
+    await reexaminerMuettes(db);
     const r = await db.prepare(
       "SELECT ref, odoo_nom, client, pays, numero, montant, " +
         "statut_vente, motif_vente, statut_apres, preuve_apres, " +
@@ -210,6 +299,11 @@ export async function encoreMuettes(db, limite = 100) {
   if (!db) return [];
   try {
     await preparerRattrapage(db);
+    /* Aussi ici, et pas seulement dans aRegulariser : les deux listes sont
+       lues dans un ordre que ce module ne choisit pas, et celle qui passe
+       la première ne doit pas montrer un état d'hier. Le second appel ne
+       trouve plus rien à reporter et ne coûte qu'une lecture. */
+    await reexaminerMuettes(db);
     const r = await db.prepare(
       "SELECT ref, odoo_nom, client, pays, numero, montant, " +
         "motif_vente, statut_apres, verifie_apres_le, cree_le " +
