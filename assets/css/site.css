@@ -363,7 +363,49 @@ body.catalog-body::before { display: none; }
   color: var(--ink-faint);
   margin: 16px 0 14px;
   font-weight: 600;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
 }
+
+/* Une vue filtrée (recherche, famille, poudres P1) dit ce qui la filtre et
+   offre toujours le chemin du retour : personne ne doit croire que le
+   catalogue se réduit aux quelques produits affichés. */
+.result-count span { color: var(--ink); font-size: 13.5px; }
+.voir-tout {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: #fff;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.voir-tout:hover, .voir-tout:focus-visible { background: #fff; color: var(--ink); }
+
+.voir-tout-bas {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 26px 0 8px;
+}
+.voir-tout-grand {
+  border: 0;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 999px;
+  padding: 15px 28px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+}
+.voir-tout-grand:hover, .voir-tout-grand:focus-visible { background: var(--gold); color: #0a0a0a; }
 
 /* ---------- Grille produits ---------- */
 

@@ -381,16 +381,15 @@
     try { w.localStorage.setItem(CLE_VU, String(Date.now())); } catch (e) { /* tant pis */ }
   }
 
+  /* « Voir les poudres P1 » : on demande au catalogue sa vue P1 — les cinq
+     références, avec un bouton bien visible pour revenir au catalogue
+     entier. Surtout pas « P1 » tapé dans la recherche : le client restait
+     enfermé dans cinq produits sans comprendre pourquoi. Hors du
+     catalogue, le lien mène à /produits/?vue=p1. */
   function versLesP1() {
-    var champ = document.getElementById("search-input");
-    if (champ) {
-      champ.value = "P1";
-      champ.dispatchEvent(new Event("input", { bubbles: true }));
-      var grille = document.getElementById("grid");
-      if (grille) grille.scrollIntoView({ behavior: "smooth", block: "start" });
-      return true;
-    }
-    return false;
+    if (!document.getElementById("grid")) return false;
+    document.dispatchEvent(new CustomEvent("nishman:voir-p1"));
+    return true;
   }
 
   function banniere() {
@@ -406,7 +405,7 @@
           '<p class="bfp-offre"><span class="bfp-douze">12</span><span class="bfp-offre-mots">' + echapper(x.grand) + "</span></p>" +
           '<p class="bfp-cond">' + echapper(x.cond) + "</p>" +
           '<p class="bfp-dates">' + echapper(x.dates) + "</p>" +
-          '<a class="bfp-bouton" href="/produits/?q=P1">' + echapper(x.cta) + "</a>" +
+          '<a class="bfp-bouton" href="/produits/?vue=p1">' + echapper(x.cta) + "</a>" +
         "</div>" +
         rangee() +
       "</div>" +
@@ -445,7 +444,7 @@
         '<p class="bfp-offre"><span class="bfp-douze">12</span><span class="bfp-offre-mots">' + echapper(x.grand) + "</span></p>" +
         '<p class="bfp-cond">' + echapper(x.cond) + "</p>" +
         '<p class="bfp-dates">' + echapper(x.dates) + "</p>" +
-        '<a class="bfp-bouton" href="/produits/?q=P1">' + echapper(x.cta) + "</a>" +
+        '<a class="bfp-bouton" href="/produits/?vue=p1">' + echapper(x.cta) + "</a>" +
       "</div>";
     function fermer() { noterVu(); fermerIntro(); document.removeEventListener("keydown", clavier); }
     function clavier(e) { if (e.key === "Escape" || e.key === "Esc") fermer(); }
@@ -485,10 +484,6 @@
         hote.appendChild(ruban());
       }
     });
-    // Arrivée par le bouton de la bannière depuis une autre page.
-    try {
-      if (/(^|[?&])q=P1(&|$)/.test(w.location.search)) setTimeout(versLesP1, 600);
-    } catch (e) { /* sans importance */ }
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", habiller);

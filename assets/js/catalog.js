@@ -36,6 +36,10 @@
   let selection = {}; // { ean: qty }
   let activeCategory = "Tous";
   let searchTerm = "";
+  // La vue « poudres P1 » de l'offre Black Friday pro : une liste fermée de
+  // cinq références, pas une recherche. La barre de recherche reste vide,
+  // et le bouton « Voir tout le catalogue » ramène au catalogue entier.
+  let vueP1 = false;
 
   // ==========================================================================
   // LANGUES — fr par défaut ; le choix est mémorisé et recharge la page.
@@ -73,6 +77,10 @@
       priceLoading: "Chargement des tarifs…",
       priceDown: "Tarifs momentanément indisponibles. Écrivez-nous à contact@nishman.be, nous vous les transmettons.",
       noResults: "Aucun produit ne correspond à votre recherche.",
+      voirTout: "Voir tout le catalogue",
+      voirToutN: (n) => `Voir tout le catalogue (${n} produits)`,
+      vueP1: "Poudres P1 — offre Black Friday pro",
+      pour: (q) => `pour « ${q} »`,
       welcomeTitle: "Catalogue professionnel",
       welcomeText: "Ce catalogue s'adresse aux salons de coiffure et aux barbiers. Les tarifs affichés sont nos prix professionnels. Pour commander, il faut un compte — la création est immédiate et gratuite.",
       welcomeSkip: "Continuer la visite",
@@ -141,6 +149,10 @@
       priceLoading: "Loading prices…",
       priceDown: "Prices are temporarily unavailable. Email contact@nishman.be and we will send them to you.",
       noResults: "No product matches your search.",
+      voirTout: "See the full catalogue",
+      voirToutN: (n) => `See the full catalogue (${n} products)`,
+      vueP1: "P1 powders — Black Friday pro offer",
+      pour: (q) => `for “${q}”`,
       welcomeTitle: "Trade catalogue",
       welcomeText: "This catalogue is for hair salons and barbershops. The prices shown are our trade prices. An account is required to order — creating one is free and immediate.",
       welcomeSkip: "Keep browsing",
@@ -209,6 +221,10 @@
       priceLoading: "Prijzen laden…",
       priceDown: "Prijzen zijn tijdelijk niet beschikbaar. Mail naar contact@nishman.be, wij bezorgen ze u.",
       noResults: "Geen enkel product komt overeen met uw zoekopdracht.",
+      voirTout: "Bekijk de volledige catalogus",
+      voirToutN: (n) => `Bekijk de volledige catalogus (${n} producten)`,
+      vueP1: "P1-poeders — Black Friday pro-actie",
+      pour: (q) => `voor “${q}”`,
       welcomeTitle: "Vakcatalogus",
       welcomeText: "Deze catalogus is bedoeld voor kapsalons en barbershops. De getoonde tarieven zijn onze vakprijzen. Om te bestellen hebt u een account nodig — aanmaken is gratis en onmiddellijk.",
       welcomeSkip: "Verder kijken",
@@ -277,6 +293,10 @@
       priceLoading: "Preise werden geladen…",
       priceDown: "Preise vorübergehend nicht verfügbar. Schreiben Sie an contact@nishman.be, wir senden sie Ihnen zu.",
       noResults: "Kein Produkt entspricht Ihrer Suche.",
+      voirTout: "Gesamten Katalog ansehen",
+      voirToutN: (n) => `Gesamten Katalog ansehen (${n} Produkte)`,
+      vueP1: "P1-Puder — Black-Friday-Pro-Angebot",
+      pour: (q) => `für „${q}“`,
       welcomeTitle: "Fachkatalog",
       welcomeText: "Dieser Katalog richtet sich an Friseursalons und Barbershops. Die angezeigten Preise sind unsere Händlerpreise. Zum Bestellen ist ein Konto nötig — die Anmeldung ist kostenlos und sofort möglich.",
       welcomeSkip: "Weiter stöbern",
@@ -345,6 +365,10 @@
       priceLoading: "Fiyatlar yükleniyor…",
       priceDown: "Fiyatlar ge\u00e7ici olarak kullan\u0131lam\u0131yor. contact@nishman.be adresine yaz\u0131n, size iletelim.",
       noResults: "Aramanızla eşleşen ürün yok.",
+      voirTout: "Tüm kataloğu gör",
+      voirToutN: (n) => `Tüm kataloğu gör (${n} ürün)`,
+      vueP1: "P1 pudralar — Black Friday Pro kampanyası",
+      pour: (q) => `“${q}” için`,
       welcomeTitle: "Profesyonel katalog",
       welcomeText: "Bu katalog kuaför salonları ve berberler içindir. Gösterilen fiyatlar profesyonel fiyatlarımızdır. Sipariş vermek için hesap gerekir — hesap açmak ücretsiz ve anındadır.",
       welcomeSkip: "Göz atmaya devam et",
@@ -551,6 +575,7 @@
     grid.querySelectorAll("[data-cat]").forEach((cell) => {
       cell.addEventListener("click", () => {
         activeCategory = cell.dataset.cat;
+        vueP1 = false;
         renderCatButton();
         renderCatGrid();
         renderGrid();
@@ -680,6 +705,10 @@
   }
 
   function getFiltered() {
+    if (vueP1) {
+      const p1 = ((window.NishmanP1 && window.NishmanP1.POUDRES) || []).map((x) => x.ean);
+      return p1.map((e) => PRODUCTS.find((p) => p.ean === e)).filter(Boolean);
+    }
     const mots = aplati(searchTerm).trim().split(/\s+/).filter(Boolean);
     const parCategorie = PRODUCTS.filter(
       (p) => activeCategory === "Tous" || p.category === activeCategory
@@ -744,7 +773,27 @@
     const countEl = document.getElementById("result-count");
     const filtered = getFiltered();
 
-    countEl.textContent = T.results(filtered.length);
+    /* NE JAMAIS LAISSER QUELQU'UN ENFERMÉ DANS UNE VUE FILTRÉE.
+     *
+     * Une recherche, une famille ou la vue « poudres P1 » réduisent la
+     * grille ; sans le dire, le client croit le catalogue réduit à ces
+     * quelques produits (constaté le 11 novembre 2026 avec « Voir les
+     * poudres P1 », qui laissait « P1 » dans la barre de recherche). Le
+     * compteur dit donc ce qui filtre, avec un bouton pour tout revoir, et
+     * le même bouton attend en bas de la liste. */
+    const filtre = vueP1 || activeCategory !== "Tous" || !!searchTerm.trim();
+    if (!filtre) {
+      countEl.textContent = T.results(filtered.length);
+    } else {
+      const quoi = vueP1 ? T.vueP1
+        : searchTerm.trim() ? T.pour(searchTerm.trim())
+        : catLabel(activeCategory);
+      countEl.innerHTML = `<span>${T.results(filtered.length)} — ${escapeHtml(quoi)}</span>`
+        + `<button type="button" class="voir-tout" data-voir-tout>✕ ${T.voirTout}</button>`;
+    }
+    const suiteBas = filtre
+      ? `<div class="voir-tout-bas"><button type="button" class="voir-tout-grand" data-voir-tout>${T.voirToutN(PRODUCTS.length)}</button></div>`
+      : "";
     const panne = document.getElementById("prix-indispo");
     if (panne) {
       panne.textContent = PRIX_INDISPO ? T.priceDown : "";
@@ -752,7 +801,7 @@
     }
 
     if (filtered.length === 0) {
-      grid.innerHTML = `<p class="no-results">${T.noResults}</p>`;
+      grid.innerHTML = `<p class="no-results">${T.noResults}</p>` + suiteBas;
       return;
     }
 
@@ -795,10 +844,10 @@
     // famille est déjà sélectionnée, le titre répéterait le filtre ; et si
     // une recherche est en cours, les résultats sont classés par pertinence,
     // un ordre que des sections casseraient.
-    const parFamilles = activeCategory === "Tous" && !searchTerm.trim();
+    const parFamilles = !filtre;
 
     if (!parFamilles) {
-      grid.innerHTML = filtered.map(carte).join("");
+      grid.innerHTML = filtered.map(carte).join("") + suiteBas;
     } else {
       const ordre = [];
       const paquets = new Map();
@@ -1381,6 +1430,43 @@
     else       { wrap.appendChild(devis); wrap.appendChild(commander); }
   }
 
+  // ---------- Vue filtrée : y entrer, en sortir ----------
+
+  // On s'arrête juste sous la barre de recherche collante : sinon elle
+  // recouvre la ligne qui dit ce qui filtre — et son bouton de retour.
+  function remonterALaGrille() {
+    const cible = document.getElementById("result-count") || document.getElementById("grid");
+    if (!cible) return;
+    const barre = document.getElementById("search-sticky");
+    const decalage = (barre ? barre.getBoundingClientRect().height : 0) + 14;
+    const y = cible.getBoundingClientRect().top + window.scrollY - decalage;
+    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+  }
+
+  // Le bouton « Voir les poudres P1 » de l'offre Black Friday pro.
+  function voirP1() {
+    vueP1 = true;
+    searchTerm = "";
+    const champ = document.getElementById("search-input");
+    if (champ) champ.value = "";
+    activeCategory = "Tous";
+    renderCatButton();
+    renderGrid();
+    remonterALaGrille();
+  }
+
+  // « Voir tout le catalogue » : tout filtre retiré, d'un seul geste.
+  function toutVoir() {
+    vueP1 = false;
+    searchTerm = "";
+    const champ = document.getElementById("search-input");
+    if (champ) champ.value = "";
+    activeCategory = "Tous";
+    renderCatButton();
+    renderGrid();
+    remonterALaGrille();
+  }
+
   // ---------- Initialisation ----------
 
   async function init() {
@@ -1393,6 +1479,16 @@
     // Black Friday pro : un parfum choisi (depuis le pop-up des 300 € HT
     // ou depuis le tiroir) se voit aussitôt dans le tiroir.
     if (window.NishmanP1) window.NishmanP1.surChoix(() => renderDrawer());
+
+    // La vue « poudres P1 », demandée par la bannière ou le pop-up de
+    // l'offre (offre-p1.js), et les boutons qui ramènent au catalogue.
+    document.addEventListener("nishman:voir-p1", voirP1);
+    document.addEventListener("click", (e) => {
+      if (e.target.closest && e.target.closest("[data-voir-tout]")) toutVoir();
+    });
+    try {
+      if (new URLSearchParams(window.location.search).get("vue") === "p1") vueP1 = true;
+    } catch (e) { /* une adresse illisible laisse le catalogue entier */ }
 
     // Les produits s'affichent dès qu'ils sont là. La validation du code
     // d'accès (aller-retour réseau vers Google, 1 à 3 s) se fait EN PARALLÈLE
@@ -1446,6 +1542,7 @@
 
     document.getElementById("search-input").addEventListener("input", (e) => {
       searchTerm = e.target.value;
+      vueP1 = false;   // taper une recherche, c'est quitter la vue P1
       renderGrid();
     });
 
