@@ -22,6 +22,12 @@
   var CALCUL = null;
   var RELAIS_CLE = "";
   var RELAIS_DISPO = false;
+
+  /* Les transporteurs qui ont des points relais vers le pays choisi, tels
+     que SendCloud les déclare. null = on n'a pas pu savoir, et on n'ose
+     alors aucun filtre ; [] = il n'y en a aucun, et proposer la carte
+     serait mentir au client. Voir la note dans _sendcloud.js. */
+  var RELAIS_TRANSPORTEURS = null;
   var relais = null;        // le point choisi, tel que le sélecteur l'a rendu
   var envoiEnCours = false;
 
@@ -65,6 +71,15 @@
         if (d.relais) {
           RELAIS_DISPO = d.relais.disponible === true;
           RELAIS_CLE = d.relais.cle || "";
+          RELAIS_TRANSPORTEURS = Array.isArray(d.relais.transporteurs)
+            ? d.relais.transporteurs : null;
+          /* Le pays a pu changer depuis le dernier choix : un point retenu
+             pour la Belgique n'a rien à faire dans une commande au
+             Luxembourg. On le relâche plutôt que de l'emporter. */
+          if (relais && RELAIS_TRANSPORTEURS && !RELAIS_TRANSPORTEURS.length) {
+            relais = null;
+            afficherRelais();
+          }
         }
         return d;
       })
@@ -114,6 +129,18 @@
                     + "Réessayez dans quelques minutes ou contactez-nous.";
       s.hidden = false;
       $("bc-choisir-relais").disabled = true;
+    } else if (RELAIS_TRANSPORTEURS && !RELAIS_TRANSPORTEURS.length) {
+      /* Aucun transporteur ne dessert de point relais vers ce pays. On le
+         dit maintenant, à l'écran, plutôt que de laisser le client choisir
+         un lieu de retrait qu'on ne pourrait pas honorer après paiement. */
+      var sp = $("bc-relais-souci");
+      sp.textContent = "La livraison en point relais n'est pas disponible vers ce pays. "
+                     + "Choisissez la livraison à domicile.";
+      sp.hidden = false;
+      $("bc-choisir-relais").disabled = true;
+    } else {
+      $("bc-relais-souci").hidden = true;
+      $("bc-choisir-relais").disabled = false;
     }
   }
 
@@ -135,6 +162,17 @@
       country: pays(),
       language: "fr-fr"
     };
+
+    /* LE FILTRE QUI MANQUAIT. Sans lui, la carte montrait les points de
+       TOUS les transporteurs, y compris ceux que le compte SendCloud ne
+       sait pas servir vers ce pays — un point bpost au Luxembourg, par
+       exemple. Le client choisissait, payait, et l'étiquette ne pouvait
+       plus être créée. On n'ouvre donc la carte que sur les transporteurs
+       dont SendCloud dit lui-même qu'ils acceptent un point relais vers
+       cette destination. Liste inconnue : pas de filtre, comme avant. */
+    if (RELAIS_TRANSPORTEURS && RELAIS_TRANSPORTEURS.length) {
+      config.carriers = RELAIS_TRANSPORTEURS.join(",");
+    }
     if (val("bc-cp")) config.postalCode = val("bc-cp");
     if (val("bc-ville")) config.city = val("bc-ville");
     if (val("bc-adresse")) config.address1 = val("bc-adresse");
