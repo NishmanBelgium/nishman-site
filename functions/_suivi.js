@@ -199,6 +199,7 @@ export async function suivi(env) {
     commandes: [],
     bons_orphelins: [],
     factures: [],
+    rapprochement: [],
     compteurs: {},
     soucis: [],
   };
@@ -355,15 +356,31 @@ export async function suivi(env) {
     jours: b.prevu_le ? jours(b.prevu_le + " 00:00:00") : null,
   }));
 
-  /* --- Les factures non soldées ---------------------------------------- */
+  /* --- Les factures non soldées ----------------------------------------
+   *
+   * LE PIÈGE DU « IN_PAYMENT », relevé le 12 novembre 2026. Une première
+   * version comptait comme créance tout ce qui n'était pas « paid » :
+   * elle annonçait 115 factures ouvertes et 53 976 € à encaisser, dont
+   * 111 échues. Faux, et faux d'une manière qui aurait discrédité l'écran
+   * dès le premier matin.
+   *
+   * Sur ces 115, quarante-six étaient à « in_payment » pour 8 805 € :
+   * l'argent du client EST arrivé, par Mollie, et c'est le rapprochement
+   * bancaire qui n'a pas encore été fait. C'est le même phénomène que la
+   * facture Zanacoiff 00130, qui affichait 361,79 € de « restant dû »
+   * sans que personne ne doive quoi que ce soit.
+   *
+   * Les deux listes sont donc séparées, parce que ce ne sont pas deux
+   * degrés d'un même problème mais deux problèmes différents : l'une se
+   * règle en relançant un client, l'autre en rapprochant un relevé. */
   try {
     const f = await appel(env, "account.move", "search_read",
       [[["move_type", "=", "out_invoice"], ["state", "=", "posted"],
-        ["payment_state", "not in", ["paid", "reversed", "invoicing_legacy"]]],
+        ["payment_state", "in", ["not_paid", "partial", "in_payment"]]],
        ["name", "partner_id", "invoice_date", "invoice_date_due",
         "amount_total", "amount_residual", "payment_state"]],
-      { limit: 300, order: "invoice_date_due asc" }) || [];
-    sortie.factures = f.map((x) => ({
+      { limit: 400, order: "invoice_date_due asc" }) || [];
+    const toutes = f.map((x) => ({
       reference: String(x.name || ""),
       client: nom(x.partner_id),
       date: String(x.invoice_date || "").slice(0, 10),
@@ -373,6 +390,8 @@ export async function suivi(env) {
       etat: x.payment_state,
       retard: x.invoice_date_due ? jours(x.invoice_date_due + " 00:00:00") : null,
     }));
+    sortie.factures = toutes.filter((x) => x.etat !== "in_payment");
+    sortie.rapprochement = toutes.filter((x) => x.etat === "in_payment");
   } catch (e) {
     sortie.soucis.push("Factures illisibles : " + String(e.message || e).slice(0, 120));
   }
@@ -393,6 +412,10 @@ export async function suivi(env) {
     reste_a_encaisser: Math.round(
       sortie.factures.reduce((s, f) => s + f.reste, 0) * 100) / 100,
     en_retard: sortie.factures.filter((f) => (f.retard || 0) > 0).length,
+    /* Encaissé mais pas rapproché : ni une créance, ni rien. */
+    rapprochement_nb: sortie.rapprochement.length,
+    rapprochement_montant: Math.round(
+      sortie.rapprochement.reduce((s, f) => s + f.reste, 0) * 100) / 100,
   };
 
   return sortie;

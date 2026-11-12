@@ -194,6 +194,7 @@
     h += tuile(c.facturation || 0, "à facturer");
     h += tuile(eur(c.reste_a_encaisser), "à encaisser", "argent");
     h += tuile(c.en_retard || 0, "factures échues", (c.en_retard ? "urgent" : ""));
+    h += tuile(eur(c.rapprochement_montant), "payé, à rapprocher");
     h += '</div>';
 
     var cmd = d.commandes || [];
@@ -207,8 +208,25 @@
               "Tout ce qui est livré est facturé.");
     h += bloc("Devis en attente", par("devis"), ligneCommande,
               "Aucun devis en suspens.");
-    h += bloc("Factures non soldées", d.factures || [], ligneFacture,
+    h += bloc("Factures à encaisser", d.factures || [], ligneFacture,
               "Tout est encaissé.");
+
+    /* L'argent reçu mais pas rapproché n'est pas une créance : il n'a
+       rien à faire dans la liste des relances, mais le taire serait
+       malhonnête — il explique l'écart avec le compte en banque. */
+    var rap = d.rapprochement || [];
+    if (rap.length) {
+      h += '<h2>En attente de rapprochement<span class="n">' + rap.length + '</span></h2>';
+      h += '<details><summary>' + rap.length + ' facture(s) pour ' +
+           e(eur(c.rapprochement_montant)) + ' — le client a payé (Mollie), ' +
+           'c\'est le rapprochement bancaire qui reste à faire. Ce n\'est pas une dette.' +
+           '</summary><ul>';
+      rap.forEach(function (f) {
+        h += '<li>' + e(f.reference) + ' — ' + e(f.client) + ' — ' + eur(f.reste) +
+             (f.date ? ' (facturée le ' + e(f.date) + ')' : '') + '</li>';
+      });
+      h += '</ul></details>';
+    }
 
     /* Les brouillons sans commande ne sont pas du travail : ce sont des
        restes. Repliés par défaut pour ne pas encombrer, mais comptés. */
