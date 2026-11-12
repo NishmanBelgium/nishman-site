@@ -93,17 +93,138 @@ export function etatFilet() {
  * un robot qui boucle sur cette adresse anonyme épuisait les quotas du
  * script, et coupait du même coup les prix, les devis et les e-mails.
  */
+/* ==========================================================================
+   LE FILET DE SECOURS — servir la dernière table connue quand le portier
+   se tait. Écrit le 12 novembre 2026, après la deuxième panne en deux jours.
+
+   LE 11 ET LE 12 NOVEMBRE, à quelques minutes d'intervalle, le catalogue
+   professionnel a affiché « Tarifs momentanément indisponibles » sur ses
+   188 références. Les deux fois, la panne a duré quelques minutes et s'est
+   résorbée seule. Les deux fois, pendant ce temps, la maison ne pouvait
+   rien vendre en ligne : sans prix, aucun bouton ne s'arme.
+
+   La cause est structurelle, pas accidentelle. La table de prix vit dans
+   un script Google, et le site la redemande toutes les soixante secondes.
+   Chaque hoquet de ce script — saturation, quota, latence — supprime donc
+   la totalité des prix du catalogue. Une dépendance extérieure momentanée
+   ne devrait jamais avoir ce pouvoir-là.
+
+   CE QUE FAIT LE FILET. À chaque réponse valide, la table est recopiée
+   dans la base, sous la même mécanique que le relevé de stock partagé
+   (table cache_stock, une clé par usage) — donc rien de neuf à installer.
+   Quand le portier se tait, on ressert cette copie au lieu de ne rien
+   rendre.
+
+   POURQUOI LA BASE ET PAS LA MÉMOIRE. Le cache d'une minute vit dans
+   l'instance Cloudflare qui l'a rempli. Une instance froide — et il y en
+   a sans arrêt — n'a rien en mémoire, et c'est précisément au moment
+   d'une panne que de nouvelles instances démarrent. Un filet qui ne
+   survit pas au redémarrage n'est pas un filet.
+
+   LES DEUX GARDE-FOUS.
+     - UNE LIMITE D'ÂGE. Au-delà, on préfère ne rien dire que d'engager un
+       prix peut-être périmé. Trois heures : assez pour couvrir largement
+       les pannes observées, trop peu pour qu'un tarif modifié dans le
+       script circule une journée entière.
+     - LA MÊME TABLE POUR TOUT LE MONDE. Le filet est posé ici, dans le
+       module que lisent la page, le panier ET la commande. Il n'existe
+       donc aucun moment où l'on afficherait un prix que la commande
+       ignorerait — c'est la règle déjà posée plus haut pour le filet Odoo,
+       et elle vaut doublement ici.
+
+   Ce que le filet ne fait PAS : masquer la panne. La réponse porte
+   `source` et `age_s`, le diagnostic les montre, et la page peut le dire.
+   Un repli silencieux est un repli qu'on découvre trop tard.
+   ========================================================================== */
+
+const SECOURS_MAX_MS = 3 * 60 * 60 * 1000;   // 3 heures
+const SECOURS_ECRIRE_MS = 10 * 60 * 1000;    // on ne réécrit pas à chaque minute
+let secoursEcritLe = 0;
+let secoursSouci = "";
+
+async function preparerSecours(db) {
+  await db.exec(
+    "CREATE TABLE IF NOT EXISTS cache_stock (" +
+      "cle TEXT PRIMARY KEY, valeur TEXT NOT NULL, pose_le INTEGER NOT NULL)"
+  );
+}
+
+/** Recopie la table valide dans la base. Ne lève jamais : un filet qui
+ *  casse ne doit pas faire tomber la réponse qu'il devait protéger. */
+async function poserSecours(db, prix, limites) {
+  if (!db) return;
+  if (Date.now() - secoursEcritLe < SECOURS_ECRIRE_MS) return;
+  try {
+    await preparerSecours(db);
+    await db.prepare(
+      "INSERT INTO cache_stock (cle, valeur, pose_le) VALUES ('prix', ?, ?) " +
+      "ON CONFLICT (cle) DO UPDATE SET valeur = excluded.valeur, pose_le = excluded.pose_le"
+    ).bind(JSON.stringify({ prices: prix, limits: limites || null }), Date.now()).run();
+    secoursEcritLe = Date.now();
+    secoursSouci = "";
+  } catch (e) {
+    secoursSouci = String((e && e.message) || e).slice(0, 160);
+  }
+}
+
+/** La dernière table connue, si elle existe et n'est pas trop vieille. */
+async function lireSecours(db) {
+  if (!db) return null;
+  try {
+    await preparerSecours(db);
+    const r = await db.prepare(
+      "SELECT valeur, pose_le FROM cache_stock WHERE cle = 'prix'"
+    ).first();
+    if (!r || !r.valeur) return null;
+    const age = Date.now() - Number(r.pose_le);
+    if (!(age >= 0) || age > SECOURS_MAX_MS) return null;
+    const d = JSON.parse(r.valeur);
+    if (!d || !d.prices || !Object.keys(d.prices).length) return null;
+    return { prices: d.prices, limits: d.limits || null, age_s: Math.round(age / 1000) };
+  } catch (e) {
+    return null;
+  }
+}
+
+/** Ce que le diagnostic affiche sur le filet de secours. Ne lève jamais. */
+export async function etatSecoursPrix(db) {
+  const s = await lireSecours(db);
+  if (s) {
+    return { ok: true, detail: Object.keys(s.prices).length + " prix en secours, posés il y a "
+      + Math.round(s.age_s / 60) + " min" };
+  }
+  return { ok: false, detail: "Aucune table de secours exploitable"
+    + (secoursSouci ? " — dernière écriture refusée : " + secoursSouci : "")
+    + ". Une panne du portier laisserait le catalogue sans prix." };
+}
+
 export async function donneesPortier(env) {
   if (cachePrix && Date.now() < cachePrixExpire) {
-    return { prices: cachePrix, limits: cacheLimites };
+    return { prices: cachePrix, limits: cacheLimites, source: "portier" };
   }
 
   const reponse = await interrogerPortier(env, "action=unlock&callback=p");
+
+  /* Un code refusé est une erreur de configuration, pas une panne : le
+     filet la masquerait sans que personne ne la corrige jamais. On la
+     laisse donc remonter, comme avant. */
   if (reponse.etat === "code") throw new Error("code interne refusé");
-  if (reponse.etat !== "ok") throw new Error("portier injoignable");
+
+  /* Le portier se tait. C'est ICI que le catalogue tombait. */
+  if (reponse.etat !== "ok") {
+    const s = await lireSecours(env && env.DB);
+    if (s) return { prices: s.prices, limits: s.limits, source: "secours", age_s: s.age_s };
+    throw new Error("portier injoignable");
+  }
 
   const d = reponse.donnees;
-  if (!d.prices) throw new Error("portier sans prix");
+  /* Le portier a répondu, mais sans table. Pour le catalogue, c'est le
+     même désastre qu'un silence : le filet vaut aussi ici. */
+  if (!d.prices) {
+    const s = await lireSecours(env && env.DB);
+    if (s) return { prices: s.prices, limits: s.limits, source: "secours", age_s: s.age_s };
+    throw new Error("portier sans prix");
+  }
 
   // Le portier a répondu : ses prix font foi. Odoo ne vient qu'ensuite,
   // et seulement là où il n'y a rien. Si Odoo ne répond pas, on sert la
@@ -127,7 +248,13 @@ export async function donneesPortier(env) {
   cachePrix = prix;
   cacheLimites = d.limits || null;
   cachePrixExpire = Date.now() + PRIX_DUREE_MS;
-  return { prices: cachePrix, limits: cacheLimites };
+
+  /* La table est bonne : on en garde une copie pour la prochaine panne.
+     Espacée de dix minutes, et silencieuse en cas d'échec — recopier le
+     filet n'est jamais plus important que de rendre les prix. */
+  await poserSecours(env && env.DB, cachePrix, cacheLimites);
+
+  return { prices: cachePrix, limits: cacheLimites, source: "portier" };
 }
 
 export async function tableDePrix(env) {

@@ -96,6 +96,12 @@ export async function onRequestGet(ctx) {
     // et limites_souci dit ce qui a empêché les vraies.
     limites_source: limitesSource,
     limites_souci: limitesSouci,
+    // D'où viennent les PRIX. « portier » = la table du script Google, à
+    // jour. « secours » = la dernière table connue, resservie parce que le
+    // portier se taisait, avec son âge en secondes. Un repli muet serait
+    // un repli qu'on découvre trop tard — voir la note dans _tarifs.js.
+    prix_source: data.source || "portier",
+    prix_age_s: data.age_s || 0,
     societe: compte ? compte.salon : null,
     email: compte ? compte.email : null,
     // Le pays décide du seuil de port affiché dans le panier.
