@@ -20,7 +20,7 @@ import { json, erreur, compteAdmin } from "../_commun.js";
 import { interrogerPortier, codePortier, adressePortier } from "../_portier.js";
 import { verifier as verifierTva } from "../_vies.js";
 import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "../_odoo.js";
-import { catalogue, donneesPortier, etatFilet } from "../_tarifs.js";
+import { catalogue, donneesPortier, etatFilet, etatSecoursPrix } from "../_tarifs.js";
 import { veillerSurLaTva } from "../_veille_tva.js";
 import { etatPromo, ELIGIBLES } from "../_promo_bf.js";
 import { etatOffre as etatOffreP1 } from "../_offre_p1.js";
@@ -397,6 +397,14 @@ async function rapport({ request, env }) {
   try { cacheStock = await etatCachePartage(env.DB); }
   catch (e) { cacheStock = { ok: false, detail: "illisible" }; }
 
+  /* L'état du filet de secours des tarifs. Sans copie exploitable, la
+     prochaine panne du script Google reviderait le catalogue de ses prix
+     — c'est arrivé les 11 et 12 novembre 2026. Un filet qu'on ne regarde
+     pas est un filet dont on ne sait pas qu'il est troué. */
+  let secoursPrix = null;
+  try { secoursPrix = await etatSecoursPrix(env.DB); }
+  catch (e) { secoursPrix = { ok: false, detail: "illisible" }; }
+
   /* Les fiches publiées qu'aucun prix ne couvre.
    *
    * C'est le défaut le plus silencieux du site : la fiche s'affiche,
@@ -514,6 +522,7 @@ async function rapport({ request, env }) {
     consequences: consequences,
     alertes: alertes,
     releve_de_stock_partage: cacheStock,
+    filet_de_secours_des_tarifs: secoursPrix,
     fiches_sans_prix: sansPrix,
     veille_tva: tva,
     black_friday: promo,
