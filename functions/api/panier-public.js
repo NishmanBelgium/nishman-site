@@ -18,7 +18,7 @@
 import { json, erreur } from "../_commun.js";
 import { catalogue } from "../_boutique.js";
 import { calculerB2C, REGLES, paysValideB2C } from "../_calcul_b2c.js";
-import { configureSendcloud } from "../_sendcloud.js";
+import { configureSendcloud, transporteursPointRelais } from "../_sendcloud.js";
 import { stockVendable } from "../_stock.js";
 
 export async function onRequestPost(ctx) {
@@ -89,6 +89,13 @@ export async function onRequestPost(ctx) {
     relais: {
       disponible: configureSendcloud(env),
       cle: String((env && env.SENDCLOUD_PUBLIC) || "").trim(),
+      /* Les transporteurs qui ont vraiment des points relais vers CE
+         pays-là. Sans ce filtre, la carte proposait des points bpost au
+         Luxembourg, que le compte SendCloud ne sait pas servir : le client
+         choisissait un lieu de retrait, payait, et l'étiquette ne pouvait
+         pas être créée. null veut dire « on n'a pas pu savoir » et la
+         boutique n'applique alors aucun filtre, comme avant. */
+      transporteurs: await transporteursPointRelais(env, pays),
     },
   });
 }

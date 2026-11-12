@@ -19,6 +19,8 @@
    un euro.
    ========================================================================== */
 
+import { tauxB2C } from "./_oss.js";
+
 /* Les réglages commerciaux, décidés par NBD le 28 octobre 2026. Ils vivent
    ici et nulle part ailleurs : la boutique les demande au serveur plutôt
    que d'en garder une copie, pour qu'un changement se fasse en un seul
@@ -35,11 +37,19 @@ export const REGLES = {
 /* La TVA belge s'applique aux trois pays tant que NBD reste sous le seuil
    de 10 000 € de ventes à distance dans l'Union. Au-delà — ou dès
    l'inscription à l'OSS — c'est le taux du pays du client qui s'applique.
-   Le prix affiché restera le même TTC dans les trois pays, donc c'est la
-   marge qui variera, pas le prix. Le jour venu, c'est ici que ça se
-   change. */
+   Le prix affiché reste le même TTC dans les trois pays, donc c'est la
+   marge qui varie, pas le prix.
+
+   Ce jour est préparé : le taux vient maintenant de _oss.js, qui le tient
+   sur la même ligne que la position fiscale et la taxe Odoo correspondantes.
+   Les trois basculent donc ensemble, par un seul interrupteur, et il n'est
+   plus possible de facturer un taux et d'en déclarer un autre. Tant que cet
+   interrupteur est à false, tauxTva rend 0,21 pour les trois pays, soit
+   exactement ce que faisait la ligne qu'il remplace.
+
+   REGLES.tva reste la TVA belge, et sert de référence au reste du fichier. */
 export function tauxTva(pays) {
-  return REGLES.tva;
+  return tauxB2C(pays);
 }
 
 export function paysValideB2C(pays) {

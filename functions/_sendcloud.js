@@ -129,6 +129,66 @@ export async function methodesSendcloud(env, pays) {
   return (d && Array.isArray(d.shipping_methods)) ? d.shipping_methods : [];
 }
 
+/* --------------------------------------------------------------------------
+   LES TRANSPORTEURS QUI ONT VRAIMENT DES POINTS RELAIS, PAR PAYS.
+
+   Écrit le 12 novembre 2026, après une commande qu'on n'a pas pu expédier.
+
+   Almir Klica commande depuis Dudelange et choisit, dans le sélecteur de
+   la boutique, un point bpost PackUp 24/24 à deux pas de chez lui. Il
+   paie. Et l'étiquette n'a jamais pu être créée : le compte SendCloud de
+   NBD ne propose AUCUN point relais bpost vers le Luxembourg — seulement
+   DPD, Mondial Relay et UPS.
+
+   Le défaut n'est pas dans l'expédition, il est dans le choix : le
+   sélecteur ouvrait la carte de TOUS les transporteurs, sans filtre, et
+   laissait donc le client choisir un point que la boutique ne savait pas
+   servir. Promettre un lieu de retrait qu'on ne peut pas honorer est pire
+   qu'une option de moins.
+
+   On demande donc à SendCloud lui-même, pour le pays de destination,
+   quelles méthodes acceptent un point relais, et on n'ouvre la carte que
+   sur ces transporteurs-là. Rien n'est codé en dur : le jour où NBD
+   active bpost au Luxembourg, la carte le proposera d'elle-même.
+
+   En cas d'échec, on rend null et l'appelant n'applique aucun filtre :
+   c'est le comportement d'avant, qui marche pour la Belgique et la France.
+   Un sélecteur non filtré vaut mieux qu'un client qui ne peut pas commander.
+   -------------------------------------------------------------------------- */
+
+const CACHE_TRANSPORTEURS = new Map();
+const CACHE_DUREE_MS = 10 * 60 * 1000;
+
+export async function transporteursPointRelais(env, pays) {
+  const code = String(pays || "").trim().toUpperCase();
+  if (!code || !configureSendcloud(env)) return null;
+
+  const enCache = CACHE_TRANSPORTEURS.get(code);
+  if (enCache && Date.now() < enCache.expire) return enCache.liste;
+
+  try {
+    const methodes = await methodesSendcloud(env, code);
+    const vus = new Set();
+    for (const m of methodes) {
+      /* « none » veut dire que la méthode ne connaît pas les points relais.
+         Les deux autres valeurs — required, optional — en acceptent un. */
+      const entree = String((m && m.service_point_input) || "none").toLowerCase();
+      if (entree === "none") continue;
+      const t = String((m && m.carrier) || "").trim().toLowerCase();
+      if (t) vus.add(t);
+    }
+    /* Aucun transporteur à points relais pour ce pays : on rend une liste
+       VIDE, et non null. La nuance compte — vide veut dire « on a demandé
+       et il n'y en a pas », et la boutique doit alors cacher l'option
+       plutôt que d'ouvrir une carte qui ne mènera nulle part. */
+    const liste = Array.from(vus).sort();
+    CACHE_TRANSPORTEURS.set(code, { liste, expire: Date.now() + CACHE_DUREE_MS });
+    return liste;
+  } catch (e) {
+    return null;
+  }
+}
+
 /* ==========================================================================
    LA VERSION 3 DE L'API
 
