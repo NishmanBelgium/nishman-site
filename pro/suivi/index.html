@@ -31,6 +31,7 @@
   .tuile.urgent { border-color: var(--rouge); }
   .tuile.urgent b { color: var(--rouge); }
   .tuile.argent b { color: var(--orange); }
+  .tuile.montant b { font-size: 1.15rem; white-space: nowrap; }
 
   h2 { font-size: .95rem; margin: 30px 0 10px; color: var(--orange);
        text-transform: uppercase; letter-spacing: .06em; }
@@ -107,7 +108,7 @@
   }
   function eur(n) {
     return (Math.round(Number(n || 0) * 100) / 100)
-      .toLocaleString("fr-BE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+      .toLocaleString("fr-BE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "\u00a0€";
   }
   /* Les dates arrivent d'Odoo en 2026-11-11 ; on lit des dates en français
      sur cet écran, pas des identifiants techniques. */
@@ -198,9 +199,9 @@
     h += tuile(c.facture_non_livree || 0, "facturées, pas livrées");
     h += tuile(c.expedition || 0, "à expédier");
     h += tuile(c.facturation || 0, "à facturer");
-    h += tuile(eur(c.reste_a_encaisser), "à encaisser", "argent");
+    h += tuile(eur(c.reste_a_encaisser), "à encaisser", "argent montant");
     h += tuile(c.en_retard || 0, "factures échues", (c.en_retard ? "urgent" : ""));
-    h += tuile(eur(c.rapprochement_montant), "payé, à rapprocher");
+    h += tuile(eur(c.rapprochement_montant), "payé, à rapprocher", "montant");
     h += '</div>';
 
     var cmd = d.commandes || [];
