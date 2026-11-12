@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Suivi des commandes — NISHMAN</title>
+<meta name="robots" content="noindex, nofollow" />
+<!-- Page de pilotage interne. Elle n'affiche rien par elle-même : tout
+     vient de /api/suivi, qui refuse de répondre à qui n'est pas connecté
+     avec le compte de NBD. Lecture seule : aucun bouton n'engage quoi que
+     ce soit, et c'est voulu — on doit pouvoir la rafraîchir sans réfléchir. -->
+<style>
+  :root { --fond: #0a0a0a; --texte: #f5f5f5; --gris: #a3a3a3; --faible: #6b6b6b;
+          --orange: #faa21b; --vert: #22c55e; --rouge: #ef4444; --bleu: #60a5fa;
+          --carte: #161616; --bord: #262626; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--texte);
+         font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         line-height: 1.5; padding: 20px 16px 72px; }
+  main { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 1.35rem; margin: 0 0 4px; }
+  .sous { color: var(--gris); font-size: .9rem; margin: 0 0 20px; }
+
+  .tuiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+            gap: 10px; margin: 0 0 26px; }
+  .tuile { border: 1px solid var(--bord); background: var(--carte);
+           border-radius: 12px; padding: 12px 14px; }
+  .tuile b { display: block; font-size: 1.6rem; line-height: 1.1; font-weight: 700; }
+  .tuile span { color: var(--gris); font-size: .78rem; text-transform: uppercase;
+                letter-spacing: .05em; }
+  .tuile.urgent { border-color: var(--rouge); }
+  .tuile.urgent b { color: var(--rouge); }
+  .tuile.argent b { color: var(--orange); }
+
+  h2 { font-size: .95rem; margin: 30px 0 10px; color: var(--orange);
+       text-transform: uppercase; letter-spacing: .06em; }
+  h2 .n { color: var(--faible); text-transform: none; letter-spacing: 0;
+          font-weight: 400; margin-left: 6px; }
+
+  .ligne { border: 1px solid var(--bord); background: var(--carte);
+           border-left: 3px solid var(--bord);
+           border-radius: 10px; padding: 11px 14px; margin: 0 0 8px; }
+  .ligne.alerte { border-left-color: var(--rouge); }
+  .ligne.calme  { border-left-color: var(--vert); }
+  .ligne.attente { border-left-color: var(--bleu); }
+  .haut { display: flex; flex-wrap: wrap; align-items: baseline;
+          gap: 8px; margin-bottom: 3px; }
+  .ref { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ref a { color: var(--texte); text-decoration: none; border-bottom: 1px dotted var(--faible); }
+  .client { color: var(--texte); }
+  .mont { margin-left: auto; color: var(--gris); font-variant-numeric: tabular-nums;
+          white-space: nowrap; }
+  .action { font-size: .93rem; }
+  .action.alerte { color: #fca5a5; }
+  .meta { color: var(--faible); font-size: .78rem; margin-top: 3px; }
+  .drapeau { display: inline-block; background: #450a0a; color: #fca5a5;
+             border-radius: 5px; padding: 1px 7px; font-size: .74rem;
+             font-weight: 600; margin-left: 2px; }
+  .drapeau.tiede { background: #3a2a06; color: #fcd34d; }
+
+  details { border: 1px solid var(--bord); background: var(--carte);
+            border-radius: 10px; padding: 11px 14px; margin: 0 0 8px; }
+  summary { cursor: pointer; color: var(--gris); font-size: .9rem; }
+  details ul { margin: 10px 0 0; padding-left: 20px; color: var(--gris); font-size: .88rem; }
+  details li { margin-bottom: 4px; }
+
+  .vide { color: var(--vert); font-size: .9rem; margin: 0 0 8px; }
+  .souci { border: 1px solid var(--rouge); background: #1a0a0a; color: #fca5a5;
+           border-radius: 10px; padding: 11px 14px; margin: 0 0 14px; font-size: .9rem; }
+  .pied { margin-top: 34px; color: var(--faible); font-size: .8rem; }
+  a { color: var(--orange); }
+  button { font: inherit; background: none; color: var(--orange);
+           border: 1px solid var(--bord); border-radius: 8px;
+           padding: 9px 16px; cursor: pointer; }
+</style>
+<link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
+</head>
+<body>
+<main>
+  <h1>Suivi des commandes</h1>
+  <p class="sous">Ce qui attend quelque chose, du plus urgent au moins pressé.
+     Lecture seule : cette page ne crée aucune étiquette et n'envoie aucune facture.</p>
+
+  <div id="sortie"><p class="sous">Lecture d'Odoo…</p></div>
+
+  <p class="pied">
+    <button type="button" id="relire">Rafraîchir</button><br /><br />
+    Page interne — <a href="/pro/etat/">état du site</a> ·
+    <a href="/pro/stats/">chiffres</a> ·
+    <a href="/pro/tva/">TVA</a> ·
+    <a href="/">retour au site</a>
+  </p>
+</main>
+
+<script>
+(function () {
+  var sortie = document.getElementById("sortie");
+
+  /* L'adresse d'Odoo, pour que chaque ligne soit cliquable : lire qu'une
+     commande bloque sans pouvoir l'ouvrir ferait perdre le bénéfice. */
+  var ODOO = "https://srl-nbd-distribution.odoo.com/odoo";
+
+  function e(t) {
+    return String(t == null ? "" : t)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+  function eur(n) {
+    return (Math.round(Number(n || 0) * 100) / 100)
+      .toLocaleString("fr-BE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+  }
+  function age(j) {
+    if (j === null || j === undefined) return "";
+    if (j <= 0) return "aujourd'hui";
+    if (j === 1) return "hier";
+    return "il y a " + j + " jours";
+  }
+
+  function tuile(valeur, libelle, classe) {
+    return '<div class="tuile ' + (classe || '') + '"><b>' + e(valeur) +
+           '</b><span>' + e(libelle) + '</span></div>';
+  }
+
+  function ligneCommande(c) {
+    /* Trois couleurs seulement, parce qu'il n'y a que trois décisions :
+       il faut agir (rouge), on attend quelqu'un d'autre (bleu), c'est en
+       bonne voie (vert). */
+    var classe = c.alerte ? "alerte" : (c.etape === "devis" ? "attente" : "calme");
+    var h = '<div class="ligne ' + classe + '">';
+    h += '<div class="haut">';
+    h += '<span class="ref"><a href="' + ODOO + '/sales/' + encodeURIComponent(c.id) +
+         '" target="_blank" rel="noopener">' + e(c.reference) + '</a></span>';
+    h += '<span class="client">' + e(c.client || "client inconnu") + '</span>';
+    /* Deux drapeaux distincts, et la distinction n'est pas cosmétique :
+       « facturée » veut seulement dire qu'une facture existe, « payée »
+       que l'argent est arrivé. La seconde situation est la plus grave. */
+    if (c.payee_non_livree) h += '<span class="drapeau">payée, pas livrée</span>';
+    else if (c.facture_non_livree) h += '<span class="drapeau tiede">facturée, pas livrée</span>';
+    h += '<span class="mont">' + eur(c.total) + '</span>';
+    h += '</div>';
+    h += '<div class="action' + (c.alerte ? ' alerte' : '') + '">' + e(c.action) + '</div>';
+    var meta = [];
+    if (c.date) meta.push("commandée le " + c.date + " — " + age(c.jours));
+    if (c.bon) meta.push(c.bon);
+    if (c.poids > 0) meta.push(c.poids.toFixed(1) + " kg");
+    h += '<div class="meta">' + e(meta.join(" · ")) + '</div>';
+    return h + '</div>';
+  }
+
+  function ligneFacture(f) {
+    var tard = (f.retard || 0) > 0;
+    var h = '<div class="ligne ' + (tard ? "alerte" : "attente") + '">';
+    h += '<div class="haut"><span class="ref">' + e(f.reference) + '</span>';
+    h += '<span class="client">' + e(f.client) + '</span>';
+    h += '<span class="mont">' + eur(f.reste) + '</span></div>';
+    h += '<div class="action' + (tard ? ' alerte' : '') + '">' +
+         (tard ? "Échue depuis " + f.retard + " jour" + (f.retard > 1 ? "s" : "")
+               : "Pas encore échue") + '</div>';
+    var meta = [];
+    if (f.date) meta.push("facturée le " + f.date);
+    if (f.echeance) meta.push("échéance " + f.echeance);
+    if (f.reste !== f.total) meta.push("sur " + eur(f.total));
+    h += '<div class="meta">' + e(meta.join(" · ")) + '</div>';
+    return h + '</div>';
+  }
+
+  function bloc(titre, lignes, rendu, vide) {
+    var h = '<h2>' + e(titre) + '<span class="n">' + lignes.length + '</span></h2>';
+    if (!lignes.length) return h + '<p class="vide">' + e(vide) + '</p>';
+    for (var i = 0; i < lignes.length; i++) h += rendu(lignes[i]);
+    return h;
+  }
+
+  function dessiner(d) {
+    if (!d || d.pret === false) {
+      sortie.innerHTML = '<div class="souci">Lecture impossible : ' +
+        e((d && d.souci) || "réponse inattendue") + '</div>';
+      return;
+    }
+
+    var c = d.compteurs || {};
+    var h = '';
+
+    (d.soucis || []).forEach(function (s) {
+      h += '<div class="souci">' + e(s) + '</div>';
+    });
+
+    h += '<div class="tuiles">';
+    h += tuile(c.a_traiter || 0, "à traiter");
+    h += tuile(c.payee_non_livree || 0, "payées, pas livrées",
+               (c.payee_non_livree ? "urgent" : ""));
+    h += tuile(c.facture_non_livree || 0, "facturées, pas livrées");
+    h += tuile(c.expedition || 0, "à expédier");
+    h += tuile(c.facturation || 0, "à facturer");
+    h += tuile(eur(c.reste_a_encaisser), "à encaisser", "argent");
+    h += tuile(c.en_retard || 0, "factures échues", (c.en_retard ? "urgent" : ""));
+    h += '</div>';
+
+    var cmd = d.commandes || [];
+    var par = function (etape) {
+      return cmd.filter(function (x) { return x.etape === etape; });
+    };
+
+    h += bloc("Expédition", par("expedition"), ligneCommande,
+              "Rien n'attend de partir.");
+    h += bloc("Facturation", par("facturation"), ligneCommande,
+              "Tout ce qui est livré est facturé.");
+    h += bloc("Devis en attente", par("devis"), ligneCommande,
+              "Aucun devis en suspens.");
+    h += bloc("Factures non soldées", d.factures || [], ligneFacture,
+              "Tout est encaissé.");
+
+    /* Les brouillons sans commande ne sont pas du travail : ce sont des
+       restes. Repliés par défaut pour ne pas encombrer, mais comptés. */
+    var orph = d.bons_orphelins || [];
+    if (orph.length) {
+      h += '<h2>À nettoyer<span class="n">' + orph.length + '</span></h2>';
+      h += '<details><summary>' + orph.length +
+           ' bon(s) de livraison sans commande d\'origine — probablement ' +
+           'créés à vide puis abandonnés</summary><ul>';
+      orph.forEach(function (b) {
+        h += '<li>' + e(b.reference) + ' — ' + e(b.etat) +
+             (b.prevu_le ? ', prévu le ' + e(b.prevu_le) : '') +
+             (b.client ? ', ' + e(b.client) : '') +
+             (b.poids > 0 ? ', ' + b.poids.toFixed(1) + ' kg' : ', 0 kg') + '</li>';
+      });
+      h += '</ul></details>';
+    }
+
+    h += '<p class="pied">' + (c.total_commandes || 0) +
+         ' commandes ouvertes dans Odoo, dont ' + (c.a_traiter || 0) +
+         ' demandent quelque chose. Lu le ' +
+         e(new Date(d.genere_le).toLocaleString("fr-BE")) + '.</p>';
+
+    sortie.innerHTML = h;
+  }
+
+  function lire() {
+    sortie.innerHTML = '<p class="sous">Lecture d\'Odoo…</p>';
+    fetch("/api/suivi", { credentials: "same-origin" })
+      .then(function (r) {
+        if (r.status === 404) throw new Error("Connectez-vous avec le compte de NBD.");
+        return r.json();
+      })
+      .then(dessiner)
+      .catch(function (err) {
+        sortie.innerHTML = '<div class="souci">' + e(err.message || err) + '</div>';
+      });
+  }
+
+  document.getElementById("relire").addEventListener("click", lire);
+  lire();
+})();
+</script>
+</body>
+</html>
