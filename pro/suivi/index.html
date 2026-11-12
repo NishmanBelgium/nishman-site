@@ -109,6 +109,12 @@
     return (Math.round(Number(n || 0) * 100) / 100)
       .toLocaleString("fr-BE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
   }
+  /* Les dates arrivent d'Odoo en 2026-11-11 ; on lit des dates en français
+     sur cet écran, pas des identifiants techniques. */
+  function dateFr(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+    return m ? m[3] + "/" + m[2] + "/" + m[1] : String(iso || "");
+  }
   function age(j) {
     if (j === null || j === undefined) return "";
     if (j <= 0) return "aujourd'hui";
@@ -140,7 +146,7 @@
     h += '</div>';
     h += '<div class="action' + (c.alerte ? ' alerte' : '') + '">' + e(c.action) + '</div>';
     var meta = [];
-    if (c.date) meta.push("commandée le " + c.date + " — " + age(c.jours));
+    if (c.date) meta.push("commandée le " + dateFr(c.date) + " — " + age(c.jours));
     if (c.bon) meta.push(c.bon);
     if (c.poids > 0) meta.push(c.poids.toFixed(1) + " kg");
     h += '<div class="meta">' + e(meta.join(" · ")) + '</div>';
@@ -157,8 +163,8 @@
          (tard ? "Échue depuis " + f.retard + " jour" + (f.retard > 1 ? "s" : "")
                : "Pas encore échue") + '</div>';
     var meta = [];
-    if (f.date) meta.push("facturée le " + f.date);
-    if (f.echeance) meta.push("échéance " + f.echeance);
+    if (f.date) meta.push("facturée le " + dateFr(f.date));
+    if (f.echeance) meta.push("échéance " + dateFr(f.echeance));
     if (f.reste !== f.total) meta.push("sur " + eur(f.total));
     h += '<div class="meta">' + e(meta.join(" · ")) + '</div>';
     return h + '</div>';
@@ -223,7 +229,7 @@
            '</summary><ul>';
       rap.forEach(function (f) {
         h += '<li>' + e(f.reference) + ' — ' + e(f.client) + ' — ' + eur(f.reste) +
-             (f.date ? ' (facturée le ' + e(f.date) + ')' : '') + '</li>';
+             (f.date ? ' (facturée le ' + e(dateFr(f.date)) + ')' : '') + '</li>';
       });
       h += '</ul></details>';
     }
@@ -238,7 +244,7 @@
            'créés à vide puis abandonnés</summary><ul>';
       orph.forEach(function (b) {
         h += '<li>' + e(b.reference) + ' — ' + e(b.etat) +
-             (b.prevu_le ? ', prévu le ' + e(b.prevu_le) : '') +
+             (b.prevu_le ? ', prévu le ' + e(dateFr(b.prevu_le)) : '') +
              (b.client ? ', ' + e(b.client) : '') +
              (b.poids > 0 ? ', ' + b.poids.toFixed(1) + ' kg' : ', 0 kg') + '</li>';
       });
