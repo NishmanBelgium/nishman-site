@@ -15,7 +15,49 @@ import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
 import { donneesPortier, catalogue } from "../_tarifs.js";
 import { stockVendable } from "../_stock.js";
 
+/* ==========================================================================
+   RIEN NE SORT D'ICI SANS ÊTRE DIT.
+
+   Le 13 novembre 2026, cette page a rendu « Worker threw exception » —
+   l'erreur 1101 de Cloudflare — sur chaque appel, pendant des heures. Le
+   catalogue professionnel, ses 223 références, affichait « Tarifs
+   momentanément indisponibles » : le repli faisait son travail, mais la
+   maison ne vendait plus rien en ligne.
+
+   Et il a été IMPOSSIBLE de savoir pourquoi depuis l'extérieur. Chaque
+   dépendance était pourtant protégée — le portier, le filet Odoo, le
+   catalogue, le relevé de stock ont tous leur try/catch, et leurs erreurs
+   remontent en JSON lisible. Ce qui tombait tombait donc AILLEURS : entre
+   ces blocs, ou dans la plateforme elle-même (temps processeur dépassé,
+   mémoire, limite de sous-requêtes), là où aucun catch local ne regardait.
+   Une page 1101 ne dit rien : ni le message, ni la ligne.
+
+   D'où cette enveloppe. Elle ne change RIEN au chemin normal — le corps
+   est intact, déplacé tel quel dans `servir`. Elle garantit seulement
+   deux choses :
+
+     - LE CATALOGUE N'A PLUS JAMAIS DE 1101. Il reçoit un JSON, donc il
+       affiche son repli au lieu d'une page d'erreur Cloudflare.
+     - LA CAUSE EST ÉCRITE DANS LA RÉPONSE. `raison: "exception"` et le
+       message exact, consultable par n'importe qui depuis le navigateur,
+       sans journal ni tableau de bord.
+
+   Si malgré cette enveloppe l'appel rend encore 1101, l'information est
+   tout aussi précieuse : c'est qu'aucun code JavaScript ne s'exécute plus
+   au moment de la chute — la plateforme a tué l'isolat — et il faut
+   alléger la page, pas la corriger.
+   ========================================================================== */
 export async function onRequestGet(ctx) {
+  try {
+    return await servir(ctx);
+  } catch (e) {
+    const m = String((e && e.message) || e).slice(0, 300);
+    const pile = String((e && e.stack) || "").split("\n").slice(0, 4).join(" | ").slice(0, 400);
+    return json({ ok: false, raison: "exception", detail: m, pile });
+  }
+}
+
+async function servir(ctx) {
   const { request, env } = ctx;
   // Lié à son contexte : waitUntil déstructuré perd son destinataire et
   // lève à l'appel. L'enveloppe garde aussi le site debout sur une
