@@ -15,6 +15,24 @@ let cachePrix = null;
 let cachePrixExpire = 0;
 const PRIX_DUREE_MS = 60 * 1000;
 
+/* Le catalogue est-il DÉJÀ en mémoire dans cet isolat ?
+
+   products.json pèse 334 Ko. L'analyser coûte du temps processeur, et
+   Cloudflare en accorde très peu par requête. Tant que l'isolat est chaud,
+   `cacheCatalogue` répond sans rien coûter ; à froid, la première requête
+   paie l'analyse entière — et le 13 novembre 2026, elle la payait en plus
+   d'un relevé de stock Odoo, ce qui dépassait le budget et tuait l'isolat
+   avant qu'une seule ligne ne puisse répondre (voir l'enveloppe de
+   api/prix.js). La page rendait « Worker threw exception ».
+
+   Savoir si le catalogue est déjà là permet à l'appelant de choisir :
+   faire le travail maintenant parce qu'il est gratuit, ou le renvoyer en
+   arrière-plan pour servir tout de suite. On expose donc l'état du cache
+   plutôt que de laisser chacun deviner. */
+export function catalogueEnMemoire() {
+  return cacheCatalogue;
+}
+
 export async function catalogue(request) {
   if (cacheCatalogue) return cacheCatalogue;
   const r = await fetch(new URL("/assets/data/products.json", request.url));

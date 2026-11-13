@@ -12,7 +12,7 @@
    ========================================================================== */
 
 import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
-import { donneesPortier, catalogue } from "../_tarifs.js";
+import { donneesPortier, catalogue, catalogueEnMemoire } from "../_tarifs.js";
 import { stockVendable } from "../_stock.js";
 
 /* ==========================================================================
@@ -100,6 +100,75 @@ async function servir(ctx) {
    * est un repli qu'on découvre trop tard. */
   let limitesSource = "portier";
   let limitesSouci = "";
+
+  /* Une seule forme de réponse, construite au moment où on la rend.
+     Les trois variables ci-dessus sont lues à l'appel, pas à la
+     définition : le départ anticipé plus bas et la fin normale rendent
+     donc exactement la même chose, sans qu'on ait à tenir deux copies du
+     même objet à jour. */
+  const reponse = () => json({
+    ok: true,
+    // Le nom affiché est celui du compte, pas celui rattaché au code
+    // interne : c'est le client qui regarde ses prix, pas NBD. Un
+    // visiteur anonyme n'a évidemment ni l'un ni l'autre.
+    connecte: !!compte,
+    prices: data.prices,
+    limits,
+    // « odoo » = le stock réel ; « portier » = des limites approximatives,
+    // et limites_souci dit ce qui a empêché les vraies.
+    limites_source: limitesSource,
+    limites_souci: limitesSouci,
+    // D'où viennent les PRIX. « portier » = la table du script Google, à
+    // jour. « secours » = la dernière table connue, resservie parce que le
+    // portier se taisait, avec son âge en secondes. Un repli muet serait
+    // un repli qu'on découvre trop tard — voir la note dans _tarifs.js.
+    prix_source: data.source || "portier",
+    prix_age_s: data.age_s || 0,
+    societe: compte ? compte.salon : null,
+    email: compte ? compte.email : null,
+    // Le pays décide du seuil de port affiché dans le panier.
+    pays: compte ? compte.pays : null,
+  }, 200, cookie ? { "set-cookie": cookie } : {});
+
+  /* ====================================================================
+     LES LIMITES NE DOIVENT JAMAIS COÛTER LES PRIX.
+
+     Ce qui suit — analyser les 334 Ko de products.json, puis relever le
+     stock de 223 références dans Odoo — ne sert QU'À calculer les
+     limites. Les prix, eux, sont déjà là, au-dessus.
+
+     Le 13 novembre 2026, ce bloc a mis le catalogue professionnel à
+     l'arrêt pendant des heures. Sur un isolat froid, ce travail dépasse
+     le temps processeur accordé par Cloudflare : la plateforme tue
+     l'isolat, la page rend « Worker threw exception », et le visiteur ne
+     voit AUCUN prix. Les limites, qui ne sont qu'un confort d'affichage,
+     emportaient ainsi la seule chose qui compte vraiment.
+
+     Le symptôme était sournois : dès qu'une requête passait, elle
+     remplissait les caches et les suivantes répondaient en 80 ms. La
+     panne se résorbait donc toute seule sous trafic, et revenait dès que
+     les isolats refroidissaient. Trois jours de coupures intermittentes
+     avant de devenir permanente.
+
+     D'où la règle posée ici : on ne fait ce travail en ligne QUE s'il est
+     déjà gratuit, c'est-à-dire si le catalogue est en mémoire. Sinon on
+     sert immédiatement les limites du portier — le repli documenté plus
+     haut, que le catalogue sait déjà afficher — et on préchauffe en
+     arrière-plan pour que la requête suivante ait les vraies.
+
+     Autrement dit : une page un peu moins précise pendant une requête,
+     plutôt qu'une page morte pendant des heures. */
+  if (!catalogueEnMemoire()) {
+    limitesSouci = "démarrage à froid : limites réelles en préparation";
+    attendre((async () => {
+      try {
+        const p = await catalogue(request);
+        await stockVendable(env, (p || []).map((x) => x && x.ean), { attendre: attendre });
+      } catch (e) { /* la requête suivante réessaiera */ }
+    })());
+    return reponse();
+  }
+
   try {
     const produits = await catalogue(request);
     const dispo = await stockVendable(env, (produits || []).map((p) => p && p.ean),
@@ -126,29 +195,7 @@ async function servir(ctx) {
     limitesSouci = String((e && e.message) || e).slice(0, 200);
   }
 
-  // Le nom affiché est celui du compte, pas celui rattaché au code interne :
-  // c'est le client qui regarde ses prix, pas NBD. Un visiteur anonyme n'a
-  // évidemment ni l'un ni l'autre.
-  return json({
-    ok: true,
-    connecte: !!compte,
-    prices: data.prices,
-    limits,
-    // « odoo » = le stock réel ; « portier » = des limites approximatives,
-    // et limites_souci dit ce qui a empêché les vraies.
-    limites_source: limitesSource,
-    limites_souci: limitesSouci,
-    // D'où viennent les PRIX. « portier » = la table du script Google, à
-    // jour. « secours » = la dernière table connue, resservie parce que le
-    // portier se taisait, avec son âge en secondes. Un repli muet serait
-    // un repli qu'on découvre trop tard — voir la note dans _tarifs.js.
-    prix_source: data.source || "portier",
-    prix_age_s: data.age_s || 0,
-    societe: compte ? compte.salon : null,
-    email: compte ? compte.email : null,
-    // Le pays décide du seuil de port affiché dans le panier.
-    pays: compte ? compte.pays : null,
-  }, 200, cookie ? { "set-cookie": cookie } : {});
+  return reponse();
 }
 
 export async function onRequest() {
