@@ -229,6 +229,25 @@ async function lireSecours(db, limiteMs) {
   }
 }
 
+/* LE DERNIER RECOURS DE L'AFFICHAGE — sans limite d'âge.
+
+   Quand tout le reste a échoué — le portier muet, Odoo injoignable, la
+   copie de secours trop vieille même pour les 36 heures de
+   l'affichage — il reste ce choix : montrer une table ancienne, ou ne
+   montrer aucun prix.
+
+   Ne rien montrer ferme la boutique. Montrer une table de l'avant-veille
+   laisse le catalogue vivant, et la réponse annonce son âge en secondes
+   pour que personne ne s'y trompe. Un visiteur qui commande malgré tout
+   sera de toute façon servi au prix réel : commander et payer
+   n'empruntent jamais ce chemin et interrogent toujours le portier.
+
+   Entre une vitrine un peu datée et une vitrine éteinte, on choisit la
+   vitrine. Ne lève jamais. */
+export async function secoursAffichage(db) {
+  return await lireSecours(db, Number.MAX_SAFE_INTEGER);
+}
+
 /** Ce que le diagnostic affiche sur le filet de secours. Ne lève jamais. */
 export async function etatSecoursPrix(db) {
   const s = await lireSecours(db);

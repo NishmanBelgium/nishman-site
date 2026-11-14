@@ -12,7 +12,7 @@
    ========================================================================== */
 
 import { json, compteConnecte, prolongerSiBesoin } from "../_commun.js";
-import { donneesPortier, catalogue, catalogueEnMemoire } from "../_tarifs.js";
+import { donneesPortier, catalogue, catalogueEnMemoire, secoursAffichage } from "../_tarifs.js";
 import { stockVendable } from "../_stock.js";
 
 /* ==========================================================================
@@ -83,8 +83,28 @@ async function servir(ctx) {
   // toujours l'autorité. Voir la note dans _tarifs.js.
   try { data = await donneesPortier(env, { secoursDabord: true, attendre: attendre }); }
   catch (e) {
-    const m = String((e && e.message) || "");
-    return json({ ok: false, raison: m.indexOf("code") >= 0 ? "code" : "portier" });
+    /* Tout a échoué : le portier se tait ET la copie de secours des 36
+       heures est trop vieille. Avant de rendre une page sans prix — ce
+       qui ferme la boutique — on tente la toute dernière table connue,
+       quel que soit son âge. Voir la note dans _tarifs.js : entre une
+       vitrine datée et une vitrine éteinte, on choisit la vitrine.
+
+       On relance quand même la vraie recherche derrière, pour que la
+       requête suivante reparte sur du neuf. */
+    try {
+      const vieux = await secoursAffichage(env.DB);
+      if (vieux) {
+        attendre((async () => {
+          try { await donneesPortier(env); } catch (e2) { /* la suivante réessaiera */ }
+        })());
+        data = { prices: vieux.prices, limits: vieux.limits, source: "secours", age_s: vieux.age_s };
+      }
+    } catch (e2) { /* même ça a échoué : on passe au message honnête */ }
+
+    if (!data) {
+      const m = String((e && e.message) || "");
+      return json({ ok: false, raison: m.indexOf("code") >= 0 ? "code" : "portier" });
+    }
   }
 
   // Les limites affichées doivent être celles que le serveur appliquera au
