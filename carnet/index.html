@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Carnet Nishman</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#101010" />
+<link rel="manifest" href="/carnet/manifest.json" />
+<link rel="apple-touch-icon" href="/assets/pwa/icon-192.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&family=Manrope:wght@400;500;600;700&display=swap" />
+<style>
+/* --------------------------------------------------------------------------
+   Le carnet s'habille seul : aucune feuille du site n'est chargée ici.
+   C'est voulu. Le jour où la boutique change de style, le carnet ne bouge
+   pas, et une erreur de style côté boutique ne peut pas rendre le carnet
+   illisible au milieu d'une tournée.
+
+   Tout est pensé pour un pouce, debout, dans une rue : cibles de 44 px au
+   minimum, contrastes forts, et jamais deux actions importantes côte à
+   côte.
+   -------------------------------------------------------------------------- */
+:root{
+  --noir:#101010; --orange:#ED9B24; --blanc:#fff; --gris:#8E8A8B;
+  --fond:#171717; --bord:#2a2a2a;
+  --vert:#2FAE6A; --bleu:#4E8BD6; --rouge:#C8553D;
+  --sr:env(safe-area-inset-right); --sl:env(safe-area-inset-left);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--noir); color:var(--blanc);
+  font:16px/1.45 Manrope,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding-left:var(--sl); padding-right:var(--sr);
+  overscroll-behavior-y:contain;
+}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+h1,h2,h3{font-family:Archivo,Impact,sans-serif;margin:0}
+.cache{display:none!important}
+
+/* ---- barre du haut ---- */
+header{
+  position:sticky; top:0; z-index:30; background:var(--noir);
+  border-bottom:1px solid var(--bord); padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;
+  display:flex; align-items:center; gap:10px;
+}
+header .marque{font-family:Archivo;font-weight:900;font-style:italic;font-size:17px;letter-spacing:-.02em}
+header .marque em{color:var(--orange);font-style:italic}
+header .secteur{flex:1;min-width:0;font-size:12px;color:var(--gris);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pastille{width:9px;height:9px;border-radius:50%;background:var(--vert);flex:0 0 auto}
+.pastille.att{background:var(--orange)}
+.pastille.ko{background:var(--rouge)}
+.menu-b{width:40px;height:40px;display:grid;place-items:center;font-size:20px;color:var(--gris)}
+
+/* ---- jours ---- */
+.jours{display:flex;gap:8px;overflow-x:auto;padding:12px 14px;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch}
+.jours::-webkit-scrollbar{display:none}
+.jours button{
+  flex:0 0 auto;border:1px solid var(--bord);border-radius:999px;padding:9px 14px;
+  font-size:13px;font-weight:600;color:var(--gris);background:var(--fond);min-height:40px
+}
+.jours button[aria-current="true"]{background:var(--orange);color:#101010;border-color:var(--orange)}
+.jours button .pt{opacity:.75;font-weight:500}
+
+/* ---- entête de journée ---- */
+.jour-tete{padding:2px 14px 12px}
+.jour-tete h2{font-size:21px;font-weight:900;font-style:italic;text-transform:uppercase;
+  letter-spacing:-.03em;line-height:1.05}
+.jour-tete .meta{font-size:12.5px;color:var(--gris);margin-top:4px}
+.barre{height:4px;border-radius:4px;background:#262626;margin-top:10px;overflow:hidden}
+.barre i{display:block;height:100%;background:var(--orange);width:0;transition:width .3s}
+.jour-tete .lancer{
+  display:block;width:100%;margin-top:12px;background:var(--orange);color:#101010;
+  border-radius:12px;padding:13px;font-weight:700;font-size:15px;text-align:center;
+  text-decoration:none;min-height:48px
+}
+
+/* ---- filtres ---- */
+.filtres{display:flex;gap:8px;padding:0 14px 10px}
+.filtres button{flex:1;border:1px solid var(--bord);border-radius:10px;padding:9px;
+  font-size:13px;font-weight:600;color:var(--gris);min-height:40px}
+.filtres button[aria-pressed="true"]{color:var(--blanc);border-color:var(--gris);background:var(--fond)}
+
+/* ---- liste ---- */
+.liste{padding:0 14px 120px;display:flex;flex-direction:column;gap:8px}
+.carte{
+  background:var(--fond);border:1px solid var(--bord);border-left:3px solid #333;
+  border-radius:12px;padding:12px 13px;display:flex;gap:11px;align-items:flex-start;
+  text-align:left;width:100%
+}
+.carte[data-s="cm"]{border-left-color:var(--vert)}
+.carte[data-s="vu"]{border-left-color:var(--orange)}
+.carte[data-s="rl"]{border-left-color:var(--bleu)}
+.carte[data-s="no"]{border-left-color:var(--gris)}
+.carte[data-s="fe"]{border-left-color:#4a3a3a;opacity:.55}
+.carte .num{flex:0 0 26px;height:26px;border-radius:7px;background:#242424;color:var(--gris);
+  display:grid;place-items:center;font-size:12px;font-weight:700;font-family:Archivo}
+.carte .corps{flex:1;min-width:0}
+.carte .nom{font-weight:700;font-size:15px;line-height:1.25}
+.carte .adr{font-size:13px;color:var(--gris);margin-top:2px}
+.carte .etiq{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.etiq span{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  border:1px solid var(--bord);border-radius:5px;padding:2px 6px;color:var(--gris)}
+.etiq .cli{color:var(--orange);border-color:#4a3410}
+.etiq .dor{color:var(--bleu);border-color:#24384f}
+.etiq .st{color:#101010;border:0;padding:3px 7px}
+.st.cm{background:var(--vert)} .st.vu{background:var(--orange)}
+.st.rl{background:var(--bleu);color:#fff} .st.no{background:#3a3a3a;color:var(--gris)}
+.st.fe{background:#3a2e2e;color:var(--gris)}
+.carte .note{font-size:12.5px;color:#cfcfcf;margin-top:7px;border-left:2px solid var(--bord);
+  padding-left:8px;white-space:pre-wrap;overflow-wrap:anywhere}
+.carte .sign{font-size:11px;color:#6e6a6b;margin-top:5px}
+.vide{color:var(--gris);text-align:center;padding:40px 20px;font-size:14px}
+
+/* ---- barre du bas ---- */
+.bas{position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(16,16,16,.96);
+  backdrop-filter:blur(8px);border-top:1px solid var(--bord);
+  padding:10px 14px calc(env(safe-area-inset-bottom) + 10px);display:flex;gap:9px}
+.bas button{flex:1;border:1px solid var(--bord);border-radius:12px;padding:12px;font-weight:700;
+  font-size:14px;min-height:48px;background:var(--fond)}
+.bas button.primaire{background:var(--orange);color:#101010;border-color:var(--orange)}
+
+/* ---- panneaux ---- */
+.voile{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.6);display:none}
+.voile.ouvert{display:block}
+.feuille{position:fixed;left:0;right:0;bottom:0;z-index:41;background:#141414;
+  border-top:1px solid var(--bord);border-radius:18px 18px 0 0;max-height:92vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .22s ease-out;
+  padding:16px 16px calc(env(safe-area-inset-bottom) + 18px)}
+.feuille.ouvert{transform:translateY(0)}
+.feuille .poignee{width:40px;height:4px;border-radius:4px;background:#333;margin:0 auto 14px}
+.feuille h3{font-size:19px;font-weight:900;font-style:italic;text-transform:uppercase;
+  letter-spacing:-.02em;line-height:1.1}
+.feuille .sous{font-size:13.5px;color:var(--gris);margin-top:5px}
+.rapide{display:flex;gap:9px;margin:14px 0}
+.rapide a,.rapide button{flex:1;border:1px solid var(--bord);border-radius:11px;padding:11px;
+  text-align:center;font-size:13px;font-weight:600;text-decoration:none;color:var(--blanc);
+  background:var(--fond);min-height:46px;display:grid;place-items:center}
+.statuts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:4px 0 14px}
+.statuts button{border:1px solid var(--bord);border-radius:11px;padding:12px;font-size:13.5px;
+  font-weight:600;background:var(--fond);min-height:48px;text-align:left}
+.statuts button[aria-pressed="true"]{background:var(--orange);color:#101010;border-color:var(--orange)}
+label.ch{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;color:var(--gris);
+  text-transform:uppercase;margin:14px 0 6px}
+textarea,input[type=text],input[type=tel],input[type=date],select{
+  width:100%;background:#1c1c1c;border:1px solid var(--bord);border-radius:11px;padding:12px;
+  font-size:16px;min-height:48px}
+textarea{min-height:110px;resize:vertical;line-height:1.4}
+.feuille .valider{width:100%;background:var(--orange);color:#101010;border-radius:12px;padding:14px;
+  font-weight:800;font-size:15.5px;margin-top:16px;min-height:52px}
+.feuille .secondaire{width:100%;border:1px solid var(--bord);border-radius:12px;padding:12px;
+  font-size:14px;color:var(--gris);margin-top:9px;min-height:48px;background:none}
+.histo{margin-top:16px;border-top:1px solid var(--bord);padding-top:12px}
+.histo p{font-size:12.5px;color:var(--gris);margin:0 0 6px}
+
+/* ---- écran de code ---- */
+#porte{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:24px}
+#porte .boite{width:100%;max-width:340px;text-align:center}
+#porte h1{font-size:30px;font-weight:900;font-style:italic;text-transform:uppercase;
+  letter-spacing:-.04em;line-height:1}
+#porte h1 em{color:var(--orange);font-style:italic}
+#porte p{color:var(--gris);font-size:14px;margin:12px 0 26px}
+#porte input{text-align:center;font-size:30px;letter-spacing:.3em;font-weight:700;
+  font-family:Archivo;padding:16px;min-height:64px}
+#porte button{width:100%;background:var(--orange);color:#101010;border-radius:12px;padding:15px;
+  font-weight:800;font-size:16px;margin-top:14px;min-height:54px}
+.msg{font-size:13.5px;margin-top:14px;min-height:20px}
+.msg.ko{color:var(--rouge)} .msg.ok{color:var(--vert)}
+.pied{font-size:11px;color:#5a5758;margin-top:28px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ la porte ════════════════════════ -->
+<div id="porte">
+  <div class="boite">
+    <h1>Carnet <em>Nishman</em></h1>
+    <p>Entre ton code à six chiffres.<br />Il te reconnaît et signe tes notes.</p>
+    <form id="f-code" novalidate>
+      <input id="code" type="text" inputmode="numeric" autocomplete="one-time-code"
+             pattern="[0-9]*" maxlength="6" placeholder="······" aria-label="Code" />
+      <button type="submit" id="b-entrer">Ouvrir le carnet</button>
+    </form>
+    <div class="msg" id="msg-porte" role="status"></div>
+    <p class="pied">Réservé à l'équipe NBD Distribution.<br />Les données sont privées et ne sortent pas d'ici.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════ le carnet ════════════════════════ -->
+<div id="app" class="cache">
+  <header>
+    <span class="marque">CAR<em>NET</em></span>
+    <span class="secteur" id="h-secteur"></span>
+    <span class="pastille" id="h-etat" title="Synchronisation"></span>
+    <button class="menu-b" id="b-menu" aria-label="Menu">⋯</button>
+  </header>
+
+  <nav class="jours" id="jours" aria-label="Journées"></nav>
+
+  <div class="jour-tete" id="jour-tete"></div>
+
+  <div class="filtres">
+    <button id="f-tout" aria-pressed="true">Tous</button>
+    <button id="f-faire" aria-pressed="false">À faire</button>
+    <button id="f-relance" aria-pressed="false">Relances</button>
+  </div>
+
+  <div class="liste" id="liste"></div>
+
+  <div class="bas">
+    <button id="b-ajouter" class="primaire">+ Salon</button>
+    <button id="b-sync">Actualiser</button>
+  </div>
+</div>
+
+<div class="voile" id="voile"></div>
+
+<!-- fiche d'un salon -->
+<section class="feuille" id="fiche" aria-hidden="true">
+  <div class="poignee"></div>
+  <h3 id="fi-nom"></h3>
+  <div class="sous" id="fi-sous"></div>
+  <div class="rapide">
+    <a id="fi-tel" href="#">Appeler</a>
+    <a id="fi-maps" href="#" target="_blank" rel="noopener">Itinéraire</a>
+  </div>
+  <label class="ch">Ce qui s'est passé</label>
+  <div class="statuts" id="fi-statuts">
+    <button data-v="cm">Commande</button>
+    <button data-v="vu">Vu, à suivre</button>
+    <button data-v="rl">À relancer</button>
+    <button data-v="no">Pas intéressé</button>
+    <button data-v="fe">Fermé / parti</button>
+    <button data-v="">Rien encore</button>
+  </div>
+  <label class="ch" for="fi-note">Note — visible par toute l'équipe</label>
+  <textarea id="fi-note" placeholder="Qui décide, ce qu'il utilise, ce qu'il a pris, quand repasser…"></textarea>
+  <label class="ch" for="fi-relance">Repasser le</label>
+  <input type="date" id="fi-relance" />
+  <button class="valider" id="fi-ok">Enregistrer</button>
+  <button class="secondaire" id="fi-suppr">Retirer de la liste</button>
+  <div class="histo cache" id="fi-histo"></div>
+</section>
+
+<!-- ajout d'un salon -->
+<section class="feuille" id="ajout" aria-hidden="true">
+  <div class="poignee"></div>
+  <h3>Ajouter un salon</h3>
+  <div class="sous">Il apparaît aussitôt chez tout le monde.</div>
+  <label class="ch" for="aj-nom">Nom du salon</label>
+  <input type="text" id="aj-nom" autocomplete="off" />
+  <label class="ch" for="aj-adr">Adresse</label>
+  <input type="text" id="aj-adr" autocomplete="off" />
+  <label class="ch" for="aj-cp">Code postal et ville</label>
+  <div style="display:flex;gap:9px">
+    <input type="text" id="aj-cp" inputmode="numeric" style="flex:0 0 96px" />
+    <input type="text" id="aj-ville" style="flex:1" />
+  </div>
+  <label class="ch" for="aj-tel">Téléphone</label>
+  <input type="tel" id="aj-tel" autocomplete="off" />
+  <button class="valider" id="aj-ok">Ajouter</button>
+  <button class="secondaire" id="aj-non">Annuler</button>
+</section>
+
+<!-- menu -->
+<section class="feuille" id="menu" aria-hidden="true">
+  <div class="poignee"></div>
+  <h3 id="me-nom"></h3>
+  <div class="sous" id="me-sous"></div>
+  <label class="ch" for="me-secteur">Secteur affiché</label>
+  <select id="me-secteur"></select>
+  <button class="secondaire" id="me-fermer">Fermer</button>
+  <button class="secondaire" id="me-sortir">Se déconnecter</button>
+  <div class="histo">
+    <p id="me-maj"></p>
+    <p>Carnet interne NBD Distribution · <span id="me-v"></span></p>
+  </div>
+</section>
+
+<script>
+/* ==========================================================================
+   LE CARNET, CÔTÉ TÉLÉPHONE
+
+   Trois principes, parce qu'un commercial n'a pas le temps d'avoir un
+   problème technique :
+
+   1. RIEN NE SE PERD. Une note enregistrée part tout de suite si le
+      réseau est là, et sinon attend dans une file sur le téléphone, qui
+      se vide dès que le réseau revient. L'écran affiche la note dans les
+      deux cas : ce qui est écrit est écrit.
+
+   2. LA PAGE S'OUVRE TOUJOURS. Les tournées et le dernier état connu
+      sont gardés sur le téléphone. Au premier affichage, on dessine avec
+      ça, puis on va chercher le frais. Pas d'écran d'attente.
+
+   3. ON NE S'ÉCRASE PAS ENTRE COLLÈGUES. Chaque note porte son auteur et
+      son heure. La dernière écrite gagne sur le salon qu'elle concerne,
+      et l'historique garde les précédentes côté serveur.
+   ========================================================================== */
+"use strict";
+const API = "/api/carnet";
+const V = "1.0";
+const CLE_CAT = "carnet.cat.";
+const CLE_ETAT = "carnet.etat";
+const CLE_FILE = "carnet.file";
+const CLE_SECT = "carnet.secteur";
+const DEPOT = "Avenue Léopold III 21, 7134 Binche";
+
+const LIB = { cm:"Commande", vu:"Vu", rl:"Relance", no:"Non", fe:"Fermé" };
+
+let etat = { moi:null, membres:{}, visites:{}, ajouts:[] };
+let cat = null;              // le secteur affiché
+let noms = {};               // id -> salon connu (toutes sources chargées)
+let jour = 0;
+let filtre = "tout";
+let courant = null;          // le salon ouvert dans la fiche
+let minuteur = null;
+
+/* ---------- petits outils ---------- */
+const $ = (id) => document.getElementById(id);
+function el(balise, classe, texte) {
+  const n = document.createElement(balise);
+  if (classe) n.className = classe;
+  if (texte != null) n.textContent = texte;
+  return n;
+}
+function lire(cle, defaut) {
+  try { const v = localStorage.getItem(cle); return v ? JSON.parse(v) : defaut; }
+  catch (e) { return defaut; }
+}
+function ecrire(cle, valeur) {
+  try { localStorage.setItem(cle, JSON.stringify(valeur)); } catch (e) {}
+}
+function aujourdhui() { return new Date().toISOString().slice(0, 10); }
+function jolieDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return "";
+  return d.toLocaleDateString("fr-BE", { day:"numeric", month:"short" })
+    + " " + d.toLocaleTimeString("fr-BE", { hour:"2-digit", minute:"2-digit" });
+}
+function pastille(classe, titre) {
+  const p = $("h-etat");
+  p.className = "pastille" + (classe ? " " + classe : "");
+  p.title = titre || "";
+}
+
+/* ---------- le réseau ---------- */
+async function poster(corps) {
+  const r = await fetch(API, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(corps),
+  });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401 && d && d.raison === "session") { porte("Session expirée. Entre ton code."); throw new Error("session"); }
+  return { ok: r.ok && d && d.ok !== false, d, statut: r.status };
+}
+
+/* ---------- la file d'attente ---------- */
+function enfiler(action) {
+  const f = lire(CLE_FILE, []);
+  f.push(action);
+  ecrire(CLE_FILE, f);
+  pastille("att", "En attente de réseau");
+}
+async function viderFile() {
+  let f = lire(CLE_FILE, []);
+  if (!f.length) return true;
+  while (f.length) {
+    try {
+      const r = await poster(f[0]);
+      /* Un refus du serveur (400) ne repartira jamais : on jette, sinon la
+       * file se bloque pour toujours sur une ligne cassée. */
+      if (!r.ok && r.statut >= 500) return false;
+    } catch (e) { return false; }
+    f.shift();
+    ecrire(CLE_FILE, f);
+  }
+  return true;
+}
+
+/* ---------- l'état partagé ---------- */
+function indexer(d) {
+  const v = {};
+  for (const l of d.visites || []) v[l.salon] = l;
+  etat = { moi:d.moi, membres:d.membres || {}, visites:v, ajouts:d.ajouts || [], heure:d.heure };
+  for (const a of etat.ajouts) {
+    noms[a.id] = { i:a.id, n:a.nom, a:a.adresse, cp:a.cp, v:a.ville, t:a.tel,
+                   q:[a.adresse, a.cp, a.ville].filter(Boolean).join(", "), ajout:true, par:a.par };
+  }
+}
+async function synchro(silencieux) {
+  if (!silencieux) pastille("att", "Synchronisation…");
+  const fileOk = await viderFile();
+  try {
+    const r = await fetch(API + "?partie=etat", { headers: { accept: "application/json" } });
+    if (r.status === 401) { porte("Entre ton code pour ouvrir le carnet."); return; }
+    const d = await r.json();
+    if (!d.ok) throw new Error("etat");
+    indexer(d);
+    ecrire(CLE_ETAT, d);
+    pastille(fileOk ? "" : "att", fileOk ? "À jour" : "Notes en attente");
+    dessiner();
+  } catch (e) {
+    pastille("ko", "Hors réseau — le carnet marche quand même");
+  }
+}
+
+async function chargerSecteur(id, forcer) {
+  const cache = lire(CLE_CAT + id, null);
+  if (cache && !forcer) { cat = cache; indexerCat(cache); dessiner(); }
+  try {
+    const r = await fetch(API + "?partie=catalogue&secteur=" + encodeURIComponent(id));
+    const d = await r.json();
+    if (d.ok && d.secteur) {
+      cat = d.secteur;
+      ecrire(CLE_CAT + id, d.secteur);
+      indexerCat(d.secteur);
+      dessiner();
+    }
+  } catch (e) {}
+}
+function indexerCat(c) {
+  for (const j of c.jours || []) for (const s of j.s || []) noms[s.i] = s;
+}
+
+/* ---------- la porte ---------- */
+function porte(message) {
+  $("app").classList.add("cache");
+  $("porte").style.display = "grid";
+  if (message) { $("msg-porte").textContent = message; $("msg-porte").className = "msg ko"; }
+  if (minuteur) { clearInterval(minuteur); minuteur = null; }
+}
+function entrer() {
+  $("porte").style.display = "none";
+  $("app").classList.remove("cache");
+  if (!minuteur) minuteur = setInterval(() => { if (!document.hidden) synchro(true); }, 30000);
+}
+
+$("f-code").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const code = ($("code").value || "").replace(/\D/g, "");
+  const m = $("msg-porte");
+  if (code.length < 4) { m.textContent = "Il faut six chiffres."; m.className = "msg ko"; return; }
+  $("b-entrer").disabled = true;
+  m.textContent = "Un instant…"; m.className = "msg";
+  try {
+    const r = await poster({ action:"connexion", code });
+    if (!r.ok) { m.textContent = "Ce code ne marche pas. Demande-le à Dilhan."; m.className = "msg ko"; }
+    else {
+      m.textContent = "Bonjour " + (r.d.nom || "") + " !"; m.className = "msg ok";
+      $("code").value = "";
+      entrer(); await demarrer();
+    }
+  } catch (err) {
+    m.textContent = "Pas de réseau. Réessaie dans un instant."; m.className = "msg ko";
+  }
+  $("b-entrer").disabled = false;
+});
+
+/* ---------- le dessin ---------- */
+function journees() {
+  const j = (cat && cat.jours) ? cat.jours.slice() : [];
+  /* Les salons ajoutés sur la route forment une journée de plus, à la fin :
+   * ils n'ont pas de tournée calculée, mais ils ne doivent pas disparaître. */
+  if (etat.ajouts.length) {
+    j.push({ t:["Ajoutés par l'équipe"], km:null, ajouts:true,
+             s: etat.ajouts.map((a) => noms[a.id]).filter(Boolean) });
+  }
+  return j;
+}
+
+function dessiner() {
+  if (!etat.moi) return;
+  $("h-secteur").textContent = cat ? (cat.titre || cat.id) : "aucun secteur";
+
+  const js = journees();
+  if (jour >= js.length) jour = 0;
+
+  /* onglets des journées */
+  const nav = $("jours");
+  nav.textContent = "";
+  js.forEach((j, i) => {
+    const faits = (j.s || []).filter((s) => etat.visites[s.i] && etat.visites[s.i].statut).length;
+    const b = el("button");
+    b.setAttribute("aria-current", i === jour ? "true" : "false");
+    b.appendChild(el("span", null, j.ajouts ? "Ajouts" : "J" + (i + 1)));
+    b.appendChild(el("span", "pt", "  " + faits + "/" + (j.s || []).length));
+    b.addEventListener("click", () => { jour = i; dessiner(); window.scrollTo(0, 0); });
+    nav.appendChild(b);
+  });
+
+  const j = js[jour] || { t:[], s:[] };
+  const stops = j.s || [];
+  const faits = stops.filter((s) => etat.visites[s.i] && etat.visites[s.i].statut).length;
+
+  /* entête */
+  const tete = $("jour-tete");
+  tete.textContent = "";
+  tete.appendChild(el("h2", null, (j.t || []).join(" · ") || "Journée"));
+  const meta = [stops.length + " arrêts", faits + " faits"];
+  if (j.km) meta.push(j.km + " km");
+  tete.appendChild(el("div", "meta", meta.join(" · ")));
+  const barre = el("div", "barre");
+  const i = el("i"); i.style.width = (stops.length ? Math.round(faits * 100 / stops.length) : 0) + "%";
+  barre.appendChild(i); tete.appendChild(barre);
+  if (stops.length) {
+    const a = el("a", "lancer", "Lancer la journée dans Maps");
+    a.href = lienJournee(stops);
+    a.target = "_blank"; a.rel = "noopener";
+    tete.appendChild(a);
+  }
+
+  /* liste */
+  const liste = $("liste");
+  liste.textContent = "";
+  let vus = stops;
+  if (filtre === "faire") vus = stops.filter((s) => !(etat.visites[s.i] && etat.visites[s.i].statut));
+  if (filtre === "relance") {
+    vus = Object.keys(etat.visites)
+      .filter((id) => { const v = etat.visites[id]; return v.relance && v.relance <= aujourdhui(); })
+      .map((id) => noms[id]).filter(Boolean);
+  }
+  if (!vus.length) {
+    liste.appendChild(el("div", "vide",
+      filtre === "relance" ? "Aucune relance due aujourd'hui."
+      : filtre === "faire" ? "Tout est fait sur cette journée." : "Rien à afficher."));
+    return;
+  }
+  vus.forEach((s, n) => liste.appendChild(carte(s, filtre === "relance" ? null : n + 1)));
+}
+
+function carte(s, n) {
+  const v = etat.visites[s.i] || {};
+  const b = el("button", "carte");
+  b.dataset.s = v.statut || "";
+  b.appendChild(el("div", "num", n == null ? "·" : String(n)));
+  const c = el("div", "corps");
+  c.appendChild(el("div", "nom", s.n));
+  c.appendChild(el("div", "adr", [s.a, s.cp, s.v].filter(Boolean).join(", ")));
+  const e = el("div", "etiq");
+  if (v.statut) { const t = el("span", "st " + v.statut, LIB[v.statut] || v.statut); e.appendChild(t); }
+  if (s.c) e.appendChild(el("span", "cli", s.ca ? "Client · " + Math.round(s.ca) + " €" : "Client"));
+  if (s.r) e.appendChild(el("span", "dor", "Endormi"));
+  if (s.av) e.appendChild(el("span", null, s.av + " avis"));
+  if (s.ajout) e.appendChild(el("span", null, "Ajouté"));
+  if (v.relance) e.appendChild(el("span", null, "→ " + v.relance.split("-").reverse().slice(0, 2).join("/")));
+  if (e.childNodes.length) c.appendChild(e);
+  if (v.note) c.appendChild(el("div", "note", v.note));
+  if (v.le) c.appendChild(el("div", "sign", (etat.membres[v.par] || "?") + " · " + jolieDate(v.le)));
+  b.appendChild(c);
+  b.addEventListener("click", () => ouvrirFiche(s));
+  return b;
+}
+
+function lienJournee(stops) {
+  /* Maps n'accepte qu'une poignée d'étapes par lien : on prend les neuf
+   * premières à partir du dépôt, et la journée se relance au besoin. */
+  const pts = [DEPOT].concat(stops.slice(0, 9).map((s) => s.q || [s.a, s.cp, s.v].filter(Boolean).join(", ")));
+  return "https://www.google.com/maps/dir/" + pts.map(encodeURIComponent).join("/");
+}
+
+/* ---------- les panneaux ---------- */
+function ouvrir(idFeuille) {
+  $("voile").classList.add("ouvert");
+  const f = $(idFeuille);
+  f.setAttribute("aria-hidden", "false");
+  requestAnimationFrame(() => f.classList.add("ouvert"));
+}
+function fermerTout() {
+  $("voile").classList.remove("ouvert");
+  for (const id of ["fiche", "ajout", "menu"]) {
+    $(id).classList.remove("ouvert");
+    $(id).setAttribute("aria-hidden", "true");
+  }
+}
+$("voile").addEventListener("click", fermerTout);
+
+function ouvrirFiche(s) {
+  courant = s;
+  const v = etat.visites[s.i] || {};
+  $("fi-nom").textContent = s.n;
+  $("fi-sous").textContent = [s.a, s.cp + " " + (s.v || "")].filter(Boolean).join(", ");
+  const tel = (s.t || "").replace(/\s/g, "");
+  const a = $("fi-tel");
+  if (tel) { a.href = "tel:" + tel; a.textContent = "Appeler"; a.style.opacity = 1; }
+  else { a.href = "#"; a.textContent = "Pas de numéro"; a.style.opacity = .4; }
+  $("fi-maps").href = "https://www.google.com/maps/dir/?api=1&destination="
+    + encodeURIComponent(s.q || [s.a, s.cp, s.v].filter(Boolean).join(", "));
+  for (const b of $("fi-statuts").querySelectorAll("button")) {
+    b.setAttribute("aria-pressed", b.dataset.v === (v.statut || "") ? "true" : "false");
+  }
+  $("fi-note").value = v.note || "";
+  $("fi-relance").value = v.relance || "";
+  $("fi-suppr").classList.toggle("cache", !s.ajout);
+  const h = $("fi-histo");
+  if (v.le) {
+    h.textContent = "";
+    h.appendChild(el("p", null, "Dernière note : " + (etat.membres[v.par] || "?") + ", " + jolieDate(v.le)));
+    h.classList.remove("cache");
+  } else h.classList.add("cache");
+  ouvrir("fiche");
+}
+
+$("fi-statuts").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  for (const o of $("fi-statuts").querySelectorAll("button")) o.setAttribute("aria-pressed", "false");
+  b.setAttribute("aria-pressed", "true");
+});
+
+$("fi-ok").addEventListener("click", async () => {
+  if (!courant) return;
+  const choisi = $("fi-statuts").querySelector('button[aria-pressed="true"]');
+  const action = {
+    action: "visite",
+    salon: courant.i,
+    statut: choisi ? choisi.dataset.v : "",
+    note: $("fi-note").value,
+    relance: $("fi-relance").value,
+  };
+  /* On affiche tout de suite, on envoie ensuite : le pouce ne doit jamais
+   * attendre le réseau. */
+  etat.visites[courant.i] = {
+    salon: action.salon, statut: action.statut, note: action.note,
+    relance: action.relance, par: etat.moi.code, le: new Date().toISOString(),
+  };
+  dessiner(); fermerTout();
+  try {
+    const r = await poster(action);
+    if (!r.ok) enfiler(action); else synchro(true);
+  } catch (e) { enfiler(action); }
+});
+
+$("fi-suppr").addEventListener("click", async () => {
+  if (!courant || !courant.ajout) return;
+  const id = courant.i;
+  etat.ajouts = etat.ajouts.filter((a) => a.id !== id);
+  delete noms[id];
+  dessiner(); fermerTout();
+  try { await poster({ action:"retrait", id }); synchro(true); }
+  catch (e) { enfiler({ action:"retrait", id }); }
+});
+
+$("b-ajouter").addEventListener("click", () => {
+  for (const id of ["aj-nom", "aj-adr", "aj-cp", "aj-ville", "aj-tel"]) $(id).value = "";
+  ouvrir("ajout");
+});
+$("aj-non").addEventListener("click", fermerTout);
+$("aj-ok").addEventListener("click", async () => {
+  const nom = $("aj-nom").value.trim();
+  if (!nom) { $("aj-nom").focus(); return; }
+  const action = {
+    action: "ajout", nom,
+    adresse: $("aj-adr").value.trim(), cp: $("aj-cp").value.trim(),
+    ville: $("aj-ville").value.trim(), tel: $("aj-tel").value.trim(),
+    secteur: cat ? cat.id : "",
+  };
+  fermerTout();
+  try {
+    const r = await poster(action);
+    if (r.ok) synchro(true); else enfiler(action);
+  } catch (e) {
+    /* Hors réseau : on le montre quand même, avec un identifiant provisoire
+     * que le serveur remplacera à l'envoi. */
+    const id = "tmp" + Date.now().toString(36);
+    etat.ajouts.push({ id, nom, adresse:action.adresse, cp:action.cp, ville:action.ville,
+                       tel:action.tel, par:etat.moi.code, le:new Date().toISOString() });
+    noms[id] = { i:id, n:nom, a:action.adresse, cp:action.cp, v:action.ville, t:action.tel,
+                 q:[action.adresse, action.cp, action.ville].filter(Boolean).join(", "), ajout:true };
+    enfiler(action); dessiner();
+  }
+});
+
+$("b-menu").addEventListener("click", async () => {
+  $("me-nom").textContent = etat.moi ? etat.moi.nom : "";
+  $("me-sous").textContent = "Code " + (etat.moi ? etat.moi.code : "") + " · tes notes sont signées à ce nom.";
+  $("me-maj").textContent = etat.heure ? "Dernière synchronisation : " + jolieDate(etat.heure) : "";
+  $("me-v").textContent = "version " + V;
+  const sel = $("me-secteur");
+  sel.textContent = "";
+  try {
+    const r = await fetch(API + "?partie=catalogue");
+    const d = await r.json();
+    for (const s of (d.secteurs || [])) {
+      const o = document.createElement("option");
+      o.value = s.secteur; o.textContent = (s.titre || s.secteur) + (s.commercial ? " — " + s.commercial : "");
+      if (cat && s.secteur === cat.id) o.selected = true;
+      sel.appendChild(o);
+    }
+  } catch (e) {}
+  ouvrir("menu");
+});
+$("me-secteur").addEventListener("change", (e) => {
+  const id = e.target.value;
+  ecrire(CLE_SECT, id); jour = 0;
+  chargerSecteur(id, true); fermerTout();
+});
+$("me-fermer").addEventListener("click", fermerTout);
+$("me-sortir").addEventListener("click", async () => {
+  fermerTout();
+  try { await poster({ action:"deconnexion" }); } catch (e) {}
+  localStorage.removeItem(CLE_ETAT);
+  porte("À bientôt.");
+  $("msg-porte").className = "msg";
+});
+
+$("b-sync").addEventListener("click", () => synchro(false));
+$("f-tout").addEventListener("click", () => majFiltre("tout"));
+$("f-faire").addEventListener("click", () => majFiltre("faire"));
+$("f-relance").addEventListener("click", () => majFiltre("relance"));
+function majFiltre(f) {
+  filtre = f;
+  $("f-tout").setAttribute("aria-pressed", f === "tout");
+  $("f-faire").setAttribute("aria-pressed", f === "faire");
+  $("f-relance").setAttribute("aria-pressed", f === "relance");
+  dessiner();
+}
+
+document.addEventListener("visibilitychange", () => { if (!document.hidden) synchro(true); });
+window.addEventListener("online", () => synchro(true));
+
+/* ---------- le démarrage ---------- */
+async function demarrer() {
+  const cache = lire(CLE_ETAT, null);
+  if (cache && cache.moi) { indexer(cache); entrer(); dessiner(); }
+  await synchro(!!cache);
+  if (!etat.moi) return;
+  const voulu = lire(CLE_SECT, null) || etat.moi.secteur;
+  if (voulu) await chargerSecteur(voulu, false);
+  else {
+    try {
+      const r = await fetch(API + "?partie=catalogue");
+      const d = await r.json();
+      if (d.ok && d.secteurs && d.secteurs.length) await chargerSecteur(d.secteurs[0].secteur, false);
+    } catch (e) {}
+  }
+}
+
+(async function () {
+  try {
+    const r = await fetch(API + "?partie=etat", { headers: { accept: "application/json" } });
+    if (r.status === 401) { porte(); return; }
+    const d = await r.json();
+    if (!d.ok) { porte(); return; }
+    indexer(d); ecrire(CLE_ETAT, d); entrer(); await demarrer();
+  } catch (e) {
+    const cache = lire(CLE_ETAT, null);
+    if (cache && cache.moi) { indexer(cache); entrer(); dessiner(); pastille("ko", "Hors réseau"); }
+    else porte();
+  }
+})();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/carnet/sw.js", { scope: "/carnet/" }).catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
