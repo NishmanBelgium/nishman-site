@@ -13,7 +13,7 @@
        garde elle-même sa dernière copie des données et dit sa date.
    ========================================================================== */
 
-const VERSION = "carnet-1";
+const VERSION = "carnet-2";
 const COQUILLE = ["/carnet/", "/carnet/manifest.json"];
 
 self.addEventListener("install", (e) => {
@@ -41,18 +41,26 @@ self.addEventListener("fetch", (e) => {
   if (!url.pathname.startsWith("/carnet")) return;   // le reste du site n'est pas mon affaire
   if (url.pathname.startsWith("/api/")) return;      // jamais de données en cache
 
-  e.respondWith(
-    caches.match(requete).then((enCache) => {
-      const reseau = fetch(requete)
-        .then((reponse) => {
-          if (reponse && reponse.ok && reponse.type === "basic") {
-            const copie = reponse.clone();
-            caches.open(VERSION).then((c) => c.put(requete, copie));
-          }
-          return reponse;
-        })
-        .catch(() => enCache || Response.error());
-      return enCache || reseau;
-    })
-  );
+  /* Dans MON tiroir, et nulle part ailleurs.
+   *
+   * caches.match() sans préciser le tiroir fouille TOUS les caches de
+   * l'origine — y compris celui de la boutique, dont le service worker,
+   * de portée /, avait gardé une copie du carnet avant que celui-ci
+   * n'existe. Résultat : le carnet se servait lui-même une version
+   * périmée, que ses propres mises à jour ne remplaçaient jamais. Une
+   * heure de perdue à chercher un bug qui n'était pas là. */
+  e.respondWith((async () => {
+    const tiroir = await caches.open(VERSION);
+    const enCache = await tiroir.match(requete);
+    const reseau = fetch(requete)
+      .then((reponse) => {
+        if (reponse && reponse.ok && reponse.type === "basic") {
+          tiroir.put(requete, reponse.clone());
+        }
+        return reponse;
+      })
+      .catch(() => enCache || Response.error());
+    if (enCache) { e.waitUntil(reseau); return enCache; }
+    return reseau;
+  })());
 });
