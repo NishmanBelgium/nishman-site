@@ -338,6 +338,12 @@ function lire(cle, defaut) {
 function ecrire(cle, valeur) {
   try { localStorage.setItem(cle, JSON.stringify(valeur)); } catch (e) {}
 }
+/** « Rue du Marché 3, 7130 Binche » : le code postal colle à la ville,
+ *  comme sur une enveloppe, et pas de virgule entre les deux. */
+function adr(a, cp, v) {
+  const ligne = [cp, v].filter(Boolean).join(" ").trim();
+  return [a, ligne].filter(Boolean).join(", ");
+}
 function aujourdhui() { return new Date().toISOString().slice(0, 10); }
 function jolieDate(iso) {
   if (!iso) return "";
@@ -394,7 +400,7 @@ function indexer(d) {
   etat = { moi:d.moi, membres:d.membres || {}, visites:v, ajouts:d.ajouts || [], heure:d.heure };
   for (const a of etat.ajouts) {
     noms[a.id] = { i:a.id, n:a.nom, a:a.adresse, cp:a.cp, v:a.ville, t:a.tel,
-                   q:[a.adresse, a.cp, a.ville].filter(Boolean).join(", "), ajout:true, par:a.par };
+                   q:adr(a.adresse, a.cp, a.ville), ajout:true, par:a.par };
   }
 }
 async function synchro(silencieux) {
@@ -545,7 +551,7 @@ function carte(s, n) {
   b.appendChild(el("div", "num", n == null ? "·" : String(n)));
   const c = el("div", "corps");
   c.appendChild(el("div", "nom", s.n));
-  c.appendChild(el("div", "adr", [s.a, s.cp, s.v].filter(Boolean).join(", ")));
+  c.appendChild(el("div", "adr", adr(s.a, s.cp, s.v)));
   const e = el("div", "etiq");
   if (v.statut) { const t = el("span", "st " + v.statut, LIB[v.statut] || v.statut); e.appendChild(t); }
   if (s.c) e.appendChild(el("span", "cli", s.ca ? "Client · " + Math.round(s.ca) + " €" : "Client"));
@@ -564,7 +570,7 @@ function carte(s, n) {
 function lienJournee(stops) {
   /* Maps n'accepte qu'une poignée d'étapes par lien : on prend les neuf
    * premières à partir du dépôt, et la journée se relance au besoin. */
-  const pts = [DEPOT].concat(stops.slice(0, 9).map((s) => s.q || [s.a, s.cp, s.v].filter(Boolean).join(", ")));
+  const pts = [DEPOT].concat(stops.slice(0, 9).map((s) => s.q || adr(s.a, s.cp, s.v)));
   return "https://www.google.com/maps/dir/" + pts.map(encodeURIComponent).join("/");
 }
 
@@ -588,13 +594,13 @@ function ouvrirFiche(s) {
   courant = s;
   const v = etat.visites[s.i] || {};
   $("fi-nom").textContent = s.n;
-  $("fi-sous").textContent = [s.a, s.cp + " " + (s.v || "")].filter(Boolean).join(", ");
+  $("fi-sous").textContent = adr(s.a, s.cp, s.v);
   const tel = (s.t || "").replace(/\s/g, "");
   const a = $("fi-tel");
   if (tel) { a.href = "tel:" + tel; a.textContent = "Appeler"; a.style.opacity = 1; }
   else { a.href = "#"; a.textContent = "Pas de numéro"; a.style.opacity = .4; }
   $("fi-maps").href = "https://www.google.com/maps/dir/?api=1&destination="
-    + encodeURIComponent(s.q || [s.a, s.cp, s.v].filter(Boolean).join(", "));
+    + encodeURIComponent(s.q || adr(s.a, s.cp, s.v));
   for (const b of $("fi-statuts").querySelectorAll("button")) {
     b.setAttribute("aria-pressed", b.dataset.v === (v.statut || "") ? "true" : "false");
   }
@@ -674,7 +680,7 @@ $("aj-ok").addEventListener("click", async () => {
     etat.ajouts.push({ id, nom, adresse:action.adresse, cp:action.cp, ville:action.ville,
                        tel:action.tel, par:etat.moi.code, le:new Date().toISOString() });
     noms[id] = { i:id, n:nom, a:action.adresse, cp:action.cp, v:action.ville, t:action.tel,
-                 q:[action.adresse, action.cp, action.ville].filter(Boolean).join(", "), ajout:true };
+                 q:adr(action.adresse, action.cp, action.ville), ajout:true };
     enfiler(action); dessiner();
   }
 });
