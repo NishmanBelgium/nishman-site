@@ -156,6 +156,30 @@ export function etatFilet() {
    ========================================================================== */
 
 const SECOURS_MAX_MS = 3 * 60 * 60 * 1000;   // 3 heures
+
+/* Pourquoi l'affichage accepte une copie beaucoup plus vieille.
+
+   Le 14 novembre 2026 au matin, le catalogue a de nouveau affiché
+   « Tarifs momentanément indisponibles ». La copie de secours était
+   pourtant là — mais vieille de la nuit, donc refusée par la limite de
+   trois heures ci-dessus. La page a dû tout refaire : portier, Odoo,
+   catalogue. Sept secondes et demie. Cloudflare a coupé.
+
+   Un stock de secours qui se périme pendant la nuit ne sert à rien le
+   matin, c'est-à-dire précisément au moment où il servirait.
+
+   On distingue donc deux usages de la même copie :
+
+     - POUR AFFICHER, on l'accepte jusqu'à 36 heures. Un prix de la
+       veille affiché à l'écran est un inconvénient minime ; une page
+       sans aucun prix fait perdre la vente. Et la vraie table arrive
+       en arrière-plan dans la seconde qui suit.
+
+     - POUR TOUT LE RESTE — c'est-à-dire la commande et le paiement,
+       qui n'empruntent jamais ce chemin — la limite de trois heures
+       reste en vigueur. Facturer un ancien prix serait une erreur,
+       pas un inconvénient. */
+const SECOURS_AFFICHAGE_MS = 36 * 60 * 60 * 1000;
 const SECOURS_ECRIRE_MS = 10 * 60 * 1000;    // on ne réécrit pas à chaque minute
 let secoursEcritLe = 0;
 let secoursSouci = "";
@@ -186,8 +210,9 @@ async function poserSecours(db, prix, limites) {
 }
 
 /** La dernière table connue, si elle existe et n'est pas trop vieille. */
-async function lireSecours(db) {
+async function lireSecours(db, limiteMs) {
   if (!db) return null;
+  const limite = limiteMs || SECOURS_MAX_MS;
   try {
     await preparerSecours(db);
     const r = await db.prepare(
@@ -195,7 +220,7 @@ async function lireSecours(db) {
     ).first();
     if (!r || !r.valeur) return null;
     const age = Date.now() - Number(r.pose_le);
-    if (!(age >= 0) || age > SECOURS_MAX_MS) return null;
+    if (!(age >= 0) || age > limite) return null;
     const d = JSON.parse(r.valeur);
     if (!d || !d.prices || !Object.keys(d.prices).length) return null;
     return { prices: d.prices, limits: d.limits || null, age_s: Math.round(age / 1000) };
@@ -247,7 +272,7 @@ export async function donneesPortier(env, options) {
      heures est un inconvénient ; en encaisser un est une erreur. */
   const attendre = options && options.attendre;
   if (options && options.secoursDabord && attendre) {
-    const s = await lireSecours(env && env.DB);
+    const s = await lireSecours(env && env.DB, SECOURS_AFFICHAGE_MS);
     if (s) {
       attendre((async () => {
         try { await donneesPortier(env); } catch (e) { /* la suivante réessaiera */ }
