@@ -20,6 +20,31 @@ import {
 
 const STATUTS = ["", "vu", "cm", "rl", "no", "fe"];
 
+/**
+ * La première installation.
+ *
+ * Verser les tournées et créer les codes demande normalement une session
+ * d'administration. Mais le tout premier versement a lieu avant qu'aucun
+ * code n'existe : il faut donc une porte pour entrer dans une maison vide.
+ *
+ * Elle est étroite et se referme d'elle-même : tant que la table des
+ * membres est vide, une requête venant du site peut verser les tournées et
+ * créer les codes ; dès le premier code créé, plus jamais. Pendant cette
+ * fenêtre il n'y a rien à lire — la lecture exige un code, et il n'en
+ * existe aucun —, et la toute première installation crée les codes en
+ * dernier, ce qui ferme la porte dans la minute.
+ */
+async function maisonVide(db) {
+  const r = await db.prepare("SELECT COUNT(*) AS n FROM carnet_membres").first();
+  return !r || Number(r.n) === 0;
+}
+
+async function peutInstaller(request, env) {
+  if (await compteAdmin(request, env)) return true;
+  if (!(await maisonVide(env.DB))) return false;
+  return !(await freinerIp(env.DB, request, "carnet-install", 30, 10));
+}
+
 /* --- lecture ------------------------------------------------------------ */
 
 export async function onRequestGet({ request, env }) {
@@ -112,8 +137,7 @@ export async function onRequestPost({ request, env }) {
 
   /* --- versement du catalogue : direction seulement --------------------- */
   if (action === "catalogue") {
-    const admin = await compteAdmin(request, env);
-    if (!admin) return json({ ok: false, raison: "reserve" }, 404);
+    if (!(await peutInstaller(request, env))) return json({ ok: false, raison: "reserve" }, 404);
     const secteur = texte(corps.secteur, 60);
     if (!secteur) return erreur("Secteur manquant.", 400, "secteur");
     if (!Array.isArray(corps.jours)) return erreur("Journées manquantes.", 400, "jours");
@@ -129,8 +153,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   if (action === "membres") {
-    const admin = await compteAdmin(request, env);
-    if (!admin) return json({ ok: false, raison: "reserve" }, 404);
+    if (!(await peutInstaller(request, env))) return json({ ok: false, raison: "reserve" }, 404);
     if (!Array.isArray(corps.liste)) return erreur("Liste manquante.", 400, "liste");
     const lignes = corps.liste.map((m) => env.DB.prepare(
       "INSERT INTO carnet_membres (code, nom, secteur, actif, cree_le) " +
