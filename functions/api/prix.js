@@ -76,7 +76,12 @@ async function servir(ctx) {
   // ce qui rendait la panne du 26 octobre indéchiffrable depuis la page.
   // Les mêmes prix que le panier et la commande, gardés une minute.
   let data;
-  try { data = await donneesPortier(env); }
+  // secoursDabord : cette page ne fait qu'AFFICHER. Elle peut servir la
+  // copie de secours sans attendre le portier, et laisser le
+  // rafraîchissement se faire derrière. commander.js et payer.js
+  // appellent la même fonction sans cette option — eux interrogent
+  // toujours l'autorité. Voir la note dans _tarifs.js.
+  try { data = await donneesPortier(env, { secoursDabord: true, attendre: attendre }); }
   catch (e) {
     const m = String((e && e.message) || "");
     return json({ ok: false, raison: m.indexOf("code") >= 0 ? "code" : "portier" });

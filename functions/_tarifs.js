@@ -216,9 +216,44 @@ export async function etatSecoursPrix(db) {
     + ". Une panne du portier laisserait le catalogue sans prix." };
 }
 
-export async function donneesPortier(env) {
+export async function donneesPortier(env, options) {
   if (cachePrix && Date.now() < cachePrixExpire) {
     return { prices: cachePrix, limits: cacheLimites, source: "portier" };
+  }
+
+  /* ====================================================================
+     SERVIR D'ABORD, RAFRAÎCHIR DERRIÈRE — pour l'AFFICHAGE seulement.
+
+     Sur un isolat froid, ce qui suit coûte cher : interroger le portier,
+     puis lire 2 000 fiches dans Odoo pour le filet, puis réécrire la
+     copie de secours. Mesuré le 14 novembre 2026 : 7,5 secondes de bout
+     en bout. Cloudflare accorde très peu de temps processeur par
+     requête, et au-delà il tue l'isolat — le catalogue rendait alors une
+     page d'erreur, et le visiteur ne voyait aucun prix (voir la note
+     dans api/prix.js).
+
+     Or une copie complète et fusionnée de la table dort déjà en base,
+     réécrite toutes les dix minutes. La servir coûte une lecture.
+
+     On la sert donc immédiatement, et on va chercher la vraie table en
+     arrière-plan pour que la requête suivante soit à jour. La réponse
+     annonce `source: "secours"` et son âge en secondes : le repli reste
+     visible, jamais silencieux.
+
+     CE RACCOURCI EST RÉSERVÉ À L'AFFICHAGE. La commande et le paiement
+     appellent cette fonction SANS l'option : eux doivent toujours
+     interroger l'autorité, parce qu'une table vieille de deux heures
+     pourrait facturer un ancien prix. Afficher un prix d'il y a deux
+     heures est un inconvénient ; en encaisser un est une erreur. */
+  const attendre = options && options.attendre;
+  if (options && options.secoursDabord && attendre) {
+    const s = await lireSecours(env && env.DB);
+    if (s) {
+      attendre((async () => {
+        try { await donneesPortier(env); } catch (e) { /* la suivante réessaiera */ }
+      })());
+      return { prices: s.prices, limits: s.limits, source: "secours", age_s: s.age_s };
+    }
   }
 
   const reponse = await interrogerPortier(env, "action=unlock&callback=p");
