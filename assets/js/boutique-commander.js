@@ -89,7 +89,31 @@
   function dessiner() {
     if (!CALCUL) return;
 
-    $("bc-lignes").innerHTML = (CALCUL.lignes || []).map(function (l) {
+    /* CE QUI A DISPARU DU PANIER SE DIT.
+     *
+     * Le serveur retire du panier ce qu'il ne peut pas vendre : une
+     * référence épuisée dans Odoo, une référence absente du catalogue. Il
+     * le dit dans sa réponse — `epuises` — mais cette page ne le lisait
+     * pas. Le client voyait donc son panier se vider tout seul entre la
+     * boutique et la commande, sans un mot, et écrivait pour demander
+     * comment faire. C'est arrivé le 15 novembre 2026.
+     *
+     * Un panier qui se vide sans explication est pire qu'un produit
+     * épuisé : le premier fait fuir, le second fait changer d'article. */
+    var mot = "";
+    var retires = (CALCUL.epuises || []).length;
+    if (retires) {
+      mot += '<p class="bc-alerte">' + (retires > 1
+        ? retires + " articles ne sont plus disponibles et ont été retirés de votre panier."
+        : "Un article n'est plus disponible et a été retiré de votre panier.") + '</p>';
+    }
+    if (!(CALCUL.lignes || []).length) {
+      mot += '<p class="bc-alerte">Votre panier est vide. Si vous veniez d\'y mettre des produits, '
+           + 'c\'est qu\'ils ne sont plus disponibles — écrivez-nous à contact@nishman.be, '
+           + 'nous vous répondons le jour même.</p>';
+    }
+
+    $("bc-lignes").innerHTML = mot + (CALCUL.lignes || []).map(function (l) {
       return '' +
         '<div class="bc-ligne">' +
           '<div class="bc-ligne-img"><img src="/assets/img/products/' + echappe(l.image) +
