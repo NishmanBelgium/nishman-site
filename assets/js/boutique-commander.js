@@ -155,7 +155,7 @@
     }
     afficherSouci("");
 
-    // On centre la recherche sur l'adresse déjà saisie quand on l'a : le
+    // On centre la recherche sur la commune déjà saisie quand on l'a : le
     // client n'a pas à retaper son code postal.
     var config = {
       apiKey: RELAIS_CLE,
@@ -169,13 +169,33 @@
        exemple. Le client choisissait, payait, et l'étiquette ne pouvait
        plus être créée. On n'ouvre donc la carte que sur les transporteurs
        dont SendCloud dit lui-même qu'ils acceptent un point relais vers
-       cette destination. Liste inconnue : pas de filtre, comme avant. */
-    if (RELAIS_TRANSPORTEURS && RELAIS_TRANSPORTEURS.length) {
-      config.carriers = RELAIS_TRANSPORTEURS.join(",");
+       cette destination. Liste inconnue : pas de filtre, comme avant.
+
+       MAIS le sélecteur ne connaît pas tous les noms que l'API des
+       méthodes d'envoi emploie. Relevé le 15 novembre 2026, en France
+       comme en Belgique : demander « ups » à la carte fait échouer la
+       recherche entière — « Une erreur s'est produite de notre côté » — et
+       le client ne voit AUCUN point, pas même ceux de DPD ou de Mondial
+       Relay qui l'entourent. Un transporteur de trop fermait donc la
+       boutique à tout le monde. On retire ceux qu'on a vus casser la
+       carte ; s'il ne reste rien, on n'envoie pas de filtre du tout,
+       parce qu'une carte trop large vaut mieux qu'une carte vide. */
+    var CASSENT_LA_CARTE = ["ups"];
+    var utilisables = (RELAIS_TRANSPORTEURS || []).filter(function (t) {
+      return CASSENT_LA_CARTE.indexOf(String(t).toLowerCase()) === -1;
+    });
+    if (RELAIS_TRANSPORTEURS && utilisables.length) {
+      config.carriers = utilisables.join(",");
     }
+
+    /* Le code postal et la commune, et RIEN DE PLUS. Avec la rue en plus,
+       le sélecteur cherche la ligne entière chez son géocodeur, qui répond
+       « Nous n'avons pas trouvé cette adresse » dès que la voie n'est pas
+       écrite exactement comme il l'attend. Le client en déduit qu'il n'y a
+       pas de point relais chez lui, alors qu'il y en a quatre à deux
+       kilomètres. Le code postal, lui, ne se trompe jamais. */
     if (val("bc-cp")) config.postalCode = val("bc-cp");
     if (val("bc-ville")) config.city = val("bc-ville");
-    if (val("bc-adresse")) config.address1 = val("bc-adresse");
 
     window.sendcloud.servicePoints.open(config, function (point) {
       relais = point;
