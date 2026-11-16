@@ -50,6 +50,10 @@ import { transporteursPointRelais, configureSendcloud } from "../_sendcloud.js";
    serait ici aussi, parce que c'est ici qu'on s'en apercevrait. */
 const CASSENT_LA_CARTE = ["ups"];
 
+/* Les transporteurs que la boutique propose en priorité, parce qu'ils sont
+   les moins chers à service égal. La même liste que boutique-commander.js. */
+const MOINS_CHERS = ["mondial_relay", "bpost"];
+
 /** Une épreuve : son nom, si elle passe, et ce qu'elle a vu. */
 function epreuve(nom, ok, detail, vital) {
   return { nom, ok: !!ok, detail: String(detail || "").slice(0, 160), vital: vital !== false };
@@ -136,6 +140,18 @@ export async function onRequestGet(ctx) {
       faites.push(epreuve("relais " + pays, utilisables.length > 0,
         utilisables.length ? utilisables.join(", ")
           : "aucun transporteur utilisable — plus personne ne peut valider"));
+
+      /* Le moins cher est-il encore là ? Si Mondial Relay et bpost
+         disparaissent pour ce pays, la boutique retombe sur DPD et chaque
+         colis coûte 4 € de trop — en silence, sans qu'aucune vente ne soit
+         bloquée. Ce n'est pas une panne, c'est une fuite : elle ne fait pas
+         sonner l'alarme, mais elle se dit. */
+      const economiques = utilisables.filter(
+        (t) => MOINS_CHERS.indexOf(String(t).toLowerCase()) !== -1);
+      if (utilisables.length && !economiques.length) {
+        faites.push(epreuve("tarif " + pays, false,
+          "ni Mondial Relay ni bpost : les colis partent au tarif fort", false));
+      }
     } catch (e) {
       faites.push(epreuve("relais " + pays, false, "SendCloud muet : " + ((e && e.message) || e)));
     }

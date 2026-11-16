@@ -208,8 +208,32 @@
     var utilisables = (RELAIS_TRANSPORTEURS || []).filter(function (t) {
       return CASSENT_LA_CARTE.indexOf(String(t).toLowerCase()) === -1;
     });
-    if (RELAIS_TRANSPORTEURS && utilisables.length) {
-      config.carriers = utilisables.join(",");
+
+    /* ON NE MONTRE QUE LES MOINS CHERS — relevé sur la facture SendCloud
+       du 16 novembre 2026, hors TVA, pour un service identique rendu au
+       client : même type de point relais, même délai.
+
+         vers la France    Mondial Relay 9,04 €   contre DPD Shop 13,03 €
+         en Belgique       Mondial Relay 3,89 €   contre DPD Shop  6,81 €
+
+       Le port encaissé est de 4,09 € HT, et il est offert dès 29,90 €.
+       Chaque colis parti chez DPD coûtait donc 4 € de trop, sans que le
+       client y gagne quoi que ce soit. Sur cent commandes françaises,
+       400 € jetés.
+
+       MAIS DPD RESTE EN FILET. Si un jour ni Mondial Relay ni bpost ne
+       répondent pour ce pays, on retombe sur la liste entière plutôt que
+       de n'afficher aucun point : une carte vide, c'est la boutique
+       fermée, et on a déjà donné du 12 au 15 novembre. Un colis à 13 €
+       vaut mieux qu'une vente perdue. */
+    var MOINS_CHERS = ["mondial_relay", "bpost"];
+    var economiques = utilisables.filter(function (t) {
+      return MOINS_CHERS.indexOf(String(t).toLowerCase()) !== -1;
+    });
+    var retenus = economiques.length ? economiques : utilisables;
+
+    if (RELAIS_TRANSPORTEURS && retenus.length) {
+      config.carriers = retenus.join(",");
     }
 
     /* Le code postal et la commune, et RIEN DE PLUS. Avec la rue en plus,
