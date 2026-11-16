@@ -45,6 +45,52 @@ const POIDS_DEFAUT_KG = 0.25;
    plusieurs colis, et c'est un jugement humain. */
 const POIDS_MAX_KG = 20;
 
+/* ---------------------------------------------------------------------------
+   LE PRIX AFFICHÉ N'EST PAS LE PRIX PAYÉ.
+
+   SendCloud annonce un tarif de base. La facture, elle, ajoute des
+   suppléments — carburant surtout, saisonnier en période de pointe — qui
+   n'apparaissent nulle part au moment de créer l'étiquette. Résultat : on
+   croyait payer 9,04 € un colis français qui en coûtait 11.
+
+   Mesuré le 16 novembre 2026 sur un mois de facturation réelle (60 colis,
+   612,11 € facturés), rapport des suppléments au tarif de base :
+
+     DPD            111,73 € sur 507,53 €  →  +22 %
+                    (dont 20 points de carburant, 2 de saisonnier)
+     bpost            8,96 € sur  69,04 €  →  +13 %
+     Mondial Relay    0,00 € sur  26,30 €  →    0 %
+
+   Mondial Relay ne facture aucun supplément : chez lui, le prix affiché EST
+   le prix payé. C'est une raison de plus de le préférer, et la seule façon
+   d'avoir un coût d'expédition prévisible.
+
+   Ces taux sont indexés et bougent : ils se revérifient dans
+   Analytics → Coûts → Répartition des suppléments. Mieux vaut une majoration
+   approximative qu'un chiffre faux présenté comme exact.
+   --------------------------------------------------------------------------- */
+const MAJORATION = { mondial_relay: 0, bpost: 0.13, dpd: 0.22 };
+const MAJORATION_INCONNUE = 0.15;
+
+/**
+ * Le coût réellement attendu sur la facture, suppléments compris.
+ *
+ * @returns { reel, majoration, sure }  sure = false quand le transporteur
+ *          n'est pas dans la table et qu'on applique une moyenne.
+ */
+export function coutReel(transporteur, prixAffiche) {
+  const p = Number(prixAffiche);
+  if (!Number.isFinite(p)) return { reel: null, majoration: null, sure: false };
+  const cle = String(transporteur || "").toLowerCase().replace(/[\s-]+/g, "_");
+  const connue = Object.prototype.hasOwnProperty.call(MAJORATION, cle);
+  const taux = connue ? MAJORATION[cle] : MAJORATION_INCONNUE;
+  return {
+    reel: Math.round(p * (1 + taux) * 100) / 100,
+    majoration: taux,
+    sure: connue,
+  };
+}
+
 /**
  * Le poids de la commande, d'après les fiches produits d'Odoo.
  *

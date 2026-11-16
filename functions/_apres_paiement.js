@@ -27,7 +27,7 @@
 import { appel } from "./_odoo.js";
 import { noterEtape } from "./_paiements.js";
 import { configureSendcloud, pointRelais } from "./_sendcloud.js";
-import { poidsCommande, creerEtiquetteRelais, noterSuiviDansOdoo } from "./_etiquette.js";
+import { poidsCommande, creerEtiquetteRelais, noterSuiviDansOdoo, coutReel } from "./_etiquette.js";
 import { envoyerConfirmation } from "./_confirmation.js";
 
 /** Un petit journal, pour pouvoir raconter ce qui s'est passé. */
@@ -437,6 +437,21 @@ async function expedier(env, p, journal) {
   const rue = String(c.street || "").trim();
   const m = rue.match(/^(.*?)[\s,]+(\d+[A-Za-z]?(?:[\/-]\d+)?)$/);
 
+  /* Ce qu'on écrit sur le bon de livraison : le tarif annoncé ET le coût
+     attendu sur la facture. Les deux, parce que le premier est celui qu'on
+     retrouvera dans SendCloud et le second celui qu'on paiera réellement.
+     Donner le tarif seul, c'est ce qui nous a fait croire pendant des mois
+     qu'un colis français coûtait 9 € quand il en coûtait 11. */
+  const coutTransport = (e) => {
+    if (e.prix === null || e.prix === undefined) return "—";
+    const r = coutReel(e.transporteur, e.prix);
+    if (r.reel === null) return e.prix + " €";
+    if (!r.majoration) return e.prix + " € (sans supplément)";
+    return e.prix + " € annoncés, ~" + r.reel.toFixed(2) + " € facturés"
+      + " (+" + Math.round(r.majoration * 100) + " % de suppléments"
+      + (r.sure ? "" : ", taux moyen, transporteur inhabituel") + ")";
+  };
+
   const etiquette = await creerEtiquetteRelais(env, {
     destinataire: {
       nom: c.name || "",
@@ -459,7 +474,7 @@ async function expedier(env, p, journal) {
     + [point.street, point.house_number].filter(Boolean).join(" ") + ", "
     + [point.postal_code, point.city].filter(Boolean).join(" ") + "\n"
     + "Poids déclaré : " + poids.kg + " kg (" + poids.detail + ")\n"
-    + "Coût transport : " + (etiquette.prix !== null ? etiquette.prix + " €" : "—") + "\n"
+    + "Coût transport : " + coutTransport(etiquette) + "\n"
     + "Suivi : " + etiquette.suivi;
 
   const dansOdoo = await noterSuiviDansOdoo(env, p.odoo_order_id, etiquette.suivi, detail);
