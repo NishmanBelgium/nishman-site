@@ -124,9 +124,57 @@ function jours(iso) {
   return Math.floor((Date.now() - t) / 86400000);
 }
 
+/* --------------------------------------------------------------------------
+   LE VEILLEUR A LE DROIT D'ENTRER — ajouté le 17 novembre 2026.
+
+   Cette page savait diagnostiquer et reprendre, mais seulement si un humain
+   ouvrait le tableau de bord et cliquait. Le 27 octobre, une commande payée
+   est restée treize jours. Le 17 novembre, S00376 — payée chez Mollie,
+   restée en brouillon dans Odoo — a été rattrapée à la main deux heures
+   plus tard, et seulement parce qu'on cherchait à faire son étiquette.
+
+   Le diagnostic existait ; le déclencheur manquait. Le voici.
+
+   Le veilleur de la boutique tourne chez Google, toutes les cinq minutes,
+   hors de Cloudflare — il survit donc à une panne du site. Il lui fallait
+   une porte. Elle s'ouvre avec une clé, jamais avec un mot de passe, et la
+   clé vit dans les variables de Cloudflare, jamais dans ce dépôt (qui est
+   public) ni dans le coffre.
+
+   TANT QUE LA VARIABLE N'EXISTE PAS, RIEN NE CHANGE : pas de clé
+   configurée, pas de porte. Le comportement d'aujourd'hui est conservé au
+   bit près.
+
+   Deux limites volontaires pour le porteur de clé :
+     - il peut DIAGNOSTIQUER et REPRENDRE — ce sont des gestes que la chaîne
+       sait déjà faire seule et qu'elle refait sans dommage ;
+     - il ne peut PAS CLASSER. Classer, c'est décider qu'un cas ne sera
+       jamais traité : ça demande un motif écrit et un jugement humain.
+       Une machine qui range les problèmes qu'elle n'arrive pas à résoudre
+       est précisément la façon dont on cesse de lire l'alarme.
+   -------------------------------------------------------------------------- */
+
+/** Comparaison à durée constante : on ne renseigne pas l'attaquant au fil des essais. */
+function memeSecret(a, b) {
+  const x = String(a || "");
+  const y = String(b || "");
+  if (!x || !y || x.length !== y.length) return false;
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x.charCodeAt(i) ^ y.charCodeAt(i);
+  return diff === 0;
+}
+
+/** Vrai si l'appelant porte la clé de service. Faux si aucune clé n'est configurée. */
+function cleDeService(request, env) {
+  const attendue = String((env && env.CLE_VEILLEUR) || "");
+  if (attendue.length < 24) return false;   // pas configurée, ou trop courte pour être sérieuse
+  return memeSecret(request.headers.get("x-cle-veilleur"), attendue);
+}
+
 export async function onRequestGet({ request, env }) {
   const compte = await compteAdmin(request, env);
-  if (!compte) return erreur("Page réservée.", 404, "reservee");
+  const machine = !compte && cleDeService(request, env);
+  if (!compte && !machine) return erreur("Page réservée.", 404, "reservee");
   if (!env.DB) return erreur("Base indisponible.", 503, "base");
 
   let lignes;
@@ -167,8 +215,11 @@ export async function onRequestGet({ request, env }) {
 
 export async function onRequestPost({ request, env }) {
   const compte = await compteAdmin(request, env);
-  if (!compte) return erreur("Page réservée.", 404, "reservee");
-  if (!origineSure(request)) return erreur("Origine refusée.", 403, "origine");
+  const machine = !compte && cleDeService(request, env);
+  if (!compte && !machine) return erreur("Page réservée.", 404, "reservee");
+  // Le contrôle d'origine est une protection contre le navigateur d'un tiers.
+  // Il n'a pas de sens pour un appelant qui porte une clé et n'a pas d'origine.
+  if (compte && !origineSure(request)) return erreur("Origine refusée.", 403, "origine");
   if (!env.DB) return erreur("Base indisponible.", 503, "base");
   if (!configureOdoo(env)) return erreur("Odoo n'est pas configuré.", 503, "odoo");
 
@@ -176,6 +227,11 @@ export async function onRequestPost({ request, env }) {
   const seule = String(url.searchParams.get("ref") || "").trim();
   const classer = url.searchParams.get("classer") === "oui";
   const motif = String(url.searchParams.get("motif") || "").trim();
+
+  // Classer est un jugement humain : la clé de service n'y donne pas droit.
+  if (classer && machine) {
+    return erreur("Classer demande un compte humain.", 403, "classement_humain");
+  }
 
   let lignes;
   try { lignes = await arretees(env.DB); }
