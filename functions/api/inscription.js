@@ -7,6 +7,7 @@
    ========================================================================== */
 
 import { controlerEtEnregistrer, ouvreDroitAExoneration } from "../_tva.js";
+import { resoudreFrance } from "../_registre_fr.js";
 import { freinerIp, estAdresseAdmin,
   json, erreur, hacher, ouvrirSession, cookieSession,
   emailValide, cleEmail, motDePasseValide,
@@ -43,7 +44,18 @@ export async function onRequestPost({ request, env }) {
   if (!nom)     return erreur("Indiquez votre nom.", 400, "nom_requis");
   if (!societe) return erreur("Indiquez le nom de votre société.", 400, "societe_requise");
 
-  const fiscal = identifiantFiscal(pays, corps.identifiant);
+  /* L'IDENTIFIANT FISCAL, ET POUR LA FRANCE LE REGISTRE.
+   *
+   * Jusqu'au 18 novembre 2026, le site calculait ici le numéro de TVA
+   * français à partir du SIRET. Il le demande maintenant à la France.
+   *
+   * Une panne du registre ne bloque pas l'inscription : resoudreFrance()
+   * rend alors « a_corriger », le compte se crée sans numéro, la TVA
+   * s'applique, et la prochaine vérification rattrape. Perdre une
+   * inscription coûte plus cher qu'une facture à corriger. */
+  const fiscal = pays === "FR"
+    ? await resoudreFrance(corps.identifiant)
+    : identifiantFiscal(pays, corps.identifiant);
   if (fiscal.erreur) {
     return erreur(fiscal.erreur, 400, fiscal.code || "",
       fiscal.attendu ? { attendu: fiscal.attendu, saisi: fiscal.saisi } : null);
@@ -112,10 +124,31 @@ export async function onRequestPost({ request, env }) {
   // simplement le compte en TVA belge, et le client pourra relancer la
   // vérification depuis son espace.
   let tva = { statut: "jamais", valide: false };
-  try {
-    tva = await controlerEtEnregistrer(db,
-      { id: compteId, tva: fiscal.tva, siret: fiscal.siret, pays }, env);
-  } catch (e) { /* l'inscription aboutit quoi qu'il arrive */ }
+  if (pays === "FR" && (fiscal.statut === "sans_numero" || fiscal.statut === "a_corriger")) {
+    /* La France a déjà tranché : cette entreprise n'a pas de numéro
+     * intracommunautaire, ou son identifiant est à corriger. Interroger
+     * le registre européen avec un SIRET ne voudrait rien dire et
+     * rendrait « invalide » — ce qui laisse croire à un numéro refusé là
+     * où il n'y a tout simplement pas de numéro. La nuance compte : l'une
+     * est une anomalie à traiter, l'autre est la franchise en base, et
+     * c'est normal. */
+    tva = { statut: fiscal.statut, valide: false };
+    try {
+      await db.prepare(
+        "UPDATE comptes SET tva_valide = 0, tva_statut = ?, tva_verifiee_le = ?, " +
+        "tva_nom = ?, tva_motif = ? WHERE id = ?"
+      ).bind(fiscal.statut, maintenant, fiscal.nom || null,
+             String(fiscal.revendique
+               ? "numéro revendiqué par le client, non déclaré au registre : " + fiscal.revendique
+               : (fiscal.message || "")).slice(0, 400),
+             compteId).run();
+    } catch (e) { /* l'inscription aboutit quoi qu'il arrive */ }
+  } else {
+    try {
+      tva = await controlerEtEnregistrer(db,
+        { id: compteId, tva: fiscal.tva, siret: fiscal.siret, pays }, env);
+    } catch (e) { /* l'inscription aboutit quoi qu'il arrive */ }
+  }
 
   // Le compte est créé et la session ouverte dans la foulée : lui redemander
   // son mot de passe juste après l'avoir choisi n'apporte rien.
@@ -129,12 +162,19 @@ export async function onRequestPost({ request, env }) {
         tva_statut: tva.statut,
         exonere: ouvreDroitAExoneration(pays, tva.statut),
       },
+      /* Ce que le registre français a répondu, dit au client dans ses
+       * mots. C'est la pièce qui manquait le plus : un coiffeur en
+       * franchise en base voyait la TVA sur sa facture sans comprendre
+       * pourquoi, et nous non plus. Maintenant il le lit à l'inscription. */
+      message_fiscal: pays === "FR" ? (fiscal.message || null) : null,
+      statut_fiscal: pays === "FR" ? (fiscal.statut || null) : null,
       // Signalé à l'inscrit sans bloquer : une clé de contrôle fausse est
       // presque toujours une faute de frappe, et vaut mieux d'être corrigée
-      // tout de suite que découverte au moment de facturer.
-      avertissement: fiscal.coherent ? null
+      // tout de suite que découverte au moment de facturer. En France, le
+      // registre a déjà répondu : son message vaut mieux que ce contrôle.
+      avertissement: (pays === "FR" || fiscal.coherent) ? null
         : "Ce numéro ne passe pas le contrôle de cohérence. Vérifiez-le depuis votre compte : une erreur empêcherait la facturation hors TVA.",
-      avertissement_code: fiscal.coherent ? null : "tva_incoherente_inscription",
+      avertissement_code: (pays === "FR" || fiscal.coherent) ? null : "tva_incoherente_inscription",
     },
     201,
     { "set-cookie": cookieSession(jeton) }

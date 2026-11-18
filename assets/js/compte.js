@@ -154,9 +154,11 @@
     });
   }
 
-  // Ce que l'on demande dépend du pays : un coiffeur français connaît son
-  // SIRET et presque jamais son numéro intracommunautaire, qui sera
-  // reconstitué à partir du SIREN côté serveur.
+  // Ce que l'on demande dépend du pays. En France, le champ accepte le
+  // SIRET, le SIREN ou le numéro de TVA : c'est le registre des
+  // entreprises qui tranche ensuite, côté serveur. Le site ne reconstitue
+  // plus le numéro à partir du SIREN — voir la note dans _commun.js, à
+  // l'endroit où vivait tvaDepuisSiret().
   function modelesIdentifiant() {
     return {
       BE: { label: t("id_BE_label"), aide: t("id_BE_aide") },
@@ -300,6 +302,21 @@
               sessionStorage.setItem("nishman-avis", JSON.stringify({
                 code: r.donnees.avertissement_code || "",
                 texte: r.donnees.avertissement,
+              }));
+            } catch (x) {}
+          }
+
+          /* Ce que le registre des entreprises a répondu, porté jusqu'à la
+             page de compte. C'est la pièce qui manquait le plus : un
+             coiffeur en franchise en base découvrait la TVA sur sa facture
+             sans jamais avoir été prévenu. Un fait normal s'affiche en
+             « info », une saisie à corriger en « erreur ». */
+          if (r.donnees.message_fiscal) {
+            try {
+              sessionStorage.setItem("nishman-avis", JSON.stringify({
+                code: "",
+                texte: r.donnees.message_fiscal,
+                ton: r.donnees.statut_fiscal === "a_corriger" ? "erreur" : "info",
               }));
             } catch (x) {}
           }
@@ -492,7 +509,7 @@
           try { avis = JSON.parse(brut); } catch (y) { avis = { texte: brut }; }
           dire($("#msg-profil"), messageServeur({
             code: avis.code, erreur: avis.texte,
-          }), "erreur");
+          }), avis.ton || "erreur");
           montrerVue("coordonnees");
         }
       } catch (x) {}
@@ -561,7 +578,12 @@
     function remplirProfil() {
       selPaysProfil.value = MOI.pays || "BE";
       $("#p-societe").value = MOI.salon || "";
-      $("#p-identifiant").value = MOI.pays === "FR" ? (MOI.siret || "")
+      /* En France, le champ accepte le SIRET ou le numéro de TVA. On y
+         remet ce que le compte porte réellement : le SIRET s'il en a un,
+         sinon son numéro — un compte créé en tapant le numéro n'a pas de
+         SIRET, et lui présenter un champ vide le pousserait à ressaisir,
+         donc à se tromper. */
+      $("#p-identifiant").value = MOI.pays === "FR" ? (MOI.siret || MOI.tva || "")
                                                     : (MOI.tva || "").replace(/^[A-Z]{2}/, "");
       $("#p-prenom").value = MOI.prenom || "";
       $("#p-nom").value = MOI.nom || "";
@@ -681,15 +703,26 @@
           return;
         }
 
+        /* Trois issues, trois tons. Le message du registre passe devant
+           l'avertissement de cohérence : quand la France a répondu, ce
+           qu'elle dit vaut mieux qu'un contrôle de clé. Et « votre
+           entreprise n'a pas de numéro intracommunautaire » n'est pas un
+           échec d'enregistrement : les coordonnées, elles, sont bien
+           enregistrées. */
+        var fiscal = r.donnees.message_fiscal || "";
         var avis = r.donnees.avertissement
           ? messageServeur({ code: r.donnees.avertissement_code,
                              erreur: r.donnees.avertissement })
           : "";
-        dire(zone, avis || t("profil_ok"), avis ? "erreur" : "succes");
+        if (fiscal) {
+          dire(zone, fiscal, r.donnees.statut_fiscal === "a_corriger" ? "erreur" : "info");
+        } else {
+          dire(zone, avis || t("profil_ok"), avis ? "erreur" : "succes");
+        }
 
         // On relit le compte plutôt que de recopier ce qu'on vient d'envoyer :
-        // c'est le serveur qui a le dernier mot, notamment sur le numéro de
-        // TVA reconstitué pour la France.
+        // c'est le serveur qui a le dernier mot — notamment sur le numéro de
+        // TVA, que le registre des entreprises peut avoir corrigé.
         return fetch("/api/moi", { headers: { accept: "application/json" }, credentials: "same-origin" })
           .then(function (x) { return x.json(); })
           .then(function (d) {

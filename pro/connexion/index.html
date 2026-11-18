@@ -15,7 +15,7 @@
   href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" />
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
-<link rel="stylesheet" href="/assets/css/compte.css?v=327" />
+<link rel="stylesheet" href="/assets/css/compte.css?v=328" />
   <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 </head>
 <body>
@@ -56,9 +56,11 @@
 
     <!-- ── inscription ── -->
     <!-- Le pays vient en premier : c'est lui qui décide de l'identifiant
-         demandé plus bas (TVA en Belgique et au Luxembourg, SIRET en
-         France, parce qu'un coiffeur français connaît son SIRET et
-         rarement son numéro intracommunautaire). -->
+         demandé plus bas. TVA en Belgique et au Luxembourg. En France, au
+         choix le SIRET, le SIREN ou le numéro de TVA : un coiffeur
+         connaît son SIRET, un gérant a parfois son numéro sous les yeux,
+         et c'est le registre des entreprises qui tranche ensuite — le
+         site ne calcule plus ce numéro, voir _commun.js. -->
     <form id="form-inscription" novalidate hidden>
 
       <div class="champ">
@@ -147,8 +149,8 @@
   </div>
 </main>
 
-<script src="/assets/js/compte-langues.js?v=205"></script>
-<script src="/assets/js/compte.js?v=390"></script>
+<script src="/assets/js/compte-langues.js?v=206"></script>
+<script src="/assets/js/compte.js?v=391"></script>
 <script src="/assets/js/consentement.js?v=394" defer></script>
 </body>
 </html>

@@ -1,7 +1,16 @@
 /* ==========================================================================
    COMMUN — les briques partagées par toutes les fonctions du site.
    Mots de passe, sessions, réponses. Rien ici ne parle à Odoo.
+
+   Une seule importation, et elle est volontaire : identifiantFrancais()
+   vit dans _registre_fr.js, avec tout ce qui concerne la France. Elle est
+   purement locale — aucun appel réseau — et _registre_fr.js n'importe
+   rien, donc aucun cycle n'est possible. C'est le seul lien de ce fichier
+   vers un autre ; si une deuxième importation devait s'ajouter un jour,
+   c'est le signe qu'il faut découper autrement plutôt que l'ajouter.
    ========================================================================== */
+
+import { identifiantFrancais } from "./_registre_fr.js";
 
 /* --- Réponses ----------------------------------------------------------- */
 
@@ -375,16 +384,38 @@ export function siretCoherent(num) {
   return somme % 10 === 0;
 }
 
-// Le numéro de TVA français se reconstitue à partir du SIREN : la clé vaut
-// (12 + 3 × (SIREN modulo 97)) modulo 97. Un coiffeur connaît son SIRET,
-// rarement son numéro intracommunautaire ; on le calcule pour lui, ce qui
-// permettra la vérification VIES sans rien lui redemander.
-export function tvaDepuisSiret(siret) {
-  if (!/^[0-9]{14}$/.test(siret)) return null;
-  const siren = siret.slice(0, 9);
-  const cle = (12 + 3 * (Number(siren) % 97)) % 97;
-  return "FR" + String(cle).padStart(2, "0") + siren;
-}
+/* --------------------------------------------------------------------------
+   ICI VIVAIT tvaDepuisSiret(), RETIRÉE LE 18 NOVEMBRE 2026.
+
+   Elle reconstituait le numéro de TVA français à partir du SIRET :
+   clé = (12 + 3 × (SIREN modulo 97)) modulo 97. L'intention était bonne —
+   un coiffeur connaît son SIRET, rarement son numéro intracommunautaire —
+   et elle a tenu un an sans qu'on voie le défaut, parce que les annuaires
+   en ligne affichent eux-mêmes ce numéro calculé : le faux et le vrai se
+   ressemblaient parfaitement.
+
+   La formule est un CONTRÔLE, pas un annuaire. Elle se trompait de deux
+   façons, et les deux ont coûté :
+
+     - elle inventait un numéro à qui n'en a pas. Un coiffeur en franchise
+       en base n'a pas de numéro intracommunautaire ; la fiche en portait
+       un, et l'exonération suivait la fiche. Neuf factures, 850,02 € de
+       TVA due.
+     - certaines clés ne sont pas numériques. B.M. BARBER porte
+       FR0F943141192 ; la formule produisait FR33943141192, refusé au
+       registre européen. Deux factures exonérées pour 20 492,70 €
+       reposaient sur un numéro faux, alors que l'exonération était due.
+
+   Elle est remplacée par _registre_fr.js, qui va CHERCHER le numéro au
+   registre français (INSEE + DGFiP) au lieu de le déduire. Le registre
+   distingue les quatre cas qu'aucun calcul ne peut distinguer :
+   l'entreprise a un numéro, elle n'en a pas, elle a cessé, ce SIREN
+   n'existe pas.
+
+   Ce bloc reste en place plutôt que d'être effacé : la prochaine session
+   qui aura l'idée de calculer ce numéro doit trouver ici pourquoi c'est
+   une mauvaise idée.
+   -------------------------------------------------------------------------- */
 
 // Renvoie { tva, siret, coherent } ou { erreur } si la longueur est
 // manifestement fausse. On refuse la longueur, jamais la clé de contrôle :
@@ -393,13 +424,12 @@ export function tvaDepuisSiret(siret) {
 // de frappe un dimanche soir.
 export function identifiantFiscal(pays, saisie) {
   const num = chiffresSeuls(saisie);
-  if (pays === "FR") {
-    if (num.length !== 14) {
-      return { erreur: "Le SIRET compte 14 chiffres. Vous en avez saisi " + num.length + ".",
-               code: "siret_longueur", attendu: 14, saisi: num.length };
-    }
-    return { siret: num, tva: tvaDepuisSiret(num), coherent: siretCoherent(num) };
-  }
+  /* La France passe par le registre : la forme est lue ici, le numéro est
+   * demandé à la France par resoudreFrance(). Cette fonction ne rend donc
+   * JAMAIS de « tva » pour un client français — c'est voulu, et c'est ce
+   * qui empêche un appelant de réutiliser par distraction un numéro qui
+   * n'aurait été ni déclaré ni vérifié. */
+  if (pays === "FR") return identifiantFrancais(saisie);
   if (pays === "BE") {
     const n = num.length === 9 ? "0" + num : num;   // beaucoup oublient le zéro de tête
     if (n.length !== 10) {

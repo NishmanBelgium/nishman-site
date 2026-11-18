@@ -69,6 +69,67 @@ export function sirenCoherent(siren) {
   return somme % 10 === 0;
 }
 
+/* --------------------------------------------------------------------------
+   CE QUE LE CLIENT A LE DROIT DE TAPER.
+
+   La question de Dilhan, mot pour mot : « comment faire en sorte que le
+   client puisse mettre la bonne info, mais qu'il ne soit pas bloqué non
+   plus ». La réponse tient en une phrase : on accepte les trois formes
+   sous lesquelles un professionnel français connaît son entreprise, et
+   c'est le registre qui tranche ensuite.
+
+     14 chiffres          le SIRET, ce que presque tous connaissent
+      9 chiffres          le SIREN, ce que portent les documents officiels
+     FR + clé + 9 chiffres le numéro intracommunautaire, pour qui l'a sous
+                          les yeux — clé alphanumérique comprise, c'est
+                          elle qui a coûté 20 492,70 € de factures assises
+                          sur un numéro faux
+
+   On ne refuse que ce qui ne ressemble à aucune des trois. Et on ne
+   refuse jamais sur la clé de contrôle : une clé qui ne tombe pas juste
+   est signalée, pas bloquée. Un dimanche soir, un coiffeur qui se trompe
+   d'un chiffre doit pouvoir finir son inscription.
+   -------------------------------------------------------------------------- */
+export function identifiantFrancais(saisie) {
+  const brut = String(saisie || "").toUpperCase().replace(/[^0-9A-Z]/g, "");
+
+  if (/^FR[0-9A-Z]{2}[0-9]{9}$/.test(brut)) {
+    const siren = brut.slice(4);
+    return { siret: null, siren, tva: null, tva_saisie: brut,
+             coherent: sirenCoherent(siren) };
+  }
+
+  const n = brut.replace(/[^0-9]/g, "");
+  if (n.length === 14 && n === brut) {
+    return { siret: n, siren: n.slice(0, 9), tva: null, tva_saisie: null,
+             coherent: siretCoherentLocal(n) };
+  }
+  if (n.length === 9 && n === brut) {
+    return { siret: null, siren: n, tva: null, tva_saisie: null,
+             coherent: sirenCoherent(n) };
+  }
+
+  return {
+    erreur: "Indiquez votre SIRET (14 chiffres), votre SIREN (9 chiffres) "
+          + "ou votre numéro de TVA intracommunautaire. Vous avez saisi "
+          + brut.length + " caractère" + (brut.length > 1 ? "s" : "") + ".",
+    code: "identifiant_fr_forme",
+  };
+}
+
+/* La clé du SIRET, pour ne pas dépendre de _commun.js — ce fichier doit
+ * rester sans importation, puisque _commun.js importe celui-ci. */
+function siretCoherentLocal(num) {
+  if (!/^[0-9]{14}$/.test(num)) return false;
+  let somme = 0;
+  for (let i = 0; i < 14; i++) {
+    let c = Number(num[i]);
+    if (i % 2 === 0) { c *= 2; if (c > 9) c -= 9; }
+    somme += c;
+  }
+  return somme % 10 === 0;
+}
+
 /**
  * Interroge le registre pour un SIRET ou un SIREN.
  *
@@ -181,5 +242,71 @@ export function consigne(resultat) {
     suite: "a_verifier", tva: resultat.tva, nom: resultat.nom,
     message: `Numéro trouvé au registre : ${resultat.tva}. Nous le confirmons `
            + "auprès du registre européen.",
+  };
+}
+
+/**
+ * LE CHEMIN COMPLET, celui que l'inscription et le profil appellent.
+ *
+ * Lit ce que le client a tapé, demande à la France, et rend ce qu'il faut
+ * écrire en base. Ne lève jamais et ne bloque jamais : au pire le compte
+ * se crée avec la TVA, et se régularise.
+ *
+ * UNE RÈGLE TIENT TOUT LE RESTE : ce qui sort d'ici ne vaut JAMAIS
+ * exonération. « a_verifier » veut dire « numéro connu, pas encore
+ * confirmé », et seul le registre européen fait passer un compte en
+ * « valide ». C'est ce qui rend l'erreur impossible dans le sens coûteux :
+ * au pire on facture une TVA qu'on rembourse, jamais on exonère à tort.
+ *
+ * @returns {Promise<{erreur?, code?, siret, siren, tva, statut, message, nom}>}
+ */
+export async function resoudreFrance(saisie) {
+  const forme = identifiantFrancais(saisie);
+  if (forme.erreur) return forme;
+
+  const registre = await chercherEntreprise(forme.siren);
+  const k = consigne(registre);
+
+  /* LE CLIENT AFFIRME UN NUMÉRO QUE LA FRANCE NE DÉCLARE PAS.
+   *
+   * Deux explications possibles, et elles demandent la même prudence.
+   * Soit le numéro vient d'être attribué et n'a pas encore atteint le
+   * registre — ça arrive, quelques semaines. Soit le client l'a recopié
+   * d'un annuaire en ligne qui, comme Le Figaro ou Pappers, AFFICHE le
+   * numéro calculé par la même formule que celle qu'on vient de retirer.
+   * C'est le cas le plus probable, et il est indétectable d'ici.
+   *
+   * On ne l'écrit donc PAS dans le champ « tva ». Ce champ-là voyage : il
+   * part dans la fiche Odoo à la première commande, et une fiche Odoo qui
+   * porte un numéro ouvre l'exonération à la facturation manuelle. C'est
+   * précisément par là que les 850,02 € de TVA due sont passés.
+   *
+   * Ce que le client a tapé n'est pas perdu pour autant : il part dans le
+   * motif, visible par NBD, et le message invite à nous écrire. Un
+   * numéro réel se confirme en deux minutes par le registre européen, et
+   * se pose alors à la main depuis /pro/tva/ — qui exige, lui, une
+   * preuve. Mieux vaut un client à rappeler qu'un faux numéro en base. */
+  if (k.suite === "sans_numero" && forme.tva_saisie) {
+    return {
+      siret: forme.siret, siren: forme.siren,
+      tva: null, statut: "sans_numero",
+      nom: k.nom || "", coherent: forme.coherent,
+      revendique: forme.tva_saisie,
+      message: "Le registre français ne déclare aucun numéro de TVA "
+             + "intracommunautaire pour cette entreprise, alors que vous en "
+             + "indiquez un. La TVA s'applique donc à vos commandes pour "
+             + "l'instant. Si ce numéro est bien le vôtre, écrivez-nous : "
+             + "nous le confirmons auprès du registre européen et nous "
+             + "régularisons.",
+    };
+  }
+
+  return {
+    siret: forme.siret, siren: forme.siren,
+    tva: k.tva || null,
+    statut: k.suite,
+    nom: k.nom || "",
+    coherent: forme.coherent,
+    message: k.message,
   };
 }

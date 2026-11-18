@@ -70,6 +70,11 @@
 .message.on { display: block; }
 .message.erreur { background: #fdeceb; color: #9b1c12; }
 .message.succes { background: #e9f6ee; color: #14633a; }
+/* Ni une erreur ni une réussite : un fait à connaître. Le registre qui
+   répond « cette entreprise n'a pas de numéro intracommunautaire » annonce
+   une situation parfaitement normale — la franchise en base — et l'afficher
+   en rouge alarmerait un client qui n'a rien à corriger. */
+.message.info { background: #fdf4e6; color: #7a4e07; }
 
 .sous-carte {
   margin-top: 22px; padding-top: 20px;
