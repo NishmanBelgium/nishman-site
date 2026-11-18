@@ -36,6 +36,18 @@ const DEMANDEUR = "BE0817750283";
 
 const RELAIS = "https://api.vatsense.com/1.0/validate";
 
+/* La clé vit dans la variable Cloudflare CLE_VATSENSE, et nulle part ailleurs
+   — ni ici, ni dans une conversation. Elle s'authentifie en Basic, nom
+   d'utilisateur « user », mot de passe la clé.
+
+   ET LE PIÈGE QUI NOUS A COÛTÉ VINGT MINUTES : ce service n'affiche la clé
+   qu'UNE SEULE FOIS, dans un bandeau en haut de la page, au-dessus du tableau
+   — pas dans la ligne du tableau, où elle reste masquée pour toujours. Le
+   cadenas de cette ligne ouvre les restrictions d'adresse IP, pas la clé.
+   Si elle est perdue : « Rotate », et regarder le bandeau du haut.
+   Corollaire général : sur un écran qui ne montre un secret qu'une fois,
+   c'est l'humain qui clique, et il doit savoir d'avance où regarder. */
+
 async function interroger(numero, cle) {
   const t0 = Date.now();
   const url = RELAIS + "?vat_number=" + encodeURIComponent(numero)
