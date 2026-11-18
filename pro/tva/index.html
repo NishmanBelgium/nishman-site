@@ -93,6 +93,14 @@
     invalide:      "le registre a démenti ce numéro",
     indisponible:  "le registre n'a pas répondu",
     jamais:        "jamais vérifié",
+    /* LES DEUX RÉPONSES DU REGISTRE FRANÇAIS, ajoutées le 18 novembre 2026.
+       Elles manquaient à cette table, donc la page affichait le mot technique
+       « sans_numero » tel quel, avec une pastille rouge — et vingt-quatre
+       comptes réglés ressemblaient à du travail en retard. C'est ce qui a fait
+       dire à Dilhan « on me demande de valider à la main plusieurs
+       entreprises » alors qu'il n'y avait rien à valider. */
+    sans_numero:   "le registre français ne lui déclare aucun numéro — franchise en base, rien à valider",
+    a_corriger:    "identifiant à corriger : le registre français ne le reconnaît pas",
     /* La seconde porte du registre : elle confirme le numéro mais ne
        délivre pas de numéro de consultation. Le libellé le dit, pour que
        personne ne croie la preuve complète. */
@@ -110,9 +118,20 @@
     return isNaN(d) ? "" : d.toLocaleDateString("fr-BE",
       { day: "2-digit", month: "2-digit", year: "numeric" });
   }
+  /* LA COULEUR DIT S'IL Y A QUELQUE CHOSE À FAIRE, pas si le client est
+     exonéré. Avant le 18 novembre, tout compte non exonéré était rouge : les
+     vingt-quatre entreprises en franchise en base — dont le dossier est clos,
+     le registre ayant répondu — s'affichaient comme des anomalies.
+
+     Vert : exonéré sur preuve du registre européen.
+     Ambre : exonéré sur constat humain, preuve plus faible.
+     Gris : réglé, pas d'exonération. Rien à faire.
+     Rouge : il y a vraiment quelque chose à regarder. */
   function classePastille(c) {
     if (c.statut === "valide_manuel") return "manuel";
-    return c.exonere ? "bon" : "mauvais";
+    if (c.exonere) return "bon";
+    if (c.statut === "sans_numero") return "";
+    return "mauvais";
   }
 
   function carte(c) {
@@ -123,7 +142,12 @@
       + '<span class="num">' + echappe(c.pays) + ' · ' + echappe(c.numero || "aucun numéro") + '</span></div>'
       + '<div class="etat">' + echappe(LIBELLE[c.statut] || c.statut)
       + (c.verifie_le ? ' — le ' + jour(c.verifie_le) : '')
-      + (c.exonere ? ' · <b>facturé hors taxe</b>' : ' · facturé avec TVA belge')
+      + (c.exonere
+          ? ' · <b>facturé hors taxe</b>'
+          /* Le taux vient de l'API, qui le tient de _oss.js. Écrit en dur ici,
+             il affichait encore « TVA belge » le jour où la France est passée
+             à 20 %. */
+          : ' · facturé avec ' + (c.taux != null ? c.taux + ' % de TVA' : 'la TVA'))
       + '</div>';
 
     if (c.motif) h += '<div class="trace">' + echappe(c.motif) + '</div>';

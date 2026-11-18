@@ -20,6 +20,7 @@
 
 import { json, erreur, compteAdmin, texteValide } from "../_commun.js";
 import { controlerEtEnregistrer, ouvreDroitAExoneration } from "../_tva.js";
+import { tauxB2C } from "../_oss.js";
 
 
 // Le numéro de consultation VIES ressemble à « WAPIAAAAXnAO0Hv0 » : des
@@ -137,7 +138,14 @@ export async function onRequestGet(contexte) {
         FROM comptes
        WHERE etat = 'actif'
          AND pays IN ('FR', 'LU')
-       ORDER BY (tva_statut = 'valide') ASC, salon COLLATE NOCASE ASC
+       ORDER BY CASE
+                  WHEN tva_statut IS NULL
+                    OR tva_statut IN ('invalide', 'a_corriger', 'indisponible', 'jamais', '')
+                  THEN 0
+                  WHEN tva_statut = 'sans_numero' THEN 2
+                  ELSE 1
+                END ASC,
+                salon COLLATE NOCASE ASC
     `).all();
   } catch (e) {
     const texte = String((e && e.message) || "");
@@ -167,6 +175,15 @@ export async function onRequestGet(contexte) {
       manuel_par: c.tva_manuel_par || "",
       manuel_le: c.tva_manuel_le || "",
       manuel_note: c.tva_manuel_note || "",
+      /* LE TAUX RÉELLEMENT APPLIQUÉ À CE COMPTE, pris à la source.
+       *
+       * La page affichait « facturé avec TVA belge » en dur. C'était vrai
+       * jusqu'au 18 novembre ; depuis la bascule OSS, un client français
+       * sans numéro porte 20 % et un luxembourgeois 17 %. Plutôt que de
+       * recopier la table des taux dans la page — une seconde table est
+       * une table qui divergera de _oss.js — on la lui donne ici, calculée
+       * par la fonction qui fait foi. */
+      taux: c.tva_valide ? 0 : Math.round(tauxB2C(c.pays) * 100),
     })),
   });
 }
