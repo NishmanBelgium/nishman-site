@@ -452,22 +452,25 @@ async function rapport({ request, env }) {
    * ouvre un nouveau pays à l'OSS sans mettre tauxAttendu() à jour. */
   if (tva.lisible && tva.non_evaluees && tva.non_evaluees.length) {
     const posns = [...new Set(tva.non_evaluees.map((n) => n.position))];
-    alertes.push(tva.non_evaluees.length + " commande(s) que la veille TVA ne sait pas juger : "
+    alertes.push(tva.non_evaluees.length + " pièce(s) que la veille TVA ne sait pas juger : "
       + "position(s) « " + posns.join(" », « ") + " » inconnue(s) du contrôle. "
       + "Voir « veille_tva.non_evaluees ».");
-    consequences.push("Ces commandes ne sont ni validées ni signalées : personne ne les "
+    consequences.push("Ces pièces ne sont ni validées ni signalées : personne ne les "
       + "regarde. Il faut apprendre le taux attendu de ces positions à tauxAttendu() "
       + "dans _veille_tva.js.");
   }
 
   if (tva.lisible && tva.anomalies.length) {
     const du = tva.anomalies.reduce((s, a) => s + (a.tva_en_jeu > 0 ? a.tva_en_jeu : 0), 0);
-    alertes.push(tva.anomalies.length + " commande(s) dont la TVA ne tient pas debout"
-      + (du > 0 ? ", dont " + du.toFixed(2) + " € de TVA manquante" : "")
+    const fact = tva.anomalies.filter((a) => a.piece !== "bon").length;
+    alertes.push(tva.anomalies.length + " pièce(s) dont la TVA ne tient pas debout"
+      + (fact ? ", dont " + fact + " déjà comptabilisée(s)" : "")
+      + (du > 0 ? ", et " + du.toFixed(2) + " € de TVA manquante" : "")
       + ". Voir « veille_tva ».");
     consequences.push("Une TVA mal posée se répare à la main : il faut décider qui a "
-      + "raison avant d'écrire. Les commandes déjà facturées relèvent du comptable, "
-      + "les devis non confirmés se corrigent directement.");
+      + "raison avant d'écrire. Une facture comptabilisée relève du comptable — note de "
+      + "crédit et refacturation ; un bon non encore facturé se corrige directement, et "
+      + "c'est le seul moment où ça ne coûte rien.");
   }
 
   /* LA PROMOTION BLACK FRIDAY, ET SES DEUX PIÈGES.
