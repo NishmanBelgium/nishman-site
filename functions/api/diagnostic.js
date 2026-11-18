@@ -371,11 +371,24 @@ async function rapport({ request, env }) {
       + "ouvrez vraiment les paiements, posez PAIEMENTS_REELS = oui chez Cloudflare et "
       + "redéployez — et faites d'abord un achat réel de votre côté pour vérifier toute la chaîne.");
   }
-  if (mollie.ok && mollie.mode === "reel" && mollie.paiements_reels_autorises) {
-    alertes.push("La clé Mollie installée est la clé RÉELLE : tout paiement déclenché depuis le site "
-               + "débitera vraiment le client. Tant que la chaîne n'a pas été éprouvée, "
-               + "remplacez-la par la clé de test (préfixe « test_ »).");
-  }
+  /* LA CLÉ RÉELLE N'EST PLUS UNE ALERTE. Retirée le 18 novembre 2026.
+   *
+   * Cette alerte datait de la période d'essai : elle demandait de remettre
+   * la clé de test « tant que la chaîne n'a pas été éprouvée ». La chaîne
+   * est éprouvée — des paiements Mollie réels sont encaissés depuis le
+   * 6 novembre. L'alerte réclamait donc de casser la boutique.
+   *
+   * Et surtout : elle ne pouvait plus JAMAIS s'éteindre. Une liste
+   * d'alertes qui n'est jamais vide cesse d'être lue, et le jour où une
+   * vraie alerte s'y ajoute, personne ne la voit. C'est la même faute que
+   * la veille TVA qui criait au loup sur des commandes justes, le même
+   * jour, et c'est ce qui a laissé une commande payée dormir treize jours
+   * le 27 octobre.
+   *
+   * L'information n'est pas perdue : le bloc « mollie » de cette réponse
+   * dit son mode et si les paiements réels sont autorisés. Le cas
+   * dangereux — clé réelle SANS feu vert, donc boutique qui n'encaisse
+   * rien — reste alerté juste au-dessus. */
 
   const tout = base.ok && portier.ok && vies.ok && odoo.ok && mollie.ok && produits.ok && sendcloud.ok;
 

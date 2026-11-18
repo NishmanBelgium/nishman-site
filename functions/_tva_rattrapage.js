@@ -208,6 +208,23 @@ export async function rattraperApresVente(db, env, compte, info) {
 
 const STATUTS_CONFIRMES = ["valide", "valide_manuel", "valide_sans_preuve"];
 
+/* UN PANIER QUE PERSONNE N'A PAYÉ N'A PAS DE PROBLÈME DE TVA.
+ *
+ * La ligne de rattrapage naît au moment du devis, bien avant qu'on sache si
+ * la vente se fera. Résultat au 18 novembre : sur les trente-deux lignes
+ * rouges de la page des statistiques, une dizaine étaient des paniers
+ * abandonnés ou expirés — CMD-20261117-JZL, annulée, 217,80 €, réclamait une
+ * note de crédit pour une vente qui n'a jamais eu lieu.
+ *
+ * On ne garde donc que ce qui a été encaissé. Une ligne sans paiement
+ * correspondant reste visible : ce sont les ventes nées directement dans
+ * Odoo, qui existent bel et bien — l'absence de trace de paiement sur le
+ * site ne veut pas dire qu'il n'y a pas eu de vente. */
+const SEULEMENT_ENCAISSEES =
+  "   AND (NOT EXISTS (SELECT 1 FROM paiements p WHERE p.ref = t.ref) " +
+  "        OR EXISTS (SELECT 1 FROM paiements p WHERE p.ref = t.ref " +
+  "                     AND p.statut = 'paye')) ";
+
 /** Les chiffres et lettres d'un numéro, pour comparer deux écritures. */
 function noyau(v) {
   return String(v || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -239,6 +256,32 @@ export async function reexaminerMuettes(db) {
     ).all();
 
     for (const l of (r && r.results) || []) {
+      /* LE REGISTRE A TRANCHÉ : PAS DE NUMÉRO. La vente est donc
+       * correctement taxée et il n'y a RIEN à régulariser — la ligne se
+       * ferme au lieu de rougir indéfiniment.
+       *
+       * C'est le défaut trouvé le 18 novembre : seuls les statuts confirmés
+       * étaient reportés, donc un compte passé en « sans_numero » gardait
+       * statut_apres vide, et sa vente restait dans « numéros que le
+       * registre n'a pas tranchés » pour toujours. Vingt-quatre comptes
+       * français sont dans ce cas : c'est l'essentiel du rouge que Dilhan
+       * voyait sur la page des statistiques sans comprendre quoi en faire.
+       *
+       * La fermeture ne vaut que pour CETTE vente. Si le client obtient un
+       * numéro plus tard, ses ventes futures en profiteront ; celle-ci
+       * portait la TVA à juste titre au moment où elle a eu lieu. */
+      if (String(l.statut || "") === "sans_numero") {
+        await db.prepare(
+          "UPDATE tva_rattrapage SET statut_apres = 'sans_numero', " +
+            "verifie_apres_le = ?, regle = 1 WHERE ref = ?"
+        ).bind(
+          String(l.verifiee_le || new Date().toISOString()).slice(0, 40),
+          l.ref,
+        ).run();
+        reportees++;
+        continue;
+      }
+
       if (STATUTS_CONFIRMES.indexOf(String(l.statut || "")) === -1) continue;
 
       const surLaVente = noyau(l.numero_vente);
@@ -277,13 +320,16 @@ export async function aRegulariser(db, limite = 100) {
     await preparerRattrapage(db);
     await reexaminerMuettes(db);
     const r = await db.prepare(
-      "SELECT ref, odoo_nom, client, pays, numero, montant, " +
-        "statut_vente, motif_vente, statut_apres, preuve_apres, " +
-        "verifie_apres_le, cree_le " +
-        "FROM tva_rattrapage " +
-        "WHERE regle = 0 AND statut_apres IN " +
+      "SELECT t.ref AS ref, t.odoo_nom AS odoo_nom, t.client AS client, " +
+        "t.pays AS pays, t.numero AS numero, t.montant AS montant, " +
+        "t.statut_vente AS statut_vente, t.motif_vente AS motif_vente, " +
+        "t.statut_apres AS statut_apres, t.preuve_apres AS preuve_apres, " +
+        "t.verifie_apres_le AS verifie_apres_le, t.cree_le AS cree_le " +
+        "FROM tva_rattrapage t " +
+        "WHERE t.regle = 0 AND t.statut_apres IN " +
         "('valide', 'valide_manuel', 'valide_sans_preuve') " +
-        "ORDER BY cree_le DESC LIMIT " + Math.min(500, Math.max(1, Number(limite) || 100))
+        SEULEMENT_ENCAISSEES +
+        "ORDER BY t.cree_le DESC LIMIT " + Math.min(500, Math.max(1, Number(limite) || 100))
     ).all();
     return (r && r.results) || [];
   } catch (e) {
@@ -307,12 +353,15 @@ export async function encoreMuettes(db, limite = 100) {
        trouve plus rien à reporter et ne coûte qu'une lecture. */
     await reexaminerMuettes(db);
     const r = await db.prepare(
-      "SELECT ref, odoo_nom, client, pays, numero, montant, " +
-        "motif_vente, statut_apres, verifie_apres_le, cree_le " +
-        "FROM tva_rattrapage " +
-        "WHERE regle = 0 AND (statut_apres IS NULL " +
-        "      OR statut_apres IN ('indisponible', 'jamais', '')) " +
-        "ORDER BY cree_le DESC LIMIT " + Math.min(500, Math.max(1, Number(limite) || 100))
+      "SELECT t.ref AS ref, t.odoo_nom AS odoo_nom, t.client AS client, " +
+        "t.pays AS pays, t.numero AS numero, t.montant AS montant, " +
+        "t.motif_vente AS motif_vente, t.statut_apres AS statut_apres, " +
+        "t.verifie_apres_le AS verifie_apres_le, t.cree_le AS cree_le " +
+        "FROM tva_rattrapage t " +
+        "WHERE t.regle = 0 AND (t.statut_apres IS NULL " +
+        "      OR t.statut_apres IN ('indisponible', 'jamais', '')) " +
+        SEULEMENT_ENCAISSEES +
+        "ORDER BY t.cree_le DESC LIMIT " + Math.min(500, Math.max(1, Number(limite) || 100))
     ).all();
     return (r && r.results) || [];
   } catch (e) {
