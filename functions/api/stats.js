@@ -21,7 +21,7 @@
 
 import { json, erreur, compteAdmin } from "../_commun.js";
 import { preparerTable } from "../_paiements.js";
-import { lireMesure, preparerMesure, lireGestes, lireCampagnes } from "../_mesure.js";
+import { lirePeriode, preparerMesure, lireGestes, lireCampagnes } from "../_mesure.js";
 import { devisParJour, lireDevis } from "../_devis.js";
 import { aRegulariser, encoreMuettes } from "../_tva_rattrapage.js";
 
@@ -283,22 +283,30 @@ export async function onRequestGet({ request, env }) {
   const avantJusqua = decaler(depuis, -1);
   const avantDepuis = decaler(avantJusqua, -(jours - 1));
 
+  /* Les deux fenêtres d'audience sont lues brutes, UNE fois chacune, et
+     les trois périmètres sont découpés en mémoire. Avant la correction du
+     18 novembre, c'étaient six appels et 42 agrégations SQL qui
+     relisaient les mêmes lignes — le premier poste de consommation D1 du
+     site. Les nombres rendus sont les mêmes ; voir l'en-tête de
+     `lirePeriode` dans `_mesure.js` pour la seule différence, délibérée. */
+  const [periode, periodeAvant] = await Promise.all([
+    lirePeriode(env.DB, depuis, jusqua),
+    lirePeriode(env.DB, avantDepuis, avantJusqua),
+  ]);
+  const audience = periode.tout;
+  const audienceAvant = periodeAvant.tout;
+  const audienceBoutique = periode.boutique;
+  const audienceBoutiqueAvant = periodeAvant.boutique;
+  const audiencePro = periode.pro;
+  const audienceProAvant = periodeAvant.pro;
+
   const [
-    audience, audienceAvant,
-    audienceBoutique, audienceBoutiqueAvant,
-    audiencePro, audienceProAvant,
     vente, venteAvant,
     ventePro, venteProAvant,
     gens, gensAvant, portes, bloquees, campagnes,
     journalDevis, listeDevis, listeCommandes, devisAvant,
     tvaARegulariser, tvaMuettes,
   ] = await Promise.all([
-    lireMesure(env.DB, depuis, jusqua),
-    lireMesure(env.DB, avantDepuis, avantJusqua),
-    lireMesure(env.DB, depuis, jusqua, "boutique"),
-    lireMesure(env.DB, avantDepuis, avantJusqua, "boutique"),
-    lireMesure(env.DB, depuis, jusqua, "pro"),
-    lireMesure(env.DB, avantDepuis, avantJusqua, "pro"),
     commerce(env.DB, depuis, jusqua, "boutique"),
     commerce(env.DB, avantDepuis, avantJusqua, "boutique"),
     commerce(env.DB, depuis, jusqua, "pro"),

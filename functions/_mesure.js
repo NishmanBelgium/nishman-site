@@ -331,52 +331,170 @@ export function segmentValide(brut) {
   return ["accueil", "boutique", "pro", "commun"].includes(s) ? s : null;
 }
 
+/* --- Regroupement en mémoire -------------------------------------------- */
+
+/* POURQUOI LE REGROUPEMENT N'EST PLUS FAIT EN SQL — mesuré le 18 novembre 2026.
+ *
+ * Chaque agrégation `GROUP BY` relisait la totalité des lignes de la
+ * fenêtre. Sept agrégations par appel, six appels par chargement du
+ * tableau de bord : 42 relectures des mêmes lignes, soit ~124 000 lignes
+ * lues pour une base qui en contient 4 841 au total. C'était, et de
+ * loin, le premier poste de consommation D1 du site.
+ *
+ * Une lecture brute de la fenêtre coûte ~1 700 lignes. Le regroupement
+ * fait ici, en mémoire, rend exactement les mêmes nombres : les sommes
+ * sont des additions d'entiers, pas des approximations. Vérifié sur huit
+ * fenêtres et six dimensions, zéro écart (voir
+ * `site/correction-a-mesure-2026-11-18.md` dans le coffre).
+ *
+ * LA SEULE DIFFÉRENCE VISIBLE, et elle est délibérée. Elle touche les
+ * DEUX répartitions tronquées : `par_chemin` (25 premiers) et
+ * `par_pays` (15 premiers). Quand plusieurs entrées ont le même nombre
+ * de vues à la frontière de la coupe, le SQL en gardait un
+ * sous-ensemble arbitraire — l'ordre de stockage des lignes, que SQLite
+ * ne garantit pas et qui change dès que la table bouge. Ici le départage
+ * est explicite (vues décroissantes, puis la clé par ordre
+ * alphabétique), donc le classement est reproductible d'un chargement à
+ * l'autre, ce que l'ancien ne garantissait pas.
+ *
+ * Mesuré : les entrées strictement au-dessus du seuil de coupe sont
+ * exactement les mêmes qu'avant, et toutes les entrées qui permutent
+ * valent exactement le seuil (au plus 4 sur les 8 fenêtres testées).
+ * `par_source` et `par_appareil` ne sont pas tronqués : mêmes membres,
+ * mêmes valeurs, seul l'ordre de deux ex æquo peut s'inverser.
+ *
+ * NE PAS « corriger » cette différence en élargissant une limite : ce
+ * sont les limites qui définissent ce que la page affiche, et les
+ * changer modifierait le tableau de bord pour de vrai. */
+
+/* Regroupe des lignes brutes sur une clé, et trie. `limite` à 0 = tout.
+   Le départage par la clé rend le classement stable : sans lui, deux
+   chargements de la même page pourraient afficher deux listes. */
+function grouper(lignes, cle, limite) {
+  const par = new Map();
+  for (const l of lignes) {
+    const k = l[cle];
+    const e = par.get(k) || { [cle]: k, vues: 0, sessions: 0 };
+    e.vues += Number(l.vues || 0);
+    e.sessions += Number(l.sessions || 0);
+    par.set(k, e);
+  }
+  const sorties = [...par.values()].sort(
+    (a, b) => b.vues - a.vues
+           || (String(a[cle]) < String(b[cle]) ? -1 : String(a[cle]) > String(b[cle]) ? 1 : 0)
+  );
+  return limite > 0 ? sorties.slice(0, limite) : sorties;
+}
+
+/* Par jour, c'est la chronologie qui compte, pas le classement. */
+function grouperParJour(lignes) {
+  const par = new Map();
+  for (const l of lignes) {
+    const e = par.get(l.jour) || { jour: l.jour, vues: 0, sessions: 0 };
+    e.vues += Number(l.vues || 0);
+    e.sessions += Number(l.sessions || 0);
+    par.set(l.jour, e);
+  }
+  return [...par.values()].sort((a, b) => (a.jour < b.jour ? -1 : a.jour > b.jour ? 1 : 0));
+}
+
+/* Les sept répartitions d'un périmètre, à partir des lignes déjà lues.
+   Aucun accès à la base ici : c'est ce qui rend les trois périmètres
+   gratuits une fois la fenêtre lue. */
+function composer(lignes, seg) {
+  const retenues = seg ? lignes.filter((l) => segmentDe(l.chemin) === seg) : lignes;
+  let vues = 0, sessions = 0;
+  for (const l of retenues) {
+    vues += Number(l.vues || 0);
+    sessions += Number(l.sessions || 0);
+  }
+  const parSegment = grouper(
+    retenues.map((l) => ({ segment: segmentDe(l.chemin), vues: l.vues, sessions: l.sessions })),
+    "segment", 0
+  );
+  return {
+    segment: seg || "tout",
+    vues,
+    sessions,
+    par_jour: grouperParJour(retenues),
+    par_chemin: grouper(retenues, "chemin", 25),
+    par_source: grouper(retenues, "source", 0),
+    par_pays: grouper(retenues, "pays", 15),
+    par_appareil: grouper(retenues, "appareil", 0),
+    par_segment: parSegment,
+  };
+}
+
+/* Combien de jours une seule lecture brute couvre.
+ *
+ * POURQUOI DÉCOUPER. La fenêtre peut aller jusqu'à 365 jours
+ * (`JOURS_MAX` dans `api/stats.js`), et la page en lit deux : la période
+ * et la précédente. Les anciennes agrégations rendaient 25 lignes quelle
+ * que soit la fenêtre ; la lecture brute, elle, rend tout. Mesuré le
+ * 18 novembre 2026 : 2 662 lignes pour 22 jours d'historique, soit
+ * ~121 lignes par jour. À ce rythme, deux ans d'historique feraient
+ * ~88 000 lignes dans une seule réponse — l'ordre de grandeur de la
+ * limite de taille de réponse de D1. Aujourd'hui le problème n'existe
+ * pas ; dans un an il existerait, et il se manifesterait par une page de
+ * chiffres qui tombe en panne sans raison apparente.
+ *
+ * Découper ne change aucun nombre : regrouper des sommes est associatif,
+ * et les tranches sont disjointes. Ça ne change pas non plus le nombre
+ * de lignes lues — ce sont les mêmes lignes, en plusieurs réponses. */
+const JOURS_PAR_TRANCHE = 62;
+
+/* Les bornes des tranches d'une fenêtre, en jours ISO. */
+function tranches(depuis, jusqua) {
+  const t = [];
+  const unJour = 86400000;
+  let d = Date.parse(depuis + "T00:00:00Z");
+  const fin = Date.parse(jusqua + "T00:00:00Z");
+  if (!Number.isFinite(d) || !Number.isFinite(fin) || fin < d) return [[depuis, jusqua]];
+  while (d <= fin) {
+    const f = Math.min(d + (JOURS_PAR_TRANCHE - 1) * unJour, fin);
+    t.push([new Date(d).toISOString().slice(0, 10), new Date(f).toISOString().slice(0, 10)]);
+    d = f + unJour;
+  }
+  return t;
+}
+
+/* Les lignes brutes d'une fenêtre, en autant de lectures que nécessaire. */
+async function lireLignes(db, depuis, jusqua) {
+  await preparerMesure(db);
+  const parts = tranches(depuis, jusqua);
+  const lots = await Promise.all(parts.map(async ([d, f]) => {
+    const r = await db.prepare(
+      "SELECT jour, chemin, pays, source, appareil, vues, sessions FROM visites " +
+      "WHERE jour BETWEEN ? AND ?"
+    ).bind(d, f).all();
+    return (r && r.results) || [];
+  }));
+  return lots.flat();
+}
+
+/** Une période lue UNE fois, et les trois périmètres qui en découlent.
+ *
+ * C'est la porte à utiliser quand on veut plusieurs périmètres de la
+ * même fenêtre : la lecture brute est faite une seule fois, et les
+ * découpages coûtent zéro ligne de plus. */
+export async function lirePeriode(db, depuis, jusqua) {
+  const lignes = await lireLignes(db, depuis, jusqua);
+  return {
+    tout: composer(lignes, null),
+    boutique: composer(lignes, "boutique"),
+    pro: composer(lignes, "pro"),
+  };
+}
+
 /** Les totaux d'une période, et le détail par dimension.
  *
  * Avec un segment, tout est restreint à cette moitié du site. Sans, on
- * lit l'ensemble et la répartition par segment vient en plus. */
+ * lit l'ensemble et la répartition par segment vient en plus.
+ *
+ * Garde la même signature et le même objet de retour qu'avant la
+ * correction du 18 novembre : les appelants n'ont rien à changer. Pour
+ * plusieurs périmètres d'une même fenêtre, préférer `lirePeriode`, qui
+ * ne lit qu'une fois. */
 export async function lireMesure(db, depuis, jusqua, segment) {
-  await preparerMesure(db);
-  const seg = segmentValide(segment);
-  const ou = seg ? ` AND (${SQL_SEGMENT}) = ?` : "";
-  const bornes = seg ? [depuis, jusqua, seg] : [depuis, jusqua];
-
-  const un = async (sql) => {
-    const r = await db.prepare(sql).bind(...bornes).all();
-    return (r && r.results) || [];
-  };
-
-  const [totaux, parJour, parChemin, parSource, parPays, parAppareil, parSegment] =
-    await Promise.all([
-      un("SELECT SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-         "WHERE jour BETWEEN ? AND ?" + ou),
-      un("SELECT jour, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY jour ORDER BY jour"),
-      un("SELECT chemin, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY chemin ORDER BY vues DESC LIMIT 25"),
-      un("SELECT source, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY source ORDER BY vues DESC"),
-      un("SELECT pays, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY pays ORDER BY vues DESC LIMIT 15"),
-      un("SELECT appareil, SUM(vues) AS vues, SUM(sessions) AS sessions FROM visites " +
-         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY appareil ORDER BY vues DESC"),
-      /* La répartition par moitié de site. C'est le chiffre qui dit s'il
-         faut travailler la boutique ou le catalogue, et il ne coûte rien :
-         le chemin est déjà en base, on ne mesure rien de nouveau. */
-      un("SELECT (" + SQL_SEGMENT + ") AS segment, SUM(vues) AS vues, " +
-         "SUM(sessions) AS sessions FROM visites " +
-         "WHERE jour BETWEEN ? AND ?" + ou + " GROUP BY segment ORDER BY vues DESC"),
-    ]);
-
-  return {
-    segment: seg || "tout",
-    vues: Number((totaux[0] && totaux[0].vues) || 0),
-    sessions: Number((totaux[0] && totaux[0].sessions) || 0),
-    par_jour: parJour,
-    par_chemin: parChemin,
-    par_source: parSource,
-    par_pays: parPays,
-    par_appareil: parAppareil,
-    par_segment: parSegment,
-  };
+  return composer(await lireLignes(db, depuis, jusqua), segmentValide(segment));
 }
