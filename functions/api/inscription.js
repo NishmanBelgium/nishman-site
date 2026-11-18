@@ -14,7 +14,12 @@ import { freinerIp, estAdresseAdmin,
   paysValide, identifiantFiscal, texteValide,
 } from "../_commun.js";
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(ctx) {
+  const { request, env } = ctx;
+  /* Lié à son contexte : waitUntil déstructuré perd son destinataire.
+     Il sert à la vérification par le relais, qui prend quinze secondes et
+     n'a donc rien à faire devant quelqu'un qui s'inscrit. */
+  const attendre = (p) => { try { ctx.waitUntil(p); } catch (e) { /* tant pis */ } };
   const db = env.DB;
   if (!db) return erreur("La base de données n'est pas branchée.", 500, "base_absente");
 
@@ -150,6 +155,47 @@ export async function onRequestPost({ request, env }) {
     } catch (e) { /* l'inscription aboutit quoi qu'il arrive */ }
   }
 
+  /* ========================================================================
+     LA VÉRIFICATION PAR LE RELAIS, APRÈS LA RÉPONSE.
+
+     Ce qui précède a interrogé les deux portes du registre européen, et
+     depuis Cloudflare elles éconduisent l'appel en soixante-quinze
+     millisecondes : le compte repart donc « indisponible », en TVA belge,
+     alors que le numéro est peut-être parfaitement valide. C'est exactement
+     la mécanique qui a produit les factures à corriger et les notes de
+     crédit du 18 novembre.
+
+     Le relais, lui, obtient la réponse — en quinze secondes. Personne ne
+     peut attendre quinze secondes devant un formulaire d'inscription, mais
+     personne n'a besoin d'attendre : entre l'inscription et la première
+     commande il s'écoule des minutes au mieux. On répond donc tout de
+     suite, et la vérification se fait derrière, pendant que le client
+     découvre la boutique. Quand il arrive au panier, son compte est déjà
+     exonéré s'il doit l'être.
+
+     On ne le fait QUE s'il reste quelque chose à gagner : un numéro déjà
+     confirmé n'a pas à être redemandé, et la France ayant déjà tranché sur
+     une absence de numéro, il n'y a rien à vérifier.
+     ===================================================================== */
+  const aGagner = (pays === "FR" || pays === "LU")
+    && !!(fiscal.tva || fiscal.siret)
+    && !tva.valide
+    && fiscal.statut !== "sans_numero" && fiscal.statut !== "a_corriger";
+
+  if (aGagner && env.CLE_VATSENSE) {
+    attendre((async () => {
+      try {
+        await controlerEtEnregistrer(db,
+          { id: compteId, tva: fiscal.tva, siret: fiscal.siret, pays }, env,
+          /* Une seule tentative sur les portes officielles : on sait
+             qu'elles vont refuser, inutile d'insister trois fois avant
+             d'arriver au relais. */
+          { tentatives: 1, delaiMs: 4000, relais: true,
+            cleRelais: String(env.CLE_VATSENSE || ""), delaiRelaisMs: 25000 });
+      } catch (e) { /* le rattrapage de nuit repassera */ }
+    })());
+  }
+
   // Le compte est créé et la session ouverte dans la foulée : lui redemander
   // son mot de passe juste après l'avoir choisi n'apporte rien.
   return json(
@@ -166,7 +212,18 @@ export async function onRequestPost({ request, env }) {
        * mots. C'est la pièce qui manquait le plus : un coiffeur en
        * franchise en base voyait la TVA sur sa facture sans comprendre
        * pourquoi, et nous non plus. Maintenant il le lit à l'inscription. */
-      message_fiscal: pays === "FR" ? (fiscal.message || null) : null,
+      /* LA PHRASE QUI MANQUAIT, et qui vaut une note de crédit évitée.
+       *
+       * Un professionnel français ou luxembourgeois dont le numéro part en
+       * vérification voit la TVA belge s'il commande dans la minute. Jusqu'ici
+       * il la découvrait sur sa facture, sans explication, et c'est comme ça
+       * qu'on se retrouve à émettre des notes de crédit et à passer une
+       * journée à démêler des factures. Maintenant il est prévenu avant, et
+       * il sait que c'est provisoire.
+       *
+       * Elle s'ajoute au message du registre français plutôt que de le
+       * remplacer : les deux comptent, et le second explique le premier. */
+      message_fiscal: messageFiscal(pays, fiscal, aGagner && !!env.CLE_VATSENSE),
       statut_fiscal: pays === "FR" ? (fiscal.statut || null) : null,
       // Signalé à l'inscrit sans bloquer : une clé de contrôle fausse est
       // presque toujours une faute de frappe, et vaut mieux d'être corrigée
@@ -179,6 +236,30 @@ export async function onRequestPost({ request, env }) {
     201,
     { "set-cookie": cookieSession(jeton) }
   );
+}
+
+/**
+ * Ce qu'on dit à l'inscrit de sa situation fiscale, en un seul message.
+ *
+ * Deux choses peuvent devoir être dites, et elles se complètent : ce que le
+ * registre français a répondu sur son numéro, et le fait qu'une vérification
+ * européenne est en cours. La seconde seule laisserait croire à une anomalie ;
+ * la première seule laisserait découvrir la TVA sur la facture.
+ */
+function messageFiscal(pays, fiscal, verificationLancee) {
+  const bouts = [];
+  if (pays === "FR" && fiscal && fiscal.message) bouts.push(String(fiscal.message));
+
+  if (verificationLancee) {
+    bouts.push(
+      "Nous vérifions votre numéro de TVA auprès du registre européen ; "
+      + "cela prend moins d'une minute. Si vous commandez avant la fin de "
+      + "cette vérification, la TVA belge sera appliquée par précaution et "
+      + "vous sera remboursée : la facture sera corrigée."
+    );
+  }
+
+  return bouts.length ? bouts.join(" ") : null;
 }
 
 export async function onRequest() {

@@ -120,6 +120,25 @@ export async function verifier(numero, paysCompte, requerant, options) {
     }
   }
 
+  /* LE RELAIS, EN DERNIER RECOURS ET SEULEMENT SI ON A LE TEMPS.
+   *
+   * En dernier parce que les portes officielles sont gratuites et font foi ;
+   * le relais est un intermédiaire payant, et on ne lui demande que ce que
+   * le registre nous a refusé. Depuis Cloudflare il nous refuse tout, donc
+   * en pratique c'est le relais qui répond — mais l'ordre reste juste, et le
+   * jour où le registre acceptera nos appels, rien ne sera à défaire.
+   *
+   * Et seulement si on a le temps, parce qu'il met quinze secondes. */
+  if (options && options.relais && options.cleRelais) {
+    const r = await interrogerRelais(numero, requerant,
+                                     options.cleRelais, options.delaiRelaisMs);
+    if (r.statut !== "indisponible") return { ...r, essais: essaisMax };
+    /* Le relais non plus n'a rien tranché : on garde SON motif, c'est lui
+       qui a parlé en dernier. Sans ça, on chercherait longtemps lequel des
+       trois chemins a lâché. */
+    dernier = r;
+  }
+
   return { ...dernier, essais: essaisMax };
 }
 
@@ -305,6 +324,127 @@ async function interrogerSansPreuve(part, delaiMs) {
   return indisponible(d.isValid === false
     ? "seconde_porte_dement_sans_confirmer"
     : "reponse_inattendue_get");
+}
+
+/* ==========================================================================
+   LA TROISIÈME PORTE — le relais commercial.
+
+   Les deux portes ci-dessus sont celles du registre européen, et depuis
+   Cloudflare elles sont éconduites toutes les deux : le registre refuse les
+   appels venus des centres de données (mesuré le 18 novembre, voir le cadre
+   de correction plus haut). Un relais commercial, lui, appelle le registre
+   depuis sa propre infrastructure, qui n'est pas éconduite, et nous rend la
+   réponse par une API ordinaire — numéro de consultation compris, puisqu'il
+   transmet NBD comme requérant.
+
+   Mesuré le 18 novembre au soir, depuis Cloudflare, sur huit numéros dont on
+   connaissait déjà la réponse : les six numéros français valides confirmés,
+   le SIREN inexistant refusé, numéro de consultation sur sept réponses sur
+   sept. Médiane 15,8 s ; un numéro déjà demandé revient en 102 ms.
+
+   CES QUINZE SECONDES DÉCIDENT DE TOUT. Cette porte n'est donc ouverte que
+   si l'appelant le demande (options.relais), et seuls les appelants que
+   personne n'attend le demandent : la vérification d'arrière-plan après une
+   inscription, le rattrapage de nuit, le contrôle lancé depuis /pro/tva/.
+   Le panier, le devis et le paiement ne la demandent jamais — leur budget
+   est de trois secondes et le relais le dépasserait toujours.
+   ========================================================================== */
+
+const RELAIS = "https://api.vatsense.com/1.0/validate";
+
+async function interrogerRelais(numero, requerant, cle, delaiMs) {
+  if (!cle) return indisponible("relais_sans_cle");
+
+  const stop = new AbortController();
+  const minuteur = setTimeout(() => stop.abort(), delaiMs || 25000);
+  let reponse;
+  try {
+    reponse = await fetch(
+      RELAIS + "?vat_number=" + encodeURIComponent(numero)
+             + "&requester_vat_number=" + encodeURIComponent(requerant),
+      {
+        headers: {
+          accept: "application/json",
+          /* Authentification Basic, nom d'utilisateur « user », mot de passe
+             la clé. Elle vit dans la variable Cloudflare CLE_VATSENSE et
+             nulle part ailleurs. */
+          Authorization: "Basic " + btoa("user:" + cle),
+        },
+        signal: stop.signal,
+      });
+  } catch (e) {
+    clearTimeout(minuteur);
+    return indisponible(e && e.name === "AbortError"
+      ? "relais_plafond" : "relais_reseau");
+  }
+  clearTimeout(minuteur);
+
+  let d;
+  try { d = await reponse.json(); }
+  catch (e) { return indisponible("relais_illisible_" + reponse.status); }
+
+  if (!reponse.ok || !d || d.success !== true) {
+    /* Vu une fois un HTTP 412 sur FR44048181010, puis HTTP 200 sur le même
+       numéro vingt minutes plus tard : le code HTTP de ce relais n'est pas
+       une information stable, on ne construit rien dessus. */
+    return indisponible("relais_http_" + reponse.status);
+  }
+
+  const donnees = d.data || {};
+  const societe = donnees.company || {};
+  const preuve = texte(donnees.consultation_number);
+  const nom = texte(societe.company_name);
+
+  if (donnees.valid === true) {
+    return {
+      statut: preuve ? "valide" : "valide_sans_preuve",
+      chemin: "relais",
+      nom: nom && nom !== "---" ? nom : "",
+      adresse: texte(societe.address),
+      preuve: preuve,
+      motif: preuve
+        ? "confirmé par le registre via le relais, numéro de consultation à l'appui"
+        : "confirmé par le relais, numéro de consultation absent",
+      verifie_le: new Date().toISOString(),
+    };
+  }
+
+  /* UN DÉMENTI NE COMPTE QUE S'IL PORTE SON NUMÉRO DE CONSULTATION.
+   *
+   * Même asymétrie que pour la seconde porte, et pour la même raison, qui a
+   * déjà coûté une fois : un correctif censé cesser de taxer des clients à
+   * tort avait commencé par les déclarer en faute. Un numéro de consultation
+   * prouve que le registre a réellement répondu, au nom de NBD. Sans lui, le
+   * « non » vient du relais et pas du registre — c'est un intermédiaire
+   * commercial, pas une administration, et son silence n'est pas un verdict.
+   *
+   * Le pire que produise cette prudence : une vérification remise au
+   * prochain passage. L'inverse produisait une facture fausse.
+   *
+   * MESURÉ LE 18 NOVEMBRE, ET C'EST LE POINT : un démenti de ce relais
+   * n'est JAMAIS accompagné d'un numéro de consultation. Deux numéros
+   * refusés, le SIREN inexistant de Sh_Barber et une saisie de pure
+   * fantaisie, rendent tous deux `valid: false` sans la moindre preuve.
+   * Cette porte ne condamnera donc en pratique jamais personne, et c'est
+   * très bien ainsi : le compte reste « indisponible » avec le motif
+   * `relais_dement_sans_preuve`, qui s'affiche dans le tableau de bord et
+   * dit à un humain d'aller regarder. Aucune facture fausse, aucun client
+   * déclaré en faute par une machine.
+   *
+   * Détail utile pour le diagnostic : la fantaisie est revenue en 512 ms et
+   * le SIREN inexistant en 9,2 s. Le relais filtre donc les saisies mal
+   * formées sans appeler le registre. On ne bâtit pas de logique sur une
+   * durée, mais ça aide à lire un relevé. */
+  if (donnees.valid === false && preuve) {
+    return {
+      statut: "invalide", chemin: "relais", preuve: preuve,
+      motif: "inconnu_du_registre_via_relais",
+      verifie_le: new Date().toISOString(),
+    };
+  }
+
+  return indisponible(donnees.valid === false
+    ? "relais_dement_sans_preuve" : "relais_reponse_inattendue");
 }
 
 /** Faut-il essayer l'autre porte ?

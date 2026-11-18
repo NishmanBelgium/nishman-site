@@ -158,8 +158,18 @@ export async function rattraperApresVente(db, env, compte, info) {
      * controlerEtEnregistrer avec ses réglages par défaut : trois essais,
      * huit secondes chacun, pauses comprises. Vingt-cinq secondes au pire,
      * et nul ne les attend — c'est exactement le temps que la commande ne
-     * pouvait pas s'accorder. */
-    const r = await controlerEtEnregistrer(db, compte, env);
+     * pouvait pas s'accorder.
+     *
+     * ET LE RELAIS, depuis le 18 novembre. C'est ici qu'il sert le plus :
+     * on arrive dans cette fonction précisément parce que le registre n'a
+     * pas tranché pendant la vente, et le relais est le seul chemin qui
+     * obtienne une réponse depuis Cloudflare. Quinze secondes de plus, que
+     * personne n'attend, contre une facture à corriger. */
+    const r = await controlerEtEnregistrer(db, compte, env,
+      env && env.CLE_VATSENSE
+        ? { relais: true, cleRelais: String(env.CLE_VATSENSE),
+            delaiRelaisMs: 25000 }
+        : undefined);
 
     await db.prepare(
       "UPDATE tva_rattrapage SET statut_apres = ?, preuve_apres = ?, " +
