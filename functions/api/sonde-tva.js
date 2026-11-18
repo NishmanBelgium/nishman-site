@@ -48,6 +48,25 @@ const RELAIS = "https://api.vatsense.com/1.0/validate";
    Corollaire général : sur un écran qui ne montre un secret qu'une fois,
    c'est l'humain qui clique, et il doit savoir d'avance où regarder. */
 
+/* LE PLAFOND DE TEMPS, ET POURQUOI IL EST SI HAUT.
+
+   Mesuré le 18 novembre depuis Cloudflare : un numéro français demande 13 à
+   18 secondes, médiane 15,8 s. Un numéro déjà demandé revient en 102 ms — le
+   relais garde ses réponses. Ces secondes ne sont pas le relais : c'est le
+   registre européen qui répond lentement, et personne n'y changera rien.
+
+   Conséquence de conception, qui est le vrai enseignement de cette mesure :
+   CET APPEL NE DOIT JAMAIS ÊTRE DEVANT QUELQU'UN QUI ATTEND. Pas dans le
+   formulaire d'inscription, pas dans le tunnel de commande. Un plafond court
+   ne corrigerait rien : il transformerait une réponse juste en absence de
+   réponse, donc en TVA facturée à tort — exactement ce qu'on cherche à
+   supprimer. Le plafond est donc large, et c'est l'appel qui se place
+   ailleurs : en arrière-plan, juste après l'inscription.
+
+   Sans plafond du tout, en revanche, un amont qui reste pendu pend avec lui.
+   25 secondes : au-delà, il s'est passé autre chose qu'une lenteur normale. */
+const MS_PLAFOND = 25000;
+
 async function interroger(numero, cle) {
   const t0 = Date.now();
   const url = RELAIS + "?vat_number=" + encodeURIComponent(numero)
@@ -55,8 +74,12 @@ async function interroger(numero, cle) {
   const entetes = {};
   if (cle) entetes["Authorization"] = "Basic " + btoa("user:" + cle);
 
+  const minuteur = new AbortController();
+  const sonnerie = setTimeout(() => minuteur.abort(), MS_PLAFOND);
+
   try {
-    const r = await fetch(url, { headers: entetes });
+    const r = await fetch(url, { headers: entetes, signal: minuteur.signal });
+    clearTimeout(sonnerie);
     const ms = Date.now() - t0;
     let corps = null;
     try { corps = await r.json(); } catch (e) { corps = null; }
@@ -82,10 +105,18 @@ async function interroger(numero, cle) {
       ms: ms,
     };
   } catch (e) {
+    clearTimeout(sonnerie);
+    /* Le plafond atteint se dit autrement qu'une panne de réseau : c'est le
+       cas qu'on veut pouvoir compter séparément. Dans les deux cas, valide
+       reste null — jamais false, parce qu'on ne sait pas. */
+    const expire = !!(e && e.name === "AbortError");
     return {
       numero: numero, http: 0, ok: false, valide: null,
       nom_recu: false, consultation_recue: false, consultation_taille: 0,
-      titre_erreur: String((e && e.message) || "injoignable").slice(0, 120),
+      titre_erreur: expire
+        ? "plafond de " + MS_PLAFOND + " ms atteint"
+        : String((e && e.message) || "injoignable").slice(0, 120),
+      expire: expire,
       ms: Date.now() - t0,
     };
   }
