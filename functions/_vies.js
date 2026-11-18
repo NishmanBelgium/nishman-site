@@ -352,8 +352,16 @@ async function interrogerSansPreuve(part, delaiMs) {
 
 const RELAIS = "https://api.vatsense.com/1.0/validate";
 
+/* Un silence du relais doit dire qu'il vient DU RELAIS. Sans ce champ, le
+   tableau de bord affichait « porte principale » pour une réponse que la
+   porte principale n'avait jamais donnée — l'ambiguïté exacte qui a coûté
+   une demi-heure de diagnostic le 7 novembre. */
+function muet(motif) {
+  return { ...indisponible(motif), chemin: "relais" };
+}
+
 async function interrogerRelais(numero, requerant, cle, delaiMs) {
-  if (!cle) return indisponible("relais_sans_cle");
+  if (!cle) return muet("relais_sans_cle");
 
   const stop = new AbortController();
   const minuteur = setTimeout(() => stop.abort(), delaiMs || 25000);
@@ -374,20 +382,20 @@ async function interrogerRelais(numero, requerant, cle, delaiMs) {
       });
   } catch (e) {
     clearTimeout(minuteur);
-    return indisponible(e && e.name === "AbortError"
+    return muet(e && e.name === "AbortError"
       ? "relais_plafond" : "relais_reseau");
   }
   clearTimeout(minuteur);
 
   let d;
   try { d = await reponse.json(); }
-  catch (e) { return indisponible("relais_illisible_" + reponse.status); }
+  catch (e) { return muet("relais_illisible_" + reponse.status); }
 
   if (!reponse.ok || !d || d.success !== true) {
     /* Vu une fois un HTTP 412 sur FR44048181010, puis HTTP 200 sur le même
        numéro vingt minutes plus tard : le code HTTP de ce relais n'est pas
        une information stable, on ne construit rien dessus. */
-    return indisponible("relais_http_" + reponse.status);
+    return muet("relais_http_" + reponse.status);
   }
 
   const donnees = d.data || {};
@@ -443,7 +451,7 @@ async function interrogerRelais(numero, requerant, cle, delaiMs) {
     };
   }
 
-  return indisponible(donnees.valid === false
+  return muet(donnees.valid === false
     ? "relais_dement_sans_preuve" : "relais_reponse_inattendue");
 }
 
