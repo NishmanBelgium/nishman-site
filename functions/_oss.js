@@ -46,7 +46,7 @@
  *
  * À false, tout se comporte exactement comme avant : TVA belge partout,
  * position « National », taxe « 21% TTC ». Il n'y a rien à restaurer. */
-export const ACTIF = false;
+export const ACTIF = true;
 
 /* LE TABLEAU. Une ligne par pays, et les trois valeurs qui doivent rester
  * d'accord entre elles.
