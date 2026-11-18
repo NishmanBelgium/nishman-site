@@ -31,8 +31,11 @@ const STATUTS_EXONERANTS = [
 
   /* Confirmé par la seconde porte du registre, celle qui ne délivre pas
    * de numéro de consultation (voir _vies.js). Il exonère : c'est bien le
-   * registre officiel qui a confirmé la conformité du numéro, et la
-   * France refuse durablement la porte qui donne la preuve. Il reste
+   * registre officiel qui a confirmé la conformité du numéro, et la porte
+   * qui donne la preuve est refusée à nos serveurs — ce n'est pas la
+   * France, c'est le registre qui éconduit les centres de données :
+   * mesuré le 18 novembre, voir le cadre de correction dans _vies.js.
+   * Il reste
    * distinct pour que NBD puisse compléter la preuve à loisir, et le
    * tableau de bord les liste. */
   "valide_sans_preuve",

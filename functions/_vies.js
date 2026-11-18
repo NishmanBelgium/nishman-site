@@ -209,6 +209,29 @@ async function interroger(numero, paysCompte, requerant, delaiMs) {
  * coup. Ce n'est donc pas la saturation passagère que nous avions supposée
  * — c'est la France qui limite durement cette variante de l'appel.
  *
+ * ┌──────────────────────────────────────────────────────────────────────┐
+ * │ CORRECTION DU 18 NOVEMBRE 2026 — le paragraphe ci-dessus accuse la   │
+ * │ France à tort, et cette erreur a orienté deux semaines de travail.   │
+ * │                                                                      │
+ * │ Mesuré à la même minute, sur les mêmes numéros, par la porte GET :   │
+ * │                                                                      │
+ * │   depuis Cloudflare        MS_MAX_CONCURRENT_REQ, en ~75 ms          │
+ * │   depuis Google (veilleur) MS_MAX_CONCURRENT_REQ, en ~430 ms         │
+ * │   depuis une connexion      isValid true, avec la raison sociale,    │
+ * │   ordinaire                 en 3 à 9 secondes                        │
+ * │                                                                      │
+ * │ Et le détail qui tranche : depuis Google, le numéro BELGE de NBD a   │
+ * │ été refusé lui aussi. Ce n'est donc pas une limite française, ni     │
+ * │ propre à une porte : LE REGISTRE ÉCONDUIT LES APPELS VENUS DES       │
+ * │ CENTRES DE DONNÉES. La lenteur n'était pas un défaut — c'est le      │
+ * │ signe qu'il travaille vraiment.                                      │
+ * │                                                                      │
+ * │ Ce qui en découle : aucune vérification automatique ne peut vivre    │
+ * │ chez Cloudflare ni chez Google, quel que soit le soin qu'on y mette. │
+ * │ Elle doit partir d'une connexion ordinaire et déposer son constat    │
+ * │ ici — c'est exactement ce que api/tva-manuel.js sait recevoir.       │
+ * └──────────────────────────────────────────────────────────────────────┘
+ *
  * La conséquence était chère : quatre sociétés françaises aux numéros
  * parfaitement valides — Hair bodega, Maison Haussmann, Oz barber, SAS
  * Lumia — étaient facturées TVA comprise, et la commande S00285 l'a été

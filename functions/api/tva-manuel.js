@@ -32,7 +32,10 @@ const CONSULTATION = /^[A-Za-z0-9_-]{6,64}$/;
    7 novembre 2026.
 
    Le numéro de consultation reste la meilleure pièce, et il reste
-   préféré. Mais la France refuse durablement l'appel qui le délivre :
+   préféré. Mais l'appel qui le délivre est refusé — on a d'abord cru que
+   c'était la France ; mesuré le 18 novembre, c'est le registre qui éconduit
+   les appels venus des centres de données, Belgique comprise (voir le
+   cadre de correction dans _vies.js) :
    l'exiger revenait à facturer indéfiniment la TVA belge à des sociétés
    dont le numéro est parfaitement conforme. C'est l'erreur que NBD a
    relevée sur la commande S00285, et elle se répétait à chaque commande
@@ -265,8 +268,9 @@ export async function onRequestPost(contexte) {
     const trace = "Constaté au registre européen le "
       + c.verifie_le.slice(0, 10) + " : " + c.nom
       + (c.adresse ? " — " + c.adresse : "")
-      + ". Sans numéro de consultation, l'État membre refusant l'appel qui "
-      + "le délivre." + (note ? " " + note : "");
+      + ". Sans numéro de consultation : le registre éconduit les appels "
+      + "venus des centres de données, et seule la porte GET répond depuis "
+      + "une connexion ordinaire." + (note ? " " + note : "");
 
     await env.DB.prepare(`
       UPDATE comptes

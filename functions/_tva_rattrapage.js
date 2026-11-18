@@ -49,8 +49,10 @@ import { controlerEtEnregistrer } from "./_tva.js";
  * asymétrique : se tromper de ce côté coûte une interrogation de plus ;
  * se tromper de l'autre laisse partir une facture fausse sans que
  * personne ne le sache. Pour mémoire, les motifs transitoires déjà
- * rencontrés sont MS_MAX_CONCURRENT_REQ — l'État membre refuse parce
- * qu'on l'appelle trop —, MS_UNAVAILABLE, SERVICE_UNAVAILABLE, TIMEOUT,
+ * rencontrés sont MS_MAX_CONCURRENT_REQ — qu'on lisait « l'État membre
+ * refuse parce qu'on l'appelle trop » ; mesuré le 18 novembre, c'est le
+ * registre qui éconduit les appels venus des centres de données, quel que
+ * soit le pays, voir _vies.js —, MS_UNAVAILABLE, SERVICE_UNAVAILABLE, TIMEOUT,
  * GLOBAL_MAX_CONCURRENT_REQ, et nos propres « reseau », « illisible »,
  * « vide », « reponse_inattendue » et « http_5xx ». */
 const MOTIFS_DEFINITIFS = ["INVALID_INPUT", "format", "inconnu_du_registre"];
