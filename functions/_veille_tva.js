@@ -51,15 +51,34 @@ const COMBIEN = 150;
 
 /* Le taux attendu selon la position fiscale. Toute position inconnue ou
    absente est traitée comme nationale : c'est le cas de 71 commandes sur
-   173 chez NBD, où la TVA belge s'applique par défaut. */
+   173 chez NBD, où la TVA belge s'applique par défaut.
+
+   LES POSITIONS OSS, AJOUTÉES LE 18 NOVEMBRE 2026. Sans elles, cette
+   fonction attendait 21 % sur « OSS B2C France » et criait à l'anomalie
+   sur chaque commande française correcte. Relevé dans le diagnostic dans
+   la minute qui a suivi la bascule : « taux uniforme de 20 % là où la
+   position OSS B2C France appelle 21 % » — c'est la veille qui se
+   trompait, pas la commande.
+
+   Une alarme qui crie au loup sur des cas justes finit par ne plus être
+   lue du tout, et c'est exactement ce qui a laissé une commande payée
+   dormir treize jours le 27 octobre. */
 function tauxAttendu(nomPosition) {
   const n = String(nomPosition || "")
     .toLowerCase()
-    .normalize("NFD").replace(/[̀-ͯ]/g, "");
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   if (!n) return 21;
   if (n.indexOf("intra") !== -1) return 0;       // Intracommunautaire / Intra-Community
   if (n.indexOf("extra") !== -1) return 0;       // hors UE
   if (n.indexOf("cocont") !== -1) return 0;      // cocontractant
+  /* L'OSS : la TVA du pays d'arrivée. On reconnaît le pays dans le nom de
+   * la position plutôt que de tenir une seconde table de taux — une table
+   * de plus est une table qui divergera de _oss.js. */
+  if (n.indexOf("oss") !== -1) {
+    if (n.indexOf("france") !== -1) return 20;
+    if (n.indexOf("luxembourg") !== -1) return 17;
+    return null;                                  // OSS d'un pays qu'on ne connaît pas encore
+  }
   return 21;                                      // National / Domestic / UE B2C / EU B2C
 }
 
@@ -68,11 +87,16 @@ function tauxAttendu(nomPosition) {
  * tient pas debout. Ne lève jamais : une veille muette ne doit pas faire
  * tomber le diagnostic qui l'appelle.
  *
- * @returns { lisible, examinees, anomalies: [...], detail }
+ * @returns { lisible, examinees, anomalies: [...], non_evaluees: [...], detail }
+ *
+ * `examinees` ne compte que les commandes réellement jugées. Celles dont la
+ * position fiscale est inconnue de tauxAttendu() sortent dans
+ * `non_evaluees` : elles ne sont ni saines ni fautives, elles n'ont pas été
+ * regardées, et c'est ce qu'il faut pouvoir lire.
  */
 export async function veillerSurLaTva(env) {
   if (!configure(env)) {
-    return { lisible: false, examinees: 0, anomalies: [], detail: "Odoo non configuré" };
+    return { lisible: false, examinees: 0, anomalies: [], non_evaluees: [], detail: "Odoo non configuré" };
   }
 
   try {
@@ -81,7 +105,7 @@ export async function veillerSurLaTva(env) {
        ["id", "name", "state", "partner_id", "fiscal_position_id", "invoice_status"]],
       { limit: COMBIEN, order: "id desc" });
     if (!cmds || !cmds.length) {
-      return { lisible: true, examinees: 0, anomalies: [], detail: "" };
+      return { lisible: true, examinees: 0, anomalies: [], non_evaluees: [], detail: "" };
     }
 
     // Les taux, une fois pour toutes : on compare des pourcentages, jamais
@@ -107,11 +131,25 @@ export async function veillerSurLaTva(env) {
     }
 
     const anomalies = [];
+    /* Les commandes qu'on n'a pas su juger, et pourquoi on les compte.
+     * Une position fiscale inconnue de tauxAttendu() ne doit surtout pas
+     * passer pour une commande saine : elle n'a pas été examinée. Même
+     * discipline que le compteur « muets » du rattrapage — un contrôle
+     * incomplet qui se lit comme complet est pire qu'un contrôle qui
+     * échoue franchement. */
+    const nonEvaluees = [];
     for (const c of cmds) {
       const ls = parCommande[c.id] || [];
       if (!ls.length) continue;
 
       const attendu = tauxAttendu(c.fiscal_position_id ? c.fiscal_position_id[1] : "");
+      if (attendu === null) {
+        nonEvaluees.push({
+          commande: c.name,
+          position: c.fiscal_position_id ? c.fiscal_position_id[1] : "aucune",
+        });
+        continue;
+      }
       const nues = ls.filter((l) => !l.tax_ids || !l.tax_ids.length);
       const tauxVus = new Set();
       for (const l of ls) {
@@ -163,10 +201,16 @@ export async function veillerSurLaTva(env) {
       }
     }
 
-    return { lisible: true, examinees: cmds.length, anomalies, detail: "" };
+    return {
+      lisible: true,
+      examinees: cmds.length - nonEvaluees.length,
+      anomalies,
+      non_evaluees: nonEvaluees,
+      detail: "",
+    };
   } catch (e) {
     return {
-      lisible: false, examinees: 0, anomalies: [],
+      lisible: false, examinees: 0, anomalies: [], non_evaluees: [],
       detail: String((e && e.message) || "illisible").slice(0, 160),
     };
   }

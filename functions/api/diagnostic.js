@@ -442,9 +442,23 @@ async function rapport({ request, env }) {
    * pas le site : elle regarde Odoo, y compris les commandes saisies à la
    * main, parce que c'est là que l'erreur se produit et que c'est la seule
    * place d'où on la voit. Voir _veille_tva.js. */
-  let tva = { lisible: false, examinees: 0, anomalies: [], detail: "non exécutée" };
+  let tva = { lisible: false, examinees: 0, anomalies: [], non_evaluees: [], detail: "non exécutée" };
   try { tva = await veillerSurLaTva(env); }
-  catch (e) { tva = { lisible: false, examinees: 0, anomalies: [], detail: String((e && e.message) || "illisible").slice(0, 160) }; }
+  catch (e) { tva = { lisible: false, examinees: 0, anomalies: [], non_evaluees: [], detail: String((e && e.message) || "illisible").slice(0, 160) }; }
+
+  /* Une position fiscale que la veille ne sait pas juger. Ça s'alerte, parce
+   * qu'une commande non jugée se lit sinon comme une commande saine — et
+   * c'est exactement ce qui a laissé passer S00304. Le cas arrive quand on
+   * ouvre un nouveau pays à l'OSS sans mettre tauxAttendu() à jour. */
+  if (tva.lisible && tva.non_evaluees && tva.non_evaluees.length) {
+    const posns = [...new Set(tva.non_evaluees.map((n) => n.position))];
+    alertes.push(tva.non_evaluees.length + " commande(s) que la veille TVA ne sait pas juger : "
+      + "position(s) « " + posns.join(" », « ") + " » inconnue(s) du contrôle. "
+      + "Voir « veille_tva.non_evaluees ».");
+    consequences.push("Ces commandes ne sont ni validées ni signalées : personne ne les "
+      + "regarde. Il faut apprendre le taux attendu de ces positions à tauxAttendu() "
+      + "dans _veille_tva.js.");
+  }
 
   if (tva.lisible && tva.anomalies.length) {
     const du = tva.anomalies.reduce((s, a) => s + (a.tva_en_jeu > 0 ? a.tva_en_jeu : 0), 0);
