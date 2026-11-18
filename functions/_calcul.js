@@ -11,6 +11,7 @@
    ========================================================================== */
 
 import { evaluerOffre } from "./_offre_p1.js";
+import { tauxB2C } from "./_oss.js";
 
 /* --- Barèmes ------------------------------------------------------------ */
 
@@ -42,8 +43,15 @@ export function regimeTva(pays, tvaValide) {
   if ((pays === "FR" || pays === "LU") && tvaValide) {
     return { taux: 0, regime: "intracom" };
   }
+  /* Sans numéro intracommunautaire, le professionnel français ou
+   * luxembourgeois n'est pas un assujetti : il relève du régime du
+   * particulier de son pays. Tant que l'OSS n'est pas actif, tauxB2C rend
+   * 21 % — soit, au centime près, ce que cette ligne rendait avant. Le
+   * jour de la bascule, elle rend 20 % en France et 17 % au Luxembourg,
+   * en même temps que la boutique et que la position fiscale posée dans
+   * Odoo. Voir la note de _fiscal.js. */
   if (pays === "FR" || pays === "LU") {
-    return { taux: TAUX_TVA_BE, regime: "intracom_sans_tva" };
+    return { taux: tauxB2C(pays), regime: "intracom_sans_tva" };
   }
   return { taux: TAUX_TVA_BE, regime: "national" };
 }

@@ -27,7 +27,7 @@
 import { appel } from "./_odoo.js";
 import { produitsParEan, partenaireParEmail } from "./_odoo.js";
 import { rangerParDepot } from "./_commun.js";
-import { nomLivraison, echec, parNomInsensible, paysId } from "./_commande_odoo.js";
+import { nomLivraison, echec, parNomInsensible, paysId, ficheNeeConforme } from "./_commande_odoo.js";
 import { regimeB2C } from "./_oss.js";
 import { champsOrigine } from "./_utm.js";
 
@@ -248,6 +248,11 @@ export async function creerCommandeB2C(env, { client, relais, resultat, ref, ori
       "La position fiscale « " + regime.positions[0] + " » n'a pas été trouvée dans Odoo.",
       { cherchees: regime.positions, vues_par_le_site: (toutes || []).map((f) => f.name) });
   }
+
+  // La fiche que le site vient de créer reçoit la même position que la
+  // commande, pour qu'une facture faite à la main depuis cette fiche ne
+  // soit pas laissée au calcul automatique d'Odoo. Voir _commande_odoo.js.
+  await ficheNeeConforme(env, fiche, positionId);
 
   const valeurs = {
     partner_id: fiche.id,

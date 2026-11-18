@@ -159,6 +159,42 @@ export async function trouverOuCreerPartenaire(env, compte) {
   return { id, cree: true, nom };
 }
 
+/* --------------------------------------------------------------------------
+   LA FICHE NAÎT CONFORME — le trou par lequel la gangrène revenait.
+
+   Le site pose depuis le 11 novembre la position fiscale sur la COMMANDE.
+   C'est ce qu'il faut pour que la commande soit juste, et ça l'est.
+
+   Mais une fiche client fraîchement créée n'en portait aucune. Elle était
+   donc laissée au calcul automatique d'Odoo — le même calcul qui, depuis
+   le 11 novembre, applique « OSS B2C France » à 20 % à des clients qui ont
+   un numéro parfaitement valide, et la bonne position à d'autres, sans
+   qu'on ait su dire pourquoi.
+
+   Tant que personne ne facture hors du site, ça ne se voit pas. Le jour où
+   NBD crée une facture à la main depuis cette fiche — un réassort au
+   téléphone, un avoir, une commande de salon — Odoo redevine, et peut se
+   tromper. Les 229 fiches existantes ont reçu leur position à la main le
+   18 novembre ; sans ces quelques lignes, la 230e serait repartie sans.
+
+   Elle n'est posée QUE sur une fiche que le site vient de créer. Une fiche
+   qui existait déjà peut porter un réglage voulu par NBD, et le chemin
+   d'une commande n'est pas le bon endroit pour le défaire.
+
+   Un échec ici n'arrête rien : la commande, elle, porte sa position. On ne
+   refuse pas une vente payée parce qu'un champ de confort n'a pas pris.
+   -------------------------------------------------------------------------- */
+export async function ficheNeeConforme(env, client, positionId) {
+  if (!client || !client.cree || !client.id || !positionId) return false;
+  try {
+    await appel(env, "res.partner", "write",
+      [[client.id], { property_account_position_id: positionId }], {});
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 /* --- La commande --------------------------------------------------------- */
 
 /**
@@ -271,11 +307,11 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
 
   // 5) Le régime fiscal, arrêté par le site. Odoo doit facturer ce que le
   //    client a lu, pas le redéduire avec ses propres règles.
-  const nomPosition = positionFiscale(resultat.regime, env);
+  const nomPosition = positionFiscale(resultat.regime, env, compte.pays);
   let positionId = null;
   if (nomPosition) {
     let fp = null;
-    for (const candidat of nomsPossibles(resultat.regime, env)) {
+    for (const candidat of nomsPossibles(resultat.regime, env, compte.pays)) {
       fp = await parNomInsensible(env, "account.fiscal.position", candidat);
       if (fp) break;
     }
@@ -291,10 +327,14 @@ export async function creerCommandeOdoo(env, { compte, resultat, livraison, ref,
       } catch (e) { disponibles = ["lecture impossible : " + String(e && e.message).slice(0, 120)]; }
       throw echec("position_introuvable",
         "La position fiscale n'a pas été trouvée dans Odoo.",
-        { cherchees: nomsPossibles(resultat.regime, env), vues_par_le_site: disponibles });
+        { cherchees: nomsPossibles(resultat.regime, env, compte.pays), vues_par_le_site: disponibles });
     }
     positionId = fp.id;
   }
+
+  // 5 bis) La fiche, si le site vient de la créer, reçoit la même position
+  //        que la commande. Voir la note longue au-dessus.
+  await ficheNeeConforme(env, client, positionId);
 
   // 6) La création, en brouillon.
   const valeurs = {

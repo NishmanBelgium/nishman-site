@@ -15,13 +15,49 @@
    avaient fait échouer la recherche.
    ========================================================================== */
 
+import { ACTIF as OSS_ACTIF, regimeB2C } from "./_oss.js";
+
 export const POSITIONS_DEFAUT = {
   national: "National",                    // client belge, TVA belge 21 %
   intracom: "Intracommunautaire",          // FR/LU, numéro vérifié : autoliquidation
   intracom_sans_tva: "UE B2C",             // FR/LU sans numéro valide : TVA belge
 };
 
-export function positionFiscale(regime, env) {
+/* --------------------------------------------------------------------------
+   LE PROFESSIONNEL SANS NUMÉRO SUIT LE PARTICULIER — à partir de l'OSS.
+
+   Un coiffeur français en franchise en base n'a pas de numéro
+   intracommunautaire. Pour la TVA, il n'est pas un assujetti : il relève
+   du même régime qu'un particulier français. Le comptable l'a dit en ces
+   termes — facturer 20 % de TVA française aux particuliers français ET
+   aux professionnels français sans numéro.
+
+   Or le chemin professionnel envoyait ce client en « UE B2C », donc en TVA
+   belge à 21 %, tandis que le chemin boutique est déjà prêt à l'envoyer en
+   « OSS B2C France » à 20 %. Le jour de la bascule, les deux chemins
+   auraient divergé : même client, deux taux, selon la page par laquelle il
+   est passé. C'est exactement l'erreur que _oss.js s'applique à rendre
+   impossible — « les changer séparément, c'est facturer un taux et en
+   déclarer un autre ».
+
+   D'où ce raccordement. Il ne bouge que si _oss.js est ACTIF. Tant qu'il
+   est à false — c'est-à-dire tant que l'inscription au guichet n'est pas
+   confirmée — les deux fonctions ci-dessous rendent exactement ce qu'elles
+   rendaient avant, au caractère près.
+   -------------------------------------------------------------------------- */
+function ossPourLePro(regime, pays, env) {
+  if (!OSS_ACTIF) return null;
+  if (String(regime || "") !== "intracom_sans_tva") return null;
+  const code = String(pays || "").trim().toUpperCase();
+  if (code !== "FR" && code !== "LU") return null;
+  const r = regimeB2C(code, env);
+  return (r && r.positions && r.positions.length) ? r.positions : null;
+}
+
+export function positionFiscale(regime, env, pays) {
+  const oss = ossPourLePro(regime, pays, env);
+  if (oss) return oss[0];
+
   const reglages = {
     national: (env && env.FP_NATIONAL) || POSITIONS_DEFAUT.national,
     intracom: (env && env.FP_INTRACOM) || POSITIONS_DEFAUT.intracom,
@@ -52,7 +88,10 @@ const EQUIVALENCES = {
 };
 
 /** Les noms à essayer pour ce régime, le réglage d'abord, sans doublon. */
-export function nomsPossibles(regime, env) {
+export function nomsPossibles(regime, env, pays) {
+  const oss = ossPourLePro(regime, pays, env);
+  if (oss) return oss;
+
   const cle = String(regime || "");
   const noms = [positionFiscale(cle, env), ...(EQUIVALENCES[cle] || [])]
     .map((n) => String(n || "").trim())

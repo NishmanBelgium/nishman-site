@@ -107,7 +107,7 @@ function chargeUtile({ ref, compte, resultat, langue, livraison, tva, env }) {
     // et non le redéduire de son côté avec d'autres règles.
     vatRegime: resultat.regime,
     // Le nom exact de la position fiscale à poser sur le devis Odoo.
-    fiscalPosition: positionFiscale(resultat.regime, env),
+    fiscalPosition: positionFiscale(resultat.regime, env, compte.pays),
     vatRate: String(Math.round((resultat.taux_tva || 0) * 100)),
     vatAmount: resultat.tva.toFixed(2),
     grandTotal: resultat.total.toFixed(2),
