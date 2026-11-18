@@ -11,7 +11,7 @@
    seul critère mérite d'être vue passer.
    ========================================================================== */
 
-import { partenaireParEmail } from "./_odoo.js";
+import { partenaireParEmail, appel } from "./_odoo.js";
 
 function memeEntreprise(tvaFiche, tvaCompte) {
   const n = (v) => String(v || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase().replace(/^[A-Z]{2}/, "");
@@ -46,6 +46,51 @@ export async function rapprocher(env, compte) {
   try { await tracer(env, compte, fiche, critere); } catch (e) { /* tant pis */ }
 
   return fiche.id;
+}
+
+/**
+ * L'identifiant de la fiche Odoo du compte, GARANTI VIVANT.
+ *
+ * POURQUOI CETTE FONCTION EXISTE. Le rattachement était retenu une fois pour
+ * toutes, et rapprocher() n'était rappelé que s'il manquait. Un identifiant
+ * qui ne désigne plus rien était donc suivi les yeux fermés : le client se
+ * connectait, et son espace affichait zéro commande. Pas d'erreur, pas de
+ * trace — juste un historique vide, ce qui est la pire forme de panne.
+ *
+ * Le 18 novembre, six fiches en double ont été fusionnées dans Odoo, et Odoo
+ * SUPPRIME la fiche absorbée au lieu de l'archiver : six rattachements sont
+ * morts d'un coup. Ça se reproduira, parce que ces fusions se font à la main
+ * dans Odoo sans que le site en sache rien.
+ *
+ * On vérifie donc, et on recolle sur la fiche retrouvée par e-mail — celle
+ * qui a absorbé l'autre porte le même e-mail, puisque c'est par là qu'on les
+ * a reconnues comme doublons.
+ *
+ * @returns {Promise<number|null>} l'identifiant utilisable, ou null
+ */
+export async function ficheVivante(env, compte) {
+  if (!compte) return null;
+  if (!compte.odoo_partner_id) return await rapprocher(env, compte);
+
+  try {
+    const l = await appel(env, "res.partner", "read",
+      [[compte.odoo_partner_id], ["id"]], {});
+    if (l && l[0] && l[0].id) return compte.odoo_partner_id;
+  } catch (e) {
+    /* Une panne d'Odoo ne doit pas faire effacer un rattachement juste :
+       on garde ce qu'on a et on laisse l'appelant échouer franchement. */
+    return compte.odoo_partner_id;
+  }
+
+  /* La fiche a répondu « rien ». Elle n'existe plus. On efface le
+     rattachement mort AVANT de rechercher, pour que rapprocher() reparte
+     d'un compte propre même si l'écriture suivante échoue. */
+  try {
+    await env.DB.prepare("UPDATE comptes SET odoo_partner_id = NULL WHERE id = ?")
+      .bind(compte.id).run();
+  } catch (e) { /* le rapprochement ci-dessous réécrira de toute façon */ }
+  compte.odoo_partner_id = null;
+  return await rapprocher(env, compte);
 }
 
 async function tracer(env, compte, fiche, critere) {

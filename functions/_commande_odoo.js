@@ -111,13 +111,31 @@ function memeTva(tvaFiche, tvaCompte) {
  */
 export async function trouverOuCreerPartenaire(env, compte) {
   // 0) Le compte est déjà rattaché à une fiche : c'est elle, et elle seule.
+  //
+  //    À CONDITION QU'ELLE EXISTE ENCORE. Ce rattachement était suivi les
+  //    yeux fermés : la lecture du nom pouvait échouer, et on rendait quand
+  //    même l'identifiant mort. La commande partait alors chez Odoo avec un
+  //    partner_id qui ne désigne plus rien, et échouait — une vente payée
+  //    perdue, pour une raison illisible.
+  //
+  //    Ce n'est pas théorique : le 18 novembre, six fiches en double ont
+  //    été fusionnées, et Odoo SUPPRIME la fiche absorbée au lieu de
+  //    l'archiver. Six identifiants sont donc morts d'un coup. Et ça se
+  //    reproduira, parce que NBD fusionne ses doublons à la main dans Odoo
+  //    sans que le site en sache rien.
+  //
+  //    Un rattachement perdu n'est pas une panne : il se refait tout seul
+  //    par l'adresse e-mail, juste en dessous. On ne rend donc l'identifiant
+  //    que si la fiche répond.
   if (compte.odoo_partner_id) {
-    let nomLie = "";
+    let nomLie = null;
     try {
       const l = await appel(env, "res.partner", "read", [[compte.odoo_partner_id], ["name"]], {});
-      nomLie = (l && l[0] && l[0].name) || "";
-    } catch (e) { /* le nom n'est qu'un libellé */ }
-    return { id: compte.odoo_partner_id, cree: false, nom: nomLie };
+      if (l && l[0]) nomLie = String(l[0].name || "");
+    } catch (e) { nomLie = null; }
+    if (nomLie !== null) return { id: compte.odoo_partner_id, cree: false, nom: nomLie };
+    /* La fiche n'existe plus — fusionnée ou supprimée. On continue par
+       l'e-mail, et le rattachement se réécrira sur la fiche retrouvée. */
   }
 
   // 1) Sinon, l'adresse e-mail — à condition que la fiche ne porte pas un

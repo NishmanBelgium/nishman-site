@@ -5,6 +5,7 @@
 
 import { json, erreur, compteConnecte } from "../_commun.js";
 import { configure, commandeDuClient, lignesDeCommande, codesBarres } from "../_odoo.js";
+import { ficheVivante } from "../_liaison.js";
 
 export async function onRequestGet({ request, env }) {
   const compte = await compteConnecte(request, env.DB);
@@ -17,12 +18,15 @@ export async function onRequestGet({ request, env }) {
 
   // Sans fiche Odoo rattachée, il n'y a rien à montrer — et surtout rien à
   // interroger : le contrôle d'appartenance ci-dessous n'aurait aucun sens.
-  if (!compte.odoo_partner_id) return erreur("Commande inconnue.", 404, "commande_inconnue");
+  // La fiche est vérifiée, pas supposée : un rattachement mort faisait
+  // répondre « commande inconnue » sur les commandes du client lui-même.
+  const partnerId = await ficheVivante(env, compte);
+  if (!partnerId) return erreur("Commande inconnue.", 404, "commande_inconnue");
 
   try {
     // On ne demande pas « la commande numéro X » mais « la commande numéro X
     // DE ce client ». Celle d'un autre n'existe pas, de son point de vue.
-    const commande = await commandeDuClient(env, compte.odoo_partner_id, id);
+    const commande = await commandeDuClient(env, partnerId, id);
     if (!commande) return erreur("Commande inconnue.", 404, "commande_inconnue");
 
     const brut = await lignesDeCommande(env, commande.id);
