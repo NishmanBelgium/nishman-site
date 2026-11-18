@@ -158,19 +158,41 @@ export async function chercherEntreprise(identifiant) {
     return { etat: "inconnu", siren, motif: "cle_siren" };
   }
 
+  /* LE REGISTRE COMPTE LES APPELS, ET IL LE DIT EN 429.
+   *
+   * Relevé en production le 18 novembre 2026 : un passage sur les comptes
+   * français a reçu 47 refus 429 sur 61 appels enchaînés. Le module a eu
+   * raison de ne rien écrire — un 429 rend « indisponible », donc « ne
+   * touche à rien » — mais le passage se lisait comme complet alors qu'il
+   * n'avait examiné que 14 comptes.
+   *
+   * On ressaie donc une fois, après la pause que le registre demande s'il
+   * la précise. Une seule fois : un travailleur Cloudflare n'a pas la
+   * soirée, et l'appelant sait repasser. Ce qui compte est qu'un refus
+   * passager ne compte pas comme une réponse. */
   let donnees;
-  try {
-    const r = await fetch(`${RACINE}?q=${encodeURIComponent(siren)}&per_page=1`, {
-      headers: { Accept: "application/json", "User-Agent": "nishman.be" },
-      signal: AbortSignal.timeout(DELAI_MS),
-    });
-    if (r.status !== 200) {
-      return { etat: "indisponible", siren, motif: "http_" + r.status };
+  for (let essai = 0; essai < 2; essai++) {
+    try {
+      const r = await fetch(`${RACINE}?q=${encodeURIComponent(siren)}&per_page=1`, {
+        headers: { Accept: "application/json", "User-Agent": "nishman.be" },
+        signal: AbortSignal.timeout(DELAI_MS),
+      });
+      if (r.status === 429 && essai === 0) {
+        const dit = Number(r.headers.get("retry-after"));
+        const attente = Number.isFinite(dit) && dit > 0 ? Math.min(dit * 1000, 4000) : 1500;
+        await new Promise((ok) => setTimeout(ok, attente));
+        continue;
+      }
+      if (r.status !== 200) {
+        return { etat: "indisponible", siren, motif: "http_" + r.status };
+      }
+      donnees = await r.json();
+      break;
+    } catch (e) {
+      return { etat: "indisponible", siren, motif: String((e && e.name) || e).slice(0, 40) };
     }
-    donnees = await r.json();
-  } catch (e) {
-    return { etat: "indisponible", siren, motif: String((e && e.name) || e).slice(0, 40) };
   }
+  if (!donnees) return { etat: "indisponible", siren, motif: "http_429" };
 
   const e = (donnees && Array.isArray(donnees.results) ? donnees.results[0] : null);
   if (!e || String(e.siren) !== siren) {

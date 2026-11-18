@@ -45,8 +45,22 @@ import { json, erreur, compteAdmin } from "../_commun.js";
 import { cleDeService } from "../_cle_service.js";
 import { chercherEntreprise } from "../_registre_fr.js";
 
-const LOT_DEFAUT = 15;
-const LOT_MAX = 25;
+const LOT_DEFAUT = 8;
+const LOT_MAX = 15;
+
+/* LA PAUSE ENTRE DEUX APPELS AU REGISTRE, ET POURQUOI ELLE EXISTE.
+ *
+ * Premier passage en production, 18 novembre 2026 : 61 appels enchaînés
+ * sans pause, 47 refus 429. Le module n'a rien écrit de faux — un refus
+ * rend « indisponible », donc « ne touche à rien » — mais le compte rendu
+ * annonçait 62 comptes « rien à faire » alors que 47 n'avaient jamais été
+ * examinés. Un passage incomplet qui se lit comme complet est pire qu'un
+ * passage qui échoue franchement.
+ *
+ * D'où deux garde-fous qui marchent ensemble : cette pause, et le compteur
+ * « muets » ci-dessous, qui empêche de lire un passage comme terminé tant
+ * qu'un seul compte n'a pas eu de réponse. */
+const PAUSE_MS = 1500;
 
 /* Les statuts qui valent exonération aujourd'hui, c'est-à-dire ceux qu'une
  * réponse du registre français n'a pas qualité pour défaire. Repris de
@@ -161,10 +175,13 @@ async function lot(env, apres, max) {
 
 async function examiner(env, comptes) {
   const plan = [];
+  let premier = true;
   for (const c of comptes) {
     const siren = sirenDuCompte(c);
     let registre = null;
     if (siren) {
+      if (!premier) await new Promise((ok) => setTimeout(ok, PAUSE_MS));
+      premier = false;
       registre = await chercherEntreprise(siren);
     }
     const d = siren
@@ -191,9 +208,20 @@ function bornes(url) {
   return { apres, max: Math.min(max, LOT_MAX) };
 }
 
+/* Le compte rendu, et le chiffre qui empêche de se tromper en le lisant.
+ *
+ * « muets » compte les comptes pour lesquels le registre n'a pas répondu.
+ * Ceux-là ne sont ni corrects ni à corriger : ils n'ont pas été examinés,
+ * et il faut repasser. Sans ce chiffre, ils se rangeaient avec les
+ * « aucune » et un passage à moitié fait se lisait comme un passage
+ * terminé. C'est l'erreur du premier passage du 18 novembre. */
 function resume(plan) {
-  const n = { aucune: 0, corriger: 0, signaler: 0 };
-  for (const p of plan) n[p.action] = (n[p.action] || 0) + 1;
+  const n = { aucune: 0, corriger: 0, signaler: 0, muets: 0 };
+  for (const p of plan) {
+    n[p.action] = (n[p.action] || 0) + 1;
+    if (p.registre && p.registre.etat === "indisponible") n.muets++;
+  }
+  n.examines = plan.length - n.muets;
   return n;
 }
 
@@ -211,10 +239,14 @@ export async function onRequestGet({ request, env }) {
     "SELECT COUNT(*) AS n FROM comptes WHERE pays = 'FR' AND id > ?"
   ).bind(comptes.length ? comptes[comptes.length - 1].id : apres).first();
 
+  const bilan = resume(plan);
   return json({
     ok: true, ecrit: false,
     lu: plan.length,
-    resume: resume(plan),
+    /* Faux tant qu'un seul compte n'a pas eu de réponse du registre : ce
+     * lot est à repasser. Voir la note sur PAUSE_MS. */
+    complet: bilan.muets === 0,
+    resume: bilan,
     suite: comptes.length ? comptes[comptes.length - 1].id : null,
     restants: (reste && reste.n) || 0,
     plan,
@@ -258,10 +290,12 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
+  const bilan = resume(plan);
   return json({
     ok: true, ecrit: true,
     lu: plan.length, ecrits,
-    resume: resume(plan),
+    complet: bilan.muets === 0,
+    resume: bilan,
     suite: comptes.length ? comptes[comptes.length - 1].id : null,
     plan,
   });
