@@ -298,13 +298,31 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
+  /* COMBIEN IL EN RESTE APRÈS CE LOT. Le GET le donnait, le POST non — et
+   * un appelant qui parcourt la base lot par lot n'avait donc aucun moyen
+   * de savoir quand s'arrêter. Trouvé le 18 novembre en lançant la passe
+   * complète : ma boucle a lu « restants » absent, l'a pris pour zéro, et
+   * s'est arrêtée après douze comptes sur soixante-sept en croyant avoir
+   * fini. C'est exactement la faute du matin, dans l'autre sens : un
+   * passage partiel qui se lit comme terminé. Le veilleur du showroom
+   * parcourra cette page en POST : il lui faut ce compteur. */
+  const dernier = comptes.length ? comptes[comptes.length - 1].id : apres;
+  let restants = null;
+  try {
+    const r = await env.DB.prepare(
+      "SELECT COUNT(*) AS n FROM comptes WHERE pays = 'FR' AND id > ?"
+    ).bind(dernier).first();
+    restants = Number((r && r.n) || 0);
+  } catch (e) { restants = null; }
+
   const bilan = resume(plan);
   return json({
     ok: true, ecrit: true,
     lu: plan.length, ecrits,
     complet: bilan.muets === 0,
     resume: bilan,
-    suite: comptes.length ? comptes[comptes.length - 1].id : null,
+    suite: comptes.length ? dernier : null,
+    restants,
     plan,
   });
 }
