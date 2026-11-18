@@ -149,6 +149,14 @@ export function decider(compte, registre) {
   /* Le registre déclare un numéro, et c'est celui qu'on a. */
   if (vrai === stocke) {
     if (confirme) return { action: "aucune", pourquoi: "numéro conforme et déjà confirmé" };
+    /* Déjà en attente du registre européen : il n'y a rien à réécrire.
+     * Sans cette ligne, chaque passage réécrivait les mêmes comptes à
+     * l'identique et le compte rendu n'arrivait jamais à zéro — ce qui
+     * aurait vidé de son sens le « complet » qu'on vient d'ajouter. */
+    if (String(compte.tva_statut || "") === "a_verifier") {
+      return { action: "aucune", tva: vrai,
+               pourquoi: "numéro conforme, en attente du registre européen" };
+    }
     return { action: "corriger", tva: vrai, statut: "a_verifier",
              pourquoi: "numéro confirmé par le registre français, reste à confirmer au registre européen" };
   }
