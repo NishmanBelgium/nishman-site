@@ -43,6 +43,30 @@ td.c{text-align:right;color:var(--or);font-weight:700;white-space:nowrap}
   background:rgba(255,80,80,.09);border:1px solid rgba(255,80,80,.3);color:#ffb9b9}
 .rappel{margin-top:16px;font-size:13px;line-height:1.5;color:var(--gris);
   border-left:3px solid var(--or);padding-left:12px}
+
+/* --- Le tirage à l'écran ------------------------------------------------
+   Pensé pour être regardé à deux mètres, par plusieurs personnes, sur un
+   téléphone posé ou une tablette : un seul nom à la fois, en très gros.
+   Une roue à cent vingt parts ne se lit pas ; un nom qui défile, si. */
+#scene{position:fixed;inset:0;background:var(--noir);z-index:50;display:none;
+  flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+#scene.on{display:flex}
+#scene .titre{font-family:var(--display);font-weight:900;font-size:12px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--or);margin-bottom:26px}
+#defile{font-family:var(--display);font-weight:900;font-style:italic;text-transform:uppercase;
+  font-size:clamp(30px,9vw,64px);line-height:1;letter-spacing:-.02em;
+  min-height:1.1em;display:flex;align-items:center;justify-content:center;
+  padding:0 8px;transition:color .12s}
+#defile.fige{color:var(--or);transform:scale(1.04)}
+#piste{width:min(520px,86vw);height:4px;background:rgba(255,255,255,.12);
+  border-radius:3px;margin-top:34px;overflow:hidden}
+#piste i{display:block;height:100%;width:0;background:var(--or)}
+#final{margin-top:30px;display:none}
+#final .det{font-size:16px;line-height:1.6;color:var(--blanc);font-weight:600}
+#final .sous{font-size:13px;color:var(--gris);margin-top:10px}
+#fermer{margin-top:30px;display:none;background:transparent;border:1px solid var(--ligne);
+  color:var(--blanc);border-radius:999px;padding:13px 26px;font-family:var(--display);
+  font-weight:900;text-transform:uppercase;font-size:14px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -79,10 +103,22 @@ td.c{text-align:right;color:var(--or);font-weight:700;white-space:nowrap}
   </div>
 </div>
 
+<div id="scene">
+  <p class="titre">Tirage au sort · GTA VI</p>
+  <div id="defile">…</div>
+  <div id="piste"><i></i></div>
+  <div id="final">
+    <div class="det" id="fdet"></div>
+    <div class="sous" id="fsous"></div>
+  </div>
+  <button id="fermer">Fermer</button>
+</div>
+
 <script>
 (function () {
   "use strict";
   var msg = document.getElementById("msg");
+  var noms = [];
   function erreur(t) { msg.textContent = t; msg.style.display = "block"; }
 
   function echapper(s) {
@@ -103,6 +139,12 @@ td.c{text-align:right;color:var(--or);font-weight:700;white-space:nowrap}
           document.getElementById("tirer").disabled = true;
           return;
         }
+        /* Les noms servent à l'animation du tirage : on les garde en
+           mémoire pour ne pas rappeler le serveur au moment du spectacle. */
+        noms = (d.participants_liste || []).map(function (p) {
+          return p.prenom + " " + p.nom;
+        });
+
         var t = document.getElementById("tableau");
         t.innerHTML = (d.participants_liste || []).map(function (p) {
           return "<tr><td>" + echapper(p.prenom + " " + p.nom) +
@@ -122,6 +164,64 @@ td.c{text-align:right;color:var(--or);font-weight:700;white-space:nowrap}
       .catch(function () { erreur("Chargement impossible."); });
   }
   charger();
+
+  /* --- L'animation ------------------------------------------------------
+     Elle ne tire rien : le gagnant est déjà décidé par le serveur quand
+     elle démarre. Elle défile parmi tous les participants et ralentit
+     jusqu'à s'arrêter sur lui. Si l'écran se bloque au milieu, le
+     résultat est déjà enregistré en base — c'est volontaire. */
+  function jouer(g, d) {
+    var scene = document.getElementById("scene");
+    var defile = document.getElementById("defile");
+    var barre = document.querySelector("#piste i");
+    var final = document.getElementById("final");
+    var fermer = document.getElementById("fermer");
+
+    var gagnant = g.prenom + " " + g.nom;
+    var pool = noms.length ? noms.slice() : [gagnant];
+
+    scene.classList.add("on");
+    defile.classList.remove("fige");
+    final.style.display = "none";
+    fermer.style.display = "none";
+
+    var duree = 5200;
+    var debut = performance.now();
+    var dernier = "";
+
+    function image(maintenant) {
+      var t = Math.min(1, (maintenant - debut) / duree);
+      /* Ralentissement très marqué sur la fin : c'est ce qui fait durer
+         la seconde d'avant le nom, et c'est toute la tension. */
+      var avance = 1 - Math.pow(1 - t, 4);
+      barre.style.width = (avance * 100).toFixed(1) + "%";
+
+      if (t >= 1) {
+        defile.textContent = gagnant;
+        defile.classList.add("fige");
+        document.getElementById("fdet").innerHTML =
+          echapper(g.telephone) + "<br>" + echapper(g.email);
+        document.getElementById("fsous").textContent =
+          g.chances + (g.chances > 1 ? " chances" : " chance") +
+          " · tiré parmi " + d.chances_total + " billets de " +
+          d.participants_total + " participants";
+        final.style.display = "block";
+        fermer.style.display = "inline-block";
+        return;
+      }
+
+      /* Le temps entre deux noms s'allonge à mesure qu'on ralentit :
+         de 35 ms au départ à près d'une demi-seconde à la fin. */
+      var attente = 35 + avance * 430;
+      var index = Math.floor(avance * 140) % pool.length;
+      var nom = pool[index];
+      if (nom !== dernier) { defile.textContent = nom; dernier = nom; }
+      setTimeout(function () { requestAnimationFrame(image); }, attente);
+    }
+    requestAnimationFrame(image);
+
+    fermer.onclick = function () { scene.classList.remove("on"); };
+  }
 
   document.getElementById("tirer").addEventListener("click", function () {
     if (!window.confirm("Tirer au sort maintenant ? Le gagnant sera enregistré et sorti de l'urne.")) return;
@@ -146,7 +246,7 @@ td.c{text-align:right;color:var(--or);font-weight:700;white-space:nowrap}
           "<br>" + g.chances + (g.chances > 1 ? " chances" : " chance") +
           " · tiré parmi " + res.d.chances_total + " billets";
         document.getElementById("gagnant").style.display = "block";
-        window.scrollTo(0, 0);
+        jouer(g, res.d);
         charger();
       })
       .catch(function () {
