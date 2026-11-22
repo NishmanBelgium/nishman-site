@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Tente ta chance — NISHMAN</title>
+<meta name="description" content="Inscris-toi au tirage au sort NISHMAN et tente de gagner GTA VI. Participation gratuite, une chance de plus par produit acheté." />
+<meta name="theme-color" content="#0a0a0a" />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+<style>
+:root{
+  --noir:#0a0a0a; --noir-2:#141416; --ligne:rgba(255,255,255,.10);
+  --or:#ff8a00; --or-clair:#ffb340; --blanc:#f4f4f5; --gris:#8b8b93;
+  --display:"Archivo",system-ui,sans-serif; --body:"Manrope",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  background:var(--noir); color:var(--blanc); font-family:var(--body);
+  padding:28px 18px 56px; min-height:100dvh; overflow-x:hidden;
+}
+.enveloppe{max-width:460px;margin:0 auto}
+.marque{font-family:var(--display);font-weight:900;font-style:italic;letter-spacing:-.03em;
+  text-transform:uppercase;font-size:20px;color:var(--blanc);margin:0 0 22px;text-align:center}
+.marque span{color:var(--or)}
+h1{font-family:var(--display);font-weight:900;font-style:italic;text-transform:uppercase;
+  letter-spacing:-.035em;line-height:.92;font-size:clamp(34px,10vw,46px);margin:0 0 10px}
+h1 em{font-style:italic;color:var(--or)}
+.chapeau{color:var(--gris);font-size:15px;line-height:1.5;margin:0 0 26px}
+.filet{height:3px;background:var(--or);width:64px;border-radius:2px;margin:0 0 22px}
+.etape{background:var(--noir-2);border:1px solid var(--ligne);border-radius:16px;
+  padding:18px 16px;margin:0 0 14px}
+.num{font-family:var(--display);font-weight:900;font-size:12px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--or);margin:0 0 8px}
+.etape p{margin:0;font-size:14px;line-height:1.5;color:var(--gris)}
+.bouton{display:block;width:100%;border:0;border-radius:999px;padding:16px 20px;
+  font-family:var(--display);font-weight:900;font-style:italic;text-transform:uppercase;
+  letter-spacing:.02em;font-size:16px;cursor:pointer;text-align:center;text-decoration:none}
+.bouton.plein{background:var(--or);color:#140b00}
+.bouton.plein:active{background:var(--or-clair)}
+.bouton.contour{background:transparent;color:var(--blanc);border:1px solid var(--ligne)}
+.bouton[disabled]{opacity:.55}
+label{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:700;color:var(--gris);margin:14px 0 6px}
+input[type=text],input[type=email],input[type=tel]{
+  width:100%;background:#0e0e10;border:1px solid var(--ligne);border-radius:12px;
+  padding:14px 14px;color:var(--blanc);font-family:var(--body);font-size:16px}
+input:focus{outline:2px solid var(--or);outline-offset:1px}
+.chances{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-top:6px}
+.chances button{background:#0e0e10;border:1px solid var(--ligne);color:var(--blanc);
+  border-radius:12px;padding:13px 0;font-family:var(--display);font-weight:900;font-size:17px;cursor:pointer}
+.chances button[aria-pressed=true]{background:var(--or);color:#140b00;border-color:var(--or)}
+.coche{display:flex;gap:11px;align-items:flex-start;margin:16px 0 0;
+  font-size:13px;line-height:1.45;color:var(--gris)}
+.coche input{margin-top:2px;width:19px;height:19px;accent-color:var(--or);flex:none}
+.avert{border-left:3px solid var(--or);padding:10px 0 10px 13px;margin:18px 0 0;
+  font-size:13.5px;line-height:1.5;color:var(--blanc)}
+.leurre{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.pied{margin-top:26px;font-size:11.5px;line-height:1.6;color:#6c6c74}
+.pied a{color:#8b8b93}
+.msg{margin-top:14px;font-size:14px;line-height:1.5;border-radius:12px;padding:13px 14px;display:none}
+.msg.ko{display:block;background:rgba(255,80,80,.09);border:1px solid rgba(255,80,80,.3);color:#ffb9b9}
+.compteur{text-align:center;color:var(--gris);font-size:12.5px;margin-top:18px;
+  letter-spacing:.1em;text-transform:uppercase}
+#fini{display:none;text-align:center}
+#fini .gros{font-family:var(--display);font-weight:900;font-style:italic;text-transform:uppercase;
+  font-size:clamp(30px,9vw,42px);line-height:.95;margin:6px 0 12px}
+#fini .jetons{display:inline-block;background:var(--or);color:#140b00;border-radius:999px;
+  padding:9px 18px;font-family:var(--display);font-weight:900;font-size:15px;margin:4px 0 16px}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+  <p class="marque">NISH<span>MAN</span> · BE · FR · LU</p>
+
+  <main id="formulaire">
+    <h1>Tente ta chance<br><em>GTA VI</em></h1>
+    <div class="filet"></div>
+    <p class="chapeau">Inscris-toi en trente secondes. La participation est gratuite —
+      chaque produit acheté sur le stand ajoute une chance.</p>
+
+    <section class="etape">
+      <p class="num">Étape 1 · 10 secondes</p>
+      <a class="bouton contour" id="insta" href="https://www.instagram.com/nishman.be.fr/"
+         target="_blank" rel="noopener">S'abonner sur Instagram</a>
+      <p style="margin-top:10px">C'est là qu'on annonce le gagnant.</p>
+    </section>
+
+    <section class="etape">
+      <p class="num">Étape 2 · tes coordonnées</p>
+      <form id="form" autocomplete="on" novalidate>
+        <div class="leurre" aria-hidden="true">
+          <label for="societe_web">Ne pas remplir</label>
+          <input type="text" id="societe_web" name="societe_web" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <label for="prenom">Prénom</label>
+        <input type="text" id="prenom" name="prenom" autocomplete="given-name" required />
+
+        <label for="nom">Nom</label>
+        <input type="text" id="nom" name="nom" autocomplete="family-name" required />
+
+        <label for="telephone">Téléphone</label>
+        <input type="tel" id="telephone" name="telephone" autocomplete="tel"
+               inputmode="tel" placeholder="+32 470 00 00 00" required />
+
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" autocomplete="email"
+               inputmode="email" required />
+
+        <label for="salon">Ton salon (facultatif)</label>
+        <input type="text" id="salon" name="salon" autocomplete="organization" />
+
+        <label>Combien de produits as-tu achetés ?</label>
+        <div class="chances" id="chances" role="group" aria-label="Nombre de produits achetés">
+          <button type="button" aria-pressed="true" data-n="1">0</button>
+          <button type="button" aria-pressed="false" data-n="2">1</button>
+          <button type="button" aria-pressed="false" data-n="3">2</button>
+          <button type="button" aria-pressed="false" data-n="4">3</button>
+          <button type="button" aria-pressed="false" data-n="5">4</button>
+          <button type="button" aria-pressed="false" data-n="6">5+</button>
+        </div>
+
+        <label class="coche" for="ig">
+          <input type="checkbox" id="ig" checked />
+          <span>Je suis abonné·e à @nishman.be.fr</span>
+        </label>
+
+        <div class="avert">
+          <strong>Le gagnant devra présenter son ticket de caisse.</strong>
+          Déclarer plus de produits que tu n'en as achetés ne sert donc à rien :
+          le tirage serait simplement refait.
+        </div>
+
+        <div class="msg ko" id="erreur"></div>
+
+        <button class="bouton plein" type="submit" id="envoyer" style="margin-top:18px">
+          Je participe
+        </button>
+      </form>
+    </section>
+
+    <p class="compteur" id="compteur"></p>
+  </main>
+
+  <section id="fini">
+    <h1 style="font-size:clamp(28px,8vw,38px)">C'est noté<em>.</em></h1>
+    <div class="filet" style="margin:14px auto 20px"></div>
+    <p class="gros" id="bonjour"></p>
+    <p class="jetons" id="jetons"></p>
+    <p class="chapeau" id="rappel">
+      Garde ton ticket de caisse : le gagnant devra le présenter.
+      Le résultat est annoncé sur Instagram.
+    </p>
+    <a class="bouton plein" href="https://www.instagram.com/nishman.be.fr/"
+       target="_blank" rel="noopener">Voir le compte Instagram</a>
+  </section>
+
+  <p class="pied">
+    Jeu organisé par NBD Distribution SRL, Avenue Léopold III 21, 7130 Binche (BE 0817.750.283).
+    Participation gratuite et sans obligation d'achat : l'inscription seule donne une chance.
+    Tirage au sort à la fermeture du stand. Tes coordonnées servent uniquement à te prévenir
+    si tu gagnes et ne sont transmises à personne.
+    <a href="/confidentialite/">Confidentialité</a>
+  </p>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var form = document.getElementById("form");
+  var bouton = document.getElementById("envoyer");
+  var erreur = document.getElementById("erreur");
+  var chances = 1;
+
+  /* Le choix du nombre de produits : des boutons et non une liste
+     déroulante, parce que ça se tape à une main, debout, sur un stand. */
+  var grille = document.getElementById("chances");
+  grille.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-n]");
+    if (!b) return;
+    Array.prototype.forEach.call(grille.querySelectorAll("button"), function (x) {
+      x.setAttribute("aria-pressed", x === b ? "true" : "false");
+    });
+    chances = parseInt(b.getAttribute("data-n"), 10) || 1;
+  });
+
+  function montrerErreur(t) {
+    erreur.textContent = t;
+    erreur.style.display = "block";
+  }
+
+  function compteur() {
+    fetch("/api/concours", { credentials: "include" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.participants > 0) {
+          document.getElementById("compteur").textContent =
+            d.participants + (d.participants > 1 ? " participants aujourd'hui" : " participant aujourd'hui");
+        }
+      })
+      .catch(function () {});
+  }
+  compteur();
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    erreur.style.display = "none";
+    bouton.disabled = true;
+    bouton.textContent = "Un instant…";
+
+    var corps = {
+      geste: "inscription",
+      prenom: document.getElementById("prenom").value,
+      nom: document.getElementById("nom").value,
+      telephone: document.getElementById("telephone").value,
+      email: document.getElementById("email").value,
+      salon: document.getElementById("salon").value,
+      chances: chances,
+      instagram: document.getElementById("ig").checked ? 1 : 0,
+      societe_web: document.getElementById("societe_web").value
+    };
+
+    fetch("/api/concours", {
+      method: "POST",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(corps)
+    })
+      .then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); })
+      .then(function (res) {
+        bouton.disabled = false;
+        bouton.textContent = "Je participe";
+        if (res.s !== 200 || !res.d.ok) {
+          montrerErreur(res.d && res.d.erreur ? res.d.erreur : "Ça n'a pas fonctionné, réessaie.");
+          return;
+        }
+        var d = res.d;
+        document.getElementById("formulaire").style.display = "none";
+        var fini = document.getElementById("fini");
+        fini.style.display = "block";
+        document.getElementById("bonjour").textContent =
+          (d.prenom ? d.prenom + ", " : "") + (d.deja ? "tu étais déjà inscrit" : "tu participes");
+        document.getElementById("jetons").textContent =
+          d.chances + (d.chances > 1 ? " chances" : " chance");
+        if (d.deja) {
+          document.getElementById("rappel").textContent =
+            "Une seule inscription par personne : tes chances sont déjà enregistrées. " +
+            "Garde ton ticket de caisse, le gagnant devra le présenter.";
+        }
+        window.scrollTo(0, 0);
+      })
+      .catch(function () {
+        bouton.disabled = false;
+        bouton.textContent = "Je participe";
+        montrerErreur("Pas de réseau. Réessaie dans un instant.");
+      });
+  });
+})();
+</script>
+</body>
+</html>

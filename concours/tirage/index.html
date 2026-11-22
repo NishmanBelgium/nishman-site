@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Tirage au sort — NISHMAN</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#0a0a0a" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
+<style>
+:root{--noir:#0a0a0a;--noir-2:#141416;--ligne:rgba(255,255,255,.10);
+  --or:#ff8a00;--blanc:#f4f4f5;--gris:#8b8b93;
+  --display:"Archivo",system-ui,sans-serif;--body:"Manrope",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--noir);color:var(--blanc);font-family:var(--body);padding:26px 18px 60px}
+.enveloppe{max-width:520px;margin:0 auto}
+h1{font-family:var(--display);font-weight:900;font-style:italic;text-transform:uppercase;
+  letter-spacing:-.03em;font-size:28px;margin:0 0 4px}
+.sous{color:var(--gris);font-size:13px;margin:0 0 20px}
+.cartes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.carte{background:var(--noir-2);border:1px solid var(--ligne);border-radius:14px;padding:14px}
+.carte .n{font-family:var(--display);font-weight:900;font-size:30px;line-height:1}
+.carte .l{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris);margin-top:4px}
+.bouton{display:block;width:100%;border:0;border-radius:999px;padding:18px;
+  font-family:var(--display);font-weight:900;font-style:italic;text-transform:uppercase;
+  font-size:18px;background:var(--or);color:#140b00;cursor:pointer}
+.bouton[disabled]{opacity:.5}
+.gagnant{background:var(--or);color:#140b00;border-radius:18px;padding:20px;margin:18px 0;display:none}
+.gagnant .t{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;opacity:.75}
+.gagnant .nom{font-family:var(--display);font-weight:900;font-style:italic;text-transform:uppercase;
+  font-size:clamp(26px,8vw,36px);line-height:1;margin:6px 0 10px}
+.gagnant .det{font-size:14px;line-height:1.55;font-weight:600}
+.liste{margin-top:26px}
+.liste h2{font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:13px;
+  letter-spacing:.18em;color:var(--gris);margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{padding:9px 6px;border-bottom:1px solid var(--ligne);vertical-align:top}
+td.c{text-align:right;color:var(--or);font-weight:700;white-space:nowrap}
+.msg{margin-top:14px;font-size:14px;border-radius:12px;padding:12px 14px;display:none;
+  background:rgba(255,80,80,.09);border:1px solid rgba(255,80,80,.3);color:#ffb9b9}
+.rappel{margin-top:16px;font-size:13px;line-height:1.5;color:var(--gris);
+  border-left:3px solid var(--or);padding-left:12px}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+  <h1>Tirage au sort</h1>
+  <p class="sous" id="edition">—</p>
+
+  <div class="cartes">
+    <div class="carte"><div class="n" id="nb">—</div><div class="l">participants</div></div>
+    <div class="carte"><div class="n" id="ch">—</div><div class="l">chances en jeu</div></div>
+  </div>
+
+  <button class="bouton" id="tirer">Tirer au sort</button>
+  <div class="msg" id="msg"></div>
+
+  <div class="gagnant" id="gagnant">
+    <div class="t">Gagnant</div>
+    <div class="nom" id="gnom"></div>
+    <div class="det" id="gdet"></div>
+  </div>
+
+  <p class="rappel">Le tirage est pondéré : quelqu'un qui a déclaré quatre produits
+    occupe quatre billets. Un gagnant tiré est retiré de l'urne — relancer ne le
+    ressortira pas. <strong>Demande le ticket de caisse avant de remettre le lot.</strong></p>
+
+  <div class="liste">
+    <h2>Derniers inscrits</h2>
+    <table id="tableau"></table>
+  </div>
+
+  <div class="liste">
+    <h2>Tirages déjà faits</h2>
+    <table id="histo"></table>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var msg = document.getElementById("msg");
+  function erreur(t) { msg.textContent = t; msg.style.display = "block"; }
+
+  function echapper(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  function charger() {
+    fetch("/api/concours", { credentials: "include" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        document.getElementById("nb").textContent = d.participants;
+        document.getElementById("ch").textContent = d.chances;
+        document.getElementById("edition").textContent = "Édition du " + d.edition;
+        if (!d.admin) {
+          erreur("Connecte-toi avec le compte administrateur pour voir la liste et tirer.");
+          document.getElementById("tirer").disabled = true;
+          return;
+        }
+        var t = document.getElementById("tableau");
+        t.innerHTML = (d.participants_liste || []).map(function (p) {
+          return "<tr><td>" + echapper(p.prenom + " " + p.nom) +
+            "<br><span style='color:#8b8b93'>" + echapper(p.telephone) +
+            (p.salon ? " · " + echapper(p.salon) : "") + "</span></td>" +
+            "<td class='c'>" + p.chances + (p.gagnant ? " ★" : "") + "</td></tr>";
+        }).join("") || "<tr><td style='color:#8b8b93'>Personne pour l'instant.</td></tr>";
+
+        var h = document.getElementById("histo");
+        h.innerHTML = (d.tirages || []).map(function (x) {
+          return "<tr><td>" + echapper(x.nom) + "<br><span style='color:#8b8b93'>" +
+            echapper(String(x.fait_le).slice(0, 16).replace("T", " à ")) +
+            " · " + x.participants_total + " participants</span></td>" +
+            "<td class='c'>" + x.chances + "</td></tr>";
+        }).join("") || "<tr><td style='color:#8b8b93'>Aucun tirage.</td></tr>";
+      })
+      .catch(function () { erreur("Chargement impossible."); });
+  }
+  charger();
+
+  document.getElementById("tirer").addEventListener("click", function () {
+    if (!window.confirm("Tirer au sort maintenant ? Le gagnant sera enregistré et sorti de l'urne.")) return;
+    var b = this;
+    b.disabled = true; b.textContent = "Tirage…"; msg.style.display = "none";
+    fetch("/api/concours", {
+      method: "POST", credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ geste: "tirage" })
+    })
+      .then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); })
+      .then(function (res) {
+        b.disabled = false; b.textContent = "Tirer au sort";
+        if (res.s !== 200 || !res.d.ok) {
+          erreur(res.d && res.d.erreur ? res.d.erreur : "Le tirage a échoué.");
+          return;
+        }
+        var g = res.d.gagnant;
+        document.getElementById("gnom").textContent = g.prenom + " " + g.nom;
+        document.getElementById("gdet").innerHTML =
+          echapper(g.telephone) + "<br>" + echapper(g.email) +
+          "<br>" + g.chances + (g.chances > 1 ? " chances" : " chance") +
+          " · tiré parmi " + res.d.chances_total + " billets";
+        document.getElementById("gagnant").style.display = "block";
+        window.scrollTo(0, 0);
+        charger();
+      })
+      .catch(function () {
+        b.disabled = false; b.textContent = "Tirer au sort";
+        erreur("Pas de réseau.");
+      });
+  });
+})();
+</script>
+</body>
+</html>
