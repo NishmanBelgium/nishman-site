@@ -48,9 +48,18 @@ export async function preparer(db) {
       "tire_le TEXT)"
     ),
     /* L'unicité est posée par la base, pas par le code : deux inscriptions
-       simultanées du même numéro ne peuvent pas passer toutes les deux. */
-    db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS concours_tel ON concours_participants (telephone_cle)"),
-    db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS concours_mail ON concours_participants (email_cle)"),
+       simultanées du même numéro ne peuvent pas passer toutes les deux.
+
+       ELLE EST JOURNALIÈRE, ET C'EST UNE CORRECTION DU 23 NOVEMBRE 2026.
+       La première version rendait le numéro unique pour toujours. Sur un
+       salon de deux jours, tous ceux qui s'étaient inscrits la veille se
+       voyaient répondre « tu es déjà inscrit » et ne participaient pas à
+       la seconde journée. Une personne par jour, c'est la bonne règle :
+       ça bloque le spam sans interdire de revenir. */
+    db.prepare("DROP INDEX IF EXISTS concours_tel"),
+    db.prepare("DROP INDEX IF EXISTS concours_mail"),
+    db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS concours_tel_jour ON concours_participants (edition, telephone_cle)"),
+    db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS concours_mail_jour ON concours_participants (edition, email_cle)"),
     db.prepare(
       "CREATE TABLE IF NOT EXISTS concours_tirages (" +
       "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -93,9 +102,20 @@ export function cleCourriel(valeur) {
   return cleEmail(String(valeur || "").trim());
 }
 
-/** L'édition du jour : un salon dure deux jours, chaque journée a la sienne. */
+/**
+ * L'édition du jour : un salon dure deux jours, chaque journée a la sienne.
+ *
+ * La date est celle de Bruxelles, pas celle de Greenwich. Avec l'heure
+ * universelle, une inscription prise à minuit et demie au stand serait
+ * comptée dans la journée du lendemain, et le tirage du soir l'aurait
+ * oubliée. Une heure d'écart suffit à faire rater un gagnant.
+ */
 export function editionDuJour(maintenant) {
-  return (maintenant || new Date()).toISOString().slice(0, 10);
+  const d = maintenant || new Date();
+  return new Intl.DateTimeFormat("fr-CA", {
+    timeZone: "Europe/Brussels",
+    year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(d);
 }
 
 /**

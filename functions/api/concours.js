@@ -118,12 +118,15 @@ async function inscription(request, env, corps) {
     /* L'index unique a parlé : ce téléphone ou cette adresse est déjà
        inscrit. On le dit gentiment et on renvoie ses chances — le
        participant croit souvent que sa première tentative a échoué. */
+    /* Le doublon se cherche DANS LA JOURNÉE : quelqu'un inscrit hier a le
+       droit de revenir aujourd'hui, et doit repartir avec ses nouvelles
+       chances, pas avec celles de la veille. */
     const deja = await env.DB
       .prepare(
         "SELECT prenom, chances FROM concours_participants" +
-        " WHERE telephone_cle = ? OR email_cle = ? LIMIT 1"
+        " WHERE edition = ? AND (telephone_cle = ? OR email_cle = ?) LIMIT 1"
       )
-      .bind(telCle, mailCle)
+      .bind(edition, telCle, mailCle)
       .first();
     if (deja) {
       return json({ ok: true, deja: true, prenom: deja.prenom, chances: deja.chances });
