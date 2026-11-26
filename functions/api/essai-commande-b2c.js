@@ -45,6 +45,33 @@ const sou = (n) => Math.round(Number(n) * 100) / 100;
    un régime particulier. */
 const PAYS = ["BE", "FR", "LU"];
 
+/* LE PLAFOND DE SOUS-REQUÊTES, appris à la première exécution.
+ *
+ * Un cycle complet — chercher la taxe, la position, le mode de livraison,
+ * la fiche, créer le devis, le relire, le retirer, vérifier le retrait —
+ * coûte une douzaine d'appels à Odoo. Cloudflare en autorise cinquante par
+ * invocation. Trois pays × deux quantités, c'est donc le plafond crevé au
+ * quatrième cycle : « Too many subrequests by single Worker invocation ».
+ *
+ * Le piège est qu'un essai qui s'épuise lui-même RESSEMBLE à une panne du
+ * site. La première exécution a répondu « ON NE PEUT PAS COMMANDER DEPUIS
+ * FR, LU » alors que la France venait de passer son premier cycle sans une
+ * anomalie. Un contrôle doit tenir dans son budget, sinon il fabrique les
+ * pannes qu'il est censé trouver.
+ *
+ * D'où deux régimes, qui tiennent tous deux largement sous cinquante :
+ *
+ *   sans paramètre  — les trois pays, QUATRE articles chacun. « Tout le
+ *                     monde peut-il commander ? » C'est la question du
+ *                     lundi matin, et quatre articles est la quantité qui
+ *                     éprouve le plus : port offert, et c'est là que
+ *                     l'ancien calcul dérivait d'un centime.
+ *   ?pays=FR        — un seul pays, UN puis QUATRE articles. La question
+ *                     qu'on pose quand ce pays-là a bronché.
+ */
+const QUANTITES_UN_PAYS = [1, 4];
+const QUANTITES_BALAYAGE = [4];
+
 export async function onRequestGet({ request, env }) {
   const compte = await compteAdmin(request, env);
   if (!compte) return erreur("Page réservée.", 404, "reservee");
@@ -91,14 +118,18 @@ export async function onRequestGet({ request, env }) {
     ville: compte.ville || "",
   };
 
+  const demande = String(new URL(request.url).searchParams.get("pays") || "").trim().toUpperCase();
+  const aEprouver = PAYS.includes(demande) ? [demande] : PAYS;
+  const quantites = aEprouver.length === 1 ? QUANTITES_UN_PAYS : QUANTITES_BALAYAGE;
+
   let toutVaBien = true;
   const paysEnPanne = [];
 
-  for (const pays of PAYS) {
+  for (const pays of aEprouver) {
     const client = { ...identite, pays };
     let paysOk = true;
 
-    for (const q of [1, 4]) {
+    for (const q of quantites) {
       const titre = pays + " · " + q + " article" + (q > 1 ? "s" : "");
       const resultat = calculerB2C({ selection: { [cobaye.ean]: q }, produits, pays });
 
@@ -175,13 +206,19 @@ export async function onRequestGet({ request, env }) {
      pas » ne lui aurait pas appris que la France était coupée. */
   return json({
     ok: toutVaBien,
-    pays_eprouves: PAYS,
+    pays_eprouves: aEprouver,
+    quantites,
     pays_en_panne: paysEnPanne,
     resume: toutVaBien
-      ? "Les trois pays peuvent commander : le prix affiché est respecté et "
-        + "Odoo tombe sur le même centime pour BE, FR et LU."
+      ? (aEprouver.length === 1
+          ? "Le " + aEprouver[0] + " peut commander : prix affiché respecté et "
+            + "Odoo au même centime, pour 1 et 4 articles."
+          : "Les trois pays peuvent commander : prix affiché respecté et Odoo "
+            + "au même centime pour BE, FR et LU.")
       : "ON NE PEUT PAS COMMANDER DEPUIS : " + paysEnPanne.join(", ")
-        + ". Voir le détail.",
+        + ". Voir le détail — et si celui-ci parle de « subrequests », c'est "
+        + "l'essai qui s'épuise, pas le site : reprendre pays par pays avec "
+        + "?pays=FR.",
     etapes,
   }, 200);
 }
