@@ -325,7 +325,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: reponse.motif, ref,
       message: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   /* L'avertissement « plusieurs colis », en arrière-plan.

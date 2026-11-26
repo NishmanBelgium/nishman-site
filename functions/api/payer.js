@@ -174,6 +174,22 @@ export async function onRequestPost(ctx) {
 
   const ref = reference();
 
+  /* POURQUOI 503 ET NON 502, sur tous les échecs qui suivent.
+   *
+   * Corrigé le 26 novembre 2026. Ces réponses portaient un 502 et un JSON
+   * qui nommait le motif. Le motif n'arrivait jamais : **Cloudflare
+   * remplace le corps d'une réponse 502 par sa propre page d'erreur.** Le
+   * journal d'incidents n'a gardé, 294 caractères durant, que
+   * « <!DOCTYPE html> <!--[if lt IE 7]> … ».
+   *
+   * Pendant six jours, cinq salons français ont échoué ici — une position
+   * fiscale renommée dans Odoo — et personne n'a pu lire pourquoi. Ce
+   * n'est pas la panne qui a coûté six jours, c'est le silence.
+   *
+   * 503 traverse intact, et dit d'ailleurs plus justement ce qui se passe :
+   * indisponible maintenant, à réessayer. Ne pas revenir à 502 sans avoir
+   * relu site/incidents.md dans le coffre. */
+
   // 1) La commande, en brouillon, avant le paiement.
   let commande;
   try {
@@ -184,7 +200,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: e && e.code ? e.code : "odoo", ref,
       message: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   /* L'AVERTISSEMENT « PLUSIEURS COLIS », en arrière-plan.
@@ -226,7 +242,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: "ecart", ref,
       message: "Votre commande n'a pas pu être validée. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   // 2) Le paiement.
@@ -251,7 +267,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: "mollie", ref,
       message: "Le paiement n'a pas pu être ouvert. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   const lien = paiement && paiement._links && paiement._links.checkout && paiement._links.checkout.href;
@@ -260,7 +276,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: "mollie_incomplet", ref,
       message: "Le paiement n'a pas pu être ouvert. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   // 3) Le lien entre les deux, écrit AVANT d'envoyer le client payer : la
@@ -279,7 +295,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: "registre", ref,
       message: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   return json({

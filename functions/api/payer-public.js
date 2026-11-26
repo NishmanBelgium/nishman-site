@@ -223,6 +223,22 @@ export async function onRequestPost(ctx) {
 
   const ref = reference();
 
+  /* POURQUOI 503 ET NON 502, sur tous les échecs qui suivent.
+   *
+   * Corrigé le 26 novembre 2026. **Cloudflare remplace le corps d'une
+   * réponse 502 par sa propre page d'erreur**, donc le motif que ces
+   * réponses prennent soin de nommer n'arrivait ni à la cliente ni au
+   * journal d'incidents — qui n'a gardé que « <!DOCTYPE html> <!--[if lt
+   * IE 7]> … », 294 caractères, vingt-trois fois rien que les 25 et
+   * 26 novembre.
+   *
+   * Ce chemin-là a refusé dix clientes françaises en six jours, pour une
+   * position fiscale renommée dans Odoo. Le code criait juste ; personne
+   * ne l'entendait.
+   *
+   * 503 traverse intact. Ne pas revenir à 502 sans avoir relu
+   * site/incidents.md dans le coffre. */
+
   // 1) La commande, en brouillon.
   let commande;
   try {
@@ -233,7 +249,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: (e && e.code) || "odoo", ref,
       message: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   // Odoo doit annoncer exactement ce que le client a lu. Un centime d'écart
@@ -243,7 +259,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: "ecart", ref,
       message: "Votre commande n'a pas pu être validée. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   // 2) Le paiement.
@@ -266,7 +282,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: "mollie", ref,
       message: "Le paiement n'a pas pu être ouvert. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   const lien = paiement && paiement._links && paiement._links.checkout && paiement._links.checkout.href;
@@ -275,7 +291,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: "mollie_incomplet", ref,
       message: "Le paiement n'a pas pu être ouvert. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   // 3) Le lien entre les deux, AVANT d'envoyer payer.
@@ -304,7 +320,7 @@ export async function onRequestPost(ctx) {
     return json({
       ok: false, motif: "registre", ref,
       message: "Votre commande n'a pas pu être enregistrée. Rien ne vous a été débité.",
-    }, 502);
+    }, 503);
   }
 
   return json({

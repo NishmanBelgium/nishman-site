@@ -260,7 +260,7 @@ export async function onRequestPost(ctx) {
   }
 
   if (!reponse.ok) {
-    return json({ ok: false, motif: reponse.motif }, 502);
+    return json({ ok: false, motif: reponse.motif }, 503);
   }
   // L'avertissement « plusieurs colis », en arrière-plan : un devis de
   // plus de vingt kilos se prépare en deux colis, et mieux vaut le lire
