@@ -87,50 +87,87 @@ export async function onRequestGet({ request, env }) {
    * même couple étape + pays, et surtout plusieurs PERSONNES différentes :
    * une seule qui insiste huit fois peut avoir un souci chez elle, trois
    * comptes distincts qui échouent au même endroit, non. */
+  /* DEUX FAMILLES QU'IL NE FAUT PAS MÊLER — c'est déjà écrit dans
+     _incidents.js, et la première version de cet écran l'avait oublié :
+     « la connexion a lâché » et « le serveur a répondu 502 » sont deux
+     problèmes opposés, l'un ne nous regarde pas, l'autre est le nôtre.
+
+     statut 0 : le navigateur n'a jamais reçu de réponse. Métro, tunnel,
+     wifi d'hôtel, onglet fermé en cours de route. On les garde — trois
+     clientes qui lâchent au même endroit peut révéler une page trop lourde
+     — mais on ne les appelle pas une panne du site.
+
+     statut >= 500 : le site a répondu, et il a répondu qu'il n'y arrivait
+     pas. Celle-là est à nous.
+
+     ET LE COMPTEUR DE PERSONNES, corrigé dans le même mouvement. Une
+     visiteuse non connectée porte `compte_id` nul : les compter comme une
+     seule personne cachait l'ampleur — « boutique · FR, 44 tentatives,
+     2 personnes », là où c'étaient dix clientes distinctes. On compte donc
+     les comptes identifiés d'un côté, les tentatives anonymes de l'autre,
+     et on ne prétend pas savoir combien de personnes se cachent derrière
+     les secondes. */
   const groupes = new Map();
   for (const l of lignes) {
-    if (!(Number(l.statut) >= 500 || Number(l.statut) === 0)) continue;
-    const cle = (l.etape || "?") + " · " + (l.pays || "?");
+    const statut = Number(l.statut);
+    const famille = statut === 0 ? "connexion" : (statut >= 500 ? "serveur" : null);
+    if (!famille) continue;
+
+    const cle = famille + " :: " + (l.etape || "?") + " · " + (l.pays || "?");
     let g = groupes.get(cle);
     if (!g) {
-      g = { ou: cle, etape: l.etape || "", pays: l.pays || "", tentatives: 0,
+      g = { famille, ou: (l.etape || "?") + " · " + (l.pays || "?"),
+            etape: l.etape || "", pays: l.pays || "", tentatives: 0, anonymes: 0,
             comptes: new Set(), statuts: new Set(), premier: l.quand, dernier: l.quand };
       groupes.set(cle, g);
     }
     g.tentatives += 1;
-    g.comptes.add(l.compte_id || 0);
-    g.statuts.add(Number(l.statut));
+    if (l.compte_id) g.comptes.add(l.compte_id); else g.anonymes += 1;
+    g.statuts.add(statut);
     if (l.quand < g.premier) g.premier = l.quand;
     if (l.quand > g.dernier) g.dernier = l.quand;
   }
 
   const foyers = [...groupes.values()]
     .map((g) => ({
+      famille: g.famille,
       ou: g.ou,
       etape: g.etape,
       pays: g.pays,
       tentatives: g.tentatives,
-      personnes: g.comptes.size,
-      comptes: [...g.comptes].filter(Boolean),
-      statuts: [...g.statuts].sort(),
+      comptes_identifies: [...g.comptes],
+      tentatives_anonymes: g.anonymes,
+      statuts: [...g.statuts].sort((a, b) => a - b),
       premier: g.premier,
       dernier: g.dernier,
-      /* Plusieurs personnes au même endroit : ce n'est plus un incident,
-         c'est une panne. C'est la phrase qu'on veut lire en premier. */
-      panne: g.comptes.size > 1 || g.tentatives >= 5,
+      /* Ce qui fait une panne plutôt qu'un incident : plusieurs comptes
+         distincts au même endroit, ou assez de tentatives anonymes pour
+         qu'une seule personne acharnée ne suffise plus à l'expliquer. Et
+         seulement du côté serveur : une connexion perdue n'est pas notre
+         panne, même répétée. */
+      panne: g.famille === "serveur"
+             && (g.comptes.size > 1 || g.anonymes >= 5 || g.tentatives >= 5),
     }))
     .sort((a, b) => b.tentatives - a.tentatives);
 
   const pannes = foyers.filter((f) => f.panne);
+  const dit = (f) => {
+    const qui = [];
+    if (f.comptes_identifies.length) {
+      qui.push(f.comptes_identifies.length + " compte"
+               + (f.comptes_identifies.length > 1 ? "s" : ""));
+    }
+    if (f.tentatives_anonymes) qui.push(f.tentatives_anonymes + " anonymes");
+    return f.ou + " (" + f.tentatives + " tentatives — " + (qui.join(" + ") || "?") + ")";
+  };
 
   return json({
     ok: pannes.length === 0,
     jours,
     total: lignes.length,
     resume: pannes.length === 0
-      ? "Aucun foyer de panne sur " + jours + " jours."
-      : "FOYERS DE PANNE : " + pannes.map((p) => p.ou + " (" + p.tentatives
-          + " tentatives, " + p.personnes + " personne" + (p.personnes > 1 ? "s" : "") + ")").join(" · "),
+      ? "Aucun foyer de panne du site sur " + jours + " jours."
+      : "FOYERS DE PANNE : " + pannes.map(dit).join(" · "),
     foyers,
     lignes: lignes.map((l) => ({
       quand: l.quand,
