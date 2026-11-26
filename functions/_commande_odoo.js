@@ -172,7 +172,50 @@ export async function trouverOuCreerPartenaire(env, compte) {
   const pid = await paysId(env, compte.pays);
   if (pid) valeurs.country_id = pid;
 
-  const id = await appel(env, "res.partner", "create", [valeurs], {});
+  /* UN NUMÉRO DE TVA MAL FORMÉ NE DOIT PAS COÛTER LA VENTE.
+   *
+   * Trouvé le 26 novembre 2026. Odoo contrôle le format du numéro de TVA
+   * à la création de la fiche et REFUSE tout net :
+   *
+   *   « Le numéro VAT [BE8687667677] pour partenaire [sjsjjks] ne semble
+   *     pas valide. Note : le format attendu est BE0477472701 »
+   *
+   * L'inscription, elle, ne contrôle pas le format : elle interroge le
+   * registre européen et se contente de noter « invalide » quand il ne
+   * reconnaît pas le numéro. Le compte est donc créé, le salon remplit
+   * son panier, arrive au paiement — et se heurte à un mur, à chaque
+   * tentative, sans jamais savoir pourquoi. Le message qu'il reçoit dit
+   * « votre commande n'a pas pu être enregistrée », ce qui est vrai et
+   * parfaitement inutile.
+   *
+   * Une faute de frappe dans un champ administratif ne doit pas interdire
+   * d'acheter. On réessaie donc sans le numéro : la fiche naît sans TVA,
+   * la commande part au régime national — ce qui est précisément le
+   * traitement correct d'un numéro non vérifié — et la vente a lieu.
+   *
+   * On ne duplique pas la règle de format d'Odoo de notre côté : Odoo en
+   * est l'autorité, et une seconde table de règles finirait par diverger.
+   * On lui demande, et on s'adapte à sa réponse.
+   *
+   * Le numéro n'est pas perdu pour autant : il reste sur le compte du
+   * site, et rattraperApresVente() liste déjà les ventes dont la TVA est
+   * à régulariser. */
+  let id = null;
+  try {
+    id = await appel(env, "res.partner", "create", [valeurs], {});
+  } catch (e) {
+    const dit = String((e && e.message) || e || "");
+    const refusTva = valeurs.vat && /vat|tva/i.test(dit) && /valide|valid/i.test(dit);
+    if (!refusTva) throw e;
+
+    const sansTva = { ...valeurs, vat: false };
+    sansTva.comment = "Numéro de TVA refusé par Odoo à la création depuis le site : "
+      + String(compte.tva || "").trim()
+      + ". La fiche a été créée sans, pour ne pas bloquer la commande. À corriger.";
+    id = await appel(env, "res.partner", "create", [sansTva], {});
+    if (!id) throw echec("client_non_cree", "Odoo n'a pas créé la fiche client.");
+    return { id, cree: true, nom, tva_refusee: String(compte.tva || "").trim() };
+  }
   if (!id) throw echec("client_non_cree", "Odoo n'a pas créé la fiche client.");
   return { id, cree: true, nom };
 }
