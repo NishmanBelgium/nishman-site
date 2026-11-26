@@ -216,6 +216,29 @@
       return { d: null, cause: "reponse-illisible" };
     }
 
+    /* UN REFUS LISIBLE SE NOTE AUSSI — le trou ouvert le 26 novembre 2026.
+     *
+     * Jusqu'au passage des échecs en 503, le corps d'une réponse d'erreur
+     * était remplacé par la page de Cloudflare : illisible, donc noté
+     * ci-dessus. Le motif est redevenu lisible le jour même — et c'est à
+     * ce moment précis que le registre a cessé d'enregistrer quoi que ce
+     * soit, puisque cette branche-là ne signalait rien.
+     *
+     * On aurait troqué un journal plein de pages d'erreur contre un
+     * journal vide. Or le motif est justement ce qu'on cherchait depuis
+     * six jours : c'est maintenant qu'il faut le garder.
+     *
+     * Seulement les 5xx : le serveur dit qu'il n'y arrive pas. Un panier
+     * vide, des conditions non cochées, une rupture de stock ou une
+     * session expirée sont des 4xx, et remplir le registre avec ça
+     * noierait les vraies pannes. */
+    if (r.status >= 500 && d.ok !== true) {
+      signaler(etape, "serveur", r.status,
+        "motif=" + String((d.motif || d.code || "?")).slice(0, 60)
+        + " · " + String(d.message || d.erreur || "").slice(0, 160)
+        + (d.detail ? " · " + String(d.detail).slice(0, 80) : ""));
+    }
+
     return { d: d, cause: "" };
   }
 

@@ -393,6 +393,18 @@
           return;
         }
         if (d.ok !== true || !d.paiement_url) {
+          /* UN REFUS LISIBLE SE NOTE AUSSI — voir commander.js, même date.
+             Depuis que les échecs répondent 503, leur corps n'est plus
+             remplacé par la page de Cloudflare : le motif arrive enfin, et
+             sans cette ligne le registre l'oublierait aussitôt. Seulement
+             les 5xx : un panier vide ou un relais non choisi sont des 4xx
+             et n'ont rien à y faire. */
+          if (statutRecu >= 500) {
+            signaler("boutique", "serveur", statutRecu,
+              "motif=" + String((d.motif || d.code || "?")).slice(0, 60)
+              + " · " + String(d.message || d.erreur || "").slice(0, 160)
+              + (d.detail ? " · " + String(d.detail).slice(0, 80) : ""));
+          }
           envoiEnCours = false;
           b.disabled = false;
           b.textContent = "Payer ma commande";
