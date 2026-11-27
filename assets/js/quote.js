@@ -39,11 +39,19 @@
   // un devis qui annonce une remise que la commande refusera ensuite est
   // pire que pas de remise du tout.
   //
-  // Il n'y a plus qu'une condition, et c'est la première commande : pas de
+  // Il n'y a qu'une condition, et c'est d'être servi une fois : pas de
   // minimum, dix euros suffisent. Cette page ne peut pas la vérifier — elle
   // est publique, elle ne sait pas qui la consulte — mais elle la dit, dans
   // le message comme sur la ligne du document. Le serveur tranche au moment
   // de la commande.
+  //
+  // CE QUE « UNE FOIS » VEUT DIRE CHANGE EN DÉCEMBRE 2026. Toute l'année,
+  // c'est la première commande du compte. Du 1er au 31 décembre, la remise
+  // est ouverte à tous les salons, une fois chacun dans le mois (décision
+  // du 27/11/2026). Les deux jeux de phrases ci-dessous disent l'un ou
+  // l'autre selon la date, parce qu'un devis qui annonce « votre première
+  // commande » à un client fidèle lui dit qu'il n'y a pas droit — alors
+  // qu'il y a droit.
   const PROMO_CODE = "FIRST10";
 
   /* LE TAUX EST DATÉ, ET C'EST UN MIROIR DE functions/_calcul.js.
@@ -61,7 +69,25 @@
   const PROMO_RATE = promoTaux();
   /* Le pourcentage écrit dans les cinq langues : jamais un « 10 » en dur. */
   const PCT = Math.round(PROMO_RATE * 100);
-  const PROMO_T = {
+  /* Vrai pendant l'opération de décembre : miroir de `remisePourTous`. */
+  const POUR_TOUS = PROMO_RATE !== 0.10;
+  const PROMO_T = POUR_TOUS ? {
+    fr: { label: "Code promo (facultatif)",
+          ok: `Code FIRST10 appliqué : −${PCT} % sur votre commande`,
+          bad: "Ce code promo n'est pas reconnu", line: `Remise FIRST10 (−${PCT} %, une fois par salon)` },
+    en: { label: "Promo code (optional)",
+          ok: `FIRST10 applied: −${PCT}% on your order`,
+          bad: "This promo code is not recognised", line: `FIRST10 discount (−${PCT}%, once per salon)` },
+    nl: { label: "Kortingscode (optioneel)",
+          ok: `FIRST10 toegepast: −${PCT}% op uw bestelling`,
+          bad: "Deze kortingscode is niet geldig", line: `Korting FIRST10 (−${PCT}%, één keer per salon)` },
+    de: { label: "Aktionscode (optional)",
+          ok: `FIRST10 angewendet: −${PCT} % auf Ihre Bestellung`,
+          bad: "Dieser Aktionscode ist ungültig", line: `Rabatt FIRST10 (−${PCT} %, einmal pro Salon)` },
+    tr: { label: "Promosyon kodu (isteğe bağlı)",
+          ok: `FIRST10 uygulandı: siparişinizde −%${PCT}`,
+          bad: "Bu promosyon kodu geçerli değil", line: `FIRST10 indirimi (−%${PCT}, salon başına bir kez)` },
+  } : {
     fr: { label: "Code promo (facultatif)",
           ok: `Code FIRST10 appliqué : −${PCT} % sur votre première commande`,
           bad: "Ce code promo n'est pas reconnu", line: `Remise FIRST10 (−${PCT} %, 1re commande)` },

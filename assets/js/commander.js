@@ -787,7 +787,13 @@
     // un deuxième code viendra peut-être avec ses conditions.
     if (d.promo) msg.textContent = t("promo_ok")(d.promo);
     else if (d.promo_refusee) {
-      msg.textContent = t("promo_deja_client")(d.promo_refusee);
+      // Deux motifs depuis le 27/11/2026 : « deja_client » hors opération,
+      // « deja_servi » pendant décembre, où la remise est ouverte à tous
+      // mais une seule fois chacun. Un motif inconnu retombe sur l'ancien
+      // message plutôt que sur rien.
+      const cle = d.promo_motif === "deja_servi"
+        ? "promo_deja_servi" : "promo_deja_client";
+      msg.textContent = t(cle)(d.promo_refusee);
     } else msg.textContent = t("promo_non");
   }
 

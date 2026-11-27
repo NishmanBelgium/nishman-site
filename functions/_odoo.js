@@ -201,7 +201,21 @@ export async function commandesDuClient(env, partnerId, limite = 50) {
  * l'aveugle est le seul choix prudent, puisqu'une remise accordée à tort
  * ne se reprend pas.
  */
-export async function aDejaCommande(env, partnerId) {
+/**
+ * Ce client a-t-il déjà une commande confirmée ?
+ *
+ * `depuis` (optionnel, date Odoo en UTC « AAAA-MM-JJ HH:MM:SS ») restreint
+ * la question à une fenêtre : « a-t-il déjà commandé DEPUIS cette date ».
+ * Sans `depuis`, la question reste « a-t-il déjà commandé un jour », qui
+ * est le comportement historique et celui de toute l'année.
+ *
+ * À quoi ça sert : en décembre 2026, la remise n'est plus réservée aux
+ * nouveaux clients, elle est offerte à tous — une fois chacun. « Une fois
+ * chacun » se vérifie exactement comme « jamais », avec un plancher de
+ * date en plus. Aucun état nouveau à stocker, aucune table à tenir : la
+ * réponse vit déjà dans Odoo. Voir `plancherPremiere()` dans `_calcul.js`.
+ */
+export async function aDejaCommande(env, partnerId, depuis) {
   // Pas de fiche client : le compte n'a jamais été lié à Odoo, donc il n'a
   // rien commandé. C'est le cas d'un compte tout juste créé, exactement
   // celui que le code de bienvenue vise.
@@ -209,9 +223,10 @@ export async function aDejaCommande(env, partnerId) {
   // Odoo non configuré : on ne peut pas répondre, et répondre « non » par
   // défaut ouvrirait la remise à tout le monde. On lève, l'appelant tranche.
   if (!configure(env)) throw new Error("Odoo non configuré : historique illisible.");
-  const n = await appel(env, "sale.order", "search_count",
-    [[["partner_id", "=", partnerId],
-      ["state", "in", ["sale", "done"]]]], {});
+  const filtre = [["partner_id", "=", partnerId],
+                  ["state", "in", ["sale", "done"]]];
+  if (depuis) filtre.push(["date_order", ">=", depuis]);
+  const n = await appel(env, "sale.order", "search_count", [filtre], {});
   return Number(n) > 0;
 }
 

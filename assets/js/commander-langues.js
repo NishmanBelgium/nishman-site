@@ -63,6 +63,11 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "Ce code n'est pas reconnu.",
     promo_deja_client: (code) => "Le code " + code + " est réservé à la première "
       + "commande, et votre compte en a déjà une.",
+    // Décembre 2026 : la remise est ouverte à tous, une fois chacun. Le
+    // refus ne veut plus dire « vous n'êtes pas nouveau » mais « vous en
+    // avez déjà profité ce mois-ci », et ce n'est pas la même nouvelle.
+    promo_deja_servi: (code) => "Le code " + code + " a déjà été utilisé sur "
+      + "une commande ce mois-ci. Il vaut une fois par salon.",
     ecartees: (n) => n + " article(s) de votre panier ne sont plus disponibles et ont été retirés.",
 
     valid_titre: "Validation",
@@ -178,6 +183,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "This code is not recognised.",
     promo_deja_client: (code) => "Code " + code + " is reserved for a first "
       + "order, and your account already has one.",
+    promo_deja_servi: (code) => "Code " + code + " has already been used on "
+      + "an order this month. It applies once per salon.",
     ecartees: (n) => n + " item(s) in your basket are no longer available and have been removed.",
 
     valid_titre: "Confirmation",
@@ -292,6 +299,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "Deze code wordt niet herkend.",
     promo_deja_client: (code) => "Code " + code + " geldt alleen voor een eerste "
       + "bestelling, en uw account heeft er al een.",
+    promo_deja_servi: (code) => "Code " + code + " is deze maand al op een "
+      + "bestelling gebruikt. Hij geldt één keer per salon.",
     ecartees: (n) => n + " artikel(en) in uw mandje zijn niet meer beschikbaar en werden verwijderd.",
 
     valid_titre: "Bevestiging",
@@ -406,6 +415,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "Dieser Code wird nicht erkannt.",
     promo_deja_client: (code) => "Der Code " + code + " gilt nur für die erste "
       + "Bestellung, und Ihr Konto hat bereits eine.",
+    promo_deja_servi: (code) => "Der Code " + code + " wurde diesen Monat "
+      + "bereits für eine Bestellung verwendet. Er gilt einmal pro Salon.",
     ecartees: (n) => n + " Artikel in Ihrem Warenkorb sind nicht mehr verfügbar und wurden entfernt.",
 
     valid_titre: "Bestätigung",
@@ -520,6 +531,8 @@ window.NISHMAN_CMD_LANGUES = {
     promo_non: "Bu kod tan\u0131nm\u0131yor.",
     promo_deja_client: (code) => code + " kodu yaln\u0131zca ilk sipari\u015f i\u00e7in "
       + "ge\u00e7erlidir ve hesab\u0131n\u0131z\u0131n zaten bir sipari\u015fi var.",
+    promo_deja_servi: (code) => code + " kodu bu ay bir sipari\u015fte zaten "
+      + "kullan\u0131ld\u0131. Salon ba\u015f\u0131na bir kez ge\u00e7erlidir.",
     ecartees: (n) => "Sepetinizdeki " + n + " \u00fcr\u00fcn art\u0131k mevcut de\u011fil ve kald\u0131r\u0131ld\u0131.",
 
     valid_titre: "Onay",

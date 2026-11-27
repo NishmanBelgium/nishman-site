@@ -58,6 +58,46 @@ export function tauxPremiere(maintenant) {
   return (t >= PREMIERE_DEBUT && t < PREMIERE_FIN) ? PREMIERE_TAUX : PROMO.taux;
 }
 
+/* ── DÉCEMBRE 2026 : LA REMISE S'OUVRE À TOUS, UNE FOIS CHACUN ──────────────
+ *
+ * Décision de Dilhan Basan du 27 novembre 2026, le soir même de celle
+ * ci-dessus et après avoir vu les chiffres de novembre : sur 128 clients
+ * du mois, 121 n'avaient commandé qu'une fois et aucun trois fois. Une
+ * offre réservée aux nouveaux disait à 128 payeurs qu'ils n'y avaient pas
+ * droit. Elle est donc ouverte à tout le monde — « −15 % sur votre
+ * prochaine commande » — et le mailing de décembre va le leur annoncer.
+ *
+ * COMMENT « UNE FOIS CHACUN » EST VÉRIFIÉ, SANS RIEN STOCKER. La question
+ * « a-t-il déjà profité de l'offre ? » est la même que « a-t-il déjà une
+ * commande confirmée depuis le 1er décembre ? », et Odoo sait y répondre.
+ * Pas de nouveau champ, pas de compteur à tenir à jour, pas de deuxième
+ * vérité à synchroniser. C'est `aDejaCommande(env, partnerId, depuis)`
+ * dans `_odoo.js` qui reçoit ce plancher.
+ *
+ * HORS DÉCEMBRE, LA FONCTION REND `null` ET RIEN NE CHANGE : la question
+ * redevient « a-t-il déjà commandé un jour », mot pour mot le comportement
+ * de toute l'année. Le 1er janvier, l'offre se referme toute seule sur la
+ * première commande à −10 %, comme le taux. */
+
+/**
+ * Le plancher de date qui définit « déjà servi » à l'instant donné.
+ * Renvoie une date Odoo (UTC) pendant l'opération de décembre, `null`
+ * sinon — auquel cas l'historique complet fait foi.
+ */
+export function plancherPremiere(maintenant) {
+  const t = Number(maintenant || Date.now());
+  // 1er décembre 00 h 00 à Bruxelles = 30 novembre 23 h 00 UTC, et Odoo
+  // stocke `date_order` en UTC. Le plancher est la même borne que
+  // PREMIERE_DEBUT, écrite dans l'autre format : les deux ne peuvent pas
+  // diverger sans qu'on le voie.
+  return (t >= PREMIERE_DEBUT && t < PREMIERE_FIN) ? "2026-11-30 23:00:00" : null;
+}
+
+/** L'opération « remise ouverte à tous » est-elle en cours ? */
+export function remisePourTous(maintenant) {
+  return plancherPremiere(maintenant) !== null;
+}
+
 /* --- Outils ------------------------------------------------------------- */
 
 const sou = (n) => Math.round(Number(n) * 100) / 100;
@@ -143,13 +183,18 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
 
   const sousTotal = sou(lignes.reduce((s, l) => s + l.total, 0));
 
-  // FIRST10 : une seule condition, et c'est la PREMIÈRE COMMANDE. Pas de
-  // minimum. Dix euros ou mille, le client qui n'a jamais commandé a ses
-  // −10 % ; celui qui a déjà une commande confirmée ne les a pas.
+  // FIRST10 : une seule condition, et c'est d'être SERVI UNE FOIS. Pas de
+  // minimum. Dix euros ou mille.
+  //
+  // Toute l'année, « une fois » veut dire une fois dans la vie du compte :
+  // c'est la remise de bienvenue. En décembre 2026, ça veut dire une fois
+  // dans le mois, pour tout le monde (voir `plancherPremiere` plus haut).
+  // Le calcul ici ne change pas d'un signe : c'est l'appelant qui a posé
+  // la bonne question à Odoo et qui rend `dejaCommande`.
   //
   // (Décision du 2 novembre 2026, qui remplace celle du commit 216 : le
   // code avait alors un minimum calé sur le franco de port. Il n'en a
-  // plus.)
+  // plus. Ouverture à tous : 27 novembre 2026.)
   const codeDonne = sousTotal > 0 &&
     String(promo || "").trim().toUpperCase() === PROMO.code;
   const dejaClient = dejaCommande === true;
@@ -197,7 +242,11 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
     // conservé : le jour où un deuxième code arrive avec ses conditions,
     // les pages sauront déjà lire un motif.
     promo_refusee: codeDonne && !promoOk ? PROMO.code : "",
-    promo_motif: codeDonne && !promoOk ? "deja_client" : "",
+    // Deux motifs de refus pour une seule condition, parce que la phrase à
+    // montrer n'est pas la même : hors opération, « réservé à la première
+    // commande » ; pendant, « vous en avez déjà profité ce mois-ci ».
+    promo_motif: codeDonne && !promoOk
+      ? (remisePourTous(maintenant) ? "deja_servi" : "deja_client") : "",
     remise,
     marchandise,
     port, port_seuil: seuil, port_manque: manque,

@@ -15,7 +15,7 @@
 
 import { json, erreur, compteConnecte, prolongerSiBesoin, texteValide, paysValide,
          rangerParDepot } from "../_commun.js";
-import { calculer } from "../_calcul.js";
+import { calculer, plancherPremiere } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
 import { positionFiscale } from "../_fiscal.js";
@@ -259,7 +259,7 @@ export async function onRequestPost(ctx) {
   let dejaCommande = false;
   if (String(corps.promo || "").trim()) {
     try {
-      dejaCommande = await aDejaCommande(env, compte.odoo_partner_id);
+      dejaCommande = await aDejaCommande(env, compte.odoo_partner_id, plancherPremiere());
     } catch (e) {
       dejaCommande = true;
     }

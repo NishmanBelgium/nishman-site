@@ -16,7 +16,21 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "361";
+  const ASSET_V = "362";
+
+  /* ── L'OFFRE DE DÉCEMBRE, DANS LA FENÊTRE D'ACCUEIL ────────────────────
+   * Miroir daté de `functions/_calcul.js`. Le serveur fait foi ; cette
+   * page ne fait que l'annoncer. Du 1er au 31 décembre 2026, −15 % pour
+   * tous les salons, une fois chacun. Le 1er janvier la phrase disparaît
+   * toute seule, sans que personne ait à y penser : c'est la règle qu'on
+   * s'est donnée après avoir laissé traîner une opération déjà finie.
+   * Bruxelles est à UTC+1 en décembre : minuit ici, 23 h la veille en UTC. */
+  const OFFRE_DEBUT = Date.UTC(2026, 10, 30, 23, 0, 0);
+  const OFFRE_FIN   = Date.UTC(2026, 11, 31, 23, 0, 0);
+  function offreEnCours(t) {
+    t = Number(t || Date.now());
+    return t >= OFFRE_DEBUT && t < OFFRE_FIN;
+  }
 
   // Conditions commerciales. Modifier ici suffit : le panier, la barre
   // flottante et la page de devis lisent ces deux valeurs.
@@ -84,6 +98,7 @@
       welcomeTitle: "Catalogue professionnel",
       welcomeText: "Ce catalogue s'adresse aux salons de coiffure et aux barbiers. Les tarifs affichés sont nos prix professionnels. Pour commander, il faut un compte — la création est immédiate et gratuite.",
       welcomeSkip: "Continuer la visite",
+      offreDec: "Et jusqu'au 31 décembre : −15 % sur votre commande, nouveau compte ou client de longue date. Une fois par salon.",
       accountNeeded: "Pour envoyer une demande de devis, il faut un compte professionnel. La création est immédiate et gratuite.",
       accountLogin: "Se connecter",
       accountCreate: "Créer un compte professionnel",
@@ -156,6 +171,7 @@
       welcomeTitle: "Trade catalogue",
       welcomeText: "This catalogue is for hair salons and barbershops. The prices shown are our trade prices. An account is required to order — creating one is free and immediate.",
       welcomeSkip: "Keep browsing",
+      offreDec: "And until 31 December: −15% on your order, whether the account is new or long-standing. Once per salon.",
       accountNeeded: "To send a quote request you need a trade account. Creating one is free and takes a minute.",
       accountLogin: "Log in",
       accountCreate: "Create a trade account",
@@ -228,6 +244,7 @@
       welcomeTitle: "Vakcatalogus",
       welcomeText: "Deze catalogus is bedoeld voor kapsalons en barbershops. De getoonde tarieven zijn onze vakprijzen. Om te bestellen hebt u een account nodig — aanmaken is gratis en onmiddellijk.",
       welcomeSkip: "Verder kijken",
+      offreDec: "En tot 31 december: −15% op uw bestelling, nieuw account of vaste klant. Eén keer per salon.",
       accountNeeded: "Om een offerteaanvraag te versturen hebt u een zakelijk account nodig. Aanmaken is gratis en onmiddellijk.",
       accountLogin: "Aanmelden",
       accountCreate: "Een professioneel account aanmaken",
@@ -300,6 +317,7 @@
       welcomeTitle: "Fachkatalog",
       welcomeText: "Dieser Katalog richtet sich an Friseursalons und Barbershops. Die angezeigten Preise sind unsere Händlerpreise. Zum Bestellen ist ein Konto nötig — die Anmeldung ist kostenlos und sofort möglich.",
       welcomeSkip: "Weiter stöbern",
+      offreDec: "Und bis zum 31. Dezember: −15 % auf Ihre Bestellung, ob neues Konto oder langjähriger Kunde. Einmal pro Salon.",
       accountNeeded: "Für eine Angebotsanfrage benötigen Sie ein Händlerkonto. Die Anmeldung ist kostenlos und sofort möglich.",
       accountLogin: "Anmelden",
       accountCreate: "Händlerkonto erstellen",
@@ -372,6 +390,7 @@
       welcomeTitle: "Profesyonel katalog",
       welcomeText: "Bu katalog kuaför salonları ve berberler içindir. Gösterilen fiyatlar profesyonel fiyatlarımızdır. Sipariş vermek için hesap gerekir — hesap açmak ücretsiz ve anındadır.",
       welcomeSkip: "Göz atmaya devam et",
+      offreDec: "Ve 31 Aralık'a kadar: siparişinizde −%15, hesabınız yeni de olsa eski de olsa. Salon başına bir kez.",
       accountNeeded: "Teklif talebi göndermek için profesyonel bir hesap gerekir. Hesap açmak ücretsiz ve anındadır.",
       accountLogin: "Giriş yap",
       accountCreate: "Profesyonel hesap oluştur",
@@ -1711,7 +1730,15 @@
     const titre = document.getElementById("access-title");
     const desc = document.getElementById("access-desc");
     if (titre) titre.textContent = arrivee ? T.welcomeTitle : T.proAccess;
-    if (desc) desc.textContent = arrivee ? T.welcomeText : T.accountNeeded;
+    if (desc) {
+      // L'offre vient APRÈS l'explication, pas à la place : un visiteur qui
+      // ne sait pas encore à qui s'adresse ce catalogue n'a que faire d'une
+      // remise. Et elle n'est ajoutée que pendant l'opération — le reste de
+      // l'année, la fenêtre est exactement celle d'avant.
+      const base = arrivee ? T.welcomeText : T.accountNeeded;
+      desc.textContent = (offreEnCours() && T.offreDec)
+        ? base + " " + T.offreDec : base;
+    }
 
     const passer = document.getElementById("access-continue");
     if (passer) {

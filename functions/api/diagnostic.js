@@ -24,6 +24,7 @@ import { catalogue, donneesPortier, etatFilet, etatSecoursPrix } from "../_tarif
 import { veillerSurLaTva } from "../_veille_tva.js";
 import { etatPromo, ELIGIBLES } from "../_promo_bf.js";
 import { etatPromo as etatDecembre } from "../_promo_decembre.js";
+import { PROMO, tauxPremiere, plancherPremiere, remisePourTous } from "../_calcul.js";
 import { etatOffre as etatOffreP1 } from "../_offre_p1.js";
 /* Le `catalogue` importé plus haut est celui du tunnel professionnel.
    La promotion Black Friday ne concerne que la boutique grand public,
@@ -605,6 +606,25 @@ async function rapport({ request, env }) {
     decembre: decembre,
     // Black Friday pro : le carton de 12 poudres P1 offert dès 300 € HT.
     black_friday_pro: etatOffreP1(),
+    /* LE CODE FIRST10, TEL QUE LE SERVEUR LE VOIT MAINTENANT.
+       Quatre fichiers du navigateur répètent cette règle pour l'afficher
+       (quote.js, catalog.js, commander-langues.js, commander.js) et le
+       serveur est seul juge. Ce bloc est le point de comparaison : si une
+       page annonce autre chose que ce qui est écrit ici, c'est la page qui
+       a tort. `plancher` est la date à partir de laquelle une commande
+       confirmée consomme l'offre — `null` veut dire « toute la vie du
+       compte », c'est-à-dire la remise de bienvenue classique. */
+    code_premiere_commande: {
+      code: PROMO.code,
+      taux: tauxPremiere(),
+      taux_hors_operation: PROMO.taux,
+      ouverte_a_tous: remisePourTous(),
+      plancher: plancherPremiere(),
+      a_verifier_dans_les_pages: [
+        "assets/js/quote.js (PROMO_DEBUT, promoTaux, POUR_TOUS)",
+        "assets/js/catalog.js (OFFRE_DEBUT, offreEnCours, offreDec)",
+      ],
+    },
     echecs_de_commande: incidentsSouci
       ? { lisible: false, detail: incidentsSouci }
       : { lisible: true, nombre: incidents.length, lignes: incidents },
