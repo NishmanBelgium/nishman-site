@@ -30,6 +30,43 @@ export const TAUX_TVA_BE = 0.21;
 
 export const PROMO = { code: "FIRST10", taux: 0.10 };
 
+/* ── DEUX NOMS POUR LA MÊME REMISE ──────────────────────────────────────────
+ *
+ * `FIRST10` reste accepté pour toujours : il circule, et un code refusé le
+ * jour où un client l'essaie coûte plus cher qu'un nom imparfait.
+ *
+ * `DECEMBRE15` est le nom annoncé dans le mailing du 1er décembre. Il
+ * existe parce que `FIRST10` ment deux fois en décembre : sur le chiffre
+ * (15 et non 10) et sur la condition (plus réservé à une première
+ * commande). Le renommer aurait transporté le mensonge ailleurs —
+ * « FIRST15 » dit encore « première ». On en ajoute un, on n'en remplace
+ * aucun.
+ *
+ * Les deux donnent exactement la même chose : le taux et la condition sont
+ * décidés par la date, jamais par le nom tapé. Un alias n'a pas de règle à
+ * lui, sinon il faudrait les tenir synchronisés et l'un dériverait.
+ *
+ * Ce qui est renvoyé dans `promo` est TOUJOURS `PROMO.code`, quel que soit
+ * le nom tapé : les pages, les devis et Odoo ne connaissent qu'un seul
+ * libellé, et l'historique reste lisible. */
+const ALIAS = ["DECEMBRE15"];
+
+/**
+ * Le nom tapé ouvre-t-il droit à la remise ?
+ *
+ * Les accents sont retirés avant comparaison. Un coiffeur qui tape
+ * « Décembre15 » sur un clavier de téléphone écrit le mot correctement,
+ * et se faire refuser pour un accent serait absurde — c'est exactement le
+ * genre de refus qui fait écrire au service commercial. Les espaces et
+ * les tirets tombent pour la même raison.
+ */
+export function codeReconnu(saisi) {
+  const v = String(saisi || "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .trim().toUpperCase().replace(/[\s-]/g, "");
+  return v === PROMO.code || ALIAS.includes(v);
+}
+
 /* ── DÉCEMBRE 2026 : LA PREMIÈRE COMMANDE PASSE À −15 % ─────────────────────
  *
  * Décision de NBD du 27 novembre 2026, pour la campagne salons de décembre :
@@ -195,8 +232,7 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
   // (Décision du 2 novembre 2026, qui remplace celle du commit 216 : le
   // code avait alors un minimum calé sur le franco de port. Il n'en a
   // plus. Ouverture à tous : 27 novembre 2026.)
-  const codeDonne = sousTotal > 0 &&
-    String(promo || "").trim().toUpperCase() === PROMO.code;
+  const codeDonne = sousTotal > 0 && codeReconnu(promo);
   const dejaClient = dejaCommande === true;
   const promoOk = codeDonne && !dejaClient;
   const tauxRemise = tauxPremiere(maintenant);

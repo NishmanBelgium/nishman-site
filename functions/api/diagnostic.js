@@ -24,7 +24,7 @@ import { catalogue, donneesPortier, etatFilet, etatSecoursPrix } from "../_tarif
 import { veillerSurLaTva } from "../_veille_tva.js";
 import { etatPromo, ELIGIBLES } from "../_promo_bf.js";
 import { etatPromo as etatDecembre } from "../_promo_decembre.js";
-import { PROMO, tauxPremiere, plancherPremiere, remisePourTous } from "../_calcul.js";
+import { PROMO, tauxPremiere, plancherPremiere, remisePourTous, codeReconnu } from "../_calcul.js";
 import { etatOffre as etatOffreP1 } from "../_offre_p1.js";
 /* Le `catalogue` importé plus haut est celui du tunnel professionnel.
    La promotion Black Friday ne concerne que la boutique grand public,
@@ -616,6 +616,9 @@ async function rapport({ request, env }) {
        compte », c'est-à-dire la remise de bienvenue classique. */
     code_premiere_commande: {
       code: PROMO.code,
+      // Les autres noms acceptés, vérifiés en les soumettant à la vraie
+      // fonction plutôt qu'en recopiant une liste qui pourrait dériver.
+      noms_acceptes: ["FIRST10", "DECEMBRE15"].filter(codeReconnu),
       taux: tauxPremiere(),
       taux_hors_operation: PROMO.taux,
       ouverte_a_tous: remisePourTous(),

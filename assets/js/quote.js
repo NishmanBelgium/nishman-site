@@ -71,22 +71,27 @@
   const PCT = Math.round(PROMO_RATE * 100);
   /* Vrai pendant l'opération de décembre : miroir de `remisePourTous`. */
   const POUR_TOUS = PROMO_RATE !== 0.10;
+  /* EN DÉCEMBRE, AUCUN NOM DE CODE N'EST AFFICHÉ. Deux noms sont acceptés
+     (FIRST10 et DECEMBRE15) et le serveur n'en renvoie qu'un : écrire un
+     nom ici, c'est prendre le risque qu'il ne soit pas celui que le client
+     a tapé ni celui que sa confirmation affichera. La remise se dit très
+     bien sans son matricule. */
   const PROMO_T = POUR_TOUS ? {
     fr: { label: "Code promo (facultatif)",
-          ok: `Code FIRST10 appliqué : −${PCT} % sur votre commande`,
-          bad: "Ce code promo n'est pas reconnu", line: `Remise FIRST10 (−${PCT} %, une fois par salon)` },
+          ok: `Code appliqué : −${PCT} % sur votre commande`,
+          bad: "Ce code promo n'est pas reconnu", line: `Remise −${PCT} % (une fois par salon)` },
     en: { label: "Promo code (optional)",
-          ok: `FIRST10 applied: −${PCT}% on your order`,
-          bad: "This promo code is not recognised", line: `FIRST10 discount (−${PCT}%, once per salon)` },
+          ok: `Code applied: −${PCT}% on your order`,
+          bad: "This promo code is not recognised", line: `−${PCT}% discount (once per salon)` },
     nl: { label: "Kortingscode (optioneel)",
-          ok: `FIRST10 toegepast: −${PCT}% op uw bestelling`,
-          bad: "Deze kortingscode is niet geldig", line: `Korting FIRST10 (−${PCT}%, één keer per salon)` },
+          ok: `Code toegepast: −${PCT}% op uw bestelling`,
+          bad: "Deze kortingscode is niet geldig", line: `Korting −${PCT}% (één keer per salon)` },
     de: { label: "Aktionscode (optional)",
-          ok: `FIRST10 angewendet: −${PCT} % auf Ihre Bestellung`,
-          bad: "Dieser Aktionscode ist ungültig", line: `Rabatt FIRST10 (−${PCT} %, einmal pro Salon)` },
+          ok: `Code angewendet: −${PCT} % auf Ihre Bestellung`,
+          bad: "Dieser Aktionscode ist ungültig", line: `Rabatt −${PCT} % (einmal pro Salon)` },
     tr: { label: "Promosyon kodu (isteğe bağlı)",
-          ok: `FIRST10 uygulandı: siparişinizde −%${PCT}`,
-          bad: "Bu promosyon kodu geçerli değil", line: `FIRST10 indirimi (−%${PCT}, salon başına bir kez)` },
+          ok: `Kod uygulandı: siparişinizde −%${PCT}`,
+          bad: "Bu promosyon kodu geçerli değil", line: `−%${PCT} indirim (salon başına bir kez)` },
   } : {
     fr: { label: "Code promo (facultatif)",
           ok: `Code FIRST10 appliqué : −${PCT} % sur votre première commande`,
@@ -105,8 +110,19 @@
           bad: "Bu promosyon kodu geçerli değil", line: `FIRST10 indirimi (−%${PCT}, ilk sipariş)` },
   };
   function promoT() { return PROMO_T[LANG] || PROMO_T.fr; }
+  /* Miroir de `codeReconnu` dans functions/_calcul.js. Deux noms donnent la
+     même remise : FIRST10, qui ne meurt jamais parce qu'il circule, et
+     DECEMBRE15, annoncé dans le mailing de décembre. Les accents, les
+     espaces et les tirets tombent avant comparaison — un code refusé pour
+     un accent fait écrire au service commercial. SI UN NOM EST AJOUTÉ
+     CÔTÉ SERVEUR, IL DOIT L'ÊTRE ICI : sinon cette page annonce « code non
+     reconnu » sur un code que la commande acceptera. */
+  const PROMO_NOMS = [PROMO_CODE, "DECEMBRE15"];
   function promoValide(v) {
-    return String(v || "").trim().toUpperCase().replace(/[\s-]/g, "") === PROMO_CODE;
+    const n = String(v || "")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .trim().toUpperCase().replace(/[\s-]/g, "");
+    return PROMO_NOMS.includes(n);
   }
   /* L'état du code pour ce devis : "ok", "inconnu", ou "" quand aucun code
      n'est saisi. Le serveur reste seul juge — il vérifie en plus que c'est
