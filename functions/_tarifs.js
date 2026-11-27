@@ -77,6 +77,7 @@ let cacheFilet = null;
 let cacheFiletExpire = 0;
 let filetSouci = "";
 let filetAjoutes = 0;
+let filetRemplaces = 0;
 
 async function prixOdoo(env) {
   if (cacheFilet && Date.now() < cacheFiletExpire) return cacheFilet;
@@ -102,7 +103,7 @@ async function prixOdoo(env) {
 
 /** Ce que le filet a comblé au dernier calcul, pour /api/diagnostic. */
 export function etatFilet() {
-  return { ajoutes: filetAjoutes, souci: filetSouci };
+  return { ajoutes: filetAjoutes, remplaces: filetRemplaces, souci: filetSouci };
 }
 
 /**
@@ -323,20 +324,65 @@ export async function donneesPortier(env, options) {
     throw new Error("portier sans prix");
   }
 
-  // Le portier a répondu : ses prix font foi. Odoo ne vient qu'ensuite,
-  // et seulement là où il n'y a rien. Si Odoo ne répond pas, on sert la
-  // table du portier telle quelle — un filet absent ne doit pas faire
-  // tomber des prix qui, eux, sont arrivés.
+  /* ------------------------------------------------------------------
+     ODOO FAIT FOI, LE PORTIER TIENT LE FILET — changé le 27/11/2026.
+
+     Avant cette date, c'était l'inverse : la table tapée à la main dans
+     le script Google primait, et Odoo ne bouchait que les trous. Deux
+     tarifs vivaient donc en parallèle, et le vrai, celui qui facture,
+     était celui qu'on ne voyait pas depuis Odoo.
+
+     Ça s'est payé le 27 novembre : les 82 nouveaux prix salon 2027,
+     écrits dans Odoo, n'atteignaient pas le site. Recopier la table à la
+     main à chaque révision, c'est se garantir une faute de frappe un
+     jour, sur un prix que personne ne relit.
+
+     CE QUE CE CHANGEMENT A COÛTÉ EN RISQUE — mesuré avant de l'écrire,
+     pas supposé. Les deux tables ont été comparées entrée par entrée le
+     27/11 :
+
+       - 232 entrées au portier, 228 identiques à Odoo au centime ;
+       - les 4 écarts (8682035085065, 8682035081104, 8684736671349 à
+         2,70 contre 2,30 ; 8682035083689 à 3,50 contre 3,90) ne sont
+         dans AUCUNE des 219 fiches du catalogue : ils sont inertes,
+         `calculer` ne les atteint jamais ;
+       - sur les 219 références du catalogue, aucune n'a de prix nul ou
+         absent dans Odoo, et aucune ne diverge du portier.
+
+     Autrement dit, cette bascule ne change aucun prix vendable autre
+     que les 82 voulus. Ce n'est pas une opinion sur l'architecture,
+     c'est un constat vérifiable, et il est refaisable : comparer
+     `product.product.list_price` à la table du portier, EAN par EAN.
+
+     DEUX GARDE-FOUS, parce qu'un prix faux coûte plus cher qu'un prix
+     vieux :
+
+       - UN PRIX ODOO NON STRICTEMENT POSITIF N'ÉCRASE RIEN. Une fiche
+         créée sans tarif, ou remise à zéro par erreur, laisserait sinon
+         le catalogue afficher 0,00 € — et `calculer` vendrait à ce
+         prix-là. Le portier garde la main dans ce cas.
+       - ODOO MUET NE FAIT RIEN TOMBER. Si l'appel échoue, on sert la
+         table du portier telle quelle, exactement comme avant.
+
+     Et le portier reste la source des références qu'Odoo ignore —
+     8682035083153, le shampoing barbe archivé dans Odoo mais toujours
+     au catalogue, tient debout par là.
+     ------------------------------------------------------------------ */
   let prix = d.prices;
   try {
     const odoo = await prixOdoo(env);
     const fusion = Object.assign({}, prix);
-    let n = 0;
+    let ajoutes = 0, remplaces = 0;
     for (const ean of Object.keys(odoo)) {
-      if (fusion[ean] === undefined) { fusion[ean] = odoo[ean]; n++; }
+      const p = Number(odoo[ean]);
+      if (!(p > 0)) continue;                       // garde-fou : jamais 0 €
+      if (fusion[ean] === undefined) ajoutes++;
+      else if (Math.abs(fusion[ean] - p) > 0.005) remplaces++;
+      fusion[ean] = p;
     }
     prix = fusion;
-    filetAjoutes = n;
+    filetAjoutes = ajoutes;
+    filetRemplaces = remplaces;
     filetSouci = "";
   } catch (e) {
     filetSouci = String((e && e.message) || e).slice(0, 160);
