@@ -16,6 +16,21 @@ import { parSlug, catalogue, echapper, euros, origine } from "../_boutique.js";
 import { ENTETES_SECURITE, CSP_PAGE } from "../_commun.js";
 import { REGLES } from "../_calcul_b2c.js";
 import { FAMILLES, ODEURS, slugFamille, pied } from "./famille/[nom].js";
+import { remiseActive as decembreActif } from "../_promo_decembre.js";
+
+/* LA MENTION SOUS LE PRIX NOMME L'OPÉRATION EN COURS, ET SA DATE DE FIN.
+ *
+ * Elle disait « Black Friday … jusqu'au 30 novembre » en dur. Une fiche
+ * remisée en décembre aurait donc annoncé une offre finie et une date
+ * passée, sous un prix bien réel : c'est une annonce de réduction fausse,
+ * et c'est exactement le genre de détail qu'une opération suivante oublie.
+ *
+ * Le prix lui-même ne vient pas d'ici : `catalogue()` l'a déjà remisé.
+ * Cette fonction ne choisit que le mot. Hors opération, le bloc n'est pas
+ * rendu du tout, puisqu'il n'y a pas de `ttc_plein`. */
+function operationEnCours() {
+  return decembreActif() ? "Offre de décembre" : "Black Friday";
+}
 
 const DESCRIPTION_MAX = 155;
 const VOISINS_MAX = 4;
@@ -200,7 +215,7 @@ function page(p, base, indexable, autres) {
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
 <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
-<link rel="stylesheet" href="/assets/css/promo-bf.css?v=417" />
+<link rel="stylesheet" href="/assets/css/promo-bf.css?v=418" />
 <style>
   .fiche-page { max-width: 1040px; margin: 0 auto; padding: 24px 16px 72px;
                 display: grid; gap: 32px; grid-template-columns: 1fr; }
@@ -305,7 +320,9 @@ function page(p, base, indexable, autres) {
         ? `<s class="prix-plein">${euros(p.ttc_plein)}</s> <span class="prix-promo">${euros(p.ttc)}</span>`
         : euros(p.ttc)}</div>
       <div class="fiche-prix-note">${p.ttc_plein
-        ? `Black Friday · −${Math.round(p.promo * 100)} % jusqu'au 30 novembre · prix de référence ${euros(p.ttc_plein)}`
+        ? `${operationEnCours()} · −${Math.round(p.promo * 100)} % ${
+            decembreActif() ? "jusqu'au 31 décembre" : "jusqu'au 30 novembre"
+          } · prix de référence ${euros(p.ttc_plein)}`
         : "Prix particulier, TVA comprise"}</div>
     </div>
 
@@ -383,6 +400,7 @@ ${pied()}
 })();
 </script>
 <script src="/assets/js/promo-bf.js?v=423"></script>
+<script src="/assets/js/promo-decembre.js?v=418"></script>
 <script src="/assets/js/mesure.js?v=391" defer></script>
 <script src="/assets/js/consentement.js?v=394" defer></script>
 <script>

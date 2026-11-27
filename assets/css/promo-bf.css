@@ -1,10 +1,17 @@
 /* ==========================================================================
    BLACK FRIDAY 2026 — l'habillage temporaire de la boutique.
 
-   Tout est sous [data-bf] : l'attribut n'est posé sur <html> que pendant
-   la fenêtre de l'opération. Le 30 novembre à 23h59, il cesse d'être
-   posé et cette feuille entière redevient inerte, sans qu'il y ait quoi
-   que ce soit à retirer. C'est ce qui rend le retour arrière instantané.
+   Ce qui s'affiche est sous [data-bf] (et, depuis décembre 2026, sous
+   [data-dec]) : l'attribut n'est posé sur <html> que pendant la fenêtre de
+   l'opération. Quand elle finit, il cesse d'être posé et cette feuille
+   redevient inerte, sans qu'il y ait quoi que ce soit à retirer. C'est ce
+   qui rend le retour arrière instantané.
+
+   Correction du 27/11/2026 : la ligne ci-dessus disait « tout est sous
+   [data-bf] ». C'était déjà faux — le prix barré, le badge et la bannière
+   sont des classes neutres, utilisables par n'importe quelle opération.
+   C'est ce qui a permis à décembre de réutiliser cette feuille au lieu de
+   la recopier.
 
    La direction vient de la vidéo de référence : noir profond, un orange
    vif unique en accent, une typographie blanche lourde et penchée. Rien
@@ -35,7 +42,14 @@
    suivante se lit mal et fait douter du prix. */
 .prix-plein, .prix-promo, .prix-du { white-space: nowrap; }
 
-[data-bf] .prix-promo { color: #b4560a; }
+/* `[data-dec]` est l'attribut de l'opération de décembre (−20 % sur toute
+   la boutique, 1er→31 décembre 2026, assets/js/promo-decembre.js). Les
+   deux attributs partagent cette feuille : seules ces deux règles-ci sont
+   portées par un attribut, le reste est neutre toute l'année. Une
+   opération suivante s'ajoute ici de la même façon, sur une seule ligne,
+   plutôt qu'en recopiant la feuille. */
+[data-bf] .prix-promo,
+[data-dec] .prix-promo { color: #b4560a; }
 
 /* ── Le badge sur la vignette ─────────────────────────────────────────── */
 
@@ -43,7 +57,8 @@
    seulement pendant l'opération, pour que le badge s'accroche à elle et
    non à la page — et pour ne rien changer au reste de l'année. Le badge
    étant hors flux, il ne décale pas l'image dans sa grille. */
-[data-bf] .carte-img { position: relative; }
+[data-bf] .carte-img,
+[data-dec] .carte-img { position: relative; }
 
 .badge-bf {
   position: absolute;
@@ -70,8 +85,15 @@
   color: var(--bf-blanc);
   text-align: center;
   /* Les deux tickers sont posés en absolu dans ces marges : sans elles,
-     la bande du bas passe par-dessus la ligne de livraison. */
-  padding: 52px 16px 62px;
+     la bande du bas passe par-dessus la ligne de livraison.
+
+     Corrigé le 27/11/2026 : la marge basse ne suffisait pas. La bande
+     orange traversait « Livraison offerte dès 29,90 € » dès 760 px de
+     large, et de 24 px au-delà de 900 px — mesuré au navigateur, pas
+     supposé. Le défaut était en ligne depuis le 10 novembre : personne ne
+     l'avait vu parce qu'on regarde une bannière sur un téléphone, et sur
+     téléphone elle passe. */
+  padding: 52px 16px 72px;
 }
 
 /* Le ticker diagonal de la vidéo. Purement décoratif, donc caché aux
@@ -151,7 +173,7 @@
    finit par occuper presque tout l'écran d'accueil. On le resserre : la
    bannière doit annoncer l'offre, pas repousser la boutique hors de vue. */
 @media (min-width: 900px) {
-  .bf-banniere { padding: 46px 16px 54px; }
+  .bf-banniere { padding: 46px 16px 86px; }
   .bf-banniere h2 { margin-top: 12px; font-size: 3.5rem; }
   .bf-taux { font-size: 4.2rem; margin: 4px 0 2px; }
 }

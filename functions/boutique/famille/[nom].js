@@ -376,7 +376,7 @@ function page(slug, f, produits, base, indexable) {
 <link rel="stylesheet" href="/assets/css/base.css?v=355" />
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
 <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
-<link rel="stylesheet" href="/assets/css/promo-bf.css?v=417" />
+<link rel="stylesheet" href="/assets/css/promo-bf.css?v=418" />
 <style>
   .fam-page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 72px; }
   .fam-retour { display: inline-block; margin-bottom: 14px; font-size: .9rem; }
@@ -484,6 +484,7 @@ function page(slug, f, produits, base, indexable) {
 ${pied()}
 
 <script src="/assets/js/promo-bf.js?v=423"></script>
+<script src="/assets/js/promo-decembre.js?v=418"></script>
 <script src="/assets/js/mesure.js?v=391" defer></script>
 <script src="/assets/js/consentement.js?v=394" defer></script>
 </body>

@@ -23,6 +23,7 @@ import { configure as configureOdoo, appel as appelOdoo, produitsParEan } from "
 import { catalogue, donneesPortier, etatFilet, etatSecoursPrix } from "../_tarifs.js";
 import { veillerSurLaTva } from "../_veille_tva.js";
 import { etatPromo, ELIGIBLES } from "../_promo_bf.js";
+import { etatPromo as etatDecembre } from "../_promo_decembre.js";
 import { etatOffre as etatOffreP1 } from "../_offre_p1.js";
 /* Le `catalogue` importé plus haut est celui du tunnel professionnel.
    La promotion Black Friday ne concerne que la boutique grand public,
@@ -531,6 +532,50 @@ async function rapport({ request, env }) {
     promo = { lisible: false, detail: String((e && e.message) || "illisible").slice(0, 160) };
   }
 
+  /* L'OPÉRATION DE DÉCEMBRE : −20 % SUR TOUTE LA BOUTIQUE.
+   *
+   * Elle n'énumère pas ses éligibles — la décision de NBD est « tout le
+   * site » — donc le contrôle s'inverse par rapport au Black Friday : ici
+   * c'est une fiche AU PRIX PLEIN qui est l'anomalie. Une boutique qui
+   * annonce « −20 % sur tout » avec un produit non remisé au milieu est
+   * une annonce fausse, et c'est invisible en lisant le code : ça ne se
+   * voit qu'en comptant les fiches rendues.
+   *
+   * Les trois coffrets sont vérifiés à part : leur prix est arrêté à
+   * 30,00 € et non calculé, donc une faute de recopie dans la table des
+   * prix arrêtés ne se verrait nulle part ailleurs. */
+  let decembre = { lisible: false, detail: "non exécutée" };
+  try {
+    decembre = etatDecembre();
+    const tous = await catalogueBoutique(request);
+    const pleines = (tous || []).filter((p) => p && p.ttc_plein === undefined);
+    const coffrets = (tous || []).filter((p) => p && p.famille === "Coffrets");
+    const coffretsHorsPrix = coffrets
+      .filter((p) => decembre.remise && Math.round(Number(p.ttc) * 100) !== 3000)
+      .map((p) => `${p.nom} à ${Number(p.ttc).toFixed(2)} €`);
+
+    decembre = {
+      ...decembre, lisible: true,
+      fiches_au_catalogue: (tous || []).length,
+      fiches_au_prix_plein: pleines.length,
+      exemples_au_prix_plein: pleines.slice(0, 8).map((p) => p.nom),
+      coffrets: coffrets.length,
+      coffrets_hors_prix_arrete: coffretsHorsPrix,
+    };
+
+    if (decembre.remise && pleines.length) {
+      alertes.push("L'offre de décembre est active mais " + pleines.length
+        + " fiche(s) de la boutique restent au prix plein, alors que l'offre "
+        + "porte sur tout le site. Voir « decembre ».");
+    }
+    if (coffretsHorsPrix.length) {
+      alertes.push("Coffret(s) hors du prix arrêté de 30,00 € : "
+        + coffretsHorsPrix.join(", ") + ". Voir « decembre ».");
+    }
+  } catch (e) {
+    decembre = { lisible: false, detail: String((e && e.message) || "illisible").slice(0, 160) };
+  }
+
   let incidents = [];
   let incidentsSouci = "";
   try { incidents = await lireIncidents(env.DB, 20); }
@@ -556,6 +601,8 @@ async function rapport({ request, env }) {
     fiches_sans_prix: sansPrix,
     veille_tva: tva,
     black_friday: promo,
+    // L'offre de décembre : −20 % sur toute la boutique, 1er→31 décembre.
+    decembre: decembre,
     // Black Friday pro : le carton de 12 poudres P1 offert dès 300 € HT.
     black_friday_pro: etatOffreP1(),
     echecs_de_commande: incidentsSouci

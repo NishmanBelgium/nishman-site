@@ -78,11 +78,19 @@
   fetch("/assets/data/boutique.json?v=360")
     .then(function (r) { return r.json(); })
     .then(function (d) {
-      /* La remise Black Friday, appliquée dès la lecture : la grille, la
+      /* La remise en cours, appliquée dès la lecture : la grille, la
        * fiche et le panier affiché descendent tous de PRODUITS, donc une
        * seule application ici suffit. Le serveur refait le même calcul de
-       * son côté et c'est lui qui encaisse — voir assets/js/promo-bf.js. */
+       * son côté et c'est lui qui encaisse — voir assets/js/promo-bf.js.
+       *
+       * Les deux opérations sont enchaînées dans le même ordre que côté
+       * serveur (functions/_boutique.js) : Black Friday puis décembre.
+       * Elles ne se chevauchent jamais — le Black Friday s'éteint à
+       * l'instant où décembre commence — et la seconde laisse de toute
+       * façon intacte une fiche qui porte déjà `ttc_plein`. Un script
+       * absent ne casse rien : la liste passe telle quelle. */
       PRODUITS = (window.PROMO_BF ? window.PROMO_BF.appliquer(d) : d);
+      if (window.PROMO_DECEMBRE) PRODUITS = window.PROMO_DECEMBRE.appliquer(PRODUITS);
       lirePanier();
       dessinerFiltres();
       brancherOutils();

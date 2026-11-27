@@ -9,6 +9,7 @@
    ========================================================================== */
 
 import { appliquer as appliquerPromo } from "./_promo_bf.js";
+import { appliquer as appliquerDecembre } from "./_promo_decembre.js";
 
 let cache = null;
 let cacheExpire = 0;
@@ -24,7 +25,7 @@ export async function catalogue(request) {
    * remise, puisqu'on ne remise jamais un prix déjà remisé.
    *
    * appliquer() rend une nouvelle liste et ne touche pas au cache. */
-  if (cache && Date.now() < cacheExpire) return appliquerPromo(cache);
+  if (cache && Date.now() < cacheExpire) return appliquerDecembre(appliquerPromo(cache));
   const r = await fetch(new URL("/assets/data/boutique.json", request.url));
   if (!r.ok) throw new Error("catalogue boutique injoignable");
   /* Les références marquées « retire » sortent de tout ce qui s'affiche :
@@ -40,7 +41,7 @@ export async function catalogue(request) {
   const tout = await r.json();
   cache = tout.filter((p) => !p.retire);
   cacheExpire = Date.now() + DUREE_MS;
-  return appliquerPromo(cache);
+  return appliquerDecembre(appliquerPromo(cache));
 }
 
 export async function parSlug(request, slug) {
