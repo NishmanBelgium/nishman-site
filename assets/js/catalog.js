@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "362";
+  const ASSET_V = "433";
 
   /* ── L'OFFRE DE DÉCEMBRE, DANS LA FENÊTRE D'ACCUEIL ────────────────────
    * Miroir daté de `functions/_calcul.js`. Le serveur fait foi ; cette
@@ -1754,16 +1754,53 @@
   // ── accueil du visiteur ────────────────────────────────────────────
   const CLE_BIENVENUE = "nishman-bienvenue";
 
+  /* UNE SEULE FENÊTRE À LA FOIS. CORRIGÉ LE 27/11/2026.
+   *
+   * Le défaut, vu en rendu iPhone : au défilement, cette fenêtre s'ouvrait
+   * PAR-DESSUS la fenêtre Black Friday déjà ouverte, le bandeau de
+   * consentement attendant sous les deux. Trois voiles empilés, et un
+   * coiffeur qui doit en fermer trois avant de voir un prix ne les ferme
+   * pas : il part. Sur du trafic acheté, c'est le pire endroit où perdre
+   * quelqu'un.
+   *
+   * On ne renonce pas pour autant : tant qu'un autre voile occupe
+   * l'écran, on repousse au lieu d'abandonner — et surtout on ne marque
+   * PAS la fenêtre comme vue, sinon le visiteur ne la verrait jamais. */
+  function voileOuvert() {
+    const visible = (e) => e && !e.hidden && getComputedStyle(e).display !== "none"
+      && getComputedStyle(e).visibility !== "hidden";
+    /* LES CLASSES SONT RELEVÉES DANS LE CODE, PAS DEVINÉES. Première
+       version de cette correction : j'avais écrit `.cons-barre` et
+       `.bf-popup` de mémoire. Les vraies sont `.cons`
+       (assets/js/consentement.js, ligne 191) et `.bfp-pop`
+       (assets/js/offre-p1.js, ligne 249) — la correction n'aurait attrapé
+       que les voiles du catalogue et laissé passer exactement ceux qui
+       posaient problème.
+       `[data-voile]` est là pour la suite : une future fenêtre n'a qu'à
+       porter cet attribut pour être comptée, sans toucher à cette ligne. */
+    const sel = ".drawer-overlay, .cat-overlay, .cons, .bfp-pop, [data-voile]";
+    return [...document.querySelectorAll(sel)].some(visible);
+  }
+
   // Montrée une fois, à un visiteur non connecté, et jamais par-dessus la
-  // cinématique du logo : on attend qu'il arrive au catalogue, ou qu'il
-  // reste assez longtemps pour qu'on puisse supposer qu'il lit.
+  // cinématique du logo ni par-dessus un autre voile : on attend qu'il
+  // arrive au catalogue, ou qu'il reste assez longtemps pour qu'on puisse
+  // supposer qu'il lit.
   function initBienvenue() {
     if (connecte()) return;
     try { if (localStorage.getItem(CLE_BIENVENUE)) return; } catch (x) {}
 
     let fait = false;
+    let reports = 0;
     const montrer = () => {
       if (fait || connecte()) return;
+      // L'écran est déjà pris : on repasse plus tard, sans rien consommer.
+      // Au bout de dix tentatives (une minute), on laisse tomber pour
+      // cette visite plutôt que de guetter indéfiniment.
+      if (voileOuvert()) {
+        if (reports++ < 10) setTimeout(montrer, 6000);
+        return;
+      }
       fait = true;
       try { localStorage.setItem(CLE_BIENVENUE, "1"); } catch (x) {}
       window.removeEventListener("scroll", surScroll);
