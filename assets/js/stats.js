@@ -319,9 +319,17 @@
          quelqu'un qui était déjà sur le site compte des pages sans ouvrir
          de visite. Le ratio affichait alors « — » et donnait l'impression
          que le lien n'avait rien fait. */
+      /* Commandes et chiffre : ce que l'étiquette a RAPPORTÉ. Une campagne
+         sans commande affiche « — » et non « 0 », parce que zéro euro se
+         lit mieux en creux qu'en chiffre — et parce qu'une campagne
+         lancée il y a deux heures n'a pas encore vendu. */
+      var cmd = Number(l.commandes || 0);
+      var ca = Number(l.chiffre || 0);
       return "<tr><td><strong>" + ech(l.campagne) + "</strong></td>"
         + '<td class="st-num">' + nombre(se) + "</td>"
         + '<td class="st-num">' + nombre(Number(l.vues || 0)) + "</td>"
+        + '<td class="st-num">' + (cmd ? nombre(cmd) : "—") + "</td>"
+        + '<td class="st-num">' + (ca ? euros(ca) : "—") + "</td>"
         + "<td>" + ech((a && a.chemin) || "—") + "</td>"
         + '<td class="st-part"><span style="width:' + part + '%"></span>'
         + "<em>" + part + " %</em></td></tr>";
@@ -330,6 +338,7 @@
     $("#st-campagnes-corps").innerHTML =
       '<table class="st-table"><thead><tr><th>Étiquette</th>'
       + '<th class="st-num">Visites</th><th class="st-num">Pages vues</th>'
+      + '<th class="st-num">Commandes</th><th class="st-num">Chiffre</th>'
       + "<th>Arrivée principale</th><th>Part</th></tr></thead><tbody>"
       + corps + "</tbody></table>";
   }

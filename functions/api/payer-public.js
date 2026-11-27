@@ -20,6 +20,7 @@
    ========================================================================== */
 
 import { freinerIp, json, erreur, texteValide } from "../_commun.js";
+import { campagnePropre } from "../_mesure.js";
 import { catalogue } from "../_boutique.js";
 import { calculerB2C, paysValideB2C } from "../_calcul_b2c.js";
 import { limiterAuStock } from "../_stock.js";
@@ -310,6 +311,7 @@ export async function onRequestPost(ctx) {
       montant: valeur,
       devise: "EUR",
       relais_id: relais.id,
+      campagne: campagnePropre(corps.campagne),
       // L'adresse saisie au moment de la commande. C'est elle qui ira sur
       // le colis, et pas celle de la fiche Odoo : quand un client a déjà
       // commandé il y a six mois, sa fiche porte l'adresse d'alors, et le

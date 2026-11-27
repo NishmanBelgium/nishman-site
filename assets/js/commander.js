@@ -458,6 +458,14 @@
   /* --- L'envoi -------------------------------------------------------- */
 
   /** Ce que les deux issues — devis et paiement — envoient au serveur. */
+  function etiquetteDeCampagne() {
+  /* L'étiquette de campagne de la visite, telle que mesure.js l'a retenue.
+     Elle voyage avec la commande pour que le tableau de bord puisse dire
+     non seulement combien de visites une campagne a amenées, mais combien
+     d'euros elle a rapportés. Absente, c'est null et rien ne change. */
+    try { return sessionStorage.getItem("nishman-c") || null; } catch (e) { return null; }
+  }
+
   function corpsCommande() {
     const enLivraison = mode() === "livraison";
     const corps = {
@@ -474,6 +482,8 @@
     }
     const venu = origineDeLaVisite();
     if (venu) corps.origine = venu;
+    const etiquette = etiquetteDeCampagne();
+    if (etiquette) corps.campagne = etiquette;
     return corps;
   }
 

@@ -16,6 +16,7 @@
    ========================================================================== */
 
 import { json, erreur, compteConnecte, prolongerSiBesoin, texteValide, paysValide } from "../_commun.js";
+import { campagnePropre } from "../_mesure.js";
 import { calculer } from "../_calcul.js";
 import { catalogue, tableDePrix } from "../_tarifs.js";
 import { controlerSiBesoin } from "../_tva.js";
@@ -290,6 +291,7 @@ export async function onRequestPost(ctx) {
       odoo_nom: commande.nom || "",
       montant: valeur,
       devise: "EUR",
+      campagne: campagnePropre(corps.campagne),
     });
   } catch (e) {
     return json({

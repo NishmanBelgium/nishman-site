@@ -309,6 +309,28 @@ export async function lireCampagnes(db, depuis, jusqua) {
     const r = await db.prepare(sql).bind(depuis, jusqua).all();
     return (r && r.results) || [];
   };
+  /* CE QUE LA CAMPAGNE A RAPPORTÉ, et pas seulement amené.
+     Ajouté le 27/11/2026. Jusque-là ce tableau ne disait que des visites :
+     on pouvait voir qu'une campagne remplissait le site sans jamais savoir
+     si elle vendait. Les commandes portent désormais l'étiquette de la
+     visite qui les a produites (colonne `campagne` du registre des
+     paiements), ce qui permet de poser les deux côte à côte.
+
+     La requête tolère l'absence de la colonne : une base qui n'a pas
+     encore reçu l'ALTER TABLE rend simplement une liste vide, et le reste
+     du tableau de bord continue de s'afficher. Un tableau de bord qui
+     tombe parce qu'une colonne manque est pire qu'un tableau de bord
+     incomplet. */
+  let rapporte = [];
+  try {
+    rapporte = await un(
+      "SELECT campagne, COUNT(*) AS commandes, " +
+      "COALESCE(SUM(CAST(montant AS REAL)), 0) AS chiffre " +
+      "FROM paiements WHERE statut = 'paye' AND campagne IS NOT NULL " +
+      "AND substr(cree_le, 1, 10) BETWEEN ? AND ? " +
+      "GROUP BY campagne ORDER BY chiffre DESC LIMIT 40");
+  } catch (e) { rapporte = []; }
+
   const [parCampagne, parJour, atterrissage] = await Promise.all([
     un("SELECT campagne, SUM(vues) AS vues, SUM(sessions) AS sessions FROM campagnes " +
        "WHERE jour BETWEEN ? AND ? GROUP BY campagne ORDER BY sessions DESC, vues DESC LIMIT 40"),
@@ -318,7 +340,21 @@ export async function lireCampagnes(db, depuis, jusqua) {
        "WHERE jour BETWEEN ? AND ? GROUP BY campagne, chemin " +
        "ORDER BY sessions DESC LIMIT 60"),
   ]);
-  return { par_campagne: parCampagne, par_jour: parJour, atterrissage };
+
+  /* On recolle les deux côtés sur l'étiquette. Une campagne qui a amené
+     des visites sans commande garde ses zéros : c'est précisément ce
+     qu'on veut voir. */
+  const gains = new Map(rapporte.map((r) => [r.campagne, r]));
+  const enrichi = parCampagne.map((c) => {
+    const g = gains.get(c.campagne);
+    return {
+      ...c,
+      commandes: g ? g.commandes : 0,
+      chiffre: g ? Math.round(g.chiffre * 100) / 100 : 0,
+    };
+  });
+
+  return { par_campagne: enrichi, par_jour: parJour, atterrissage };
 }
 
 /* --- Lecture ------------------------------------------------------------ */

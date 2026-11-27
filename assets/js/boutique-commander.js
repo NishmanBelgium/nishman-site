@@ -374,6 +374,15 @@
      * r.json() lève, et le client lisait « Connexion interrompue » alors
      * que sa connexion allait très bien. On lit le texte d'abord, on
      * tranche ensuite, et on nous le fait savoir. */
+    /* L'étiquette de campagne de la visite, retenue par mesure.js.
+       Elle part avec la commande pour que le tableau de bord puisse
+       dire ce qu'une campagne a rapporté, et pas seulement combien de
+       visites elle a amenées. Absente, elle ne part pas. */
+    try {
+      var etiquette = sessionStorage.getItem("nishman-c");
+      if (etiquette) corps.campagne = etiquette;
+    } catch (e) { /* stockage indisponible : on commande sans étiquette */ }
+
     var statutRecu = 0;
     fetch("/api/payer-public", {
       method: "POST",
