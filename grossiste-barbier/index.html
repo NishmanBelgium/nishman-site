@@ -26,7 +26,7 @@
 <link rel="stylesheet" href="/assets/css/boutique.css?v=354" />
 <!-- Les tuiles de familles, reprises de l'accueil. familles.css ne dépend
      que des variables de base.css : rien d'autre à charger. -->
-<link rel="stylesheet" href="/assets/css/familles.css?v=400" />
+<link rel="stylesheet" href="/assets/css/familles.css?v=432" />
 <link rel="stylesheet" href="/assets/css/consentement.css?v=359" />
 <!-- Cette page vise une recherche que personne n'occupe : « grossiste
      produit barbier Belgique » et ses variantes. Le concurrent qui
@@ -147,13 +147,41 @@
      ====================================================================== -->
 <section class="phares" aria-labelledby="gb-titre">
   <div class="wrap">
-    <h1 id="gb-titre">Grossiste en produits barbier pour la Belgique, la France et le Luxembourg</h1>
-    <p class="phares-lead">Importateur officiel NISHMAN. Cent vingt-cinq références
-      en stock à Binche, au tarif professionnel et au carton, expédiées le jour même
-      vers la Belgique, la France et le Luxembourg.</p>
+    <!-- LE TITRE A ÉTÉ RACCOURCI LE 27/11/2026, ET VOICI POURQUOI.
+         Mesuré au téléphone (86 % du trafic pro) : l'ancien titre tenait
+         sur trois lignes et poussait les photos de produits hors du
+         premier écran. Quelqu'un qui arrive d'une publicité illustrée
+         tombait sur un mur de texte.
+         Le mot-clé visé — « grossiste produits barbier » — est intact ;
+         les trois pays, eux, sont dans la phrase juste en dessous, dans
+         le <title>, dans la méta description et dans le balisage
+         WholesaleStore. Le référencement ne perd rien, le lecteur gagne
+         un écran. -->
+    <h1 id="gb-titre">Grossiste produits barbier.<br />Stock en Belgique.</h1>
+    <p class="phares-lead">Importateur officiel NISHMAN pour la Belgique, la France
+      et le Luxembourg. 125 références au tarif professionnel, expédiées le jour même.</p>
+
+    <!-- CE QUE L'ANNONCE PROMET DOIT ÊTRE LA PREMIÈRE CHOSE LUE ICI.
+         Les créations de décembre annoncent −15 % ; jusqu'au 27/11 cette
+         page n'en disait pas un mot, et un visiteur qui ne retrouve pas
+         la promesse se demande s'il s'est trompé d'endroit.
+         La bande est MASQUÉE par défaut et révélée par la date, comme
+         toutes les opérations du site : le 1er janvier elle disparaît
+         sans que personne ait à y penser. Sans JavaScript elle reste
+         masquée — mieux vaut ne rien annoncer qu'annoncer une offre
+         finie. -->
+    <p class="gb-offre" id="gb-offre" hidden>
+      <b>−15 %</b> sur votre commande, jusqu'au 31 décembre.
+      <span>Nouveau compte ou client de longue date, une fois par salon.</span>
+    </p>
+
+    <!-- UN SEUL BOUTON SUR LE PREMIER ÉCRAN. Le devis reste accessible
+         dans l'en-tête et en bas de page : il attend ceux qui savent déjà
+         ce qu'ils veulent, et il n'a rien à faire en face du catalogue au
+         moment où le visiteur ne connaît encore rien de la gamme. Deux
+         appels côte à côte font arbitrer, et on arbitre en partant. -->
     <p class="gb-actions">
       <a class="gb-cta" href="/produits/">Voir le catalogue professionnel</a>
-      <a class="gb-cta gb-cta-second" href="/devis/">Demander un devis</a>
     </p>
 
     <ul class="phares-piste">
@@ -346,6 +374,21 @@ commerciaux passent également avec les échantillons.</p>
   </div>
 </footer>
 
+<!-- La bande d'offre, révélée par la date. Même borne que
+     functions/_calcul.js : Bruxelles est à UTC+1, donc minuit ici est
+     23 h la veille en UTC. Si cette borne change là-bas, elle change
+     ici — /api/diagnostic publie celle du serveur pour comparer. -->
+<script>
+(function () {
+  var DEBUT = Date.UTC(2026, 10, 30, 23, 0, 0);
+  var FIN   = Date.UTC(2026, 11, 31, 23, 0, 0);
+  var t = Date.now();
+  if (t >= DEBUT && t < FIN) {
+    var e = document.getElementById("gb-offre");
+    if (e) e.hidden = false;
+  }
+})();
+</script>
 <script src="/assets/js/mesure.js?v=391" defer></script>
 <script src="/assets/js/consentement.js?v=394" defer></script>
 </body>

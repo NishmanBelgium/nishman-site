@@ -216,3 +216,40 @@
   .gb-actions { flex-direction: column; gap: 10px; }
   .gb-cta { text-align: center; padding: 15px 20px; }
 }
+
+/* ── LA BANDE D'OFFRE DU PREMIER ÉCRAN ─────────────────────────────────────
+   Ajoutée le 27/11/2026. Elle répète ce que l'annonce a promis, et c'est
+   tout ce qu'elle fait : un filet orange à gauche plutôt qu'un aplat,
+   parce que l'orange est un accent et jamais un fond — la règle n° 1 de
+   la direction artistique, et deux couleurs fortes ne se touchent pas.
+   Elle est masquée par défaut dans le HTML : c'est la date qui l'allume. */
+.gb-offre {
+  border-left: 3px solid var(--orange, #ED9B24);
+  padding: 2px 0 2px 14px;
+  margin: 0 0 22px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #F7F6F2;
+}
+.gb-offre b {
+  font-family: var(--titre, "Archivo", "Helvetica Neue", Arial, sans-serif);
+  font-stretch: 85%;
+  font-weight: 800;
+  color: var(--orange, #ED9B24);
+}
+/* La condition passe à la ligne et s'efface : elle rassure celui qui la
+   cherche sans disputer la vedette au chiffre. */
+.gb-offre span {
+  display: block;
+  color: var(--encre-inverse-douce, #C4C0B8);
+  font-size: 0.82rem;
+  margin-top: 3px;
+}
+
+/* Le titre raccourci du 27/11 tient sur deux lignes voulues : la coupure
+   est dans le HTML, pas laissée au hasard de la largeur. Sous 560 px la
+   deuxième ligne doit rester lisible, d'où la taille plancher. */
+.phares h1 { text-wrap: balance; }
+@media (max-width: 560px) {
+  .phares h1 { font-size: 1.45rem; line-height: 1.12; }
+}
