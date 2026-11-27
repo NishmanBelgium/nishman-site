@@ -45,23 +45,38 @@
   // le message comme sur la ligne du document. Le serveur tranche au moment
   // de la commande.
   const PROMO_CODE = "FIRST10";
-  const PROMO_RATE = 0.10;
+
+  /* LE TAUX EST DATÉ, ET C'EST UN MIROIR DE functions/_calcul.js.
+     Décembre 2026 : −15 % sur la première commande, du 1er au 31. Le reste
+     de l'année : −10 %. Le serveur fait foi et renvoie `promo_taux` ; cette
+     page doit annoncer le même chiffre, sinon le devis promet une remise
+     que la commande corrigera. TOUTE MODIFICATION ICI DOIT Y ÊTRE REPORTÉE.
+     Bruxelles est à UTC+1 en décembre : minuit ici, 23 h la veille en UTC. */
+  const PROMO_DEBUT = Date.UTC(2026, 10, 30, 23, 0, 0);
+  const PROMO_FIN   = Date.UTC(2026, 11, 31, 23, 0, 0);
+  function promoTaux(t) {
+    t = Number(t || Date.now());
+    return (t >= PROMO_DEBUT && t < PROMO_FIN) ? 0.15 : 0.10;
+  }
+  const PROMO_RATE = promoTaux();
+  /* Le pourcentage écrit dans les cinq langues : jamais un « 10 » en dur. */
+  const PCT = Math.round(PROMO_RATE * 100);
   const PROMO_T = {
     fr: { label: "Code promo (facultatif)",
-          ok: "Code FIRST10 appliqué : −10 % sur votre première commande",
-          bad: "Ce code promo n'est pas reconnu", line: "Remise FIRST10 (−10 %, 1re commande)" },
+          ok: `Code FIRST10 appliqué : −${PCT} % sur votre première commande`,
+          bad: "Ce code promo n'est pas reconnu", line: `Remise FIRST10 (−${PCT} %, 1re commande)` },
     en: { label: "Promo code (optional)",
-          ok: "FIRST10 applied: −10% on your first order",
-          bad: "This promo code is not recognised", line: "FIRST10 discount (−10%, first order)" },
+          ok: `FIRST10 applied: −${PCT}% on your first order`,
+          bad: "This promo code is not recognised", line: `FIRST10 discount (−${PCT}%, first order)` },
     nl: { label: "Kortingscode (optioneel)",
-          ok: "FIRST10 toegepast: −10% op uw eerste bestelling",
-          bad: "Deze kortingscode is niet geldig", line: "Korting FIRST10 (−10%, 1e bestelling)" },
+          ok: `FIRST10 toegepast: −${PCT}% op uw eerste bestelling`,
+          bad: "Deze kortingscode is niet geldig", line: `Korting FIRST10 (−${PCT}%, 1e bestelling)` },
     de: { label: "Aktionscode (optional)",
-          ok: "FIRST10 angewendet: −10 % auf Ihre erste Bestellung",
-          bad: "Dieser Aktionscode ist ungültig", line: "Rabatt FIRST10 (−10 %, 1. Bestellung)" },
+          ok: `FIRST10 angewendet: −${PCT} % auf Ihre erste Bestellung`,
+          bad: "Dieser Aktionscode ist ungültig", line: `Rabatt FIRST10 (−${PCT} %, 1. Bestellung)` },
     tr: { label: "Promosyon kodu (isteğe bağlı)",
-          ok: "FIRST10 uygulandı: ilk siparişinizde −%10",
-          bad: "Bu promosyon kodu geçerli değil", line: "FIRST10 indirimi (−%10, ilk sipariş)" },
+          ok: `FIRST10 uygulandı: ilk siparişinizde −%${PCT}`,
+          bad: "Bu promosyon kodu geçerli değil", line: `FIRST10 indirimi (−%${PCT}, ilk sipariş)` },
   };
   function promoT() { return PROMO_T[LANG] || PROMO_T.fr; }
   function promoValide(v) {

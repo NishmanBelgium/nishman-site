@@ -30,6 +30,34 @@ export const TAUX_TVA_BE = 0.21;
 
 export const PROMO = { code: "FIRST10", taux: 0.10 };
 
+/* ── DÉCEMBRE 2026 : LA PREMIÈRE COMMANDE PASSE À −15 % ─────────────────────
+ *
+ * Décision de NBD du 27 novembre 2026, pour la campagne salons de décembre :
+ * −15 % sur la première commande, sans minimum d'achat, jusqu'au 31 décembre.
+ *
+ * LE TAUX EST UNE FONCTION DE L'HEURE, PAS UNE CONSTANTE RÉÉCRITE. Le 1er
+ * janvier à 00 h 00, le code redevient −10 % tout seul, sans que personne
+ * ait à s'en souvenir ni à repousser quoi que ce soit. C'est la leçon déjà
+ * payée sur les opérations boutique : une remise qu'il faut penser à
+ * éteindre reste allumée.
+ *
+ * LE CODE NE CHANGE PAS DE NOM. `FIRST10` reste le seul code accepté —
+ * il est imprimé sur des documents, il circule chez des clients, et un
+ * code refusé le jour où la publicité l'annonce coûte plus cher que le
+ * nom imparfait. Ce que le client lit vient du taux renvoyé par le
+ * serveur (`promo_taux`), jamais d'un « 10 » écrit en dur dans une page.
+ *
+ * Bruxelles est à UTC+1 en décembre : minuit ici, 23 h la veille en UTC. */
+const PREMIERE_DEBUT = Date.UTC(2026, 10, 30, 23, 0, 0);  // 1er déc. 00h00
+const PREMIERE_FIN   = Date.UTC(2026, 11, 31, 23, 0, 0);  // 31 déc. 23h59'59
+const PREMIERE_TAUX  = 0.15;
+
+/** Le taux de la remise « première commande » à l'instant donné. */
+export function tauxPremiere(maintenant) {
+  const t = Number(maintenant || Date.now());
+  return (t >= PREMIERE_DEBUT && t < PREMIERE_FIN) ? PREMIERE_TAUX : PROMO.taux;
+}
+
 /* --- Outils ------------------------------------------------------------- */
 
 const sou = (n) => Math.round(Number(n) * 100) / 100;
@@ -126,7 +154,8 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
     String(promo || "").trim().toUpperCase() === PROMO.code;
   const dejaClient = dejaCommande === true;
   const promoOk = codeDonne && !dejaClient;
-  const remise = promoOk ? sou(sousTotal * PROMO.taux) : 0;
+  const tauxRemise = tauxPremiere(maintenant);
+  const remise = promoOk ? sou(sousTotal * tauxRemise) : 0;
 
   const marchandise = sou(sousTotal - remise);
 
@@ -160,6 +189,9 @@ export function calculer({ selection, produits, prix, pays, tvaValide, mode, pro
     offre_p1: offreP1,
     sous_total: sousTotal,
     promo: promoOk ? PROMO.code : "",
+    // Le taux appliqué, pour que la page l'affiche au lieu de l'écrire en
+    // dur : en décembre il vaut 0,15, le reste de l'année 0,10.
+    promo_taux: promoOk ? tauxRemise : 0,
     // Le code a été donné mais écarté : la page doit pouvoir dire pourquoi.
     // Il ne reste qu'un seul motif de refus possible, mais le champ est
     // conservé : le jour où un deuxième code arrive avec ses conditions,
