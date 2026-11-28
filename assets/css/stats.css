@@ -321,3 +321,26 @@
   .st-dates { width: 100%; }
   .st-dates input[type="date"] { flex: 1 1 130px; min-width: 0; }
 }
+
+/* ── LE TUNNEL PROFESSIONNEL ────────────────────────────────────────────────
+   Posé le 28 novembre 2026. Une marche par ligne, la barre proportionnelle
+   à la première marche, et la chute affichée SOUS chaque marche — c'est
+   elle l'information, pas le nombre absolu. */
+.st-tunnel-marche { margin: 0 0 14px; }
+.st-tunnel-nom {
+  font-size: .82rem; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--st-doux, #8E8A8B); margin-bottom: 5px;
+}
+.st-tunnel-barre {
+  position: relative; height: 26px; border-radius: 3px;
+  background: rgba(255, 255, 255, .05); overflow: hidden;
+}
+.st-tunnel-barre span { display: block; height: 100%; border-radius: 3px; }
+.st-tunnel-chiffre {
+  font-variant-numeric: tabular-nums; font-weight: 700;
+  font-size: 1.05rem; margin-top: 4px;
+}
+/* La chute est en orange : c'est ce qu'on vient chercher sur cette page. */
+.st-tunnel-chute {
+  display: block; font-size: .8rem; color: #ED9B24; margin-top: 1px;
+}

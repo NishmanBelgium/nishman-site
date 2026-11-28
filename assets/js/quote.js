@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const ASSET_V = "208";
+  const ASSET_V = "435";
 
   // Mêmes conditions commerciales que le catalogue.
   //
@@ -805,6 +805,15 @@
     // refusé, rien n'est envoyé et la demande part quand même. Le garde
     // en sessionStorage évite qu'un second envoi dans la même session
     // compte deux fois — Meta facturerait une conversion imaginaire.
+    /* NOTRE PROPRE COMPTEUR, À CÔTÉ DE CELUI DE META ET PAS À SA PLACE.
+       Celui de Meta ci-dessous ne part qu'avec le consentement du
+       visiteur ; celui-ci part toujours, parce qu'il ne porte aucun
+       identifiant — un nombre par jour, rien d'autre. C'est exactement
+       la raison d'être du doublon : si la moitié des visiteurs refuse
+       les traceurs, le chiffre de Meta sous-compte de moitié et c'est le
+       nôtre qui dit la vérité sur ce que la campagne a produit. */
+    try { if (window.nishmanGeste) window.nishmanGeste("pro-devis"); } catch (e) {}
+
     try {
       var cons = window.nishmanConsentement;
       if (cons && !sessionStorage.getItem("nishman-devis-envoye")) {

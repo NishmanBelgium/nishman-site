@@ -69,6 +69,26 @@ export async function preparerMesure(db) {
 const GESTES = [
   "porte-pro",        // depuis l'accueil, vers les tarifs professionnels
   "porte-boutique",   // depuis l'accueil, vers la boutique
+
+  /* ── LE TUNNEL PROFESSIONNEL, POSÉ LE 28 NOVEMBRE 2026 ─────────────────
+   *
+   * Pourquoi maintenant : la campagne de décembre envoie 1 700 € de
+   * trafic sur ce tunnel. Jusqu'ici on enregistrait l'arrivée (une page
+   * vue) et la commande (« fini » ou « abandon ») — et rien entre les
+   * deux. On savait qui achetait, jamais où les autres décrochaient. À
+   * 3,76 % de transformation, c'est le reste qui coûte cher.
+   *
+   * Ils restent des COMPTEURS PAR JOUR, comme les portes : pas
+   * d'identifiant, pas de parcours individuel, pas de bandeau de
+   * traceurs à ajouter. On saura que le mur du prix a été vu trois cents
+   * fois et que douze comptes se sont ouverts ; jamais que c'est le même
+   * visiteur. C'est moins précis qu'un pixel, et c'est le prix à payer
+   * pour un site qui n'en pose pas. */
+  "pro-mur-prix",       // la fenêtre « compte professionnel » s'est ouverte
+  "pro-compte-ouvert",  // un compte vient d'être créé
+  "pro-compte-echec",   // une création de compte a été refusée
+  "pro-panier",         // une première ligne entre dans le panier pro
+  "pro-devis",          // une demande de devis part
 ];
 
 export function gesteValide(brut) {

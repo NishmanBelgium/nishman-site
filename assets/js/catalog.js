@@ -16,7 +16,7 @@
   // écran d'accueil sauté. On reprend la main.
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
-  const ASSET_V = "433";
+  const ASSET_V = "435";
 
   /* ── L'OFFRE DE DÉCEMBRE, DANS LA FENÊTRE D'ACCUEIL ────────────────────
    * Miroir daté de `functions/_calcul.js`. Le serveur fait foi ; cette
@@ -1172,6 +1172,25 @@
           renderFloatBar();
           closeProductSheet(); // retour direct au catalogue
           if (!removed) showToast(wasInCart ? T.toastUpdated : T.toastAdded);
+
+          /* LA PREMIÈRE LIGNE QUI ENTRE AU PANIER, et seulement la
+             première de la session. Ce qu'on cherche à savoir, c'est
+             combien de visiteurs passent du regard à l'intention — pas
+             combien de lignes compose celui qui a déjà décidé. Un
+             grossiste qui ajoute quarante références ferait sinon
+             quarante fois le même signal et noierait les trente-neuf
+             autres visiteurs de la journée.
+
+             Le jeton vit dans sessionStorage : il meurt avec l'onglet,
+             ne sort pas du navigateur et ne désigne personne. */
+          if (!removed) {
+            try {
+              if (!sessionStorage.getItem("nishman-panier-compte")) {
+                sessionStorage.setItem("nishman-panier-compte", "1");
+                if (window.nishmanGeste) window.nishmanGeste("pro-panier");
+              }
+            } catch (e) { /* un compteur perdu */ }
+          }
         });
       }
     }
@@ -1722,6 +1741,13 @@
   function openAccessModal(propos) {
     const ov = document.getElementById("access-overlay");
     if (!ov) return;
+
+    /* LE MUR DU PRIX. C'est le point du tunnel professionnel qu'on ne
+       voyait pas : combien de visiteurs arrivent jusqu'à vouloir un prix
+       et tombent sur « il faut un compte ». Rapporté au nombre de comptes
+       créés, c'est lui qui dit si le mur convainc ou s'il fait fuir.
+       Compteur du jour, sans identifiant — comme les portes. */
+    try { if (window.nishmanGeste) window.nishmanGeste("pro-mur-prix"); } catch (e) {}
 
     // Même fenêtre, deux propos : à l'arrivée on explique à qui s'adresse
     // ce catalogue ; depuis le bouton, on explique pourquoi un compte est

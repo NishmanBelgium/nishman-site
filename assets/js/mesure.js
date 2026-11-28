@@ -205,6 +205,17 @@
     if (cible) geste(cible.getAttribute("data-mesure"));
   }, true);
 
+  /* Tous les gestes ne sont pas des clics. Une fenêtre qui s'ouvre, un
+     compte qui se crée, un devis qui part : ce sont des moments du
+     tunnel professionnel, et ils arrivent dans d'autres scripts. On
+     expose donc l'envoi, en lecture seule du point de vue de l'appelant.
+
+     Le nom reste filtré côté serveur par une liste fermée : un appel
+     avec un nom inventé ne crée rien, il est simplement ignoré. */
+  window.nishmanGeste = function (nom) {
+    try { geste(String(nom || "")); } catch (e) { /* un compteur perdu */ }
+  };
+
   if (document.readyState === "complete" || document.readyState === "interactive") {
     annoncer();
   } else {

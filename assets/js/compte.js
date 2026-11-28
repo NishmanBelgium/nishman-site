@@ -336,9 +336,21 @@
             }));
           } catch (x) {}
 
+          /* Un compte de plus. Compteur du jour, rien d'autre : ni qui,
+             ni d'où. C'est la seule marche du tunnel professionnel qu'on
+             ne pouvait pas déduire d'une page vue, et c'est celle qui
+             décide de tout le reste — un salon qui n'ouvre pas de compte
+             ne verra jamais un prix. */
+          try { if (window.nishmanGeste) window.nishmanGeste("pro-compte-ouvert"); } catch (x) {}
+
           location.href = retourSur() || "/pro/compte/";
           return;
         }
+        /* Un refus compte autant qu'une réussite. Si le mur rejette des
+           salons réels — numéro de TVA mal saisi, pays non couvert — il
+           faut que ça se voie dans le tableau de bord, et pas seulement
+           dans la frustration de quelqu'un qu'on ne reverra pas. */
+        try { if (window.nishmanGeste) window.nishmanGeste("pro-compte-echec"); } catch (x) {}
         dire(messageServeur(r.donnees, t("echec_inscription")));
         rendreBouton();
       }).catch(function () {

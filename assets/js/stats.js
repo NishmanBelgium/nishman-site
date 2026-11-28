@@ -414,6 +414,81 @@
       + nombre(total) + " ont poussé l'une des deux portes.</p>";
   }
 
+  /* ── LE TUNNEL PROFESSIONNEL ────────────────────────────────────────────
+   *
+   * Cinq marches, et c'est la CHUTE entre deux marches qui est
+   * l'information — pas le nombre absolu. Un tableau qui aligne cinq
+   * compteurs laisse le lecteur faire les divisions ; on les fait pour
+   * lui, parce que c'est précisément le chiffre qui dit où agir.
+   *
+   * Les compteurs étant posés le 28/11/2026, toute période antérieure
+   * est vide. On le dit plutôt que d'afficher des zéros qui se liraient
+   * comme un effondrement. */
+  function tunnel(d) {
+    var zone = $("#st-tunnel");
+    if (etat.vue === "boutique") { zone.hidden = true; return; }
+    zone.hidden = false;
+
+    var g = d.portes || {};
+    var n = function (k) { return Number(g[k] || 0); };
+    var arrivees = Number((d.pro && d.pro.audience && d.pro.audience.sessions) || 0);
+    var commandes = Number((d.pro && d.pro.commerce && d.pro.commerce.commandes) || 0);
+
+    var marches = [
+      { nom: "Visites du tunnel pro", v: arrivees },
+      { nom: "Ont vu le mur du prix", v: n("pro-mur-prix") },
+      { nom: "Ont ouvert un compte", v: n("pro-compte-ouvert") },
+      { nom: "Ont rempli un panier", v: n("pro-panier") },
+      { nom: "Ont demandé un devis", v: n("pro-devis") },
+      { nom: "Ont commandé", v: commandes },
+    ];
+
+    var poses = n("pro-mur-prix") + n("pro-compte-ouvert") + n("pro-panier") + n("pro-devis");
+    if (!poses) {
+      $("#st-tunnel-corps").innerHTML =
+        '<p class="st-vide">Rien encore sur cette période. Les marches du '
+        + "tunnel ont été posées le 28 novembre 2026 : les chiffres "
+        + "commencent à la première visite qui suit, pas avant.</p>";
+      return;
+    }
+
+    var haut = marches[0].v || 1;
+    var lignes = marches.map(function (m, i) {
+      var large = Math.max(1.5, (m.v / haut) * 100);
+      var perte = "";
+      if (i > 0) {
+        var avant = marches[i - 1].v;
+        if (avant > 0) {
+          var reste = (m.v / avant) * 100;
+          perte = '<span class="st-tunnel-chute">' + reste.toFixed(1) + " % passent"
+                + (reste < 100 ? " · " + nombre(avant - m.v) + " repartent" : "") + "</span>";
+        }
+      }
+      return '<div class="st-tunnel-marche">'
+        + '<div class="st-tunnel-nom">' + m.nom + "</div>"
+        + '<div class="st-tunnel-barre"><span style="width:' + large.toFixed(2)
+        + '%;background:' + BLEU + '"></span></div>'
+        + '<div class="st-tunnel-chiffre">' + nombre(m.v) + "</div>"
+        + perte + "</div>";
+    }).join("");
+
+    /* Le refus de compte est à part : ce n'est pas une marche du chemin,
+       c'est une porte qui s'est fermée au nez de quelqu'un. S'il monte,
+       c'est le formulaire qu'il faut regarder, pas la publicité. */
+    var echecs = n("pro-compte-echec"), ouverts = n("pro-compte-ouvert");
+    var note = "";
+    if (echecs) {
+      note = '<p class="st-lead">' + nombre(echecs)
+           + " création(s) de compte refusée(s)"
+           + (ouverts + echecs > 0
+              ? " — " + part(echecs, ouverts + echecs) + " % des tentatives"
+              : "")
+           + ". Au-dessus de 20 %, c'est le formulaire qu'il faut regarder.</p>";
+    }
+
+    $("#st-tunnel-corps").innerHTML = lignes + note;
+  }
+
   function clients(d) {
     var zone = $("#st-clients");
     if (etat.vue === "boutique" || !d.clients) { zone.hidden = true; return; }
@@ -804,6 +879,7 @@
       : "Commandes payées sur le site, par jour";
 
     repartition(d);
+    tunnel(d);
     portes(d);
     clients(d);
 
